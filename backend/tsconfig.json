@@ -7,7 +7,7 @@
     "outDir": "./dist",                                  
     "esModuleInterop": true,                    
     "forceConsistentCasingInFileNames": true,
-    "strict": true,
+    "strict": false,
     "lib": ["ESNext"],
     "skipLibCheck": true,
     "noImplicitAny": false,
