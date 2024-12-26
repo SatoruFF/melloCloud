@@ -5,7 +5,7 @@
   "main": "app.js",
   "type": "module",
   "scripts": {
-    "build": "npx tsc",
+    "build": "npx tsc --noEmitOnError false",
     "start": "concurrently \"npx tsc --watch\" \"nodemon dist/app.js\" \"prisma studio\"",
     "dev": "concurrently \"npx tsc --watch\" \"nodemon dist/app.js\""
   },
