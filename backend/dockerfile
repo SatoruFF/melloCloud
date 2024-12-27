@@ -16,7 +16,7 @@ RUN npm install
 COPY . .
 
 # Генерация Prisma Client для нужной платформы
-RUN npx prisma generate
+# RUN npx prisma generate
 
 # Выполняем сборку
 RUN npm run build
