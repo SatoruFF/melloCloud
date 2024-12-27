@@ -1,5 +1,8 @@
 FROM node:22-alpine
 
+# Установка OpenSSL (fix with: https://github.com/prisma/prisma/discussions/22519)
+RUN apk add --no-cache openssl
+
 # Установка рабочей директории
 WORKDIR /app
 
