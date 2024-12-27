@@ -2,8 +2,8 @@ name: Deploy to Server
 
 on:
   push:
-    tags:        
-      - '*' 
+    tags:
+      - "*"
 
 jobs:
   deploy:
@@ -21,7 +21,7 @@ jobs:
         run: |
           sshpass -e ssh -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP bash -c "
           echo ✅ SSH connection successful &&
-          cd /root/core/meatIsland &&
+          cd /home/satoru/melloCloud &&
           echo ✅ Cleaning up unused Docker images and containers &&
           docker system prune -af --volumes &&
           echo ✅ Pulling from GitHub &&
