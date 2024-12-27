@@ -6,6 +6,7 @@ import router from "./routes/index.js";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import fileUpload from "express-fileupload";
+import { routesMiddleWare } from "./middleware/routes.middleware.js";
 
 // utils
 import { logger } from "./logger.js";
@@ -40,11 +41,9 @@ app.set("query parser", function (str) {
   return qs.parse(str, { depth });
 });
 
+app.use(routesMiddleWare);
 // routes
-// cause in production we use something like: api.[url].com
-const basePath = process.env.NODE_ENV === 'production' ? '' : '/api';
-
-app.use(basePath, router);
+app.use(router);
 
 // check health
 app.all("/", (_, res: Response) => {
