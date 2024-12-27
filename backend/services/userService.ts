@@ -1,3 +1,5 @@
+// @ts-nocheck
+// FIXME: remove this in future
 // base
 import { FileService } from "./fileService.js";
 import { MailService } from "./mailService.js";

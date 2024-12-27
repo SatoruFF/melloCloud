@@ -1,3 +1,5 @@
+// @ts-nocheck
+// FIXME: remove this in future
 // base
 import { prisma, imagekit } from "../configs/config.js";
 

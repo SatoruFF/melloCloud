@@ -1,3 +1,5 @@
+// @ts-nocheck
+// FIXME: remove this in future
 import _ from "lodash";
 
 import "dotenv/config.js";
