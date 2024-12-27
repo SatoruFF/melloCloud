@@ -41,7 +41,10 @@ app.set("query parser", function (str) {
 });
 
 // routes
-app.use("/api", router);
+// cause in production we use something like: api.[url].com
+const basePath = process.env.NODE_ENV === 'production' ? '' : '/api';
+
+app.use(basePath, router);
 
 // check health
 app.all("/", (_, res: Response) => {
