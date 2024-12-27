@@ -13,6 +13,8 @@ RUN npm install
 # Копируем все файлы проекта в контейнер
 COPY . .
 
+COPY prisma ./prisma/
+
 # Выполняем сборку
 RUN npm run build
 
