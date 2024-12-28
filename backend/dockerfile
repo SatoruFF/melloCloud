@@ -1,7 +1,7 @@
 FROM node:22-slim
 
 # Установка OpenSSL (для исправления проблем с Prisma https://github.com/prisma/prisma/discussions/22519)
-RUN apk add --no-cache openssl
+# RUN apk add --no-cache openssl
 
 # Установка рабочей директории
 WORKDIR /app
