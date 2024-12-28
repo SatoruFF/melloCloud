@@ -1,13 +1,16 @@
-FROM node:22-bullseye-slim
+FROM node:22-alpine
 
 # Установка OpenSSL (для исправления проблем с Prisma https://github.com/prisma/prisma/discussions/22519)
-# RUN apk add --no-cache openssl
+RUN apk add --no-cache openssl
 
 # Установка рабочей директории
 WORKDIR /app
 
 # Копируем package.json и package-lock.json
 COPY package*.json ./ 
+
+# Копируем папку prisma
+COPY prisma ./prisma/
 
 RUN rm -rf node_modules
 RUN npm install
@@ -16,7 +19,7 @@ RUN npm install
 COPY . .
 
 # Генерация Prisma Client для нужной платформы
-# RUN npx prisma generate
+RUN npx prisma generate
 
 # Выполняем сборку
 RUN npm run build
