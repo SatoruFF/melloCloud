@@ -2,12 +2,12 @@ const isLocalhost = window.location.hostname.includes("localhost") || window.loc
 
 // Формируем базовый URL с учетом протокола
 const _baseUrl: string = isLocalhost
-  ? "http://localhost:10000" // Указываем http для локального хоста
+  ? "http://localhost:10000/api" // Указываем http для локального хоста
   : "https://api.mellocloud.net"; // https для продакшена
 
 export const Variables = {
-  User_URL: `${_baseUrl}/api/user/`,
-  File_URL: `${_baseUrl}/api/`,
-  UpAvatar_URL: `${_baseUrl}/api/file/avatar`,
-  FileUpload_URL: `${_baseUrl}/api/file/upload`,
+  User_URL: `${_baseUrl}/user/`,
+  File_URL: `${_baseUrl}/`,
+  UpAvatar_URL: `${_baseUrl}/file/avatar`,
+  FileUpload_URL: `${_baseUrl}/file/upload`,
 } as const;
