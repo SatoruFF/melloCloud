@@ -1,5 +1,5 @@
-import Particles from "react-tsparticles";
-import { loadFull } from "tsparticles";
+import Particles from 'react-tsparticles';
+import { loadFull } from 'tsparticles';
 
 const ParticleEffect = () => {
   const particlesInit: any = async (main) => {
@@ -28,7 +28,7 @@ const ParticleEffect = () => {
               // },
               onHover: {
                 enable: true,
-                mode: "repulse",
+                mode: 'repulse',
               },
               resize: true,
             },
@@ -44,10 +44,10 @@ const ParticleEffect = () => {
           },
           particles: {
             color: {
-              value: "#ffffff",
+              value: '#ffffff',
             },
             links: {
-              color: "#ffffff",
+              color: '#ffffff',
               distance: 150,
               enable: true,
               opacity: 0.5,
@@ -57,10 +57,10 @@ const ParticleEffect = () => {
               enable: true,
             },
             move: {
-              direction: "none",
+              direction: 'none',
               enable: true,
               outModes: {
-                default: "bounce",
+                default: 'bounce',
               },
               random: false,
               speed: 1,
@@ -77,7 +77,7 @@ const ParticleEffect = () => {
               value: 0.9,
             },
             shape: {
-              type: "circle",
+              type: 'circle',
             },
             size: {
               value: { min: 1, max: 5 },

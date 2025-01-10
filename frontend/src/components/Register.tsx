@@ -6,7 +6,7 @@ import { unwrapResult } from "@reduxjs/toolkit";
 import { SmileOutlined } from "@ant-design/icons";
 
 import { LOGIN_ROUTE, ACTIVATION_ROUTE } from "../utils/consts";
-import { userApi } from "../services/user";
+import { userApi } from "./services/user";
 import { useAppDispatch } from "../store/store";
 import { setUser } from "../store/reducers/userSlice";
 

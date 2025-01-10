@@ -8,10 +8,10 @@ import {
 } from "@ant-design/icons";
 
 import { unwrapResult } from "@reduxjs/toolkit";
-import { useAppSelector } from "../store/store";
-import { useAppDispatch } from "../store/store";
+import { useAppSelector } from "../../store/store";
+import { useAppDispatch } from "../../store/store";
 import { useCreateDirMutation, useGetFilesQuery } from "../services/file";
-import Filelist from "../components/Filelist";
+import Filelist from "../Filelist";
 import {
   setFiles,
   addNewFile,
@@ -19,9 +19,9 @@ import {
   popToStack,
   setView,
   popToPath,
-} from "../store/reducers/fileSlice";
-import { generateParams } from "../utils/generateParams";
-import UploadModal from "../components/modals/UploadModal";
+} from "../../store/reducers/fileSlice";
+import { generateParams } from "../../utils/generateParams";
+import UploadModal from "../modals/UploadModal";
 
 import diskBack from "../assets/disk-back.jpg";
 import styles from "../style/fileSpace.module.scss";

@@ -1,23 +1,23 @@
-import { ApiOutlined } from "@ant-design/icons";
-import { useNavigate } from "react-router-dom";
-import { useState } from "react";
-import { Button, Divider, notification } from "antd";
+import { ApiOutlined } from '@ant-design/icons';
+import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import { Button, Divider, notification } from 'antd';
 
-import { useAppSelector, useAppDispatch } from "../store/store";
-import { sizeFormat } from "../utils/sizeFormat";
-import { logout } from "../store/reducers/userSlice";
-import { WELCOME_ROUTE } from "../utils/consts";
-import InfoModal from "./modals/InfoModal";
-import PasswordModal from "./modals/PasswordModal";
-import DeleteModal from "./modals/DeleteModal";
+import { useAppSelector, useAppDispatch } from '../store/store';
+import { sizeFormat } from '../utils/sizeFormat';
+import { logout } from '../store/reducers/userSlice';
+import { WELCOME_ROUTE } from '../utils/consts';
+import InfoModal from './modals/InfoModal';
+import PasswordModal from './modals/PasswordModal';
+import DeleteModal from './modals/DeleteModal';
 
-import styles from "../style/accountSettings.module.scss";
-import cn from "classnames"
+import styles from '../style/accountSettings.module.scss';
+import cn from 'classnames';
 
 const AccountSettings = () => {
-  const [changeInfoModal, setChangeInfoModal] = useState(false)
-  const [changePassModal, setChangePassModal] = useState(false)
-  const [deleteModal, setDeleteModal] = useState(false)
+  const [changeInfoModal, setChangeInfoModal] = useState(false);
+  const [changePassModal, setChangePassModal] = useState(false);
+  const [deleteModal, setDeleteModal] = useState(false);
 
   const user = useAppSelector((state) => state.users.currentUser);
   const totalSpace = sizeFormat(user.diskSpace);
@@ -30,10 +30,10 @@ const AccountSettings = () => {
     dispatch(logout());
     navigate(WELCOME_ROUTE);
     notification.open({
-      message: "You succesfully log out",
-      description: "You have successfully logged out of your account",
-      placement: "topLeft",
-      icon: <ApiOutlined style={{ color: "#ff7875" }} />,
+      message: 'You succesfully log out',
+      description: 'You have successfully logged out of your account',
+      placement: 'topLeft',
+      icon: <ApiOutlined style={{ color: '#ff7875' }} />,
     });
   };
 
@@ -49,11 +49,13 @@ const AccountSettings = () => {
       </div>
       <div className={cn(styles.accountSettings)}>
         <Divider orientation="left">Edit</Divider>
-        <Button className={cn(styles.accountBtn)} onClick={() => setChangeInfoModal(true)}>Change profile info</Button>
+        <Button className={cn(styles.accountBtn)} onClick={() => setChangeInfoModal(true)}>
+          Change profile info
+        </Button>
       </div>
-      <InfoModal status={changeInfoModal} def={setChangeInfoModal}/>
-      <PasswordModal status={changePassModal} def={setChangePassModal}/>
-      <DeleteModal status={deleteModal} def={setDeleteModal}/>
+      <InfoModal status={changeInfoModal} def={setChangeInfoModal} />
+      <PasswordModal status={changePassModal} def={setChangePassModal} />
+      <DeleteModal status={deleteModal} def={setDeleteModal} />
     </div>
   );
 };

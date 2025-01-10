@@ -17,7 +17,7 @@ import Ajv from "ajv";
 import { FILE_ROUTE, REGISTRATION_ROUTE } from "../utils/consts";
 import { useAppDispatch, useAppSelector } from "../store/store";
 import { setUser } from "../store/reducers/userSlice";
-import { userApi } from "../services/user";
+import { userApi } from "./services/user";
 
 import styles from "../style/auth.module.scss";
 import cn from "classnames";

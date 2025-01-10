@@ -1,7 +1,7 @@
 import { Anchor, Button, message } from "antd";
 import { LazyMotion, domAnimation, motion } from "framer-motion";
 
-import ParticleEffect from "../components/UI/ParticleEffect";
+import ParticleEffect from "../UI/ParticleEffect";
 
 import mainLogo from "../assets/sea-turtle.png";
 import desktopIcon from "../assets/desktop.png";

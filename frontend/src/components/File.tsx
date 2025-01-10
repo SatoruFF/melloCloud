@@ -22,7 +22,7 @@ import {
   useDeleteFileMutation,
   useDownloadFileMutation,
   useGetFilesQuery,
-} from "../services/file";
+} from "./services/file";
 import { sizeFormat } from "../utils/sizeFormat";
 import FileViewer from "./file-viewer/FileViewer";
 
