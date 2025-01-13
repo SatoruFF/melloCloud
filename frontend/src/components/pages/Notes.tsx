@@ -1,7 +1,5 @@
 const Notes = () => {
-    return (
-        <></>
-    );
-}
+  return <></>;
+};
 
 export default Notes;

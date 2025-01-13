@@ -1,5 +1,5 @@
-import useSound from "use-sound";
-import clickSfx from "../../assets/slide.mp3";
+import useSound from 'use-sound';
+import clickSfx from '../../assets/slide.mp3';
 
 const Controls = ({
   timerMode,
@@ -17,12 +17,12 @@ const Controls = ({
   const handleModeChange = (event) => {
     setTimerMode(event.target.id);
     setIsActive(false);
-    setButtonText("START");
+    setButtonText('START');
     switch (event.target.id) {
-      case "short":
+      case 'short':
         setSecondsLeft(shortLength * 60);
         break;
-      case "long":
+      case 'long':
         setSecondsLeft(longLength * 60);
         break;
       default:
@@ -36,7 +36,7 @@ const Controls = ({
         type="radio"
         id="pomo"
         name="mode"
-        checked={timerMode === "pomo"}
+        checked={timerMode === 'pomo'}
         onClick={playSfx}
         onChange={handleModeChange}
       />
@@ -48,7 +48,7 @@ const Controls = ({
         type="radio"
         id="short"
         name="mode"
-        checked={timerMode === "short"}
+        checked={timerMode === 'short'}
         onClick={playSfx}
         onChange={handleModeChange}
       />
@@ -60,7 +60,7 @@ const Controls = ({
         type="radio"
         id="long"
         name="mode"
-        checked={timerMode === "long"}
+        checked={timerMode === 'long'}
         onClick={playSfx}
         onChange={handleModeChange}
       />

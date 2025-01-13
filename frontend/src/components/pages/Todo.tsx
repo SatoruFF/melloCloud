@@ -1,7 +1,5 @@
 const Todo = () => {
-    return (
-        <></>
-    );
-}
+  return <></>;
+};
 
 export default Todo;

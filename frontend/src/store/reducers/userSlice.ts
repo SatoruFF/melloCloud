@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice } from '@reduxjs/toolkit';
 
 export interface UserInterface {
   currentUser: any;
@@ -6,14 +6,14 @@ export interface UserInterface {
   isAuth: boolean;
 }
 
-const initialState: UserInterface  = {
+const initialState: UserInterface = {
   currentUser: {},
-  token: "",
+  token: '',
   isAuth: false,
 };
 
 export const userSlice = createSlice({
-  name: "user",
+  name: 'user',
   initialState,
   reducers: {
     setUser: (state, action: any) => {
@@ -21,14 +21,14 @@ export const userSlice = createSlice({
         state.currentUser = action.payload.user;
         state.token = action.payload.token;
         state.isAuth = true;
-        localStorage.setItem("token", action.payload.token);
+        localStorage.setItem('token', action.payload.token);
       }
     },
     logout: (state) => {
       state.isAuth = false;
-      state.currentUser = {}
-      state.token = null
-      localStorage.removeItem("token");
+      state.currentUser = {};
+      state.token = null;
+      localStorage.removeItem('token');
     },
     deleteAvatar: (state) => {
       state.currentUser.avatar = null;

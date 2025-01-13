@@ -1,40 +1,31 @@
-import { useState } from "react";
-import {
-  Form,
-  Input,
-  Checkbox,
-  Button,
-  Spin,
-  message,
-  notification,
-} from "antd";
-import Divider from "antd/es/divider";
-import { NavLink, useNavigate } from "react-router-dom";
-import { SmileOutlined } from "@ant-design/icons";
-import { unwrapResult } from "@reduxjs/toolkit";
-import Ajv from "ajv";
+import { useState } from 'react';
+import { Form, Input, Checkbox, Button, Spin, message, notification } from 'antd';
+import Divider from 'antd/es/divider';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { SmileOutlined } from '@ant-design/icons';
+import { unwrapResult } from '@reduxjs/toolkit';
+import Ajv from 'ajv';
 
-import { FILE_ROUTE, REGISTRATION_ROUTE } from "../utils/consts";
-import { useAppDispatch, useAppSelector } from "../store/store";
-import { setUser } from "../store/reducers/userSlice";
-import { userApi } from "./services/user";
+import { FILE_ROUTE, REGISTRATION_ROUTE } from '../utils/consts';
+import { useAppDispatch, useAppSelector } from '../store/store';
+import { setUser } from '../store/reducers/userSlice';
+import { userApi } from './services/user';
 
-import styles from "../style/auth.module.scss";
-import cn from "classnames";
+import styles from '../style/auth.module.scss';
+import cn from 'classnames';
 
 const Login = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
-  const [setLogin, { isLoading, error: logError }]: any =
-    userApi.useLoginMutation();
+  const [setLogin, { isLoading, error: logError }]: any = userApi.useLoginMutation();
   // const isAuth = useAppSelector((state) => state.users.isAuth);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
   const handleClick = async () => {
     try {
-      if (email == "" || password == "") {
+      if (email == '' || password == '') {
         return message.error(`error: some fields are empty`);
       }
       const user: any = await setLogin({
@@ -48,10 +39,10 @@ const Login = () => {
       const userData = user.data ? user.data : user;
       dispatch(setUser(userData as any));
       notification.open({
-        message: "Success log in",
+        message: 'Success log in',
         description: `User with email: ${email} has log in`,
-        placement: "topLeft",
-        icon: <SmileOutlined style={{ color: "#52c41a" }} />,
+        placement: 'topLeft',
+        icon: <SmileOutlined style={{ color: '#52c41a' }} />,
       });
       navigate(FILE_ROUTE);
     } catch (e: any) {
@@ -63,11 +54,7 @@ const Login = () => {
     <div className={cn(styles.rightSideForm)}>
       <div className={cn(styles.authFormTitle)}>Login</div>
       <Form layout="vertical">
-        <Form.Item
-          label="email:"
-          name="email"
-          rules={[{ required: true, message: "Please input your email!" }]}
-        >
+        <Form.Item label="email:" name="email" rules={[{ required: true, message: 'Please input your email!' }]}>
           <Input
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -77,7 +64,7 @@ const Login = () => {
         <Form.Item
           label="password:"
           name="password"
-          rules={[{ required: true, message: "Please input your password!" }]}
+          rules={[{ required: true, message: 'Please input your password!' }]}
         >
           <Input
             type="password"
@@ -94,11 +81,7 @@ const Login = () => {
             {isLoading ? (
               <Spin />
             ) : (
-              <Button
-                onClick={() => handleClick()}
-                type="primary"
-                htmlType="submit"
-              >
+              <Button onClick={() => handleClick()} type="primary" htmlType="submit">
                 Submit
               </Button>
             )}
@@ -106,7 +89,7 @@ const Login = () => {
         </Form.Item>
         <Divider orientation="left">No account?</Divider>
         <Button>
-          <NavLink to={REGISTRATION_ROUTE}>Create profile</NavLink>{" "}
+          <NavLink to={REGISTRATION_ROUTE}>Create profile</NavLink>{' '}
         </Button>
       </Form>
     </div>

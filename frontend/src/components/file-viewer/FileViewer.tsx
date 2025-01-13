@@ -1,37 +1,25 @@
-import { Image, Modal, Button } from "antd";
-import { useState } from "react";
-import ReactPlayer from "react-player";
-import {
-  FolderFilled,
-  FileFilled,
-  PlayCircleOutlined,
-} from "@ant-design/icons";
-import cn from "classnames"
-import styles from "../../style/fileViewer.module.scss";
-
+import { Image, Modal, Button } from 'antd';
+import { useState } from 'react';
+import ReactPlayer from 'react-player';
+import { FolderFilled, FileFilled, PlayCircleOutlined } from '@ant-design/icons';
+import cn from 'classnames';
+import styles from '../../style/fileViewer.module.scss';
 
 const FileViewer = ({ type, url }) => {
   const [isOpenPlayer, setIsOpenPlayer] = useState(false);
 
   type = type.toLowerCase();
 
-  const isImage =
-    type == "png" || type == "jpg" || type == "jpeg" || type == "gif";
-  const isPlayer =
-    type == "mp4" ||
-    type == "webm" ||
-    type == "ogv" ||
-    type == "mp3" ||
-    type == "hls" ||
-    type == "dash";
+  const isImage = type == 'png' || type == 'jpg' || type == 'jpeg' || type == 'gif';
+  const isPlayer = type == 'mp4' || type == 'webm' || type == 'ogv' || type == 'mp3' || type == 'hls' || type == 'dash';
   // need to destructure, cause in future this a big module
   const determineViewer = (fileType: String, url: any) => {
-    if (fileType === "dir") {
+    if (fileType === 'dir') {
       return <FolderFilled className="folder" />;
     } else if (isImage) {
       return <Image src={url} className="image-file" />;
     } else if (isPlayer) {
-      return <PlayCircleOutlined className="playerIcon" onClick={() => setIsOpenPlayer(true)}/>;
+      return <PlayCircleOutlined className="playerIcon" onClick={() => setIsOpenPlayer(true)} />;
     } else {
       return <FileFilled className="file" />;
     }
@@ -45,10 +33,10 @@ const FileViewer = ({ type, url }) => {
         open={isOpenPlayer}
         onCancel={() => setIsOpenPlayer(false)}
         footer={[
-            <Button key="back" onClick={() => setIsOpenPlayer(false)}>
-              cancel
-            </Button>,
-          ]}
+          <Button key="back" onClick={() => setIsOpenPlayer(false)}>
+            cancel
+          </Button>,
+        ]}
       >
         <ReactPlayer className="mainPlayer" controls={true} url={url} />
       </Modal>

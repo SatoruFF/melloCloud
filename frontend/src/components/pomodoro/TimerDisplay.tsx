@@ -1,12 +1,9 @@
-import MuteToggle from "./MuteToggle";
-import {
-  CircularProgressbarWithChildren,
-  buildStyles,
-} from "react-circular-progressbar";
-import "react-circular-progressbar/dist/styles.css";
-import useSound from "use-sound";
-import startSfx from "../../assets/startTimer.mp3";
-import pauseSfx from "../../assets/pauseTimer.mp3";
+import MuteToggle from './MuteToggle';
+import { CircularProgressbarWithChildren, buildStyles } from 'react-circular-progressbar';
+import 'react-circular-progressbar/dist/styles.css';
+import useSound from 'use-sound';
+import startSfx from '../../assets/startTimer.mp3';
+import pauseSfx from '../../assets/pauseTimer.mp3';
 
 const TimerDisplay = ({
   timerMode,
@@ -29,11 +26,11 @@ const TimerDisplay = ({
   });
 
   const handleClick = (event) => {
-    if (event.target.id === "muteButton") {
+    if (event.target.id === 'muteButton') {
       return null;
     }
 
-    if (timeLeft === "0:00") {
+    if (timeLeft === '0:00') {
       return null;
     }
 
@@ -43,16 +40,14 @@ const TimerDisplay = ({
       play();
     }
     setIsActive(!isActive);
-    setButtonText(
-      buttonText === "START" || buttonText === "RESUME" ? "PAUSE" : "RESUME"
-    );
+    setButtonText(buttonText === 'START' || buttonText === 'RESUME' ? 'PAUSE' : 'RESUME');
   };
 
-  let timesUpMsg = timerMode === "pomo" ? "time for a break" : "back to work!";
+  let timesUpMsg = timerMode === 'pomo' ? 'time for a break' : 'back to work!';
 
-  let timeText = timeLeft === "0:00" ? timesUpMsg : timeLeft;
+  let timeText = timeLeft === '0:00' ? timesUpMsg : timeLeft;
 
-  let textSize = timeLeft === "0:00" ? "12px" : "28px";
+  let textSize = timeLeft === '0:00' ? '12px' : '28px';
 
   return (
     <div className="timer" onClick={handleClick}>
@@ -65,11 +60,11 @@ const TimerDisplay = ({
             // How long animation takes to go from one percentage to another, in seconds
             pathTransitionDuration: 0.5,
             // Colors & Fonts
-            pathColor: "var(--accent-color)",
-            textColor: "#fff",
+            pathColor: 'var(--accent-color)',
+            textColor: '#fff',
             textSize: textSize,
-            fontFamily: "var(--font-current)",
-            trailColor: "none",
+            fontFamily: 'var(--font-current)',
+            trailColor: 'none',
           })}
         >
           <MuteToggle volume={volume} setVolume={setVolume} />

@@ -1,7 +1,7 @@
-import React from "react";
+import React from 'react';
 
-const Button = ({ type, buttonText = "", toggleVisibility }) => {
-  if (type === "settings") {
+const Button = ({ type, buttonText = '', toggleVisibility }) => {
+  if (type === 'settings') {
     return (
       <button
         className="pomodoro-app__preferences"
@@ -9,13 +9,7 @@ const Button = ({ type, buttonText = "", toggleVisibility }) => {
         title="show preferences pane"
         onClick={toggleVisibility}
       >
-        <svg
-          width="28"
-          height="28"
-          viewBox="0 0 28 28"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
+        <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
           <g opacity="0.5">
             <path
               fillRule="evenodd"
@@ -29,7 +23,7 @@ const Button = ({ type, buttonText = "", toggleVisibility }) => {
     );
   }
 
-  if (type === "close") {
+  if (type === 'close') {
     return (
       <button className="pane__close-preferences" onClick={toggleVisibility}>
         {buttonText}
@@ -37,14 +31,10 @@ const Button = ({ type, buttonText = "", toggleVisibility }) => {
     );
   }
 
-  if (type === "apply") {
+  if (type === 'apply') {
     return (
       <div className="pane__apply-row">
-        <input
-          type="submit"
-          value={buttonText}
-          className="pane__apply-preferences"
-        />
+        <input type="submit" value={buttonText} className="pane__apply-preferences" />
       </div>
     );
   } else {

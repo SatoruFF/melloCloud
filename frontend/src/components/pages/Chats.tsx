@@ -1,7 +1,5 @@
 const Chats = () => {
-    return (
-        <></>
-    );
-}
+  return <></>;
+};
 
 export default Chats;
