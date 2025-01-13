@@ -5,11 +5,11 @@ import { LeftOutlined, UploadOutlined, UnorderedListOutlined, AppstoreOutlined }
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppSelector } from '../../../store/store';
 import { useAppDispatch } from '../../../store/store';
-import { useCreateDirMutation, useGetFilesQuery } from '../../../components/services/file';
-import Filelist from '../../../components/Filelist';
+import { useCreateDirMutation, useGetFilesQuery } from '../../../TEMP/services/file';
+import Filelist from '../../../widgets/fileList/ui/Filelist';
 import { setFiles, addNewFile, setDir, popToStack, setView, popToPath } from '../../../store/reducers/fileSlice';
 import { generateParams } from '../../../utils/generateParams';
-import UploadModal from '../../../components/modals/UploadModal';
+import UploadModal from '../../../features/uploadModal/ui/UploadModal';
 
 import diskBack from '../assets/disk-back.jpg';
 import styles from '../style/fileSpace.module.scss';

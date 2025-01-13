@@ -8,9 +8,9 @@ import { useMediaQuery } from 'react-responsive';
 import { FILE_ROUTE, LOGIN_ROUTE, PROFILE_ROUTE, REGISTRATION_ROUTE, WELCOME_ROUTE } from '../../../utils/consts';
 import { useAppDispatch, useAppSelector } from '../../../store/store';
 import { logout } from '../../../store/reducers/userSlice';
-import AccountSettings from '../../../components/AccountSettings.';
+import AccountSettings from '../../../TEMP/AccountSettings.';
 import avatarIcon from '../assets/avatar-icon.png';
-import WorkspacesDropdown from '../../../components/UI/WorkspacesDropdown';
+import WorkspacesDropdown from '../../../TEMP/UI/WorkspacesDropdown';
 
 import mainLogo from '../assets/mainLog.png';
 import styles from '../style/navbar.module.scss';

@@ -6,7 +6,7 @@ import { setUser } from '../../../store/reducers/userSlice';
 import { CheckSquareTwoTone, CloseCircleTwoTone } from '@ant-design/icons';
 import { useAppDispatch, useAppSelector } from '../../../store/store';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { useActivateUserMutation } from '../../../components/services/user';
+import { useActivateUserMutation } from '../../../TEMP/services/user';
 
 import styles from '../style/activate.module.scss';
 import { FILE_ROUTE } from '../../../utils/consts';

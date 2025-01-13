@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
 import useSound from 'use-sound';
 
-import Header from '../../../components/pomodoro/Header';
-import Controls from '../../../components/pomodoro/Controls';
-import TimerDisplay from '../../../components/pomodoro/TimerDisplay';
-import Button from '../../../components/pomodoro/Button';
-import Settings from '../../../components/pomodoro/Settings';
+import Header from '../../../features/pomodoro/ui/Header';
+import Controls from '../../../features/pomodoro/ui/Controls';
+import TimerDisplay from '../../../features/pomodoro/ui/TimerDisplay';
+import Button from '../../../features/pomodoro/ui/Button';
+import Settings from '../../../features/pomodoro/ui/Settings';
 
 import timesUpSfx from '../assets/timesUp.mp3';
 import styles from '../style/pomodoro.module.scss';

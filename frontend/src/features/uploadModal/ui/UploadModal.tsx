@@ -2,10 +2,10 @@ import { Button, Modal, Upload, message } from 'antd';
 import type { UploadProps } from 'antd';
 import { InboxOutlined } from '@ant-design/icons';
 
-import { useAppSelector } from '../../store/store';
-import { useAppDispatch } from '../../store/store';
-import { addNewFile } from '../../store/reducers/fileSlice';
-import { Variables } from '../../config/localVariables';
+import { useAppSelector } from '../../../store/store';
+import { useAppDispatch } from '../../../store/store';
+import { addNewFile } from '../../../store/reducers/fileSlice';
+import { Variables } from '../../../config/localVariables';
 
 import styles from '../../style/uploadModal.module.scss';
 import cn from 'classnames';

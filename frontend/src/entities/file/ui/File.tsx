@@ -4,11 +4,11 @@ import { Button, Popconfirm, Tooltip, message } from 'antd';
 import { motion } from 'framer-motion';
 import { unwrapResult } from '@reduxjs/toolkit';
 
-import { useAppDispatch, useAppSelector } from '../store/store';
-import { pushToPath, pushToStack, setDir, setFiles } from '../store/reducers/fileSlice';
-import { useDeleteFileMutation, useDownloadFileMutation, useGetFilesQuery } from './services/file';
-import { sizeFormat } from '../utils/sizeFormat';
-import FileViewer from './file-viewer/FileViewer';
+import { useAppDispatch, useAppSelector } from '../../../store/store';
+import { pushToPath, pushToStack, setDir, setFiles } from '../../../store/reducers/fileSlice';
+import { useDeleteFileMutation, useDownloadFileMutation, useGetFilesQuery } from '../../../TEMP/services/file';
+import { sizeFormat } from '../../../utils/sizeFormat';
+import FileViewer from '../../../features/fileViewer/ui/FileViewer';
 
 import styles from '../style/file.module.scss';
 import cn from 'classnames';

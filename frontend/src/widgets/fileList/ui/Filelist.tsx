@@ -1,6 +1,6 @@
 import { Empty } from 'antd';
-import { useAppSelector } from '../store/store';
-import File from './File';
+import { useAppSelector } from '../../../store/store';
+import File from '../../../entities/file/ui/File';
 
 import cn from 'classnames';
 import styles from '../style/fileList.module.scss';

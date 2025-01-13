@@ -7,9 +7,9 @@ import { useAppSelector, useAppDispatch } from '../store/store';
 import { sizeFormat } from '../utils/sizeFormat';
 import { logout } from '../store/reducers/userSlice';
 import { WELCOME_ROUTE } from '../utils/consts';
-import InfoModal from './modals/InfoModal';
-import PasswordModal from './modals/PasswordModal';
-import DeleteModal from './modals/DeleteModal';
+import InfoModal from '../features/infoModal/ui/InfoModal';
+import PasswordModal from '../features/passwordModal/ui/PasswordModal';
+import DeleteModal from '../features/deleteModal/ui/DeleteModal';
 
 import styles from '../style/accountSettings.module.scss';
 import cn from 'classnames';
