@@ -13,15 +13,15 @@ import {
   ACTIVATION_ROUTE,
 } from '../../../utils/consts';
 
-const Welcome = lazy(() => import('../../../components/pages/Welcome'));
-const Authorization = lazy(() => import('../../../components/pages/Authorization'));
-const FileSpace = lazy(() => import('../../../components/pages/FileSpace'));
-const Profile = lazy(() => import('../../../components/pages/Profile'));
-const Pomodoro = lazy(() => import('../../../components/pages/PomodoroTimer'));
-const Chats = lazy(() => import('../../../components/pages/Chats'));
-const Notes = lazy(() => import('../../../components/pages/Notes'));
-const Todo = lazy(() => import('../../../components/pages/Todo'));
-const Activate = lazy(() => import('../../../components/pages/Activate'));
+const Welcome = lazy(() => import('../../../pages/home/ui/Welcome'));
+const Authorization = lazy(() => import('../../../pages/authorization/ui/Authorization'));
+const FileSpace = lazy(() => import('../../../pages/files/ui/FileSpace'));
+const Profile = lazy(() => import('../../../pages/profile/ui/Profile'));
+const Pomodoro = lazy(() => import('../../../pages/pomodoro/ui/PomodoroTimer'));
+const Chats = lazy(() => import('../../../pages/chats/ui/Chats'));
+const Notes = lazy(() => import('../../../pages/notes/ui/Notes'));
+const Todo = lazy(() => import('../../../pages/todo/ui/Todo'));
+const Activate = lazy(() => import('../../../pages/activate/ui/Activate'));
 
 interface Route {
   path: string;

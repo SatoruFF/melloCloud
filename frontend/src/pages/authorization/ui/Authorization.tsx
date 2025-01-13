@@ -1,8 +1,8 @@
 import { useLocation } from 'react-router-dom';
 
-import Register from '../Register';
-import Login from '../Login';
-import ParticleEffect from '../UI/ParticleEffect';
+import Register from '../../../components/Register';
+import Login from '../../../components/Login';
+import ParticleEffect from '../../../components/UI/ParticleEffect';
 
 import styles from '../style/auth.module.scss';
 import cn from 'classnames';

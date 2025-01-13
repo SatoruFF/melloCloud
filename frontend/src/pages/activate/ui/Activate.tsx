@@ -2,14 +2,14 @@ import _ from 'lodash-es';
 import cn from 'classnames';
 import { useEffect, useState } from 'react';
 import { message } from 'antd';
-import { setUser } from '../../store/reducers/userSlice';
+import { setUser } from '../../../store/reducers/userSlice';
 import { CheckSquareTwoTone, CloseCircleTwoTone } from '@ant-design/icons';
-import { useAppDispatch, useAppSelector } from '../../store/store';
+import { useAppDispatch, useAppSelector } from '../../../store/store';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { useActivateUserMutation } from '../services/user';
+import { useActivateUserMutation } from '../../../components/services/user';
 
 import styles from '../style/activate.module.scss';
-import { FILE_ROUTE } from '../../utils/consts';
+import { FILE_ROUTE } from '../../../utils/consts';
 
 const Activate = () => {
   const user = useAppSelector((state) => state.users.currentUser);

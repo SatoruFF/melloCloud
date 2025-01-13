@@ -3,13 +3,13 @@ import { Button, Spin, Modal, Input, message, Select, Breadcrumb } from 'antd';
 import { LeftOutlined, UploadOutlined, UnorderedListOutlined, AppstoreOutlined } from '@ant-design/icons';
 
 import { unwrapResult } from '@reduxjs/toolkit';
-import { useAppSelector } from '../../store/store';
-import { useAppDispatch } from '../../store/store';
-import { useCreateDirMutation, useGetFilesQuery } from '../services/file';
-import Filelist from '../Filelist';
-import { setFiles, addNewFile, setDir, popToStack, setView, popToPath } from '../../store/reducers/fileSlice';
-import { generateParams } from '../../utils/generateParams';
-import UploadModal from '../modals/UploadModal';
+import { useAppSelector } from '../../../store/store';
+import { useAppDispatch } from '../../../store/store';
+import { useCreateDirMutation, useGetFilesQuery } from '../../../components/services/file';
+import Filelist from '../../../components/Filelist';
+import { setFiles, addNewFile, setDir, popToStack, setView, popToPath } from '../../../store/reducers/fileSlice';
+import { generateParams } from '../../../utils/generateParams';
+import UploadModal from '../../../components/modals/UploadModal';
 
 import diskBack from '../assets/disk-back.jpg';
 import styles from '../style/fileSpace.module.scss';
