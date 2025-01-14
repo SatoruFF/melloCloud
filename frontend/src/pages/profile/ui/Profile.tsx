@@ -4,11 +4,11 @@ import { PieChartOutlined } from '@ant-design/icons';
 import type { UploadProps } from 'antd';
 import { unwrapResult } from '@reduxjs/toolkit';
 
-import { useAppDispatch, useAppSelector } from '../../../store/store';
-import { useDeleteAvatarMutation } from '../../../TEMP/services/file';
-import { setAvatar, deleteAvatar } from '../../../store/reducers/userSlice';
-import { sizeFormat } from '../../../utils/sizeFormat';
-import { Variables } from '../../../config/localVariables';
+import { useAppDispatch, useAppSelector } from '../../../app/store/store';
+import { useDeleteAvatarMutation } from '../../../shared/api/file';
+import { setAvatar, deleteAvatar } from '../../../app/store/reducers/userSlice';
+import { sizeFormat } from '../../../shared/utils/sizeFormat';
+import { Variables } from '../../../shared/api/localVariables';
 
 import avatarIcon from '../assets/avatar-icon.png';
 

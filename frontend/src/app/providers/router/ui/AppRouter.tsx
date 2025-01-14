@@ -2,9 +2,9 @@ import { Suspense } from 'react';
 import { Spin } from 'antd';
 import { Routes, Route, Navigate } from 'react-router-dom';
 
-import { useAppSelector } from '../../../../store/store';
+import { useAppSelector } from '../../../store/store';
 
-import { WELCOME_ROUTE } from '../../../../utils/consts';
+import { WELCOME_ROUTE } from '../../../../shared/consts/consts';
 import { routes, privateRoutes } from '../../../../shared/config/routeConfig/routes';
 
 const AppRouter = () => {

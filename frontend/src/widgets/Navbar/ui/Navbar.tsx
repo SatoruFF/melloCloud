@@ -5,15 +5,15 @@ import { ApiOutlined, SettingOutlined, MenuFoldOutlined, MenuUnfoldOutlined } fr
 import { motion } from 'framer-motion';
 import { useMediaQuery } from 'react-responsive';
 
-import { FILE_ROUTE, LOGIN_ROUTE, PROFILE_ROUTE, REGISTRATION_ROUTE, WELCOME_ROUTE } from '../../../utils/consts';
-import { useAppDispatch, useAppSelector } from '../../../store/store';
-import { logout } from '../../../store/reducers/userSlice';
-import AccountSettings from '../../../TEMP/AccountSettings.';
-import avatarIcon from '../assets/avatar-icon.png';
-import WorkspacesDropdown from '../../../TEMP/UI/WorkspacesDropdown';
+import { FILE_ROUTE, LOGIN_ROUTE, PROFILE_ROUTE, REGISTRATION_ROUTE, WELCOME_ROUTE } from '../../../shared/consts/consts';
+import { useAppDispatch, useAppSelector } from '../../../app/store/store';
+import { logout } from '../../../app/store/reducers/userSlice';
+import AccountSettings from '../../accountSettings/ui/AccountSettings.';
+import avatarIcon from '../../../shared/assets/avatar-icon.png';
+import WorkspacesDropdown from '../../../features/workspaceDropdown/ui/WorkspacesDropdown';
 
-import mainLogo from '../assets/mainLog.png';
-import styles from '../style/navbar.module.scss';
+import mainLogo from '../../../shared/assets/mainLog.png';
+import styles from '../styles/navbar.module.scss';
 import cn from 'classnames';
 
 const MyNavbar: React.FC = () => {

@@ -3,8 +3,8 @@ import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 
 import userReducer from './reducers/userSlice';
 import fileReducer from './reducers/fileSlice';
-import { userApi } from '../TEMP/services/user';
-import { fileApi } from '../TEMP/services/file';
+import { userApi } from '../../shared/api/user';
+import { fileApi } from '../../shared/api/file';
 
 export const store = configureStore({
   reducer: {

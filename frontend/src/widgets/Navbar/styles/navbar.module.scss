@@ -1,0 +1,120 @@
+@import '../../../shared/styles/tmp.scss';
+@import url('https://fonts.googleapis.com/css2?family=Sono&display=swap');
+
+.navbar {
+  width: 100%;
+  height: 10vh;
+  //background-color: #434343;
+  background-color: #27272a;
+  display: flex;
+  flex-direction: row;
+  overflow: hidden;
+  justify-content: space-around;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+  .mainLogo img {
+    &:hover {
+      cursor: pointer;
+    }
+  }
+  .userInfo {
+    @extend %centerTemplate;
+    gap: 15px;
+    background-color: white;
+    box-sizing: border-box;
+    border-radius: 10px;
+    padding: 10px;
+    cursor: pointer;
+    p {
+      color: black;
+      @extend %mainFont;
+      font-size: 14px;
+    }
+  }
+  .userInfo:hover {
+    background-color: #1677ff;
+    color: white;
+    p {
+      color: white;
+    }
+  }
+  .navUser {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    .avatar {
+      img {
+        width: 40px;
+        border-radius: 10px;
+        &:hover {
+          cursor: pointer;
+        }
+      }
+    }
+  }
+  .mainLogo img {
+    width: 105px;
+    height: 90px;
+    margin-left: 20px;
+  }
+  a {
+    text-decoration: none;
+    color: white;
+    font-family: 'Sono', sans-serif;
+    font-size: 14px;
+    text-transform: lowercase;
+  }
+  .navItems {
+    .nav-logout {
+      @extend %mainFont;
+    }
+    width: 60%;
+    @extend %centerTemplate;
+    justify-content: space-around;
+    .navBurger {
+      display: none;
+      padding-right: 40px;
+      .burgerIcon {
+        color: white;
+        font-size: 22px;
+      }
+    }
+  }
+}
+
+.burgerItem {
+  width: 80%;
+  padding: 10px;
+  margin-top: 10px;
+  a {
+    font-size: 16px;
+    @extend %mainFont;
+  }
+}
+
+@media screen and (max-width: 992px) {
+  .navbar {
+    justify-content: space-between;
+    .mainLogo img {
+      padding-left: 6px;
+    }
+    .navItems {
+      width: 100%;
+      justify-content: end;
+      padding-right: 20px;
+      .navbarItem {
+        display: none;
+      }
+      .naBurger {
+        display: block;
+      }
+    }
+    .navFiles {
+      margin-right: 30px;
+    }
+    .navLogout {
+      display: none;
+    }
+  }
+}

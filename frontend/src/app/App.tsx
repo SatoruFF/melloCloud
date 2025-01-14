@@ -3,9 +3,9 @@ import { AppRouter } from './providers/router';
 import { BrowserRouter } from 'react-router-dom';
 import MyNavbar from '../widgets/Navbar/ui/Navbar';
 import './styles/global.scss';
-import { useAppDispatch } from '../store/store';
-import { useAuthQuery } from '../TEMP/services/user';
-import { setUser } from '../store/reducers/userSlice';
+import { useAppDispatch } from './store/store';
+import { useAuthQuery } from '../shared/api/user';
+import { setUser } from './store/reducers/userSlice';
 import { Spin } from 'antd';
 
 function App() {

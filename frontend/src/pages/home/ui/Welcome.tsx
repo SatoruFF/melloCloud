@@ -3,15 +3,15 @@ import { LazyMotion, domAnimation, motion } from 'framer-motion';
 
 import ParticleEffect from '../../../shared/ui/particleEffect/ParticleEffect';
 
-import mainLogo from '../assets/sea-turtle.png';
-import desktopIcon from '../assets/desktop.png';
-import mobileIcon from '../assets/mobile-phone.png';
-import storageIcon from '../assets/cloud-data.png';
-import telegramLogo from '../assets/telegram.png';
-import twitterLogo from '../assets/twitter.png';
-import gitIcon from '../assets/github-icon.png';
+import mainLogo from '../../../shared/assets/sea-turtle.png'
+import desktopIcon from '../../../shared/assets/desktop.png';
+import mobileIcon from '../../../shared/assets/mobile-phone.png';
+import storageIcon from '../../../shared/assets/cloud-data.png';
+import telegramLogo from '../../../shared/assets/telegram.png';
+import twitterLogo from '../../../shared/assets/twitter.png';
+import gitIcon from '../../../shared/assets/github-icon.png';
 
-import styles from '../style/welcome.module.scss';
+import styles from '../styles/welcome.module.scss';
 import cn from 'classnames';
 
 const Welcome = () => {

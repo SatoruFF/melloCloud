@@ -1,5 +1,5 @@
 import { Empty } from 'antd';
-import { useAppSelector } from '../../../store/store';
+import { useAppSelector } from '../../../app/store/store';
 import File from '../../../entities/file/ui/File';
 
 import cn from 'classnames';

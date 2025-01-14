@@ -5,10 +5,10 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { SmileOutlined } from '@ant-design/icons';
 
-import { LOGIN_ROUTE, ACTIVATION_ROUTE } from '../../../utils/consts';
-import { userApi } from '../../../TEMP/services/user';
-import { useAppDispatch } from '../../../store/store';
-import { setUser } from '../../../store/reducers/userSlice';
+import { LOGIN_ROUTE, ACTIVATION_ROUTE } from '../../../shared/consts/consts';
+import { userApi } from '../../../shared/api/user';
+import { useAppDispatch } from '../../../app/store/store';
+import { setUser } from '../../../app/store/reducers/userSlice';
 
 import styles from '../style/auth.module.scss';
 import cn from 'classnames';

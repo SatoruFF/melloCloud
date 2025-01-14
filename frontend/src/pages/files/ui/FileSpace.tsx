@@ -3,12 +3,12 @@ import { Button, Spin, Modal, Input, message, Select, Breadcrumb } from 'antd';
 import { LeftOutlined, UploadOutlined, UnorderedListOutlined, AppstoreOutlined } from '@ant-design/icons';
 
 import { unwrapResult } from '@reduxjs/toolkit';
-import { useAppSelector } from '../../../store/store';
-import { useAppDispatch } from '../../../store/store';
-import { useCreateDirMutation, useGetFilesQuery } from '../../../TEMP/services/file';
+import { useAppSelector } from '../../../app/store/store';
+import { useAppDispatch } from '../../../app/store/store';
+import { useCreateDirMutation, useGetFilesQuery } from '../../../shared/api/file';
 import Filelist from '../../../widgets/fileList/ui/Filelist';
-import { setFiles, addNewFile, setDir, popToStack, setView, popToPath } from '../../../store/reducers/fileSlice';
-import { generateParams } from '../../../utils/generateParams';
+import { setFiles, addNewFile, setDir, popToStack, setView, popToPath } from '../../../app/store/reducers/fileSlice';
+import { generateParams } from '../../../shared/utils/generateParams';
 import UploadModal from '../../../features/uploadModal/ui/UploadModal';
 
 import diskBack from '../assets/disk-back.jpg';

@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { Variables } from '../../config/localVariables';
+import { Variables } from './localVariables';
 
 const url = Variables.File_URL;
 

@@ -1,6 +1,6 @@
 import { Form, Input, Modal, message } from 'antd';
-import { useAppSelector, useAppDispatch } from '../../../store/store';
-import { useChangeInfoMutation } from '../../../TEMP/services/user';
+import { useAppSelector, useAppDispatch } from '../../../app/store/store';
+import { useChangeInfoMutation } from '../../../shared/api/user';
 import { useState } from 'react';
 import _ from 'lodash';
 

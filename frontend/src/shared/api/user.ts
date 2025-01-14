@@ -2,8 +2,8 @@ import type { BaseQueryFn, FetchArgs, FetchBaseQueryError } from '@reduxjs/toolk
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { Mutex } from 'async-mutex';
 
-import { Variables } from '../../config/localVariables';
-import { logout, setUser } from '../../store/reducers/userSlice';
+import { Variables } from './localVariables';
+import { logout, setUser } from '../../app/store/reducers/userSlice';
 
 // create a new mutex
 const mutex = new Mutex();

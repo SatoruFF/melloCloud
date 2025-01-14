@@ -11,7 +11,7 @@ import {
   NOTES_ROUTE,
   TODO_ROUTE,
   ACTIVATION_ROUTE,
-} from '../../../utils/consts';
+} from '../../consts/consts';
 
 const Welcome = lazy(() => import('../../../pages/home/ui/Welcome'));
 const Authorization = lazy(() => import('../../../pages/authorization/ui/Authorization'));

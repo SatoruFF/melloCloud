@@ -3,15 +3,15 @@ import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { Button, Divider, notification } from 'antd';
 
-import { useAppSelector, useAppDispatch } from '../store/store';
-import { sizeFormat } from '../utils/sizeFormat';
-import { logout } from '../store/reducers/userSlice';
-import { WELCOME_ROUTE } from '../utils/consts';
-import InfoModal from '../features/infoModal/ui/InfoModal';
-import PasswordModal from '../features/passwordModal/ui/PasswordModal';
-import DeleteModal from '../features/deleteModal/ui/DeleteModal';
+import { useAppSelector, useAppDispatch } from '../../../app/store/store';
+import { sizeFormat } from '../../../shared/utils/sizeFormat';
+import { logout } from '../../../app/store/reducers/userSlice';
+import { WELCOME_ROUTE } from '../../../shared/consts/consts';
+import InfoModal from '../../../features/infoModal/ui/InfoModal';
+import PasswordModal from '../../../features/passwordModal/ui/PasswordModal';
+import DeleteModal from '../../../features/deleteModal/ui/DeleteModal';
 
-import styles from '../style/accountSettings.module.scss';
+import styles from '../styles/accountSettings.module.scss';
 import cn from 'classnames';
 
 const AccountSettings = () => {
