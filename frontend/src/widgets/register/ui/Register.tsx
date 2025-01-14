@@ -10,7 +10,7 @@ import { userApi } from '../../../shared/api/user';
 import { useAppDispatch } from '../../../app/store/store';
 import { setUser } from '../../../app/store/reducers/userSlice';
 
-import styles from '../style/auth.module.scss';
+import styles from '../styles/auth.module.scss';
 import cn from 'classnames';
 
 const Register = () => {

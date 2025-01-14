@@ -4,14 +4,13 @@ import Divider from 'antd/es/divider';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { SmileOutlined } from '@ant-design/icons';
 import { unwrapResult } from '@reduxjs/toolkit';
-import Ajv from 'ajv';
 
 import { FILE_ROUTE, REGISTRATION_ROUTE } from '../../../shared/consts/consts';
-import { useAppDispatch, useAppSelector } from '../../../app/store/store';
+import { useAppDispatch } from '../../../app/store/store';
 import { setUser } from '../../../app/store/reducers/userSlice';
 import { userApi } from '../../../shared/api/user';
 
-import styles from '../style/auth.module.scss';
+import styles from '../styles/auth.module.scss';
 import cn from 'classnames';
 
 const Login = () => {

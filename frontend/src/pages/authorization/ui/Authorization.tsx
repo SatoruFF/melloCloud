@@ -4,7 +4,7 @@ import Register from '../../../widgets/register/ui/Register';
 import Login from '../../../widgets/login/ui/Login';
 import ParticleEffect from '../../../shared/ui/particleEffect/ParticleEffect';
 
-import styles from '../style/auth.module.scss';
+import styles from '../styles/auth.module.scss';
 import cn from 'classnames';
 
 const Authorization = () => {
