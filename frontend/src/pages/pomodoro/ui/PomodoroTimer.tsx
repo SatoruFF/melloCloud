@@ -11,7 +11,7 @@ import timesUpSfx from '../assets/timesUp.mp3';
 import styles from '../style/pomodoro.module.scss';
 import cn from 'classnames';
 
-function App() {
+function PomodoroTimer() {
   const [settingsVisible, setSettingsVisible] = useState(false);
   const [timerMode, setTimerMode] = useState('pomo'); // options: pomo, short, long
   const [pomoLength, setPomoLength] = useState(25);
@@ -115,4 +115,4 @@ function App() {
   );
 }
 
-export default App;
+export default PomodoroTimer;
