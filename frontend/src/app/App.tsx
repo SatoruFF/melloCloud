@@ -13,6 +13,9 @@ function App() {
   const { data, isLoading } = useAuthQuery();
 
   useEffect(() => {
+    // const appEnv = process.env.mode || 'test';
+
+    // console.log('App Environment:', appEnv);
     const check = async () => {
       dispatch(setUser(data));
     };
