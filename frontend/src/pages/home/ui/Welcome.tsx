@@ -62,7 +62,7 @@ const Welcome = () => {
             <div className={cn(styles.leftSide)}>
               <div className={cn(styles.welcomeTitle)}>{t('primary-name')}</div>
               <div className={cn(styles.welcomeDescription, 'animate__animated animate__fadeInDown')}>
-                Mello - its a nice web cloud for everyone. each person is given as much as 100 free megabytes.
+                {t('about-product')}
               </div>
             </div>
             <div className={cn(styles.rightSide)}>
