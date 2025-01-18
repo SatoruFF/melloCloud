@@ -1,9 +1,9 @@
 import { Anchor, Button, message } from 'antd';
 import { LazyMotion, domAnimation, motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
+import cn from 'classnames';
 
-import ParticleEffect from '../../../shared/ui/particleEffect/ParticleEffect';
-
-import mainLogo from '../../../shared/assets/sea-turtle.png'
+import mainLogo from '../../../shared/assets/sea-turtle.png';
 import desktopIcon from '../../../shared/assets/desktop.png';
 import mobileIcon from '../../../shared/assets/mobile-phone.png';
 import storageIcon from '../../../shared/assets/cloud-data.png';
@@ -12,9 +12,11 @@ import twitterLogo from '../../../shared/assets/twitter.png';
 import gitIcon from '../../../shared/assets/github-icon.png';
 
 import styles from '../styles/welcome.module.scss';
-import cn from 'classnames';
+import ParticleEffect from '../../../shared/ui/particleEffect/ParticleEffect';
 
 const Welcome = () => {
+  const { t, i18n } = useTranslation();
+
   return (
     <div className={cn(styles.welcomeWrapper)}>
       <Anchor
@@ -58,7 +60,7 @@ const Welcome = () => {
         <div className={cn(styles.contextMax)}>
           <div className={cn(styles.welcomeCard, 'animate__animated animate__fadeIn')}>
             <div className={cn(styles.leftSide)}>
-              <div className={cn(styles.welcomeTitle)}>Mello</div>
+              <div className={cn(styles.welcomeTitle)}>{t('primary-name')}</div>
               <div className={cn(styles.welcomeDescription, 'animate__animated animate__fadeInDown')}>
                 Mello - its a nice web cloud for everyone. each person is given as much as 100 free megabytes.
               </div>

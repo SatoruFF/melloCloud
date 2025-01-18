@@ -4,8 +4,17 @@ import { Button, notification, Drawer, Divider, Tooltip } from 'antd';
 import { ApiOutlined, SettingOutlined, MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
 import { motion } from 'framer-motion';
 import { useMediaQuery } from 'react-responsive';
+import { GlobalOutlined } from '@ant-design/icons';
+import cn from 'classnames';
+import { useTranslation } from 'react-i18next';
 
-import { FILE_ROUTE, LOGIN_ROUTE, PROFILE_ROUTE, REGISTRATION_ROUTE, WELCOME_ROUTE } from '../../../shared/consts/consts';
+import {
+  FILE_ROUTE,
+  LOGIN_ROUTE,
+  PROFILE_ROUTE,
+  REGISTRATION_ROUTE,
+  WELCOME_ROUTE,
+} from '../../../shared/consts/consts';
 import { useAppDispatch, useAppSelector } from '../../../app/store/store';
 import { logout } from '../../../app/store/reducers/userSlice';
 import AccountSettings from '../../accountSettings/ui/AccountSettings.';
@@ -14,9 +23,9 @@ import WorkspacesDropdown from '../../../features/workspaceDropdown/ui/Workspace
 
 import mainLogo from '../../../shared/assets/mainLog.png';
 import styles from '../styles/navbar.module.scss';
-import cn from 'classnames';
 
 const MyNavbar: React.FC = () => {
+  const { i18n } = useTranslation();
   const isAuth = useAppSelector((state) => state.users.isAuth);
   const user = useAppSelector((state) => state.users.currentUser);
   const [profile, setProfile] = useState(false);
@@ -37,11 +46,21 @@ const MyNavbar: React.FC = () => {
     });
   };
 
+  const changeLanguage = (): void => {
+    i18n.changeLanguage(i18n.language === 'en' ? 'ru' : 'en');
+  };
+
   return (
     <div className={cn(styles.navbar)}>
-      <div className={cn(styles.mainLogo)}>
-        <img src={mainLogo} alt="" onClick={() => navigate(WELCOME_ROUTE)} />
+      <div className={cn(styles.baseItems)}>
+        <div className={cn(styles.translates)}>
+          <GlobalOutlined onClick={changeLanguage} className={cn(styles.translateToggleBtn)} />
+        </div>
+        <div className={cn(styles.mainLogo)}>
+          <img src={mainLogo} alt="" onClick={() => navigate(WELCOME_ROUTE)} />
+        </div>
       </div>
+
       {isAuth ? (
         <div className={cn(styles.navItems)}>
           {!isTabletOrMobile && (

@@ -53,6 +53,15 @@
       }
     }
   }
+  .baseItems {
+    display: flex;
+    flex-direction: row;
+    color: white;
+    align-items: center;
+  }
+  .translateToggleBtn {
+    // color: white;
+  }
   .mainLogo img {
     width: 105px;
     height: 90px;

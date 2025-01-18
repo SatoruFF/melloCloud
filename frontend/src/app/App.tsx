@@ -1,12 +1,14 @@
-import { useEffect } from 'react';
+import { Suspense, useEffect } from 'react';
 import { AppRouter } from './providers/router';
 import { BrowserRouter } from 'react-router-dom';
-import MyNavbar from '../widgets/Navbar/ui/Navbar';
+import { Spin } from 'antd';
+
 import './styles/global.scss';
+
+import MyNavbar from '../widgets/Navbar/ui/Navbar';
 import { useAppDispatch } from './store/store';
 import { useAuthQuery } from '../shared/api/user';
 import { setUser } from './store/reducers/userSlice';
-import { Spin } from 'antd';
 
 function App() {
   const dispatch = useAppDispatch();
@@ -26,10 +28,13 @@ function App() {
     return <Spin style={{ width: '100%', height: '100vh', marginTop: '400px' }} />;
   }
 
+  // suspense need for i18n
   return (
     <BrowserRouter>
-      <MyNavbar />
-      <AppRouter />
+      <Suspense fallback={""}>
+        <MyNavbar />
+        <AppRouter />
+      </Suspense>
     </BrowserRouter>
   );
 }
