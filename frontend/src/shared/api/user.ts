@@ -84,23 +84,23 @@ export const userApi = createApi({
   reducerPath: 'userApi',
   tagTypes: ['User'],
   baseQuery: baseQueryWithReauth,
-  endpoints: (builder) => ({
+  endpoints: builder => ({
     registration: builder.mutation<any, RegisterRequest>({
-      query: (body) => ({
+      query: body => ({
         url: 'register',
         method: 'POST',
         body,
       }),
     }),
     login: builder.mutation<any, LoginRequest>({
-      query: (body) => ({
+      query: body => ({
         url: 'login',
         method: 'POST',
         body,
       }),
     }),
     activateUser: builder.mutation<any, string>({
-      query: (token) => ({
+      query: token => ({
         url: `activate?token=${token}`,
         method: 'GET',
       }),
@@ -109,14 +109,14 @@ export const userApi = createApi({
       query: () => 'auth',
     }),
     logout: builder.mutation<any, any>({
-      query: (body) => ({
+      query: body => ({
         url: 'logout',
         method: 'POST',
         body,
       }),
     }),
     changeInfo: builder.mutation<any, any>({
-      query: (body) => ({
+      query: body => ({
         url: 'userchange',
         method: 'PATCH',
         body,

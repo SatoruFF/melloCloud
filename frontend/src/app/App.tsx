@@ -31,7 +31,7 @@ function App() {
   // suspense need for i18n
   return (
     <BrowserRouter>
-      <Suspense fallback={""}>
+      <Suspense fallback={''}>
         <MyNavbar />
         <AppRouter />
       </Suspense>

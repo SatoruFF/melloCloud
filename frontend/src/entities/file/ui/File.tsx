@@ -19,8 +19,8 @@ const File = ({ file }: any) => {
 
   //redux
   const dispatch = useAppDispatch();
-  const currentDir = useAppSelector((state) => state.files.currentDir);
-  const fileView = useAppSelector((state) => state.files.view);
+  const currentDir = useAppSelector(state => state.files.currentDir);
+  const fileView = useAppSelector(state => state.files.view);
 
   //rtk-query
   const [downloadFile] = useDownloadFileMutation();

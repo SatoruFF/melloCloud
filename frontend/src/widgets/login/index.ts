@@ -1,3 +1,3 @@
-import Login from "./ui/Login";
+import Login from './ui/Login';
 
-export { Login }
+export { Login };

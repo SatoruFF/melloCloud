@@ -19,7 +19,7 @@ const AccountSettings = () => {
   const [changePassModal, setChangePassModal] = useState(false);
   const [deleteModal, setDeleteModal] = useState(false);
 
-  const user = useAppSelector((state) => state.users.currentUser);
+  const user = useAppSelector(state => state.users.currentUser);
   const totalSpace = sizeFormat(user.diskSpace);
   const usedSize = sizeFormat(user.usedSpace);
 

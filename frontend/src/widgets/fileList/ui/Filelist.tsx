@@ -6,8 +6,8 @@ import cn from 'classnames';
 import styles from '../style/fileList.module.scss';
 
 const Filelist = () => {
-  const files = useAppSelector((state) => state.files.files);
-  const fileView = useAppSelector((state) => state.files.view);
+  const files = useAppSelector(state => state.files.files);
+  const fileView = useAppSelector(state => state.files.view);
 
   if (files.length === 0) {
     return (

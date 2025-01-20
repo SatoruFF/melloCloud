@@ -15,7 +15,7 @@ const { Dragger } = Upload;
 const UploadModal = ({ status, def }) => {
   const dispatch = useAppDispatch();
   const token = localStorage.getItem('token');
-  const currentDir = useAppSelector((state) => state.files.currentDir);
+  const currentDir = useAppSelector(state => state.files.currentDir);
 
   // file upload
   const props: UploadProps = {
@@ -44,7 +44,7 @@ const UploadModal = ({ status, def }) => {
         '100%': '#87d068',
       },
       strokeWidth: 3,
-      format: (percent) => percent && `${parseFloat(percent.toFixed(2))}%`,
+      format: percent => percent && `${parseFloat(percent.toFixed(2))}%`,
     },
   };
 

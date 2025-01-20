@@ -14,7 +14,7 @@ const Controls = ({
 }) => {
   const [playSfx] = useSound(clickSfx, { volume: volume });
 
-  const handleModeChange = (event) => {
+  const handleModeChange = event => {
     setTimerMode(event.target.id);
     setIsActive(false);
     setButtonText('START');

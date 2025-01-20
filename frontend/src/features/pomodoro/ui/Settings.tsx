@@ -31,7 +31,7 @@ const Settings = ({
 
   const styles = document.documentElement.style;
 
-  const applySettings = (event) => {
+  const applySettings = event => {
     event.preventDefault();
 
     setPomoLength(event.target.pomodoro.value);

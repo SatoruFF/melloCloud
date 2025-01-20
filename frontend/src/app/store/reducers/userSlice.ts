@@ -24,13 +24,13 @@ export const userSlice = createSlice({
         localStorage.setItem('token', action.payload.token);
       }
     },
-    logout: (state) => {
+    logout: state => {
       state.isAuth = false;
       state.currentUser = {};
       state.token = null;
       localStorage.removeItem('token');
     },
-    deleteAvatar: (state) => {
+    deleteAvatar: state => {
       state.currentUser.avatar = null;
     },
     setAvatar: (state, action: any) => {

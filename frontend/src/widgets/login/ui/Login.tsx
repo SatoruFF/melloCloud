@@ -54,11 +54,7 @@ const Login = () => {
       <div className={cn(styles.authFormTitle)}>Login</div>
       <Form layout="vertical">
         <Form.Item label="email:" name="email" rules={[{ required: true, message: 'Please input your email!' }]}>
-          <Input
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="please input your email here..."
-          />
+          <Input value={email} onChange={e => setEmail(e.target.value)} placeholder="please input your email here..." />
         </Form.Item>
         <Form.Item
           label="password:"
@@ -68,7 +64,7 @@ const Login = () => {
           <Input
             type="password"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={e => setPassword(e.target.value)}
             placeholder="please input your password here..."
           />
         </Form.Item>

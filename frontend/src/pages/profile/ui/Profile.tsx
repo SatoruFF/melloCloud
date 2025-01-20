@@ -18,7 +18,7 @@ import cn from 'classnames';
 const { Paragraph } = Typography;
 
 const Profile = () => {
-  const user = useAppSelector((state) => state.users.currentUser);
+  const user = useAppSelector(state => state.users.currentUser);
   const totalSpace = sizeFormat(user.diskSpace);
   const usedSize = sizeFormat(user.usedSpace);
   const dispatch = useAppDispatch();
@@ -33,7 +33,7 @@ const Profile = () => {
     headers: {
       Authorization: `Bearer ${token}`,
     },
-    beforeUpload: (file) => {
+    beforeUpload: file => {
       const isPNG = file.type === 'image/png';
       const isJPEG = file.type === 'image/jpeg';
       if (!isPNG && !isJPEG) {
@@ -58,7 +58,7 @@ const Profile = () => {
         '100%': '#87d068',
       },
       strokeWidth: 3,
-      format: (percent) => percent && `${parseFloat(percent.toFixed(2))}%`,
+      format: percent => percent && `${parseFloat(percent.toFixed(2))}%`,
     },
   };
 

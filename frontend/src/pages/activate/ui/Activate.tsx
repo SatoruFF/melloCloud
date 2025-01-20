@@ -12,7 +12,7 @@ import styles from '../style/activate.module.scss';
 import { FILE_ROUTE } from '../../../shared/consts/consts';
 
 const Activate = () => {
-  const user = useAppSelector((state) => state.users.currentUser);
+  const user = useAppSelector(state => state.users.currentUser);
   const [searchParams] = useSearchParams();
   const [activateUser, { isLoading, isSuccess, isError, error }]: any = useActivateUserMutation();
   const [status, setStatus] = useState<'idle' | 'success' | 'error' | 'loading'>('idle');
@@ -36,7 +36,7 @@ const Activate = () => {
       setStatus('loading');
       handleActivate()
         .then(() => setStatus('success'))
-        .catch((e) => {
+        .catch(e => {
           console.log('⚠ :: useEffect :: e:', e);
           message.error(`error with activate account: ${_.get(e, ['data', 'message'], 'some error with token')}`);
           setStatus('error');

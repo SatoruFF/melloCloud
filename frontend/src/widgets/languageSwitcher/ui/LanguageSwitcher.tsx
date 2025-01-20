@@ -10,7 +10,7 @@ const LanguageSwitcher = () => {
   const changeLanguage = (): void => {
     i18n.changeLanguage(i18n.language === 'en' ? 'ru' : 'en');
   };
-  
+
   return (
     <div className={cn(styles.translates)}>
       <GlobalOutlined onClick={changeLanguage} className={cn(styles.translateToggleBtn)} />

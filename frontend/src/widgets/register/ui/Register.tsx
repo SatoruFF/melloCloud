@@ -58,16 +58,12 @@ const Register = () => {
         >
           <Input
             value={userName}
-            onChange={(e) => setUserName(e.target.value)}
+            onChange={e => setUserName(e.target.value)}
             placeholder="please input your username here..."
           />
         </Form.Item>
         <Form.Item label="email:" name="email" rules={[{ required: true, message: 'Please input your email!' }]}>
-          <Input
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="please input your email here..."
-          />
+          <Input value={email} onChange={e => setEmail(e.target.value)} placeholder="please input your email here..." />
         </Form.Item>
         <Form.Item
           label="password:"
@@ -77,7 +73,7 @@ const Register = () => {
           <Input
             value={password}
             type="password"
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={e => setPassword(e.target.value)}
             placeholder="please input your password here..."
           />
         </Form.Item>

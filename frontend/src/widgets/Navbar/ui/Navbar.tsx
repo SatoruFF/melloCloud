@@ -26,8 +26,8 @@ import LanguageSwitcher from '../../languageSwitcher/ui/LanguageSwitcher';
 
 const MyNavbar: React.FC = () => {
   const { t } = useTranslation();
-  const isAuth = useAppSelector((state) => state.users.isAuth);
-  const user = useAppSelector((state) => state.users.currentUser);
+  const isAuth = useAppSelector(state => state.users.isAuth);
+  const user = useAppSelector(state => state.users.currentUser);
   const [profile, setProfile] = useState(false);
   const [burger, setBurger] = useState(false);
   const dispatch = useAppDispatch();

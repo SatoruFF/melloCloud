@@ -31,7 +31,7 @@ function PomodoroTimer() {
   useEffect(() => {
     if (isActive) {
       const interval = setInterval(() => {
-        setSecondsLeft((secondsLeft) => secondsLeft - 1);
+        setSecondsLeft(secondsLeft => secondsLeft - 1);
       }, 1000);
 
       if (secondsLeft === 0) {
@@ -49,7 +49,7 @@ function PomodoroTimer() {
     setSettingsVisible(!settingsVisible);
   };
 
-  const formatTimeLeft = (seconds) => {
+  const formatTimeLeft = seconds => {
     return `${Math.floor(seconds / 60)}:${seconds % 60 > 9 ? seconds % 60 : '0' + (seconds % 60)}`;
   };
 

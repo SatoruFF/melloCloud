@@ -20,9 +20,9 @@ const { Search } = Input;
 const FileSpace = () => {
   //Redux state
   const dispatch = useAppDispatch();
-  const currentDir = useAppSelector((state) => state.files.currentDir);
-  const dirStack = useAppSelector((state) => state.files.dirStack);
-  const paths = useAppSelector((state) => state.files.paths);
+  const currentDir = useAppSelector(state => state.files.currentDir);
+  const dirStack = useAppSelector(state => state.files.dirStack);
+  const paths = useAppSelector(state => state.files.paths);
 
   //states
   const [modal, setModal] = useState(false);
@@ -115,7 +115,7 @@ const FileSpace = () => {
           <Select
             className={cn(styles.diskOrder)}
             defaultValue="Order by"
-            onChange={(value) => setSort(value)}
+            onChange={value => setSort(value)}
             options={[
               { value: 'name', label: 'name' },
               { value: 'type', label: 'type' },
@@ -145,11 +145,7 @@ const FileSpace = () => {
           </Button>,
         ]}
       >
-        <Input
-          value={folderName}
-          onChange={(e) => setFolderName(e.target.value)}
-          placeholder="Enter a folder name..."
-        />
+        <Input value={folderName} onChange={e => setFolderName(e.target.value)} placeholder="Enter a folder name..." />
       </Modal>
       <Filelist />
     </div>

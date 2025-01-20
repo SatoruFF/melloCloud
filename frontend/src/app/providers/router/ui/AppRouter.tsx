@@ -8,20 +8,20 @@ import { WELCOME_ROUTE } from '../../../../shared/consts/consts';
 import { routes, privateRoutes } from '../../../../shared/config/routeConfig/routes';
 
 const AppRouter = () => {
-  const isAuth = useAppSelector((state) => state.users.isAuth);
+  const isAuth = useAppSelector(state => state.users.isAuth);
 
   return (
     <Suspense fallback={<Spin />}>
       <Routes>
         {isAuth ? (
           <>
-            {privateRoutes.map((item) => (
+            {privateRoutes.map(item => (
               <Route key={item.path} path={item.path} element={<item.element />} />
             ))}
           </>
         ) : (
           <>
-            {routes.map((item) => (
+            {routes.map(item => (
               <Route key={item.path} path={item.path} element={<item.element />} />
             ))}
           </>

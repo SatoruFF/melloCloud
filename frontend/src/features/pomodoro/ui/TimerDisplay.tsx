@@ -25,7 +25,7 @@ const TimerDisplay = ({
     volume: volume,
   });
 
-  const handleClick = (event) => {
+  const handleClick = event => {
     if (event.target.id === 'muteButton') {
       return null;
     }

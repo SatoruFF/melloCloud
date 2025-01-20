@@ -13,7 +13,7 @@ export const store = configureStore({
     [userApi.reducerPath]: userApi.reducer,
     [fileApi.reducerPath]: fileApi.reducer,
   },
-  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(userApi.middleware, fileApi.middleware),
+  middleware: getDefaultMiddleware => getDefaultMiddleware().concat(userApi.middleware, fileApi.middleware),
 });
 
 // Types

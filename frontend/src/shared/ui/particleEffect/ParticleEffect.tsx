@@ -2,7 +2,7 @@ import Particles from 'react-tsparticles';
 import { loadFull } from 'tsparticles';
 
 const ParticleEffect = () => {
-  const particlesInit: any = async (main) => {
+  const particlesInit: any = async main => {
     await loadFull(main);
   };
   return (

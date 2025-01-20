@@ -10,7 +10,7 @@
     "build:dev": "cross-env MODE=development vite build",
     "build:prod": "cross-env MODE=production vite build",
     "test": "jest .test.js --roots src",
-    "format": "prettier --write \"src/**/*.js\"",
+    "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx}\"",
     "lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\"",
     "lint:fix": "eslint \"src/**/*.{js,jsx,ts,tsx}\" --fix"
   },

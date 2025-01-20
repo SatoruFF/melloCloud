@@ -1,3 +1,3 @@
-import File from "./ui/File";
+import File from './ui/File';
 
-export { File }
+export { File };

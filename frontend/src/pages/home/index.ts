@@ -1,3 +1,3 @@
-import Welcome from "./ui/Welcome";
+import Welcome from './ui/Welcome';
 
-export { Welcome as Home }
+export { Welcome as Home };

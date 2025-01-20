@@ -60,7 +60,7 @@ const WorkspacesDropdown = ({ viewAll, logOut, setProfile }: { viewAll: boolean;
 
   return (
     <Dropdown menu={{ items }}>
-      <a onClick={(e) => e.preventDefault()}>
+      <a onClick={e => e.preventDefault()}>
         <Space style={{ cursor: 'default', paddingRight: '30px' }}>
           workspace
           <DownOutlined />

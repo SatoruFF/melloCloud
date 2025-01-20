@@ -7,7 +7,7 @@ export const fileApi = createApi({
   reducerPath: 'fileApi',
   baseQuery: fetchBaseQuery({
     baseUrl: url,
-    prepareHeaders: (headers) => {
+    prepareHeaders: headers => {
       const token = localStorage.getItem('token');
       if (token) {
         headers.set('Authorization', `Bearer ${token}`);
@@ -15,9 +15,9 @@ export const fileApi = createApi({
       return headers;
     },
   }),
-  endpoints: (builder) => ({
+  endpoints: builder => ({
     createDir: builder.mutation<any, any>({
-      query: (body) => ({
+      query: body => ({
         url: 'file',
         method: 'POST',
         body,
@@ -27,7 +27,7 @@ export const fileApi = createApi({
       query: ({ file }) => ({
         url: `file/download?id=${file.id}`,
         method: 'POST',
-        responseHandler: async (response) => {
+        responseHandler: async response => {
           const blob = await response.blob(); // получаем бинарные данные ответа
           const url = window.URL.createObjectURL(blob); // создаем URL-адрес для скачивания файла
           const link = document.createElement('a'); // создаем ссылку для скачивания файла

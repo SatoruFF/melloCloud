@@ -1,3 +1,3 @@
-import FileViewer from "./ui/FileViewer";
+import FileViewer from './ui/FileViewer';
 
-export { FileViewer }
+export { FileViewer };
