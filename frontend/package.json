@@ -7,9 +7,12 @@
     "dev": "cross-env MODE=development vite",
     "build": "vite build",
     "preview": "vite preview",
-    "format": "prettier --write \"src/**/*.{ts,tsx}\"",
     "build:dev": "cross-env MODE=development vite build",
-    "build:prod": "cross-env MODE=production vite build"
+    "build:prod": "cross-env MODE=production vite build",
+    "test": "jest .test.js --roots src",
+    "format": "prettier --write \"src/**/*.js\"",
+    "lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\"",
+    "lint:fix": "eslint \"src/**/*.{js,jsx,ts,tsx}\" --fix"
   },
   "dependencies": {
     "@ant-design/icons": "^5.2.5",
@@ -46,13 +49,27 @@
     "use-sound": "^4.0.1"
   },
   "devDependencies": {
+    "@eslint/js": "^9.18.0",
     "@types/lodash-es": "^4.17.12",
     "@types/react-dom": "^18.2.7",
+    "@typescript-eslint/eslint-plugin": "^6.4.0",
     "@vitejs/plugin-react": "^3.0.0",
     "cross-env": "^7.0.3",
+    "eslint": "^8.2.0",
+    "eslint-config-airbnb": "^19.0.4",
+    "eslint-config-prettier": "^10.0.1",
+    "eslint-config-standard": "^17.1.0",
+    "eslint-config-standard-with-typescript": "^43.0.1",
+    "eslint-plugin-import": "^2.31.0",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
+    "eslint-plugin-prettier": "^5.2.3",
+    "eslint-plugin-react": "^7.37.4",
+    "eslint-plugin-react-hooks": "^5.1.0",
+    "globals": "^15.14.0",
     "prettier": "^3.4.2",
     "react-responsive": "^9.0.2",
     "typescript": "^5.7.3",
+    "typescript-eslint": "^8.20.0",
     "vite": "^4.5.5"
   }
 }

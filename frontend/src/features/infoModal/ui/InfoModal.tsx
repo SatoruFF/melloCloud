@@ -1,5 +1,5 @@
-import { Form, Input, Modal, message } from 'antd';
-import { useAppSelector, useAppDispatch } from '../../../app/store/store';
+import { Form, Input, Modal } from 'antd';
+import { useAppSelector } from '../../../app/store/store';
 import { useChangeInfoMutation } from '../../../shared/api/user';
 import { useState } from 'react';
 import _ from 'lodash';
@@ -8,7 +8,7 @@ const InfoModal = ({ status, def }) => {
   const [userName, setUserName] = useState();
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();
-  const user = useAppSelector((state) => state.users.currentUser);
+  const user = useAppSelector(state => state.users.currentUser);
   const [changeUser, { data, isLoading, isError }] = useChangeInfoMutation();
   const changeInfo = () => {
     def(false);
