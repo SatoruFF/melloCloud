@@ -4,6 +4,7 @@ import Divider from 'antd/es/divider';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { SmileOutlined } from '@ant-design/icons';
+import { useTranslation } from 'react-i18next';
 
 import { LOGIN_ROUTE, ACTIVATION_ROUTE } from '../../../shared/consts/consts';
 import { userApi } from '../../../shared/api/user';
@@ -14,6 +15,8 @@ import styles from '../styles/auth.module.scss';
 import cn from 'classnames';
 
 const Register = () => {
+  const { t } = useTranslation();
+
   const [userName, setUserName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -49,24 +52,24 @@ const Register = () => {
 
   return (
     <div className={cn(styles.rightSideForm)}>
-      <div className={cn(styles.authFormTitle)}>Registration</div>
+      <div className={cn(styles.authFormTitle)}>{t('auth.registration')}</div>
       <Form layout="vertical">
         <Form.Item
-          label="username:"
+          label={t('auth.nickname')}
           name="firstName"
-          rules={[{ required: true, message: 'Please input your username!' }]}
+          rules={[{ required: true, message: t('auth.nickname-warning') }]}
         >
           <Input
             value={userName}
             onChange={e => setUserName(e.target.value)}
-            placeholder="please input your username here..."
+            placeholder={t('auth.nickname-placeholder')}
           />
         </Form.Item>
-        <Form.Item label="email:" name="email" rules={[{ required: true, message: 'Please input your email!' }]}>
-          <Input value={email} onChange={e => setEmail(e.target.value)} placeholder="please input your email here..." />
+        <Form.Item label={t('auth.email')} name="email" rules={[{ required: true, message: t('auth.email-warning') }]}>
+          <Input value={email} onChange={e => setEmail(e.target.value)} placeholder={t('auth.email-placeholder')} />
         </Form.Item>
         <Form.Item
-          label="password:"
+          label={t('auth.password')}
           name="password"
           rules={[{ required: true, message: 'Please input your password!' }]}
         >
@@ -83,13 +86,13 @@ const Register = () => {
           <Spin />
         ) : (
           <Button onClick={() => handleCreate()} type="primary" htmlType="submit">
-            Submit
+            {t('auth.submit')}
           </Button>
         )}
       </div>
-      <Divider orientation="left">Already have account?</Divider>
+      <Divider orientation="left">{t('auth.have-account')}</Divider>
       <Button>
-        <NavLink to={LOGIN_ROUTE}>Log in</NavLink>
+        <NavLink to={LOGIN_ROUTE}>{t('auth.authorization')}</NavLink>
       </Button>
     </div>
   );

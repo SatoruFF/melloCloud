@@ -4,6 +4,7 @@ import Divider from 'antd/es/divider';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { SmileOutlined } from '@ant-design/icons';
 import { unwrapResult } from '@reduxjs/toolkit';
+import { useTranslation } from 'react-i18next';
 
 import { FILE_ROUTE, REGISTRATION_ROUTE } from '../../../shared/consts/consts';
 import { useAppDispatch } from '../../../app/store/store';
@@ -14,6 +15,8 @@ import styles from '../styles/auth.module.scss';
 import cn from 'classnames';
 
 const Login = () => {
+  const { t } = useTranslation();
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -51,25 +54,25 @@ const Login = () => {
 
   return (
     <div className={cn(styles.rightSideForm)}>
-      <div className={cn(styles.authFormTitle)}>Login</div>
+      <div className={cn(styles.authFormTitle)}>{t('auth.authorization')}</div>
       <Form layout="vertical">
-        <Form.Item label="email:" name="email" rules={[{ required: true, message: 'Please input your email!' }]}>
-          <Input value={email} onChange={e => setEmail(e.target.value)} placeholder="please input your email here..." />
+        <Form.Item label={t('auth.email')} name="email" rules={[{ required: true, message: t('auth.email-warning') }]}>
+          <Input value={email} onChange={e => setEmail(e.target.value)} placeholder={t('auth.email-placeholder')} />
         </Form.Item>
         <Form.Item
-          label="password:"
+          label={t('auth.password')}
           name="password"
-          rules={[{ required: true, message: 'Please input your password!' }]}
+          rules={[{ required: true, message: t('auth.password-warning') }]}
         >
           <Input
             type="password"
             value={password}
             onChange={e => setPassword(e.target.value)}
-            placeholder="please input your password here..."
+            placeholder={t('auth.password-placeholder')}
           />
         </Form.Item>
         <Form.Item name="remember" valuePropName="checked">
-          <Checkbox>Remember me</Checkbox>
+          <Checkbox>{t('auth.remember')}</Checkbox>
         </Form.Item>
         <Form.Item>
           <div>
@@ -77,14 +80,14 @@ const Login = () => {
               <Spin />
             ) : (
               <Button onClick={() => handleClick()} type="primary" htmlType="submit">
-                Submit
+                {t('auth.submit')}
               </Button>
             )}
           </div>
         </Form.Item>
-        <Divider orientation="left">No account?</Divider>
+        <Divider orientation="left">{t('auth.no-account')}</Divider>
         <Button>
-          <NavLink to={REGISTRATION_ROUTE}>Create profile</NavLink>{' '}
+          <NavLink to={REGISTRATION_ROUTE}>{t('auth.create-profile')}</NavLink>{' '}
         </Button>
       </Form>
     </div>

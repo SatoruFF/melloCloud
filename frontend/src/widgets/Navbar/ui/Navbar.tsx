@@ -99,12 +99,12 @@ const MyNavbar: React.FC = () => {
         <div className={cn(styles.navItems)}>
           <div className={cn(styles.navItem)}>
             <Button ghost>
-              <NavLink to={LOGIN_ROUTE}>authorization</NavLink>
+              <NavLink to={LOGIN_ROUTE}>{t('auth.authorization')}</NavLink>
             </Button>
           </div>
           <div className={cn(styles.navItem)}>
             <Button ghost>
-              <NavLink to={REGISTRATION_ROUTE}>registration</NavLink>
+              <NavLink to={REGISTRATION_ROUTE}>{t('auth.registration')}</NavLink>
             </Button>
           </div>
           <div className={cn(styles.navBurger)}>

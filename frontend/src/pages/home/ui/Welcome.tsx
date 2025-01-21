@@ -15,7 +15,7 @@ import styles from '../styles/welcome.module.scss';
 import ParticleEffect from '../../../shared/ui/particleEffect/ParticleEffect';
 
 const Welcome = () => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
 
   return (
     <div className={cn(styles.welcomeWrapper)}>
@@ -25,17 +25,17 @@ const Welcome = () => {
           {
             key: 'part-1',
             href: '#part-1',
-            title: 'Title',
+            title: t('home-anchor.title'),
           },
           {
             key: 'part-2',
             href: '#part-2',
-            title: 'More',
+            title: t('home-anchor.more'),
           },
           {
             key: 'part-3',
             href: '#part-3',
-            title: 'About',
+            title: t('home-anchor.about'),
           },
         ]}
       />
@@ -77,14 +77,12 @@ const Welcome = () => {
       {/* second content space */}
       <div className={cn(styles.welcomeMore)} id="part-2">
         <ParticleEffect />
-        <div className={cn(styles.moreTitle)}>Want more?</div>
+        <div className={cn(styles.moreTitle)}>{t('want-more')}</div>
         <div className={cn(styles.contentMax)}>
           <div className={cn(styles.moreContent)}>
             <div className={cn(styles.moreDesktopCard)}>
               <img src={desktopIcon} alt="desktop" loading="lazy" />
-              <div className={cn(styles.moreDescription)}>
-                You can also download desktop applications by clicking the button below
-              </div>
+              <div className={cn(styles.moreDescription)}>{t('desktop')}</div>
               <Button type="primary" onClick={() => message.info('coming soon...')}>
                 download
               </Button>
@@ -92,7 +90,7 @@ const Welcome = () => {
 
             <div className={cn(styles.moreMobileCard)}>
               <img src={mobileIcon} alt="mobile" loading="lazy" />
-              <div className={cn(styles.moreDescription)}>And there is also a mobile cloud storage application</div>
+              <div className={cn(styles.moreDescription)}>{t('mobile')}</div>
               <Button type="primary">
                 <a href="https://wdfiles.ru/775e318" target="_blank">
                   download
@@ -105,22 +103,10 @@ const Welcome = () => {
 
       {/* third content space */}
       <div className={cn(styles.welcomeAbout)} id="part-3">
-        <div className={cn(styles.aboutTitle)}>About</div>
+        <div className={cn(styles.aboutTitle)}>{t('about-title')}</div>
         <div className={cn(styles.contentMax)}>
           <div className={cn(styles.aboutContent)}>
-            <div className={cn(styles.aboutDescription)}>
-              Ocean Cloud is a cloud storage that allows users to store and manage their data in a cloud environment. It
-              provides high-level security and data access control functions, as well as guarantees high availability
-              and scalability. The main advantages of Ocean Cloud are: <br />
-              ·Flexibility and Scalability: Ocean Cloud allows users to easily scale their storage to meet growing data
-              storage needs, expanding storage capacity as needed.
-              <br />
-              ·Security: Ocean Cloud provides a high level of data security thanks to data encryption at rest and in
-              motion, traffic filtering and the ability to control access to data at the user level.
-              <br />
-              ·Usability: Ocean Cloud has a simple and intuitive interface that allows users to easily upload, store and
-              manage their data without requiring special knowledge and skills.
-            </div>
+            <div className={cn(styles.aboutDescription)}>{t('about-description')}</div>
             <div className={cn(styles.aboutLinks, 'aboutLinks')}>
               <img src={storageIcon} alt="storage" loading="lazy" className={cn(styles.storageLogo)} />
               <div className={cn(styles.socials, 'socials')}>

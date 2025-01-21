@@ -14,9 +14,9 @@ import qs from "qs";
 import "dotenv/config.js";
 
 // Swagger
-import swaggerUi from "swagger-ui-express";
-import swaggerJsdoc from "swagger-jsdoc";
-import swaggerDocument from "./swagger.json";
+// import swaggerUi from "swagger-ui-express";
+// import swaggerJsdoc from "swagger-jsdoc";
+// import swaggerDocument from "./swagger.json";
 
 // performing
 import cluster from "cluster";
@@ -28,12 +28,12 @@ const app: Express = express();
 const port = process.env.PORT || 3002;
 
 // Swagger setup
-const specs = swaggerJsdoc({
-  swaggerDefinition: swaggerDocument,
-  apis: ["./routes/*.js"], // path to routes
-});
+// const specs = swaggerJsdoc({
+//   swaggerDefinition: swaggerDocument,
+//   apis: ["./routes/*.js"], // path to routes
+// });
 
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
+// app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
 
 // middleware
 app.use(
