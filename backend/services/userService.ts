@@ -13,10 +13,7 @@ import "dotenv/config.js";
 // import { v4 as uuidv4 } from "uuid";
 import { generateJwt } from "../utils/generateJwt.js";
 import createError from "http-errors";
-import {
-  validateAccessToken,
-  validateRefreshToken,
-} from "../utils/validateJwt.js";
+import { validateAccessToken, validateRefreshToken } from "../utils/validateJwt.js";
 
 interface IUserData {
   email: string;
@@ -77,10 +74,7 @@ class UserServiceClass {
       });
 
       if (candidate) {
-        throw createError(
-          400,
-          `User with email: ${userData.email} already exists`
-        );
+        throw createError(400, `User with email: ${userData.email} already exists`);
       }
 
       // create user in dataBase
@@ -164,7 +158,7 @@ class UserServiceClass {
       const isPassValid = bcrypt.compareSync(password, user.password);
 
       if (!isPassValid) {
-        throw createError(400, `Uncorrect data`);
+        throw createError(400, `Uncorrect login or email`);
       }
 
       const { accessToken, refreshToken } = generateJwt(user.id);
@@ -224,8 +218,7 @@ class UserServiceClass {
 
   async activate(activationToken: string) {
     return prisma.$transaction(async (trx) => {
-      const { payload: emailFromInvite } =
-        validateAccessToken(activationToken) || {};
+      const { payload: emailFromInvite } = validateAccessToken(activationToken) || {};
 
       if (!emailFromInvite) {
         throw createError("401", "Auth error, may be token is expired");
@@ -238,10 +231,7 @@ class UserServiceClass {
       });
 
       if (!invite) {
-        throw createError(
-          404,
-          "Invite not found for email address: " + emailFromInvite
-        );
+        throw createError(404, "Invite not found for email address: " + emailFromInvite);
       }
 
       const { email, password, userName } = invite;
@@ -280,9 +270,7 @@ class UserServiceClass {
         throw createError(404, "User not found");
       }
 
-      const { accessToken, refreshToken: newToken } = generateJwt(
-        foundedUser.id
-      );
+      const { accessToken, refreshToken: newToken } = generateJwt(foundedUser.id);
 
       const user = await trx.user.update({
         where: {

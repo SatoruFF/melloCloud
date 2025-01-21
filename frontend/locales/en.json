@@ -5,11 +5,14 @@
   "desktop": "You can also download desktop applications by clicking the button below",
   "mobile": "And there is also a mobile cloud storage application",
   "about-title": "About",
-  "about-description": "Mello cloud is a cloud storage that allows users to store and manage their data in a cloud environment. It provides high-level security and data access control functions, as well as guarantees high availability and scalability. The main advantages of Ocean Cloud are: ·Flexibility and Scalability: Ocean Cloud allows users to easily scale their storage to meet growing data storage needs, expanding storage capacity as needed. ·Security: Ocean Cloud provides a high level of data security thanks to data encryption at rest and in motion, traffic filtering and the ability to control access to data at the user level. ·Usability Ocean Cloud has a simple and intuitive interface that allows users to easily upload, store and manage their data without requiring special knowledge and skills.",
+  "about-description": "Mello cloud is a cloud storage that allows users to store and manage their data in a cloud environment. It provides high-level security and data access control functions, as well as guarantees high availability and scalability. The main advantages of Mello cloud are: ·Flexibility and Scalability: Mello cloud allows users to easily scale their storage to meet growing data storage needs, expanding storage capacity as needed. ·Security: Mello cloud provides a high level of data security thanks to data encryption at rest and in motion, traffic filtering and the ability to control access to data at the user level. ·Usability Mello cloud has a simple and intuitive interface that allows users to easily upload, store and manage their data without requiring special knowledge and skills.",
   "home-anchor": {
     "title": "Title",
     "more": "More",
     "about": "About"
+  },
+  "user": {
+    "settings": "settings"
   },
   "auth": {
     "authorization": "authorization",
@@ -29,5 +32,27 @@
     "no-account": "No account?",
     "have-account": "Already have account?",
     "create-profile": "Create profile"
+  },
+  "files": {
+    "my-files": "My files",
+    "create-new-folder": "Create new folder",
+    "enter-folder-name": "Enter a folder name...",
+    "upload-file": "Click to upload",
+    "search-placeholder": "What are you looking for?",
+    "order-by": "Order by",
+    "order": {
+      "name": "name",
+      "type": "type",
+      "date": "date"
+    }
+  },
+  "workspace": "workspace",
+  "tabs": {
+    "files": "Files",
+    "settings": "Settings",
+    "chats": "Chats",
+    "notes": "Notes",
+    "to-do": "To-do",
+    "pomodoro": "Pomodoro"
   }
 }

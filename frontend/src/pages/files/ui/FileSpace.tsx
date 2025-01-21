@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Button, Spin, Modal, Input, message, Select, Breadcrumb } from 'antd';
 import { LeftOutlined, UploadOutlined, UnorderedListOutlined, AppstoreOutlined } from '@ant-design/icons';
+import { useTranslation } from 'react-i18next';
 
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppSelector } from '../../../app/store/store';
@@ -18,6 +19,7 @@ import cn from 'classnames';
 const { Search } = Input;
 
 const FileSpace = () => {
+  const { t } = useTranslation();
   //Redux state
   const dispatch = useAppDispatch();
   const currentDir = useAppSelector(state => state.files.currentDir);
@@ -101,7 +103,7 @@ const FileSpace = () => {
             <LeftOutlined />
           </Button>
           <Button onClick={() => setModal(true)}>
-            <p className={cn(styles.diskCreateFolderTxt)}>Create new folder</p>
+            <p className={cn(styles.diskCreateFolderTxt)}>{t('files.create-new-folder')}</p>
           </Button>
 
           <Button
@@ -109,21 +111,21 @@ const FileSpace = () => {
             onClick={() => setUploadModal(true)}
             className={cn(styles.uploadBtn, styles.diskUpload)}
           >
-            Click to Upload
+            {t('files.upload-file')}
           </Button>
           <UploadModal status={uploadModal} def={setUploadModal} />
           <Select
             className={cn(styles.diskOrder)}
-            defaultValue="Order by"
+            defaultValue={t('files.order-by')}
             onChange={value => setSort(value)}
             options={[
-              { value: 'name', label: 'name' },
-              { value: 'type', label: 'type' },
-              { value: 'date', label: 'date' },
+              { value: 'name', label: t('files.order.name') },
+              { value: 'type', label: t('files.order.type') },
+              { value: 'date', label: t('files.order.date') },
             ]}
           />
           <Search
-            placeholder="What are you looking for?"
+            placeholder={t('files.search-placeholder')}
             className={cn(styles.searchFiles)}
             onSearch={onSearch}
             enterButton
@@ -136,7 +138,7 @@ const FileSpace = () => {
         </div>
       </div>
       <Modal
-        title="Create new folder"
+        title={t('files.create-new-folder')}
         open={modal}
         onCancel={() => setModal(false)}
         footer={[
@@ -145,7 +147,11 @@ const FileSpace = () => {
           </Button>,
         ]}
       >
-        <Input value={folderName} onChange={e => setFolderName(e.target.value)} placeholder="Enter a folder name..." />
+        <Input
+          value={folderName}
+          onChange={e => setFolderName(e.target.value)}
+          placeholder={t('files.enter-folder-name')}
+        />
       </Modal>
       <Filelist />
     </div>

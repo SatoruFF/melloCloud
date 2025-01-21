@@ -1,5 +1,5 @@
 import useSound from 'use-sound';
-import clickSfx from '../../assets/slide.mp3';
+import clickSfx from '../../../shared/assets/slide.mp3';
 
 const Controls = ({
   timerMode,

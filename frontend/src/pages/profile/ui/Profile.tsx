@@ -10,9 +10,9 @@ import { setAvatar, deleteAvatar } from '../../../app/store/reducers/userSlice';
 import { sizeFormat } from '../../../shared/utils/sizeFormat';
 import { Variables } from '../../../shared/api/localVariables';
 
-import avatarIcon from '../assets/avatar-icon.png';
+import avatarIcon from '../../../shared/assets/avatar-icon.png';
 
-import styles from '../style/profile.module.scss';
+import styles from '../styles/profile.module.scss';
 import cn from 'classnames';
 
 const { Paragraph } = Typography;

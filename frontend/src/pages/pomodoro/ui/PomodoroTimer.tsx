@@ -7,8 +7,8 @@ import TimerDisplay from '../../../features/pomodoro/ui/TimerDisplay';
 import Button from '../../../features/pomodoro/ui/Button';
 import Settings from '../../../features/pomodoro/ui/Settings';
 
-import timesUpSfx from '../assets/timesUp.mp3';
-import styles from '../style/pomodoro.module.scss';
+import timesUpSfx from '../../../shared/assets/timesUp.mp3';
+import styles from '../styles/pomodoro.module.scss';
 import cn from 'classnames';
 
 function PomodoroTimer() {

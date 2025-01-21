@@ -61,11 +61,11 @@ const MyNavbar: React.FC = () => {
             <React.Fragment>
               <div className={cn(styles.navFiles)}>
                 <Button ghost>
-                  <NavLink to={FILE_ROUTE}>My files</NavLink>
+                  <NavLink to={FILE_ROUTE}>{t('files.my-files')}</NavLink>
                 </Button>
               </div>
               <Button className={cn(styles.mainLogout)} type="primary" onClick={() => logOut()}>
-                Log out
+                {t('auth.logout')}
               </Button>
             </React.Fragment>
           )}
@@ -86,7 +86,7 @@ const MyNavbar: React.FC = () => {
             </div>
           </div>
           <Drawer
-            title="Settings"
+            title={t('user.settings')}
             placement="right"
             onClose={() => setProfile(false)}
             open={profile}

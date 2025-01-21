@@ -2,8 +2,8 @@ import MuteToggle from './MuteToggle';
 import { CircularProgressbarWithChildren, buildStyles } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 import useSound from 'use-sound';
-import startSfx from '../../assets/startTimer.mp3';
-import pauseSfx from '../../assets/pauseTimer.mp3';
+import startSfx from '../../../shared/assets/startTimer.mp3';
+import pauseSfx from '../../../shared/assets/pauseTimer.mp3';
 
 const TimerDisplay = ({
   timerMode,
