@@ -11,8 +11,8 @@ import { setFiles, addNewFile, setDir, popToStack, setView, popToPath } from '..
 import { generateParams } from '../../../shared/utils/generateParams';
 import UploadModal from '../../../features/uploadModal/ui/UploadModal';
 
-import diskBack from '../assets/disk-back.jpg';
-import styles from '../style/fileSpace.module.scss';
+import diskBack from '../../../shared/assets/disk-back.jpg';
+import styles from '../styles/fileSpace.module.scss';
 import cn from 'classnames';
 
 const { Search } = Input;

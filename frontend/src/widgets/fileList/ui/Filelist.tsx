@@ -3,7 +3,7 @@ import { useAppSelector } from '../../../app/store/store';
 import File from '../../../entities/file/ui/File';
 
 import cn from 'classnames';
-import styles from '../style/fileList.module.scss';
+import styles from '../styles/fileList.module.scss';
 
 const Filelist = () => {
   const files = useAppSelector(state => state.files.files);

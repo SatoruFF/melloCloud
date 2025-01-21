@@ -8,7 +8,7 @@ import { useAppDispatch, useAppSelector } from '../../../app/store/store';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useActivateUserMutation } from '../../../shared/api/user';
 
-import styles from '../style/activate.module.scss';
+import styles from '../styles/activate.module.scss';
 import { FILE_ROUTE } from '../../../shared/consts/consts';
 
 const Activate = () => {

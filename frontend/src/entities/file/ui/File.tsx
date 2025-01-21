@@ -10,7 +10,7 @@ import { useDeleteFileMutation, useDownloadFileMutation, useGetFilesQuery } from
 import { sizeFormat } from '../../../shared/utils/sizeFormat';
 import FileViewer from '../../../features/fileViewer/ui/FileViewer';
 
-import styles from '../style/file.module.scss';
+import styles from '../styles/file.module.scss';
 import cn from 'classnames';
 
 const File = ({ file }: any) => {

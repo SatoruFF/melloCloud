@@ -3,7 +3,7 @@ import { useState } from 'react';
 import ReactPlayer from 'react-player';
 import { FolderFilled, FileFilled, PlayCircleOutlined } from '@ant-design/icons';
 import cn from 'classnames';
-import styles from '../../style/fileViewer.module.scss';
+import styles from '../styles/fileViewer.module.scss';
 
 const FileViewer = ({ type, url }) => {
   const [isOpenPlayer, setIsOpenPlayer] = useState(false);

@@ -7,7 +7,7 @@ import { useAppDispatch } from '../../../app/store/store';
 import { addNewFile } from '../../../app/store/reducers/fileSlice';
 import { Variables } from '../../../shared/api/localVariables';
 
-import styles from '../../style/uploadModal.module.scss';
+import styles from '../styles/uploadModal.module.scss';
 import cn from 'classnames';
 
 const { Dragger } = Upload;
