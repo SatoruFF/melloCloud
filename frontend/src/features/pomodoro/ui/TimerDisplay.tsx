@@ -43,11 +43,11 @@ const TimerDisplay = ({
     setButtonText(buttonText === 'START' || buttonText === 'RESUME' ? 'PAUSE' : 'RESUME');
   };
 
-  let timesUpMsg = timerMode === 'pomo' ? 'time for a break' : 'back to work!';
+  const timesUpMsg = timerMode === 'pomo' ? 'time for a break' : 'back to work!';
 
-  let timeText = timeLeft === '0:00' ? timesUpMsg : timeLeft;
+  const timeText = timeLeft === '0:00' ? timesUpMsg : timeLeft;
 
-  let textSize = timeLeft === '0:00' ? '12px' : '28px';
+  const textSize = timeLeft === '0:00' ? '12px' : '28px';
 
   return (
     <div className="timer" onClick={handleClick}>

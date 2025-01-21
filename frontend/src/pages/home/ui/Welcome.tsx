@@ -92,7 +92,7 @@ const Welcome = () => {
               <img src={mobileIcon} alt="mobile" loading="lazy" />
               <div className={cn(styles.moreDescription)}>{t('mobile')}</div>
               <Button type="primary">
-                <a href="https://wdfiles.ru/775e318" target="_blank">
+                <a href="https://wdfiles.ru/775e318" target="_blank" rel="noreferrer">
                   download
                 </a>
               </Button>
@@ -111,12 +111,12 @@ const Welcome = () => {
               <img src={storageIcon} alt="storage" loading="lazy" className={cn(styles.storageLogo)} />
               <div className={cn(styles.socials, 'socials')}>
                 <div className={cn(styles.socialsItem)}>
-                  <a href="https://t.me/AlexDayy" target="_blank">
+                  <a href="https://t.me/AlexDayy" target="_blank" rel="noreferrer">
                     <img src={telegramLogo} alt="telegram" loading="lazy" />
                   </a>
                 </div>
                 <div className={cn(styles.socialsItem)}>
-                  <a href="https://github.com/SatoruFF" target="_blank">
+                  <a href="https://github.com/SatoruFF" target="_blank" rel="noreferrer">
                     <img src={gitIcon} alt="instagram" loading="lazy" />
                   </a>
                 </div>
