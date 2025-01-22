@@ -143,7 +143,7 @@ const FileSpace = () => {
         onCancel={() => setModal(false)}
         footer={[
           <Button type="primary" onClick={addNewFolder}>
-            create
+            {t('buttons.create-folder')}
           </Button>,
         ]}
       >

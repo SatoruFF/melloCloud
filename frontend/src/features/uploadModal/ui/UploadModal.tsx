@@ -1,6 +1,7 @@
 import { Button, Modal, Upload, message } from 'antd';
 import type { UploadProps } from 'antd';
 import { InboxOutlined } from '@ant-design/icons';
+import { useTranslation } from 'react-i18next';
 
 import { useAppSelector } from '../../../app/store/store';
 import { useAppDispatch } from '../../../app/store/store';
@@ -13,6 +14,7 @@ import cn from 'classnames';
 const { Dragger } = Upload;
 
 const UploadModal = ({ status, def }) => {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const token = localStorage.getItem('token');
   const currentDir = useAppSelector(state => state.files.currentDir);
@@ -51,12 +53,12 @@ const UploadModal = ({ status, def }) => {
   return (
     <Modal
       open={status}
-      title="Upload files"
+      title={t('files.upload-files-title')}
       className={cn(styles.uplModalFileSpace)}
       onCancel={() => def(false)}
       footer={[
         <Button key="back" type="primary" onClick={() => def(false)}>
-          Return
+          {t('buttons.return')}
         </Button>,
       ]}
     >
@@ -64,10 +66,8 @@ const UploadModal = ({ status, def }) => {
         <p className="ant-upload-drag-icon">
           <InboxOutlined />
         </p>
-        <p className="ant-upload-text">Click or drag file to this area to upload</p>
-        <p className="ant-upload-hint">
-          You can upload up to 5 files at the same time. Downloading illegal content is prohibited
-        </p>
+        <p className="ant-upload-text">{t('files.upload-files-text')}</p>
+        <p className="ant-upload-hint"> {t('files.upload-files-hint')}</p>
       </Dragger>
     </Modal>
   );

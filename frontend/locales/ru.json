@@ -12,26 +12,31 @@
     "about": "О нас"
   },
   "user": {
-    "settings": "Настройки"
+    "settings": "Настройки",
+    "role": "Роль",
+    "edit": "Редактировать",
+    "total-space": "Общий размер",
+    "used-space": "Использованный размер"
   },
   "auth": {
     "authorization": "Войти",
     "registration": "Регистрация",
     "logout": "Выйти",
     "nickname": "Имя пользователя",
-    "nickname-warning": "Введите имя пользователя!",
+    "nickname-warning": "Введите имя пользователя",
     "nickname-placeholder": "Введите имя пользователя...",
     "email": "Почта",
-    "email-warning": "Введите свой пароль!",
+    "email-warning": "Введите свою почту",
     "email-placeholder": "Введите свою почту...",
     "password": "Пароль",
-    "password-warning": "Введите свой пароль!",
+    "password-warning": "Введите свой пароль",
     "password-placeholder": "Введите свой пароль...",
     "remember": "Запомнить меня",
     "submit": "Отправить",
     "no-account": "Нету аккаунта?",
     "have-account": "Уже есть аккаунт?",
-    "create-profile": "Создать профиль"
+    "create-profile": "Создать профиль",
+    "change-profile-info": "Изменить настройки профиля"
   },
   "files": {
     "my-files": "файлы",
@@ -40,6 +45,9 @@
     "upload-file": "Загрузить",
     "search-placeholder": "Что нужно найти?",
     "order-by": "Сортировать по",
+    "upload-files-title": "Загрузить файлы",
+    "upload-files-text": "Щелкните или перетащите файл в эту область для загрузки.",
+    "upload-files-hint": "Вы можете загружать до 5 файлов одновременно. Загрузка нелегального контента запрещена.",
     "order": {
       "name": "Наименование",
       "type": "Тип",
@@ -54,5 +62,13 @@
     "notes": "Заметки",
     "to-do": "Задачи",
     "pomodoro": "Pomodoro"
+  },
+  "buttons": {
+    "ok": "ок",
+    "cancel": "отмена",
+    "return": "вернуться",
+    "create-folder": "создать",
+    "upload-avatar": "Загрузить аватар",
+    "delete-avatar": "Удалить аватар"
   }
 }

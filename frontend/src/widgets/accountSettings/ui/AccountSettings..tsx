@@ -2,6 +2,8 @@ import { ApiOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { Button, Divider, notification } from 'antd';
+import cn from 'classnames';
+import { useTranslation } from 'react-i18next';
 
 import { useAppSelector, useAppDispatch } from '../../../app/store/store';
 import { sizeFormat } from '../../../shared/utils/sizeFormat';
@@ -10,11 +12,10 @@ import { WELCOME_ROUTE } from '../../../shared/consts/consts';
 import InfoModal from '../../../features/infoModal/ui/InfoModal';
 import PasswordModal from '../../../features/passwordModal/ui/PasswordModal';
 import DeleteModal from '../../../features/deleteModal/ui/DeleteModal';
-
 import styles from '../styles/accountSettings.module.scss';
-import cn from 'classnames';
 
 const AccountSettings = () => {
+  const { t } = useTranslation();
   const [changeInfoModal, setChangeInfoModal] = useState(false);
   const [changePassModal, setChangePassModal] = useState(false);
   const [deleteModal, setDeleteModal] = useState(false);
@@ -40,17 +41,23 @@ const AccountSettings = () => {
   return (
     <div className={cn(styles.accountWrapper)}>
       <div className={cn(styles.accountPersonal)}>
-        <p className={cn(styles.personalItem)}>Username: {user.userName}</p>
-        <p className={cn(styles.personalItem)}>Email: {user.email}</p>
-        <p className={cn(styles.personalItem)}>Role: {user.role}</p>
+        <p className={cn(styles.personalItem)}>
+          {t('auth.nickname')} : {user.userName}
+        </p>
+        <p className={cn(styles.personalItem)}>
+          {t('auth.email')} : {user.email}
+        </p>
+        <p className={cn(styles.personalItem)}>
+          {t('user.role')} : {user.role}
+        </p>
         <Button className={cn(styles.personalLogout)} type="primary" onClick={() => logOut()}>
-          Log out
+          {t('auth.logout')}
         </Button>
       </div>
       <div className={cn(styles.accountSettings)}>
-        <Divider orientation="left">Edit</Divider>
+        <Divider orientation="left">{t('user.edit')} </Divider>
         <Button className={cn(styles.accountBtn)} onClick={() => setChangeInfoModal(true)}>
-          Change profile info
+          {t('auth.change-profile-info')}
         </Button>
       </div>
       <InfoModal status={changeInfoModal} def={setChangeInfoModal} />

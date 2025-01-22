@@ -12,7 +12,11 @@
     "about": "About"
   },
   "user": {
-    "settings": "settings"
+    "settings": "settings",
+    "role": "Role",
+    "edit": "Edit",
+    "total-space": "Total space",
+    "used-space": "Used space"
   },
   "auth": {
     "authorization": "authorization",
@@ -31,7 +35,8 @@
     "submit": "submit",
     "no-account": "No account?",
     "have-account": "Already have account?",
-    "create-profile": "Create profile"
+    "create-profile": "Create profile",
+    "change-profile-info": "Change profile info"
   },
   "files": {
     "my-files": "My files",
@@ -40,6 +45,9 @@
     "upload-file": "Click to upload",
     "search-placeholder": "What are you looking for?",
     "order-by": "Order by",
+    "upload-files-title": "Upload files",
+    "upload-files-text": "Click or drag file to this area to upload",
+    "upload-files-hint": "You can upload up to 5 files at the same time. Downloading illegal content is prohibited",
     "order": {
       "name": "name",
       "type": "type",
@@ -54,5 +62,13 @@
     "notes": "Notes",
     "to-do": "To-do",
     "pomodoro": "Pomodoro"
+  },
+  "buttons": {
+    "ok": "ok",
+    "cancel": "cancel",
+    "return": "return",
+    "create-folder": "create",
+    "upload-avatar": "Upload avatar",
+    "delete-avatar": "Delete avatar"
   }
 }

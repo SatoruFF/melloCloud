@@ -1,10 +1,13 @@
+import _ from 'lodash';
 import { Form, Input, Modal } from 'antd';
+import { useTranslation } from 'react-i18next';
+import { useState } from 'react';
+
 import { useAppSelector } from '../../../app/store/store';
 import { useChangeInfoMutation } from '../../../shared/api/user';
-import { useState } from 'react';
-import _ from 'lodash';
 
 const InfoModal = ({ status, def }) => {
+  const { t } = useTranslation();
   const [userName, setUserName] = useState();
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();
@@ -14,7 +17,7 @@ const InfoModal = ({ status, def }) => {
     def(false);
   };
   return (
-    <Modal title="Change profile info" open={status} onOk={changeInfo} onCancel={() => def(false)}>
+    <Modal title={t('auth.change-profile-info')} open={status} onOk={changeInfo} onCancel={() => def(false)}>
       <Form
         name="changeInfo"
         wrapperCol={{ span: 16 }}
@@ -24,14 +27,14 @@ const InfoModal = ({ status, def }) => {
         // onFinishFailed={onFinishFailed}
         autoComplete="off"
       >
-        <Form.Item label="Username" name="Username">
+        <Form.Item label={t('auth.nickname')} name="Username">
           <Input placeholder={user.userName} value={userName} onChange={(e: any) => setUserName(e.target.value)} />
         </Form.Item>
-        <Form.Item label="Email" name="Email">
+        <Form.Item label={t('auth.email')} name="Email">
           <Input placeholder={user.email} value={email} onChange={(e: any) => setEmail(e.target.value)} />
         </Form.Item>
         <Form.Item
-          label="Password"
+          label={t('auth.password')}
           name="Password"
           rules={[{ required: true, message: 'Please input your password!' }]}
         >

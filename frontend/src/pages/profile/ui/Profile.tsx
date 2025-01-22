@@ -3,21 +3,21 @@ import { Button, Upload, message, Typography, Col, Row, Statistic, Card, Spin } 
 import { PieChartOutlined } from '@ant-design/icons';
 import type { UploadProps } from 'antd';
 import { unwrapResult } from '@reduxjs/toolkit';
+import cn from 'classnames';
+import { useTranslation } from 'react-i18next';
 
 import { useAppDispatch, useAppSelector } from '../../../app/store/store';
 import { useDeleteAvatarMutation } from '../../../shared/api/file';
 import { setAvatar, deleteAvatar } from '../../../app/store/reducers/userSlice';
 import { sizeFormat } from '../../../shared/utils/sizeFormat';
 import { Variables } from '../../../shared/api/localVariables';
-
 import avatarIcon from '../../../shared/assets/avatar-icon.png';
-
 import styles from '../styles/profile.module.scss';
-import cn from 'classnames';
 
 const { Paragraph } = Typography;
 
 const Profile = () => {
+  const { t } = useTranslation();
   const user = useAppSelector(state => state.users.currentUser);
   const totalSpace = sizeFormat(user.diskSpace);
   const usedSize = sizeFormat(user.usedSpace);
@@ -87,29 +87,36 @@ const Profile = () => {
                 <Spin style={{ marginRight: '35px' }} />
               ) : (
                 <Button type="primary" danger onClick={() => changeAvatarHandler()}>
-                  Delete avatar
+                  {t('buttons.delete-avatar')}
                 </Button>
               )}
               <Upload className={cn(styles.profileUploader)} name="file" multiple={false} maxCount={1} {...props}>
-                <Button className={cn(styles.uploadBtn)}>Upload avatar</Button>
+                <Button className={cn(styles.uploadBtn)}>{t('buttons.upload-avatar')}</Button>
               </Upload>
             </div>
           </div>
           <div className={cn(styles.profileRightSide)}>
             <div className={cn(styles.profileName)}>{user.userName}</div>
             <Paragraph copyable className={cn(styles.profileEmail)}>
-              Email: {user.email}
+              {t('auth.email')} : {user.email}
             </Paragraph>
-            <Paragraph className={cn(styles.profileItem)}>Role: {user.role}</Paragraph>
+            <Paragraph className={cn(styles.profileItem)}>
+              {t('user.role')} : {user.role}
+            </Paragraph>
             <Row gutter={16} className={cn(styles.profileStat)}>
               <Col span={12}>
                 <Card>
-                  <Statistic title="Total space" value={totalSpace} />
+                  <Statistic title={t('user.total-space')} value={totalSpace} />
                 </Card>
               </Col>
               <Col span={12}>
                 <Card>
-                  <Statistic title="Used space" value={usedSize} precision={2} prefix={<PieChartOutlined />} />
+                  <Statistic
+                    title={t('user.used-space')}
+                    value={usedSize}
+                    precision={2}
+                    prefix={<PieChartOutlined />}
+                  />
                 </Card>
               </Col>
             </Row>
