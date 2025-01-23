@@ -12,7 +12,9 @@
     "test": "jest .test.js --roots src",
     "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx}\"",
     "lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\"",
-    "lint:fix": "eslint \"src/**/*.{js,jsx,ts,tsx}\" --fix"
+    "lint:fix": "eslint \"src/**/*.{js,jsx,ts,tsx}\" --fix",
+    "lint:scss": "npx stylelint \"**/*.scss\"",
+    "lint:scss:fix": "npx stylelint \"**/*.scss\" --fix"
   },
   "dependencies": {
     "@ant-design/icons": "^5.2.5",
@@ -69,6 +71,8 @@
     "globals": "^15.14.0",
     "prettier": "^3.4.2",
     "react-responsive": "^9.0.2",
+    "stylelint": "^16.13.2",
+    "stylelint-config-standard-scss": "^14.0.0",
     "typescript": "^5.7.3",
     "typescript-eslint": "^8.20.0",
     "vite": "^4.5.9"
