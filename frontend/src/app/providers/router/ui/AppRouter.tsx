@@ -10,6 +10,7 @@ import { routes, privateRoutes } from '../../../../shared/config/routeConfig/rou
 const AppRouter = () => {
   const isAuth = useAppSelector(state => state.users.isAuth);
 
+  // TODO: здесь желательно вместо спина добавить виджет PageLoader
   return (
     <Suspense fallback={<Spin />}>
       <Routes>
