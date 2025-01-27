@@ -1,4 +1,5 @@
 export const WELCOME_ROUTE: string = '/';
+export const NOT_FOUND: string = '/not-found';
 export const LOGIN_ROUTE: string = '/login';
 export const REGISTRATION_ROUTE: string = '/registration';
 export const ACTIVATION_ROUTE: string = '/activate';

@@ -11,7 +11,10 @@ import {
   NOTES_ROUTE,
   TODO_ROUTE,
   ACTIVATION_ROUTE,
+  NOT_FOUND,
 } from '../../consts/consts';
+
+import { NotFoundPage } from '../../../pages/notFoundPage';
 
 const Welcome = lazy(() => import('../../../pages/home/ui/Welcome'));
 const Authorization = lazy(() => import('../../../pages/authorization/ui/Authorization'));
@@ -44,6 +47,10 @@ export const routes: Route[] = [
   {
     path: ACTIVATION_ROUTE,
     element: Activate,
+  },
+  {
+    path: NOT_FOUND,
+    element: NotFoundPage,
   },
 ];
 

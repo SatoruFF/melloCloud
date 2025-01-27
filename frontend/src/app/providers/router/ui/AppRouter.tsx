@@ -4,7 +4,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 
 import { useAppSelector } from '../../../store/store';
 
-import { WELCOME_ROUTE } from '../../../../shared/consts/consts';
+import { NOT_FOUND } from '../../../../shared/consts/consts';
 import { routes, privateRoutes } from '../../../../shared/config/routeConfig/routes';
 
 const AppRouter = () => {
@@ -26,7 +26,7 @@ const AppRouter = () => {
             ))}
           </>
         )}
-        <Route path="/*" element={<Navigate replace to={WELCOME_ROUTE} />} />
+        <Route path="/*" element={<Navigate replace to={NOT_FOUND} />} />
       </Routes>
     </Suspense>
   );
