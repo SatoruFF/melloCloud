@@ -9,12 +9,15 @@
     "preview": "vite preview",
     "build:dev": "cross-env MODE=development vite build",
     "build:prod": "cross-env MODE=production vite build",
-    "test": "jest",
+    "test": "jest test.js --roots src",
     "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx}\"",
     "lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\"",
     "lint:fix": "eslint \"src/**/*.{js,jsx,ts,tsx}\" --fix",
     "lint:scss": "npx stylelint \"**/*.scss\"",
-    "lint:scss:fix": "npx stylelint \"**/*.scss\" --fix"
+    "lint:scss:fix": "npx stylelint \"**/*.scss\" --fix",
+    "test:unit": "jest test.ts --roots src",
+    "test:integration": "jest test.ts --roots tests/integration",
+    "test:e2e": "jest test.ts --roots tests/e2e"
   },
   "dependencies": {
     "@ant-design/icons": "^5.2.5",
@@ -47,11 +50,13 @@
     "react-tsparticles": "^2.12.2",
     "redux-persist": "^6.0.0",
     "sass": "^1.69.7",
+    "ts-node": "^10.9.2",
     "tsparticles": "^2.9.3",
     "use-sound": "^4.0.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.18.0",
+    "@types/jest": "^29.5.14",
     "@types/lodash-es": "^4.17.12",
     "@types/react-dom": "^18.2.7",
     "@typescript-eslint/eslint-plugin": "^8.21.0",
@@ -71,6 +76,7 @@
     "eslint-plugin-react-hooks": "^4.6.2",
     "globals": "^15.14.0",
     "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
     "prettier": "^3.4.2",
     "react-responsive": "^9.0.2",
     "stylelint": "^16.13.2",
