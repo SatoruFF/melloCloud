@@ -9,6 +9,7 @@ import MyNavbar from '../widgets/Navbar/ui/Navbar';
 import { useAppDispatch } from './store/store';
 import { useAuthQuery } from '../shared/api/user';
 import { setUser } from './store/reducers/userSlice';
+import { ErrorBoundary } from './providers/ErrorBoundary';
 
 function App() {
   const dispatch = useAppDispatch();
@@ -19,7 +20,7 @@ function App() {
 
     // console.log('App Environment:', appEnv);
     const check = async () => {
-      dispatch(setUser(data));
+      data && dispatch(setUser(data));
     };
     check();
   }, [data]);
@@ -31,10 +32,12 @@ function App() {
   // suspense need for i18n
   return (
     <BrowserRouter>
-      <Suspense fallback={''}>
-        <MyNavbar />
-        <AppRouter />
-      </Suspense>
+      <ErrorBoundary>
+        <Suspense fallback={<Spin style={{ width: '100%', height: '100vh', marginTop: '400px' }} />}>
+          <MyNavbar />
+          <AppRouter />
+        </Suspense>
+      </ErrorBoundary>
     </BrowserRouter>
   );
 }

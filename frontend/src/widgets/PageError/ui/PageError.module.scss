@@ -1,0 +1,22 @@
+@import '../../../shared/styles/tmp.scss';
+@import url('https://fonts.googleapis.com/css2?family=Sono&display=swap');
+
+.pageErrorWrapper {
+  width: 100vw;
+  height: 100vh;
+  display: inline-block;
+  margin: 0 auto;
+
+  display: grid;
+  place-items: center;
+
+  .pageErrorContent {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: space-evenly;
+    .pageErrorTitle {
+      margin-bottom: 10px;
+    }
+  }
+}

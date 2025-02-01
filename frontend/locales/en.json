@@ -7,7 +7,8 @@
   "about-title": "About",
   "about-description": "Mello cloud is a cloud storage that allows users to store and manage their data in a cloud environment. It provides high-level security and data access control functions, as well as guarantees high availability and scalability. The main advantages of Mello cloud are: ·Flexibility and Scalability: Mello cloud allows users to easily scale their storage to meet growing data storage needs, expanding storage capacity as needed. ·Security: Mello cloud provides a high level of data security thanks to data encryption at rest and in motion, traffic filtering and the ability to control access to data at the user level. ·Usability Mello cloud has a simple and intuitive interface that allows users to easily upload, store and manage their data without requiring special knowledge and skills.",
   "exceptions": {
-    "pageNotFound": "Page not found("
+    "pageNotFound": "Page not found(",
+    "just-error": "Something went wrong("
   },
   "home-anchor": {
     "title": "Title",
@@ -72,6 +73,7 @@
     "return": "return",
     "create-folder": "create",
     "upload-avatar": "Upload avatar",
-    "delete-avatar": "Delete avatar"
+    "delete-avatar": "Delete avatar",
+    "reload-page": "reload page"
   }
 }

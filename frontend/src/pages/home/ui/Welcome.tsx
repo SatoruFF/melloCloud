@@ -13,10 +13,17 @@ import gitIcon from '../../../shared/assets/github-icon.png';
 
 import styles from '../styles/welcome.module.scss';
 import ParticleEffect from '../../../shared/ui/particleEffect/ParticleEffect';
+// import { useEffect } from 'react';
 
 const Welcome = () => {
   const { t } = useTranslation();
 
+  // For test error boundary
+  // useEffect(() => {
+  //   if (Math.random() < 0.5) {
+  //     throw new Error();
+  //   }
+  // }, []);
   return (
     <div className={cn(styles.welcomeWrapper)}>
       <Anchor
