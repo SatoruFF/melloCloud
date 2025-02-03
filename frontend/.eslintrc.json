@@ -16,6 +16,6 @@
   "rules": {
     "react/react-in-jsx-scope": "off",
     "eslint-plugin-import/prefer-default-export": "off",
-    "i18next/no-literal-string": ["error", { "markupOnly": true }]
+    "i18next/no-literal-string": ["error", { "markupOnly": true, "ignoreAttribute": ["data-testid"] }]
   }
 }

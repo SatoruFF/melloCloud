@@ -47,7 +47,7 @@ const MyNavbar: React.FC = () => {
   };
 
   return (
-    <div className={cn(styles.navbar)}>
+    <div className={cn(styles.navbar)} data-testid="navbar">
       <div className={cn(styles.baseItems)}>
         <LanguageSwitcher />
         <div className={cn(styles.mainLogo)}>
