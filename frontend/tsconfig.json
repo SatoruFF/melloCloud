@@ -19,6 +19,6 @@
     "suppressImplicitAnyIndexErrors": false
     // "types": ["vitest/globals", "@testing-library/jest-dom"]
   },
-  "include": ["src", "./jest-setup.ts"],
+  "include": ["src", "./src/**/*.{ts|tsx}", "./jest-setup.ts"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
