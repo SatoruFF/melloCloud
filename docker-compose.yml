@@ -19,7 +19,7 @@ services:
       - portainer
     networks:
       - prod
-    restart: on-failure:5 
+    restart: on-failure
 
   backend:
     container_name: mello-backend
@@ -34,7 +34,7 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
       - "backend:172.18.0.4"
-    restart: on-failure:5 
+    restart: on-failure
 
   frontend:
     container_name: mello-frontend
@@ -48,7 +48,7 @@ services:
       - ./frontend:/app
     ports:
       - "5173:5173"
-    restart: on-failure:5 
+    restart: on-failure
 
   portainer:
     container_name: mello-portainer
@@ -60,7 +60,7 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - portainer_data:/data
-    restart: on-failure:5 
+    restart: on-failure
 
 volumes:
   portainer_data:
