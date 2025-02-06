@@ -1,0 +1,31 @@
+.mainButton {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+
+  &:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
+}
+
+.primary {
+  background-color: #007bff;
+
+  &:hover:not(:disabled) {
+    background-color: darken(#007bff, 10%);
+  }
+}
+
+.clear {
+  background-color: transparent;
+  color: #007bff;
+  border: 1px solid #007bff;
+
+  &:hover:not(:disabled) {
+    background-color: rgba(0, 123, 255, 0.1);
+  }
+}

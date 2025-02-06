@@ -13,7 +13,7 @@ import {
   PROFILE_ROUTE,
   REGISTRATION_ROUTE,
   WELCOME_ROUTE,
-} from '../../../shared/consts/consts';
+} from '../../../shared/consts/routes';
 import { useAppDispatch, useAppSelector } from '../../../app/store/store';
 import { logout } from '../../../app/store/reducers/userSlice';
 import AccountSettings from '../../accountSettings/ui/AccountSettings.';
@@ -24,6 +24,7 @@ import mainLogo from '../../../shared/assets/mainLog.png';
 import styles from '../styles/navbar.module.scss';
 import LanguageSwitcher from '../../languageSwitcher/ui/LanguageSwitcher';
 
+// TODO: add storybook
 const MyNavbar: React.FC = () => {
   const { t } = useTranslation();
   const isAuth = useAppSelector(state => state.users.isAuth);

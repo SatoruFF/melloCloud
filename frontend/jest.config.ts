@@ -4,6 +4,7 @@
  */
 
 import type { Config } from 'jest';
+// TODO: rich package.json with --config file and set path to this config
 
 const config: Config = {
   // All imported modules in your tests should be mocked automatically

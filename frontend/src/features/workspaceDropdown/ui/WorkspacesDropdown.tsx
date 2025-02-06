@@ -12,7 +12,7 @@ import {
 } from '@ant-design/icons';
 import { NavLink } from 'react-router-dom';
 // import { useMediaQuery } from "react-responsive";
-import { CHATS_ROUTE, FILE_ROUTE, NOTES_ROUTE, POMODORO_ROUTE, TODO_ROUTE } from '../../../shared/consts/consts';
+import { CHATS_ROUTE, FILE_ROUTE, NOTES_ROUTE, POMODORO_ROUTE, TODO_ROUTE } from '../../../shared/consts/routes';
 
 const WorkspacesDropdown = ({ viewAll, logOut, setProfile }: { viewAll: boolean; logOut: any; setProfile: any }) => {
   const { t } = useTranslation();

@@ -6,7 +6,7 @@ import { unwrapResult } from '@reduxjs/toolkit';
 import { SmileOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 
-import { LOGIN_ROUTE, ACTIVATION_ROUTE } from '../../../shared/consts/consts';
+import { LOGIN_ROUTE, ACTIVATION_ROUTE } from '../../../shared/consts/routes';
 import { userApi } from '../../../shared/api/user';
 import { useAppDispatch } from '../../../app/store/store';
 import { setUser } from '../../../app/store/reducers/userSlice';

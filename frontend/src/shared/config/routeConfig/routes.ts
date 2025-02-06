@@ -12,7 +12,7 @@ import {
   TODO_ROUTE,
   ACTIVATION_ROUTE,
   NOT_FOUND,
-} from '../../consts/consts';
+} from '../../consts/routes';
 
 import { NotFoundPage } from '../../../pages/notFoundPage';
 

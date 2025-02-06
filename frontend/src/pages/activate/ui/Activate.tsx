@@ -9,7 +9,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useActivateUserMutation } from '../../../shared/api/user';
 
 import styles from '../styles/activate.module.scss';
-import { FILE_ROUTE } from '../../../shared/consts/consts';
+import { FILE_ROUTE } from '../../../shared/consts/routes';
 
 const Activate = () => {
   const user = useAppSelector(state => state.users.currentUser);

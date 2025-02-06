@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { useAppSelector, useAppDispatch } from '../../../app/store/store';
 import { sizeFormat } from '../../../shared/utils/sizeFormat';
 import { logout } from '../../../app/store/reducers/userSlice';
-import { WELCOME_ROUTE } from '../../../shared/consts/consts';
+import { WELCOME_ROUTE } from '../../../shared/consts/routes';
 import InfoModal from '../../../features/infoModal/ui/InfoModal';
 import PasswordModal from '../../../features/passwordModal/ui/PasswordModal';
 import DeleteModal from '../../../features/deleteModal/ui/DeleteModal';

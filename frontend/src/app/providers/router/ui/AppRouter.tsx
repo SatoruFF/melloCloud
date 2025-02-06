@@ -4,7 +4,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 
 import { useAppSelector } from '../../../store/store';
 
-import { NOT_FOUND } from '../../../../shared/consts/consts';
+import { NOT_FOUND } from '../../../../shared/consts/routes';
 import { routes, privateRoutes } from '../../../../shared/config/routeConfig/routes';
 
 const AppRouter = () => {
