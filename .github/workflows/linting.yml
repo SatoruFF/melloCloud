@@ -1,0 +1,69 @@
+name: linting, tests
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./frontend
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: "npm"
+
+      - name: Install frontend dependencies
+        run: npm install
+
+      - name: Run frontend linting
+        run: npm run lint
+        if: always()
+
+      - name: Run frontend tests
+        run: npm run test
+        if: always()
+
+      - name: Build frontend
+        run: npm run build
+        if: always()
+        # TODO: add loki
+
+  backend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./backend
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: "npm"
+
+      - name: Install backend dependencies
+        run: npm install
+
+      - name: Run backend linting
+        run: npm run lint
+        if: always()
+
+      - name: Run backend tests
+        run: npm run test
+        if: always()
+
+      - name: Build backend
+        run: npm run build
+        if: always()

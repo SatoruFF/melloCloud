@@ -24,3 +24,6 @@ dist-ssr
 *.sw?
 
 *storybook.log
+
+.loki/report.json
+.loki/report.html
