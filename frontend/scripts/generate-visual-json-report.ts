@@ -2,6 +2,7 @@ import { readdir, writeFile } from 'fs';
 import { join: joinPath, relative } from 'path'
 import { promisify } from 'util';
 
+// link https://github.com/oblador/loki/issues/76
 const asyncReaddir = promisify(readdir);
 const writeFileAsync = promisify(writeFile);
 
