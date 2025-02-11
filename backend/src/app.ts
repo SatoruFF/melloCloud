@@ -9,7 +9,7 @@ import fileUpload from 'express-fileupload';
 import { routesMiddleWare } from './middleware/routes.middleware.js';
 
 // utils
-import { logger } from '../logger.js';
+import { logger } from './configs/logger.js';
 import qs from 'qs';
 import 'dotenv/config.js';
 

@@ -3,7 +3,7 @@ import 'dotenv/config.js';
 import { NextFunction, Request, Response } from 'express';
 import createError from 'http-errors';
 
-import { logger } from '../../logger.js';
+import { logger } from '../configs/logger.js';
 
 import { UserService } from '../services/userService.js';
 

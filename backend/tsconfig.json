@@ -1,16 +1,20 @@
 {
   "compilerOptions": {
     "sourceMap": true,
-    "target": "ES6", 
+    "target": "ES6",
     // "module": "CommonJS",
-    "rootDir": "./",                               
-    "outDir": "./dist",                                  
-    "esModuleInterop": true,                    
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "strict": false,
     "lib": ["ESNext"],
     "skipLibCheck": true,
     "noImplicitAny": false,
     "moduleResolution": "node",
-  }
+    // "bun-types" is the important part
+    "types": ["bun-types"]
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"]
 }

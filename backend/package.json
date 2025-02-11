@@ -25,6 +25,7 @@
     "@types/nodemailer": "^6.4.14",
     "aws-sdk": "^2.1692.0",
     "bcrypt": "^5.1.1",
+    "bun-types": "^1.2.2",
     "cloudinary": "^1.37.0",
     "concurrently": "^8.2.0",
     "config": "^3.3.9",

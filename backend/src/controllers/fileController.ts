@@ -10,7 +10,7 @@ import { Avatar } from '../helpers/avatar.js';
 import _ from 'lodash';
 import { PassThrough } from 'stream';
 import createError from 'http-errors';
-import { logger } from '../../logger.js';
+import { logger } from '../configs/logger.js';
 import 'dotenv/config.js';
 
 class FileControllerClass {
