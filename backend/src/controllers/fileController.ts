@@ -1,17 +1,17 @@
 // base
-import { Request, Response } from "express";
+import { Request, Response } from 'express';
 
 // services
-import { prisma } from "../configs/config.js";
-import { FileService } from "../services/fileService.js";
-import { Avatar } from "../helpers/avatar.js";
+import { prisma } from '../configs/config.js';
+import { FileService } from '../services/fileService.js';
+import { Avatar } from '../helpers/avatar.js';
 
 // Utils
-import _ from "lodash";
-import { PassThrough } from "stream";
-import createError from "http-errors";
-import { logger } from "../logger.js";
-import "dotenv/config.js";
+import _ from 'lodash';
+import { PassThrough } from 'stream';
+import createError from 'http-errors';
+import { logger } from '../../logger.js';
+import 'dotenv/config.js';
 
 class FileControllerClass {
   /**
@@ -23,14 +23,14 @@ class FileControllerClass {
   async createDir(req: Request, res: Response) {
     try {
       const { name, type, parent } = req.body;
-      const userId = _.get(req, ["user", "id"]);
+      const userId = _.get(req, ['user', 'id']);
 
       const doubledFolder = await prisma.file.findFirst({
         where: { name, parentId: parent },
       });
 
       if (!_.isEmpty(doubledFolder)) {
-        return res.status(400).json({ message: "Folder name is not unique!" });
+        return res.status(400).json({ message: 'Folder name is not unique!' });
       }
 
       const fileInstance = {
@@ -38,8 +38,8 @@ class FileControllerClass {
         type,
         parentId: parent,
         userId,
-        path: "",
-        url: "",
+        path: '',
+        url: '',
       };
 
       let itemUrl;
@@ -53,7 +53,7 @@ class FileControllerClass {
         });
 
         if (_.isEmpty(parentFile)) {
-          throw createError(400, "Parent directory not found");
+          throw createError(400, 'Parent directory not found');
         }
 
         fileInstance.path = `${parentFile.path}/${name}`;
@@ -85,7 +85,7 @@ class FileControllerClass {
     try {
       const { sort, search } = req.query;
       let parentId = parseInt(req.query.parent) || null;
-      const userId = _.get(req, ["user", "id"]);
+      const userId = _.get(req, ['user', 'id']);
 
       const files = await FileService.getFiles(sort, search, parentId, userId);
 
@@ -132,16 +132,13 @@ class FileControllerClass {
       const userId = req.user.id;
       const queryId = req.query.id;
 
-      const { s3object, file } = await FileService.downloadFile(
-        queryId,
-        userId
-      );
+      const { s3object, file } = await FileService.downloadFile(queryId, userId);
 
       const stream = new PassThrough();
       stream.end(s3object.Body);
 
-      res.setHeader("Content-disposition", "attachment; filename=" + file.name);
-      res.setHeader("Content-type", file.type);
+      res.setHeader('Content-disposition', 'attachment; filename=' + file.name);
+      res.setHeader('Content-type', file.type);
       res.attachment(file.name);
 
       stream.pipe(res);

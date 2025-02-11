@@ -1,19 +1,19 @@
 // @ts-nocheck
 // FIXME: remove this in future
 // base
-import { prisma, imagekit } from "../configs/config.js";
+import { prisma, imagekit } from '../configs/config.js';
 
 // utils
-import { v4 as uuidv4 } from "uuid";
-import _ from "lodash";
-import createError from "http-errors";
-import { createReadStream } from "streamifier";
+import { v4 as uuidv4 } from 'uuid';
+import _ from 'lodash';
+import createError from 'http-errors';
+import { createReadStream } from 'streamifier';
 
 class AvatarClass {
   async uploadAvatar(fileBuffer, userId) {
     const fileStream = createReadStream(fileBuffer);
 
-    const avatarName = uuidv4() + ".png";
+    const avatarName = uuidv4() + '.png';
 
     const user: any = await prisma.user.findFirst({
       where: { id: userId },
@@ -23,9 +23,7 @@ class AvatarClass {
     if (user.avatar) {
       const fileList = await imagekit.listFiles();
 
-      const file =
-        _.isArray(fileList) &&
-        fileList.find((file) => file.url === user.avatar);
+      const file = _.isArray(fileList) && fileList.find(file => file.url === user.avatar);
 
       const fileId = file ? file.fileId : null;
 
@@ -37,7 +35,7 @@ class AvatarClass {
       fileName: avatarName,
       extensions: [
         {
-          name: "google-auto-tagging",
+          name: 'google-auto-tagging',
           maxTags: 5,
           minConfidence: 95,
         },
@@ -64,13 +62,12 @@ class AvatarClass {
     });
 
     if (!user.avatar) {
-      throw createError(404, "avatar not found");
+      throw createError(404, 'avatar not found');
     }
 
     const fileList: any = await imagekit.listFiles();
 
-    const file =
-      _.isArray(fileList) && fileList.find((file) => file.url === user.avatar);
+    const file = _.isArray(fileList) && fileList.find(file => file.url === user.avatar);
 
     const fileId = file ? file.fileId : null;
 

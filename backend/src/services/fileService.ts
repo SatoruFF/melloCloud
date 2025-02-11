@@ -1,14 +1,14 @@
-import _ from "lodash";
-import createError from "http-errors";
-import "dotenv/config.js";
+import _ from 'lodash';
+import createError from 'http-errors';
+import 'dotenv/config.js';
 
-import { prisma, s3 } from "../configs/config.js";
+import { prisma, s3 } from '../configs/config.js';
 
 interface File {
   userId: number;
   path: string;
   name?: string;
-  type: string | "dir" | "file";
+  type: string | 'dir' | 'file';
   url?: string;
 }
 
@@ -33,14 +33,14 @@ class FileServiceClass {
   async createDir(file: File): Promise<CreateDirResponse> {
     let folderPath = `${file.userId}/${file.path}`;
 
-    if (!folderPath.endsWith("/")) {
-      folderPath += "/";
+    if (!folderPath.endsWith('/')) {
+      folderPath += '/';
     }
 
     const params: IS3 = {
       Bucket: process.env.S3_BUCKET_NAME,
       Key: folderPath,
-      Body: "",
+      Body: '',
     };
 
     const getParams: IS3 = {
@@ -50,17 +50,17 @@ class FileServiceClass {
 
     await s3.putObject(params as any).promise();
 
-    const newDirUrl = await s3.getSignedUrl("getObject", getParams);
+    const newDirUrl = await s3.getSignedUrl('getObject', getParams);
 
     return newDirUrl;
   }
 
   // delete file or directory
   async deleteBucketFile(file: File): Promise<DeleteFileResponse> {
-    if (file.type === "dir") {
+    if (file.type === 'dir') {
       let filePath = `${String(file.userId)}/${file.path}`;
 
-      filePath = filePath.replace(/\/{2,}/g, "/");
+      filePath = filePath.replace(/\/{2,}/g, '/');
 
       const params: IS3 = {
         Bucket: process.env.S3_BUCKET_NAME,
@@ -70,7 +70,7 @@ class FileServiceClass {
       const { Contents }: any = await s3.listObjectsV2(params as any).promise();
 
       if (Contents.length === 0) {
-        return { message: "Folder was deleted" };
+        return { message: 'Folder was deleted' };
       }
 
       const deleteParams: IS3 = {
@@ -96,11 +96,11 @@ class FileServiceClass {
           .promise();
       }
 
-      return { message: "Folder was deleted" };
+      return { message: 'Folder was deleted' };
     } else {
       let filePath = `${String(file.userId)}/${file.path}/${file.name}`;
 
-      filePath = filePath.replace(/\/{2,}/g, "/");
+      filePath = filePath.replace(/\/{2,}/g, '/');
 
       const params: IS3 = {
         Bucket: process.env.S3_BUCKET_NAME,
@@ -109,7 +109,7 @@ class FileServiceClass {
 
       await s3.deleteObject(params as any).promise();
 
-      return { message: "File was deleted" };
+      return { message: 'File was deleted' };
     }
   }
 
@@ -123,37 +123,37 @@ class FileServiceClass {
         where: { userId },
       });
 
-      files = _.filter(files, (file) => _.includes(file.name, search));
+      files = _.filter(files, file => _.includes(file.name, search));
 
       return files;
     }
 
     // find with sort query
     switch (sort) {
-      case "name":
+      case 'name':
         files = await prisma.file.findMany({
           where: {
             AND: [{ userId }, { parentId }],
           },
-          orderBy: { name: "asc" },
+          orderBy: { name: 'asc' },
         });
 
         break;
-      case "type":
+      case 'type':
         files = await prisma.file.findMany({
           where: {
             AND: [{ userId }, { parentId }],
           },
-          orderBy: { type: "asc" },
+          orderBy: { type: 'asc' },
         });
 
         break;
-      case "date":
+      case 'date':
         files = await prisma.file.findMany({
           where: {
             AND: [{ userId }, { parentId }],
           },
-          orderBy: { createdAt: "asc" },
+          orderBy: { createdAt: 'asc' },
         });
         break;
 
@@ -172,10 +172,10 @@ class FileServiceClass {
 
   // upload file
   async uploadFile(file: any, userId, parentId?: string): Promise<any> {
-    return prisma.$transaction(async (trx) => {
+    return prisma.$transaction(async trx => {
       let parent;
 
-      if (parentId !== "null" || !_.isNil(parentId)) {
+      if (parentId !== 'null' || !_.isNil(parentId)) {
         parent = await trx.file.findFirst({
           where: { userId, id: Number(parentId) },
         });
@@ -187,7 +187,7 @@ class FileServiceClass {
 
       // check size on disc after upload
       if (user.usedSpace + BigInt(file.size) > user.diskSpace) {
-        throw createError(400, "Not enough space on the disk");
+        throw createError(400, 'Not enough space on the disk');
       }
 
       user.usedSpace += BigInt(file.size);
@@ -210,12 +210,12 @@ class FileServiceClass {
       const newFile = await s3.upload(params).promise();
 
       // get url for download new file
-      const fileUrl = _.get(newFile, "Location", "");
+      const fileUrl = _.get(newFile, 'Location', '');
 
       const dbFile = await trx.file.create({
         data: {
           name: file.name,
-          type: file.name.split(".").pop(),
+          type: file.name.split('.').pop(),
           size: file.size,
           path: parent?.path,
           parentId: parent ? parent.id : null,
@@ -245,7 +245,7 @@ class FileServiceClass {
 
     let filePath = `${String(userId)}/${file.path}/${file.name}`;
 
-    filePath = filePath.replace(/\/{2,}/g, "/");
+    filePath = filePath.replace(/\/{2,}/g, '/');
 
     const s3object = await s3
       .getObject({
@@ -258,9 +258,9 @@ class FileServiceClass {
   }
 
   async deleteFile(fileId, userId) {
-    return prisma.$transaction(async (trx) => {
+    return prisma.$transaction(async trx => {
       if (_.isNaN(fileId)) {
-        throw createError(400, "Invalid file ID");
+        throw createError(400, 'Invalid file ID');
       }
 
       const file: any = await trx.file.findFirst({
@@ -273,14 +273,11 @@ class FileServiceClass {
       });
 
       if (!_.isEmpty(existInnerContent)) {
-        throw createError(
-          400,
-          "You cannot delete a folder while it has content"
-        );
+        throw createError(400, 'You cannot delete a folder while it has content');
       }
 
       if (!file) {
-        throw createError(400, "File not found");
+        throw createError(400, 'File not found');
       }
 
       await this.deleteBucketFile(file);

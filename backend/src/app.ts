@@ -1,17 +1,17 @@
 // bases
-import express, { Express, Response } from "express";
-import router from "./routes/index.js";
+import express, { Express, Response } from 'express';
+import router from './routes/index.js';
 
 // middleware
-import cors from "cors";
-import cookieParser from "cookie-parser";
-import fileUpload from "express-fileupload";
-import { routesMiddleWare } from "./middleware/routes.middleware.js";
+import cors from 'cors';
+import cookieParser from 'cookie-parser';
+import fileUpload from 'express-fileupload';
+import { routesMiddleWare } from './middleware/routes.middleware.js';
 
 // utils
-import { logger } from "./logger.js";
-import qs from "qs";
-import "dotenv/config.js";
+import { logger } from '../logger.js';
+import qs from 'qs';
+import 'dotenv/config.js';
 
 // Swagger
 // import swaggerUi from "swagger-ui-express";
@@ -19,8 +19,8 @@ import "dotenv/config.js";
 // import swaggerDocument from "./swagger.json";
 
 // performing
-import cluster from "cluster";
-import { cpus } from "os";
+import cluster from 'cluster';
+import { cpus } from 'os';
 const numCPU = cpus().length;
 
 // base consts
@@ -38,18 +38,18 @@ const port = process.env.PORT || 3002;
 // middleware
 app.use(
   cors({
-    origin: "*",
-    methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
+    origin: '*',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     preflightContinue: false,
     optionsSuccessStatus: 204,
-  })
+  }),
 );
 app.use(express.json());
 app.use(cookieParser());
 app.use(fileUpload({}));
 // app.use(express.static('static'))
 
-app.set("query parser", function (str) {
+app.set('query parser', function (str) {
   const depth = 15;
   return qs.parse(str, { depth });
 });
@@ -68,8 +68,8 @@ app.use(router);
  *       200:
  *         description: Returns a welcome message.
  */
-app.all("/", (_, res: Response) => {
-  res.send("i am alive ;)");
+app.all('/', (_, res: Response) => {
+  res.send('i am alive ;)');
 });
 
 if (cluster.isPrimary) {
@@ -80,12 +80,12 @@ if (cluster.isPrimary) {
     cluster.fork();
   }
 
-  cluster.on("online", function (worker) {
-    logger.info("Worker " + worker.process.pid + " is alive.");
+  cluster.on('online', function (worker) {
+    logger.info('Worker ' + worker.process.pid + ' is alive.');
   });
 
-  cluster.on("exit", function (worker, code, signal) {
-    logger.error("worker " + worker.process.pid + " died.");
+  cluster.on('exit', function (worker, code, signal) {
+    logger.error('worker ' + worker.process.pid + ' died.');
   });
 } else {
   // main def

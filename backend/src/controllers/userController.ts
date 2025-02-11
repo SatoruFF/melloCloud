@@ -1,11 +1,11 @@
-import _ from "lodash";
-import "dotenv/config.js";
-import { NextFunction, Request, Response } from "express";
-import createError from "http-errors";
+import _ from 'lodash';
+import 'dotenv/config.js';
+import { NextFunction, Request, Response } from 'express';
+import createError from 'http-errors';
 
-import { logger } from "../logger.js";
+import { logger } from '../../logger.js';
 
-import { UserService } from "../services/userService.js";
+import { UserService } from '../services/userService.js';
 
 interface IUser {
   id: number;
@@ -14,7 +14,7 @@ interface IUser {
   diskSpace: number;
   usedSpace: number;
   avatar: string | null;
-  role: "USER" | "ROOT";
+  role: 'USER' | 'ROOT';
 }
 
 class UserControllerClass {
@@ -45,7 +45,7 @@ class UserControllerClass {
 
       const userData = await UserService.login(email, password);
 
-      res.cookie("refreshToken", userData.refreshToken, {
+      res.cookie('refreshToken', userData.refreshToken, {
         maxAge: 30 * 24 * 60 * 60 * 1000,
         httpOnly: true,
       });
@@ -79,11 +79,11 @@ class UserControllerClass {
     try {
       const { token: activationToken } = req.query || req.params;
 
-      if (!activationToken) throw createError(404, "Cannot get activate token");
+      if (!activationToken) throw createError(404, 'Cannot get activate token');
 
       const userData = await UserService.activate(activationToken);
 
-      res.cookie("refreshToken", userData.refreshToken, {
+      res.cookie('refreshToken', userData.refreshToken, {
         maxAge: 30 * 24 * 60 * 60 * 1000,
         httpOnly: true,
       });
@@ -104,7 +104,7 @@ class UserControllerClass {
 
       const userData = await UserService.refresh(refreshToken);
 
-      res.cookie("refreshToken", userData.refreshToken, {
+      res.cookie('refreshToken', userData.refreshToken, {
         maxAge: 30 * 24 * 60 * 60 * 1000,
         httpOnly: true,
       });
@@ -125,11 +125,9 @@ class UserControllerClass {
 
       const user = await UserService.logout(refreshToken);
 
-      res.clearCookie("refreshToken");
+      res.clearCookie('refreshToken');
 
-      return res
-        .status(200)
-        .json({ message: `User ${user.email} was successfully logout` });
+      return res.status(200).json({ message: `User ${user.email} was successfully logout` });
     } catch (error: any) {
       logger.error(error.message, error);
       res.status(error.statusCode || 500).send({

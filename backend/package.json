@@ -6,8 +6,10 @@
   "type": "module",
   "scripts": {
     "build": "npx tsc --noEmitOnError false",
-    "start": "concurrently \"npx tsc --watch\" \"nodemon dist/app.js\" \"prisma studio\"",
-    "dev": "concurrently \"npx tsc --watch\" \"nodemon dist/app.js\"",
+    "start": "bun run src/app.ts",
+    "dev": "bun run src/app.ts",
+    "start:prisma": "concurrently \"npx tsc --watch\" \"nodemon dist/app.js\" \"prisma studio\"",
+    "start:node": "concurrently \"npx tsc --watch\" \"nodemon dist/app.js\"",
     "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx}\"",
     "test": "jest"
   },
