@@ -20,7 +20,7 @@ import AccountSettings from '../../accountSettings/ui/AccountSettings.';
 import avatarIcon from '../../../shared/assets/avatar-icon.png';
 import WorkspacesDropdown from '../../../features/workspaceDropdown/ui/WorkspacesDropdown';
 
-import mainLogo from '../../../shared/assets/mainLog.png';
+import mainLogo from '../../../shared/assets/octopus-kid.jpg';
 import styles from '../styles/navbar.module.scss';
 import LanguageSwitcher from '../../languageSwitcher/ui/LanguageSwitcher';
 

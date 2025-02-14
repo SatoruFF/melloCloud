@@ -3,7 +3,7 @@ import { LazyMotion, domAnimation, motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import cn from 'classnames';
 
-import mainLogo from '../../../shared/assets/sea-turtle.png';
+import mainLogo from '../../../shared/assets/octopus-kid.jpg';
 import desktopIcon from '../../../shared/assets/desktop.png';
 import mobileIcon from '../../../shared/assets/mobile-phone.png';
 import storageIcon from '../../../shared/assets/cloud-data.png';
