@@ -15,13 +15,13 @@ const FileViewer = ({ type, url }) => {
   // need to destructure, cause in future this a big module
   const determineViewer = (fileType: string, url: any) => {
     if (fileType === 'dir') {
-      return <FolderFilled className="folder" />;
+      return <FolderFilled className={cn(styles.folder)} />;
     } else if (isImage) {
-      return <Image src={url} className="image-file" />;
+      return <Image src={url} className={cn(styles.imageFile)} />;
     } else if (isPlayer) {
-      return <PlayCircleOutlined className="playerIcon" onClick={() => setIsOpenPlayer(true)} />;
+      return <PlayCircleOutlined className={cn(styles.playerIcon)} onClick={() => setIsOpenPlayer(true)} />;
     } else {
-      return <FileFilled className="file" />;
+      return <FileFilled className={cn(styles.file)} />;
     }
   };
   return (

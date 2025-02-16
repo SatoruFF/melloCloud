@@ -172,10 +172,11 @@ class FileServiceClass {
 
   // upload file
   async uploadFile(file: any, userId, parentId?: string): Promise<any> {
+    console.log(34343, userId, parentId);
     return prisma.$transaction(async trx => {
       let parent;
 
-      if (parentId !== 'null' || !_.isNil(parentId)) {
+      if (parentId !== 'null' && !_.isNil(parentId)) {
         parent = await trx.file.findFirst({
           where: { userId, id: Number(parentId) },
         });
