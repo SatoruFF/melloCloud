@@ -1,37 +1,37 @@
-@import '../../../shared/styles/tmp.scss';
+@use '../../../shared/styles/tmp.scss';
 
 .accountWrapper {
-    width: 100%;
-    height: 100%;
-    .accountPersonal {
-        height: 50%;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-evenly;
-        .personalItem {
-            border: 1px solid #1677ff;
-            color: black;
-            padding: 10px;
-            text-align: start;
-            cursor: default;
-            border-radius: 10px;
-            @extend %mainFont;
-        }
-        .personalLogout {
-            color: white;
-            @extend %mainFont;
-        }
+  width: 100%;
+  height: 100%;
+  .accountPersonal {
+    height: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    .personalItem {
+      border: 1px solid #1677ff;
+      color: black;
+      padding: 10px;
+      text-align: start;
+      cursor: default;
+      border-radius: 10px;
+      @extend %mainFont;
     }
-    .accountSettings {
-        height: 50%;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-evenly;
-        .accountBtn {
-            width: 100%;
-        }
-        * {
-            @extend %secondFont;
-        }
+    .personalLogout {
+      color: white;
+      @extend %mainFont;
     }
+  }
+  .accountSettings {
+    height: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    .accountBtn {
+      width: 100%;
+    }
+    * {
+      @extend %secondFont;
+    }
+  }
 }

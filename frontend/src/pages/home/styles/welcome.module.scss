@@ -1,4 +1,4 @@
-@import '../../../shared/styles/tmp.scss';
+@use '../../../shared/styles/tmp.scss';
 
 .contentMax {
   @extend %content-max;
@@ -229,7 +229,8 @@
         font-size: 24px;
         @extend %secondFont;
       }
-      .storageLogo, img {
+      .storageLogo,
+      img {
         width: 300px;
       }
       .socials {

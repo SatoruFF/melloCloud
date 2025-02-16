@@ -1,4 +1,4 @@
-@import '../../../shared/styles/tmp.scss';
+@use '../../../shared/styles/tmp.scss';
 
 .activateContainer {
   display: flex;
@@ -21,8 +21,8 @@
 }
 
 .activateInfo {
-    box-sizing: border-box;
-    padding: 10px;
+  box-sizing: border-box;
+  padding: 10px;
 }
 
 .activateIcon {

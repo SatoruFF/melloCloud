@@ -1,5 +1,5 @@
-@import '../../../shared/styles/tmp.scss';
-@import url('https://fonts.googleapis.com/css2?family=Sono&display=swap');
+@use '../../../shared/styles/tmp.scss';
+@usel ('https://fonts.googleapis.com/css2?family=Sono&display=swap');
 
 .pageErrorWrapper {
   width: 100vw;

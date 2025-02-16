@@ -1,74 +1,70 @@
-@import '../../../shared/styles/tmp.scss';
+@use '../../../shared/styles/tmp.scss';
 
-.filelistWrapper{
-    height: 90%;
-    box-sizing: border-box;
-    position: relative;
-    .fileListHeader{
-        width: 100%;
-        display: grid;
-        grid-template-columns: 1fr 4fr repeat(4, 1fr);
-        color: white;
-        font-size: 16px;
-        padding-top: 10px;
-        padding-bottom: 10px;
-        border-bottom: 2px solid white;
-        @extend %secondFont;
-        .name {
-            grid-column-start: 2;
+.filelistWrapper {
+  height: 90%;
+  box-sizing: border-box;
+  position: relative;
+  .fileListHeader {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 4fr repeat(4, 1fr);
+    color: white;
+    font-size: 16px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid white;
+    @extend %secondFont;
+    .name {
+      grid-column-start: 2;
 
-
-            box-sizing: border-box;
-            padding: 10px;
-            width: 70px;
-            cursor: default;
-        }
-        .date {
-            grid-column-start: 5;
-            justify-self: center;
-
-
-            box-sizing: border-box;
-            padding: 10px;
-            width: 60px;
-            cursor: default;
-        }
-        .size {
-            grid-column-start: 6;
-            justify-self: center;
-
-
-            box-sizing: border-box;
-            padding: 10px;
-            width: 55px;
-            cursor: default;
-        }
+      box-sizing: border-box;
+      padding: 10px;
+      width: 70px;
+      cursor: default;
     }
+    .date {
+      grid-column-start: 5;
+      justify-self: center;
+
+      box-sizing: border-box;
+      padding: 10px;
+      width: 60px;
+      cursor: default;
+    }
+    .size {
+      grid-column-start: 6;
+      justify-self: center;
+
+      box-sizing: border-box;
+      padding: 10px;
+      width: 55px;
+      cursor: default;
+    }
+  }
 }
 
 .fileplateListWrapper {
-    box-sizing: border-box;
-    padding-top: 20px;
-    display: flex;
-    width: 100%;
-    height: auto;
-    flex-wrap: wrap;
+  box-sizing: border-box;
+  padding-top: 20px;
+  display: flex;
+  width: 100%;
+  height: auto;
+  flex-wrap: wrap;
 }
 
-
 .filesNotFound {
-    position: absolute;
-    z-index: 0;
-    width: 100%;
-    height: calc(100vh - 16vh);
-    box-sizing: border-box;
-    color: white;
-    font-size: 24px;
-    @extend %centerTemplate, %mainFont;
-    .emptyFolder {
-        div {
-            color: white;
-            @extend %mainFont;
-        }
+  position: absolute;
+  z-index: 0;
+  width: 100%;
+  height: calc(100vh - 16vh);
+  box-sizing: border-box;
+  color: white;
+  font-size: 24px;
+  @extend %centerTemplate, %mainFont;
+  .emptyFolder {
+    div {
+      color: white;
+      @extend %mainFont;
     }
+  }
 }

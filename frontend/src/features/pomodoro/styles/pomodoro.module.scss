@@ -1,6 +1,6 @@
-@import '../../../shared/styles/tmp.scss';
-@import url("https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400;700&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Space+Mono:wght@700&display=swap");
+@use '../../../shared/styles/tmp.scss';
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Poppins&family=Sono&display=swap');
 
 // scss variables
@@ -16,8 +16,8 @@ $purple-accent: #d881f8;
 
 $font-current: 'Sono', sans-serif;
 $font-default: 'Sono', sans-serif;
-$font-roboto-slab: "Roboto Slab", serif;
-$font-space-mono: "Space Mono", monospace;
+$font-roboto-slab: 'Roboto Slab', serif;
+$font-space-mono: 'Space Mono', monospace;
 
 .pomodoroTimerWrapper {
   @extend %centerTemplate;
@@ -39,7 +39,7 @@ $font-space-mono: "Space Mono", monospace;
   }
 
   h1 {
-    font-family: "Kumbh Sans", sans-serif;
+    font-family: 'Kumbh Sans', sans-serif;
     color: $light-text-color;
     text-align: center;
     font-style: normal;
@@ -64,7 +64,7 @@ $font-space-mono: "Space Mono", monospace;
 
   /* hide radio inputs so the labels can be styled */
   /* display: none; will make them unfocusable / no keyboard navigation */
-  .controls input[type="radio"] {
+  .controls input[type='radio'] {
     opacity: 0;
     position: fixed;
     width: 0;
@@ -90,7 +90,7 @@ $font-space-mono: "Space Mono", monospace;
     cursor: pointer;
   }
 
-  .controls input[type="radio"]:checked + label {
+  .controls input[type='radio']:checked + label {
     color: $dark-text-color;
     opacity: 1;
     background: $accent-color;
@@ -108,7 +108,9 @@ $font-space-mono: "Space Mono", monospace;
     height: 300px;
     border-radius: 90%;
     background: linear-gradient(315deg, #2e325a 0%, #0e112a 100%);
-    box-shadow: -50px -50px 100px #272c5a, 50px 50px 100px #121530;
+    box-shadow:
+      -50px -50px 100px #272c5a,
+      50px 50px 100px #121530;
     cursor: pointer;
   }
 
@@ -209,7 +211,9 @@ $font-space-mono: "Space Mono", monospace;
 
     position: relative;
     margin: auto;
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    box-shadow:
+      0 4px 8px 0 rgba(0, 0, 0, 0.2),
+      0 6px 20px 0 rgba(0, 0, 0, 0.19);
     transition: 3.25s all ease-in-out;
   }
 
@@ -294,8 +298,8 @@ $font-space-mono: "Space Mono", monospace;
     color: $dark-text-color;
   }
 
-  input[type="number"]::-webkit-outer-spin-button,
-  input[type="number"]::-webkit-inner-spin-button {
+  input[type='number']::-webkit-outer-spin-button,
+  input[type='number']::-webkit-inner-spin-button {
     margin-right: 16px;
     -webkit-appearance: none;
     background: url("data:image/svg+xml,%3Csvg width='14' height='21' viewBox='0 0 14 21' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 6L7 2L13 6' stroke='%231E213F' stroke-opacity='0.25' stroke-width='2'/%3E%3Cpath d='M1 15L7 19L13 15' stroke='%231E213F' stroke-opacity='0.25' stroke-width='2'/%3E%3C/svg%3E%0A")
@@ -306,32 +310,34 @@ $font-space-mono: "Space Mono", monospace;
     cursor: pointer;
   }
 
-  input[type="number"]::-webkit-inner-spin-button:hover,
-  input[type="number"]::-webkit-inner-spin-button:active {
+  input[type='number']::-webkit-inner-spin-button:hover,
+  input[type='number']::-webkit-inner-spin-button:active {
     opacity: 1;
   }
 
   /* hide radio inputs so the labels can be styled */
   /* display: none; will make them unfocusable / no keyboard navigation */
-  .pane__color-preference input[type="radio"],
-  .pane__font-preference input[type="radio"] {
+  .pane__color-preference input[type='radio'],
+  .pane__font-preference input[type='radio'] {
     opacity: 0;
     position: fixed;
     width: 0;
   }
 
-  .pane__color-preference input[type="radio"] + label,
-  .pane__font-preference input[type="radio"] + label {
+  .pane__color-preference input[type='radio'] + label,
+  .pane__font-preference input[type='radio'] + label {
     opacity: 1;
     display: flex;
     justify-content: center;
     align-items: center;
-    transition: transform 0.25s ease-in-out, background-color 0.25s ease-in-out;
+    transition:
+      transform 0.25s ease-in-out,
+      background-color 0.25s ease-in-out;
     cursor: pointer;
   }
 
-  .pane__color-preference input[type="radio"] + label:hover,
-  .pane__font-preference input[type="radio"] + label:hover {
+  .pane__color-preference input[type='radio'] + label:hover,
+  .pane__font-preference input[type='radio'] + label:hover {
     transform: scale(1.1);
   }
 
@@ -372,12 +378,12 @@ $font-space-mono: "Space Mono", monospace;
     color: $dark-text-color;
   }
 
-  .pane__font-preference input[type="radio"]:checked + label {
+  .pane__font-preference input[type='radio']:checked + label {
     background: $settings-heading;
     color: #fff;
   }
 
-  .pane__font-preference input[type="radio"]:hover + label {
+  .pane__font-preference input[type='radio']:hover + label {
     background: $settings-heading;
     color: #fff;
     opacity: 0.9;
@@ -409,13 +415,13 @@ $font-space-mono: "Space Mono", monospace;
     background-color: $purple-accent;
   }
 
-  .pane__color-preference input[type="radio"]:checked + label {
+  .pane__color-preference input[type='radio']:checked + label {
     background-image: url("data:image/svg+xml,%3Csvg width='15' height='11' viewBox='0 0 15 11' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 5.5L4.95263 9.45263L13.4053 1' stroke='%23161932' stroke-width='2'/%3E%3C/svg%3E%0A");
     background-repeat: no-repeat;
     background-position: center;
   }
 
-  .pane__color-preference input[type="radio"]:hover + label {
+  .pane__color-preference input[type='radio']:hover + label {
     background-image: url("data:image/svg+xml,%3Csvg width='15' height='11' viewBox='0 0 15 11' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 5.5L4.95263 9.45263L13.4053 1' stroke='%23161932' stroke-width='2'/%3E%3C/svg%3E%0A");
     background-repeat: no-repeat;
     background-position: center;
