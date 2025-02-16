@@ -11,7 +11,8 @@
     "start:prisma": "concurrently \"npx tsc --watch\" \"nodemon dist/app.js\" \"prisma studio\"",
     "start:node": "concurrently \"npx tsc --watch\" \"nodemon dist/app.js\"",
     "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx}\"",
-    "test": "jest"
+    "test": "jest",
+    "prepare": "husky"
   },
   "author": "SatoruF",
   "license": "ISC",

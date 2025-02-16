@@ -1,0 +1,4 @@
+npm run test:unit
+nm run lint:scss
+nm run test:ui
+nm run format
