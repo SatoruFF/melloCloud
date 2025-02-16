@@ -70,7 +70,7 @@ const File = ({ file }: any) => {
     return (
       <motion.div
         key={Math.random()}
-        className={cn(styles.fileplateFileWrapper)}
+        className={cn(styles.filePlateFileWrapper)}
         onDoubleClick={() => openDirHandler()}
       >
         <FileViewer type={fileType} url={file.url} />
