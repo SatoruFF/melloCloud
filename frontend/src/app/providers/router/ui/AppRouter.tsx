@@ -9,6 +9,9 @@ import { routes, privateRoutes } from '../../../../shared/config/routeConfig/rou
 
 const AppRouter = () => {
   const isAuth = useAppSelector(state => state.users.isAuth);
+  const isUserLoading = useAppSelector(state => state.users.isUserLoading);
+
+  if (isUserLoading) return <Spin />;
 
   // TODO: здесь желательно вместо спина добавить виджет PageLoader
   return (

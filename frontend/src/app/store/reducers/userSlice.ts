@@ -4,12 +4,14 @@ export interface UserInterface {
   currentUser: any;
   token: string | null;
   isAuth: boolean;
+  isUserLoading: boolean;
 }
 
 const initialState: UserInterface = {
   currentUser: {},
   token: '',
   isAuth: false,
+  isUserLoading: true,
 };
 
 export const userSlice = createSlice({
@@ -21,11 +23,13 @@ export const userSlice = createSlice({
         state.currentUser = action.payload.user;
         state.token = action.payload.token;
         state.isAuth = true;
+        state.isUserLoading = false;
         localStorage.setItem('token', action.payload.token);
       }
     },
     logout: state => {
       state.isAuth = false;
+      state.isUserLoading = true;
       state.currentUser = {};
       state.token = null;
       localStorage.removeItem('token');
