@@ -10,4 +10,5 @@ export const Variables = {
   File_URL: `${_baseUrl}/`,
   UpAvatar_URL: `${_baseUrl}/file/avatar`,
   FileUpload_URL: `${_baseUrl}/file/upload`,
+  Message_URL: `${_baseUrl}/messages`,
 } as const;

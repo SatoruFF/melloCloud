@@ -1,9 +1,9 @@
-@use '../../../shared/styles/tmp.scss';
+@import '../../../shared/styles/tmp.scss';
 @import url('https://fonts.googleapis.com/css2?family=Sono&display=swap');
 
 .navbar {
   width: 100%;
-  height: 10vh;
+  height: $header-height;
   //background-color: #434343;
   background-color: #27272a;
   display: flex;

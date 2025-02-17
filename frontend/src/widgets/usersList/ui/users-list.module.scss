@@ -1,0 +1,8 @@
+@import '../../../shared/styles/tmp.scss';
+
+.usersListWrapper {
+  height: 100vh - $header-height;
+  border-right: 2px solid black;
+  width: 20%;
+  align-items: center;
+}

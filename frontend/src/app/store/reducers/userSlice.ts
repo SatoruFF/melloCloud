@@ -29,10 +29,12 @@ export const userSlice = createSlice({
     },
     logout: state => {
       state.isAuth = false;
-      state.isUserLoading = true;
       state.currentUser = {};
       state.token = null;
       localStorage.removeItem('token');
+    },
+    setUserLoading: state => {
+      state.isUserLoading = !state;
     },
     deleteAvatar: state => {
       state.currentUser.avatar = null;
@@ -43,5 +45,5 @@ export const userSlice = createSlice({
   },
 });
 
-export const { setUser, logout, setAvatar, deleteAvatar } = userSlice.actions;
+export const { setUser, logout, setAvatar, deleteAvatar, setUserLoading } = userSlice.actions;
 export default userSlice.reducer;
