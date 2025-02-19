@@ -9,7 +9,8 @@
   "exceptions": {
     "page-not-found": "Страница не найдена(",
     "page-not-found-message": "Возможно такого адреса не существует",
-    "just-error": "Что-то пошло не так("
+    "just-error": "Что-то пошло не так(",
+    "details": "Детали ошибки"
   },
   "home-anchor": {
     "title": "Описание",
@@ -75,6 +76,7 @@
     "create-folder": "создать",
     "upload-avatar": "Загрузить аватар",
     "delete-avatar": "Удалить аватар",
-    "reload-page": "Обновить страницу"
+    "reload-page": "Обновить страницу",
+    "copy-error": "Скопировать ошибку"
   }
 }

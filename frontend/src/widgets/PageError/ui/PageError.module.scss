@@ -1,5 +1,5 @@
 @use '../../../shared/styles/tmp.scss';
-@usel ('https://fonts.googleapis.com/css2?family=Sono&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Sono&display=swap');
 
 .pageErrorWrapper {
   width: 100vw;
@@ -15,6 +15,11 @@
     align-items: center;
     flex-direction: column;
     justify-content: space-evenly;
+
+    .errorDetails {
+      margin-bottom: 10px;
+    }
+
     .pageErrorTitle {
       margin-bottom: 10px;
     }

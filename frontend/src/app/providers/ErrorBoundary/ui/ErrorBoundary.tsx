@@ -1,8 +1,11 @@
 import React, { ErrorInfo, ReactNode, Suspense } from 'react';
 import { withTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
-import { PageError } from '../../../../widgets/PageError';
 import { Spin } from 'antd';
+import cn from 'classnames';
+
+import { PageError } from '../../../../widgets/PageError';
+import styles from './error-boundary.module.scss';
 
 interface ErrorBoundaryProps {
   children: ReactNode;
@@ -13,30 +16,28 @@ interface ErrorBoundaryState {
   hasError: boolean;
 }
 
-class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
+class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState & { error?: Error }> {
   constructor(props: ErrorBoundaryProps) {
     super(props);
-    this.state = { hasError: false };
+    this.state = { hasError: false, error: undefined };
   }
 
   static getDerivedStateFromError(error: Error) {
-    // Update state so the next render will show the fallback UI.
-    return { hasError: true };
+    return { hasError: true, error };
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    // You can also log the error to an error reporting service
-    console.log(error, errorInfo);
+    console.error('ErrorBoundary caught an error:', error, errorInfo);
   }
 
   render() {
-    const { hasError } = this.state;
+    const { hasError, error } = this.state;
     const { children } = this.props;
+
     if (hasError) {
-      // You can render any custom fallback UI
       return (
         <Suspense fallback={<Spin style={{ width: '100%', height: '100vh', marginTop: '400px' }} />}>
-          <PageError />;
+          <PageError error={error} />
         </Suspense>
       );
     }

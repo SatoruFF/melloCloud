@@ -9,7 +9,8 @@
   "exceptions": {
     "page-not-found": "Page not found(",
     "page-not-found-message": "Perhabs route does not exists",
-    "just-error": "Something went wrong("
+    "just-error": "Something went wrong(",
+    "details": "Error details"
   },
   "home-anchor": {
     "title": "Title",
@@ -75,6 +76,7 @@
     "create-folder": "create",
     "upload-avatar": "Upload avatar",
     "delete-avatar": "Delete avatar",
-    "reload-page": "reload page"
+    "reload-page": "reload page",
+    "copy-error": "Copy error"
   }
 }

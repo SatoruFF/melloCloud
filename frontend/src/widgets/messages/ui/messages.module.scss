@@ -1,0 +1,62 @@
+@import '../../../shared/styles/tmp.scss';
+@import url('https://fonts.googleapis.com/css2?family=Sono&display=swap');
+
+.messagesWrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 80%;
+  border: 1px solid #d9d9d9;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.messageList {
+  //   flex: 1;
+  padding: 10px;
+  overflow-y: auto;
+  //   max-height: 400px;
+}
+
+.messageItem {
+  display: flex;
+  align-items: flex-end;
+  margin-bottom: 10px;
+}
+
+.self {
+  justify-content: flex-end;
+}
+
+.avatar {
+  background-color: #1890ff;
+  color: white;
+  margin-right: 8px;
+}
+
+.messageContent {
+  max-width: 70%;
+  padding: 8px 12px;
+  border-radius: 12px;
+  background: #f0f0f0;
+  font-size: 14px;
+}
+
+.self .messageContent {
+  background: #1890ff;
+  color: white;
+}
+
+.messageTime {
+  font-size: 10px;
+  color: #888;
+  text-align: right;
+  margin-top: 4px;
+}
+
+.input {
+  border-top: 1px solid #d9d9d9;
+  padding: 10px;
+  resize: none;
+}
