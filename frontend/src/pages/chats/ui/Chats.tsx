@@ -9,8 +9,8 @@ import { Messages } from '../../../widgets/messages';
 const Chats = () => {
   return (
     <Layout className={cn(styles.chatContainer)}>
-      <UsersList></UsersList>
-      <Messages></Messages>
+      <UsersList />
+      <Messages />
     </Layout>
   );
 };

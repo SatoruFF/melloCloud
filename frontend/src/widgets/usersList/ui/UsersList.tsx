@@ -4,15 +4,18 @@ import { List, Avatar } from 'antd';
 import cn from 'classnames';
 
 import styles from './users-list.module.scss';
+import { Search } from '../../../shared';
 
 const UsersList: React.FC = () => {
+  const [search, onSearch] = useState('');
   const [messages, setMessages] = useState([
-    { text: '123', sender: 'You' },
-    { text: '123', sender: 'You' },
+    { text: 'Can you do it?', sender: 'You' },
+    { text: 'Yea all right', sender: 'John' },
   ]);
 
   return (
     <div className={cn(styles.usersListWrapper)}>
+      <Search onSearch={onSearch} className={styles.searchChats}></Search>
       <List
         dataSource={messages}
         renderItem={msg => (

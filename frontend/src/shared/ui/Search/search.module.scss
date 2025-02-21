@@ -1,0 +1,14 @@
+@import '../../../shared/styles/tmp.scss';
+
+.search {
+  width: 20%;
+  * {
+    @extend %mainFont;
+  }
+}
+
+@media screen and (max-width: 992px) {
+  .search {
+    width: 100%;
+  }
+}

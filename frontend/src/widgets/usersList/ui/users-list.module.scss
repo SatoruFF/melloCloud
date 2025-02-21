@@ -5,4 +5,10 @@
   border-right: 2px solid black;
   width: 20%;
   align-items: center;
+  box-sizing: border-box;
+  padding: 10px;
+}
+
+.searchChats {
+  width: 100%;
 }

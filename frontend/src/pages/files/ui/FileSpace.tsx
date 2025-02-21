@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Button, Spin, Modal, Input, message, Select, Breadcrumb } from 'antd';
 import { LeftOutlined, UploadOutlined, UnorderedListOutlined, AppstoreOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
@@ -15,8 +15,7 @@ import UploadModal from '../../../features/uploadModal/ui/UploadModal';
 import diskBack from '../../../shared/assets/disk-back.jpg';
 import styles from '../styles/fileSpace.module.scss';
 import cn from 'classnames';
-
-const { Search } = Input;
+import { Search } from '../../../shared';
 
 const FileSpace = () => {
   const { t } = useTranslation();
@@ -32,7 +31,7 @@ const FileSpace = () => {
   const [folderName, setFolderName] = useState('');
   const [sort, setSort]: any = useState('');
   const [search, setSearch] = useState('');
-  const onSearch = (value: string) => setSearch(value);
+  const onSearch = useCallback((value: string) => setSearch(value), []);
 
   //RTK query
   const params = generateParams(currentDir, sort, search);
@@ -124,12 +123,7 @@ const FileSpace = () => {
               { value: 'date', label: t('files.order.date') },
             ]}
           />
-          <Search
-            placeholder={t('files.search-placeholder')}
-            className={cn(styles.searchFiles)}
-            onSearch={onSearch}
-            enterButton
-          />
+          <Search placeholder={t('files.search-placeholder')} onSearch={onSearch} />
           <div className={cn(styles.visual)}>
             <UnorderedListOutlined className={cn(styles.visualByList)} onClick={() => dispatch(setView('list'))} />
             <AppstoreOutlined className={cn(styles.visualByFile)} onClick={() => dispatch(setView('plate'))} />

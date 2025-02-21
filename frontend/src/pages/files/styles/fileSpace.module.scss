@@ -35,12 +35,6 @@
         @extend %secondFont;
       }
     }
-    .searchFiles {
-      width: 20%;
-      * {
-        @extend %mainFont;
-      }
-    }
     .visual {
       width: 8%;
       display: flex;
@@ -96,9 +90,6 @@
       display: grid;
       grid-template-columns: 1fr 3fr 3fr;
       grid-template-rows: 1fr 1fr;
-      .searchFiles {
-        width: 100%;
-      }
       .visual {
         width: 100%;
       }
