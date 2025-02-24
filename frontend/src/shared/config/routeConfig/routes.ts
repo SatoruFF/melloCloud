@@ -1,4 +1,5 @@
-import { FC, lazy } from 'react';
+import { FC, lazy, ReactElement } from 'react';
+import React from 'react';
 
 import {
   WELCOME_ROUTE,
@@ -26,61 +27,34 @@ const Notes = lazy(() => import('../../../pages/notes/ui/Notes'));
 const Todo = lazy(() => import('../../../pages/todo/ui/Todo'));
 const Activate = lazy(() => import('../../../pages/activate/ui/Activate'));
 
-interface Route {
+export interface IRoute {
   path: string;
-  element: FC;
+  element: ReactElement;
+  private?: boolean;
 }
 
-export const routes: Route[] = [
-  {
-    path: WELCOME_ROUTE,
-    element: Welcome,
-  },
-  {
-    path: LOGIN_ROUTE,
-    element: Authorization,
-  },
-  {
-    path: REGISTRATION_ROUTE,
-    element: Authorization,
-  },
-  {
-    path: ACTIVATION_ROUTE,
-    element: Activate,
-  },
-  {
-    path: NOT_FOUND,
-    element: NotFoundPage,
-  },
-];
+// Функция для создания маршрутов с JSX-элементами
+const createRoutes = (routes: { path: string; element: FC; private?: boolean }[]): IRoute[] =>
+  routes.map(route => ({ ...route, element: React.createElement(route.element) }));
 
-export const privateRoutes: Route[] = [
-  {
-    path: WELCOME_ROUTE,
-    element: Welcome,
-  },
-  {
-    path: FILE_ROUTE,
-    element: FileSpace,
-  },
-  {
-    path: PROFILE_ROUTE,
-    element: Profile,
-  },
-  {
-    path: CHATS_ROUTE,
-    element: Chats,
-  },
-  {
-    path: NOTES_ROUTE,
-    element: Notes,
-  },
-  {
-    path: TODO_ROUTE,
-    element: Todo,
-  },
-  {
-    path: POMODORO_ROUTE,
-    element: Pomodoro,
-  },
-];
+// Публичные роуты
+const publicRoutes: IRoute[] = createRoutes([
+  { path: WELCOME_ROUTE, element: Welcome },
+  { path: LOGIN_ROUTE, element: Authorization },
+  { path: REGISTRATION_ROUTE, element: Authorization },
+  { path: ACTIVATION_ROUTE, element: Activate },
+  { path: NOT_FOUND, element: NotFoundPage },
+]);
+
+// Приватные роуты (сразу добавляем private: true)
+const privateRoutes: IRoute[] = createRoutes([
+  { path: FILE_ROUTE, element: FileSpace, private: true },
+  { path: PROFILE_ROUTE, element: Profile, private: true },
+  { path: CHATS_ROUTE, element: Chats, private: true },
+  { path: NOTES_ROUTE, element: Notes, private: true },
+  { path: TODO_ROUTE, element: Todo, private: true },
+  { path: POMODORO_ROUTE, element: Pomodoro, private: true },
+]);
+
+// Объединяем все роуты
+export const routes: IRoute[] = [...publicRoutes, ...privateRoutes];
