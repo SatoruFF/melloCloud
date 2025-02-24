@@ -35,6 +35,12 @@ model User {
 
   // Обратная связь для чатов
   chats        ChatUser[]   // Все чаты, в которых участвует пользователь
+
+  // Обратная связь для заметок
+  notes        Note[]       // Все заметки, принадлежащие пользователю
+
+    // Обратная связь для задач
+  todos        ToDo[]       // Все задачи, принадлежащие пользователю
 }
 
 model UserConfig {
@@ -110,4 +116,29 @@ model Message {
   sender    User     @relation(fields: [senderId], references: [id])
   chat      Chat     @relation(fields: [chatId], references: [id])
   createdAt DateTime @default(now())
+}
+
+// Define Note data model
+model Note {
+  id        Int      @id @default(autoincrement())
+  title     String   // Заголовок заметки
+  content   String   // Содержание заметки
+  userId    Int      // Ссылка на пользователя
+  user      User     @relation(fields: [userId], references: [id]) // Связь с пользователем
+  createdAt DateTime @default(now()) // Дата создания
+  updatedAt DateTime @updatedAt // Дата обновления
+}
+
+// Define ToDo data model
+model ToDo {
+  id        Int      @id @default(autoincrement())
+  title     String   // Название задачи
+  content   String   // Содержание задачи
+  priority  String   @default("LOW") // Приоритет задачи (LOW, MEDIUM, HIGH)
+  isDone    Boolean  @default(false) // Статус выполнения задачи
+  dueDate   DateTime? // Срок выполнения задачи (необязательно)
+  userId    Int      // Ссылка на пользователя
+  user      User     @relation(fields: [userId], references: [id]) // Связь с пользователем
+  createdAt DateTime @default(now()) // Дата создания
+  updatedAt DateTime @updatedAt // Дата обновления
 }
