@@ -1,0 +1,36 @@
+.sidebar {
+  background: #f7f7f7;
+  height: 100vh;
+  padding: 16px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #ddd;
+}
+
+.avatar {
+  background-color: #1890ff;
+}
+
+.username {
+  font-size: 16px;
+}
+
+.menu {
+  margin-top: 16px;
+  border-right: none;
+  background: transparent;
+}
+
+.menuItem {
+  padding: 10px 16px;
+  font-size: 14px;
+}
+
+.menuItem:hover {
+  background: #e6f7ff;
+}
