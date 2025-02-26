@@ -1,6 +1,9 @@
 import { useEffect, useState, useCallback } from 'react';
 import Particles, { initParticlesEngine } from '@tsparticles/react';
 import { loadSlim } from '@tsparticles/slim'; // Подключаем оптимизированную версию
+import cn from 'classnames';
+
+import styles from './particle.module.scss';
 
 const ParticleEffect = () => {
   const [init, setInit] = useState(false);
@@ -22,6 +25,7 @@ const ParticleEffect = () => {
       {init && (
         <Particles
           id="tsparticles"
+          className={cn(styles.particle)}
           particlesLoaded={particlesLoaded}
           options={{
             fpsLimit: 120,
