@@ -14,17 +14,19 @@ const UsersList: React.FC = () => {
     { text: 'Yea all right', sender: 'John' },
   ]);
 
+  const [width, setWidth] = useState(300);
+
   return (
     <ResizableBox
-      width={300} // Начальная ширина
-      height={Infinity}
+      width={width}
+      height={0} // Даем ему расти по содержимому
       axis="x"
-      minConstraints={[200, 100]} // Минимальная ширина
-      maxConstraints={[500, 100]} // Максимальная ширина
-      // className={cn(styles.usersListWrapper)}
+      minConstraints={[200, 100]}
+      maxConstraints={[500, 100]}
+      onResizeStop={(e, { size }) => setWidth(size.width)}
     >
-      <div className={cn(styles.usersListWrapper)}>
-        <Search onSearch={onSearch} className={styles.searchChats}></Search>
+      <div className={cn(styles.usersListWrapper)} style={{ width }}>
+        <Search onSearch={onSearch} className={styles.searchChats} />
         <List
           dataSource={messages}
           renderItem={msg => (

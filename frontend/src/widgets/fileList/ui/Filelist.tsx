@@ -12,7 +12,6 @@ const Filelist = () => {
   if (files.length === 0) {
     return (
       <h1 className={cn(styles.filesNotFound, 'animate__animated animate__fadeIn')}>
-        {' '}
         <Empty className="emptyFolder" />{' '}
       </h1>
     );

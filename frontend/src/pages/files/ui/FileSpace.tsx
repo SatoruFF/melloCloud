@@ -123,7 +123,7 @@ const FileSpace = () => {
               { value: 'date', label: t('files.order.date') },
             ]}
           />
-          <Search placeholder={t('files.search-placeholder')} onSearch={onSearch} />
+          <Search placeholder={t('files.search-placeholder')} className={cn(styles.searchFiles)} onSearch={onSearch} />
           <div className={cn(styles.visual)}>
             <UnorderedListOutlined className={cn(styles.visualByList)} onClick={() => dispatch(setView('list'))} />
             <AppstoreOutlined className={cn(styles.visualByFile)} onClick={() => dispatch(setView('plate'))} />

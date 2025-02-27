@@ -1,14 +1,21 @@
 @import '../../../shared/styles/tmp.scss';
 
 .usersListWrapper {
-  height: 100vh - $header-height;
+  height: calc(100vh - $header-height);
   border-right: 2px solid black;
-  width: 20%;
-  align-items: center;
   box-sizing: border-box;
   padding: 10px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 .searchChats {
   width: 100%;
+  margin-bottom: 10px;
+}
+
+.ant-list {
+  flex: 1; // Даем списку возможность растягиваться
+  overflow-y: auto;
 }
