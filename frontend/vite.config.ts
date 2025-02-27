@@ -16,6 +16,13 @@ export default defineConfig({
       filename: 'analyse.html', // will be saved in project's root
     }) as PluginOption,
   ],
+  // css: {
+  //   preprocessorOptions: {
+  //     scss: {
+  //       additionalData: `@import "./src/shared/styles/tmp.scss";`, // global scss templates import
+  //     },
+  //   },
+  // },
   server: {
     fs: {
       allow: ['..'], // Разрешаем доступ к корневой папке ( для доступа к переводам например )

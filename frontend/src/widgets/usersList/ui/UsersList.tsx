@@ -1,6 +1,7 @@
 import React from 'react';
 import { useState } from 'react';
 import { List, Avatar } from 'antd';
+import { ResizableBox } from 'react-resizable';
 import cn from 'classnames';
 
 import styles from './users-list.module.scss';
@@ -14,17 +15,26 @@ const UsersList: React.FC = () => {
   ]);
 
   return (
-    <div className={cn(styles.usersListWrapper)}>
-      <Search onSearch={onSearch} className={styles.searchChats}></Search>
-      <List
-        dataSource={messages}
-        renderItem={msg => (
-          <List.Item>
-            <List.Item.Meta avatar={<Avatar>{msg.sender[0]}</Avatar>} title={msg.sender} description={msg.text} />
-          </List.Item>
-        )}
-      />
-    </div>
+    <ResizableBox
+      width={300} // Начальная ширина
+      height={Infinity}
+      axis="x"
+      minConstraints={[200, 100]} // Минимальная ширина
+      maxConstraints={[500, 100]} // Максимальная ширина
+      // className={cn(styles.usersListWrapper)}
+    >
+      <div className={cn(styles.usersListWrapper)}>
+        <Search onSearch={onSearch} className={styles.searchChats}></Search>
+        <List
+          dataSource={messages}
+          renderItem={msg => (
+            <List.Item>
+              <List.Item.Meta avatar={<Avatar>{msg.sender[0]}</Avatar>} title={msg.sender} description={msg.text} />
+            </List.Item>
+          )}
+        />
+      </div>
+    </ResizableBox>
   );
 };
 
