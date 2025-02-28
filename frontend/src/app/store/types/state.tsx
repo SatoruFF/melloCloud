@@ -1,4 +1,4 @@
-import { FileSchema } from '../../../entities/file';
+import { FileListSchema } from '../../../entities/file';
 import { MessageSchema } from '../../../entities/message';
 import { UserSchema } from '../../../entities/user';
 import { fileApi } from '../../../shared/api/file';
@@ -7,7 +7,7 @@ import { userApi } from '../../../shared/api/user';
 
 export interface StateSchema {
   users: UserSchema; // Тип для состояния пользователей
-  files: FileSchema; // Тип для состояния файлов
+  files: FileListSchema; // Тип для состояния файлов
   messages: MessageSchema; // Тип для состояния сообщений
   [userApi.reducerPath]: ReturnType<typeof userApi.reducer>; // Тип для API пользователей
   [fileApi.reducerPath]: ReturnType<typeof fileApi.reducer>; // Тип для API файлов

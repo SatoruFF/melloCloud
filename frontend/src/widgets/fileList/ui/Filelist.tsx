@@ -4,8 +4,19 @@ import File from '../../../entities/file/ui/File';
 
 import cn from 'classnames';
 import styles from '../styles/fileList.module.scss';
+import { IFile } from '../../../entities/file';
+import { memo } from 'react';
 
-const Filelist = () => {
+// const mockFiles = new Array(1000).fill({
+//   id: '10',
+//   name: 'landscape.png',
+//   type: 'file',
+//   size: 3245678,
+//   url: 'https://img.icons8.com/?size=512&id=44442&format=png',
+//   updatedAt: '2023-10-06T16:49:28',
+// });
+
+const Filelist: React.FC = () => {
   const files = useAppSelector(state => state.files.files);
   const fileView = useAppSelector(state => state.files.view);
 
@@ -20,7 +31,7 @@ const Filelist = () => {
   if (fileView == 'plate') {
     return (
       <div className={cn(styles.fileplateListWrapper, 'animate__animated animate__fadeIn')}>
-        {files.map((file: any) => (
+        {files.map((file: IFile) => (
           <File key={Math.random()} file={file} />
         ))}
       </div>
@@ -35,11 +46,11 @@ const Filelist = () => {
         <p className={cn(styles.size)}>Size</p>
       </div>
 
-      {files.map((file: any) => (
+      {files.map((file: IFile) => (
         <File key={Math.random()} file={file} />
       ))}
     </div>
   );
 };
 
-export default Filelist;
+export default memo(Filelist);

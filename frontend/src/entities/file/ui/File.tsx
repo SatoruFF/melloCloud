@@ -12,8 +12,9 @@ import FileViewer from '../../../features/fileViewer/ui/FileViewer';
 
 import styles from '../styles/file.module.scss';
 import cn from 'classnames';
+import { FileProps } from '../types/file';
 
-const File = ({ file }: any) => {
+const File: React.FC<FileProps> = ({ file }) => {
   //size format
   const size = sizeFormat(file.size);
 

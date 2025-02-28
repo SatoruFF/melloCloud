@@ -1,4 +1,4 @@
 import File from './ui/File';
-import type { FileSchema } from './types/file';
+import type { FileListSchema, IFile, FileProps } from './types/file';
 
-export { File, FileSchema };
+export { File, FileListSchema, IFile, FileProps };
