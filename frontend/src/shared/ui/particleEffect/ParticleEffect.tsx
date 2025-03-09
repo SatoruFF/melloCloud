@@ -1,7 +1,7 @@
-import { useEffect, useState, useCallback } from 'react';
 import Particles, { initParticlesEngine } from '@tsparticles/react';
 import { loadSlim } from '@tsparticles/slim'; // Подключаем оптимизированную версию
 import cn from 'classnames';
+import { useCallback, useEffect, useState } from 'react';
 
 import styles from './particle.module.scss';
 

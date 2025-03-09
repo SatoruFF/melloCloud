@@ -55,6 +55,7 @@
         @extend %centerTemplate;
         flex-direction: column;
         justify-content: space-evenly;
+        z-index: 1;
 
         .welcomeTitle {
           font-size: 48px;
@@ -87,6 +88,7 @@
 
       .rightSide {
         @extend %centerTemplate;
+        z-index: 1;
         img {
           width: 350px;
           border-radius: 10px;
@@ -102,6 +104,7 @@
       top: 0;
       width: 100%;
       height: 100%;
+      z-index: 0;
 
       use {
         animation: move-forever 4s linear infinite;

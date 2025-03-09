@@ -1,6 +1,6 @@
 import { fireEvent, render, screen } from "@testing-library/react";
-import { PrimaryButton } from "./PrimaryButton";
 import { componentRender } from "../../lib/tests/componentRender/componentRender";
+import { PrimaryButton } from "./PrimaryButton";
 
 describe('Primary button test', () => {
   test('Just render test', () => {

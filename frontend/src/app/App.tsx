@@ -1,15 +1,15 @@
-import { Suspense, useEffect } from 'react';
-import { AppRouter } from './providers/router';
-import { BrowserRouter } from 'react-router-dom';
 import { Spin } from 'antd';
+import { Suspense, useEffect } from 'react';
+import { BrowserRouter } from 'react-router-dom';
+import { AppRouter } from './providers/router';
 
 import './styles/global.scss';
 
-import MyNavbar from '../widgets/Navbar/ui/Navbar';
-import { useAppDispatch } from './store/store';
 import { useAuthQuery } from '../shared/api/user';
-import { setUser } from './store/reducers/userSlice';
+import MyNavbar from '../widgets/Navbar/ui/Navbar';
 import { ErrorBoundary } from './providers/ErrorBoundary';
+import { setUser } from './store/reducers/userSlice';
+import { useAppDispatch } from './store/store';
 
 function App() {
   const dispatch = useAppDispatch();

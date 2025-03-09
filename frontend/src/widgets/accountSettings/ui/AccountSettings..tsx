@@ -1,17 +1,17 @@
 import { ApiOutlined } from '@ant-design/icons';
-import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
 import { Button, Divider, notification } from 'antd';
 import cn from 'classnames';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 
-import { useAppSelector, useAppDispatch } from '../../../app/store/store';
-import { sizeFormat } from '../../../shared/utils/sizeFormat';
 import { logout } from '../../../app/store/reducers/userSlice';
-import { WELCOME_ROUTE } from '../../../shared/consts/routes';
+import { useAppDispatch, useAppSelector } from '../../../app/store/store';
+import DeleteModal from '../../../features/deleteModal/ui/DeleteModal';
 import InfoModal from '../../../features/infoModal/ui/InfoModal';
 import PasswordModal from '../../../features/passwordModal/ui/PasswordModal';
-import DeleteModal from '../../../features/deleteModal/ui/DeleteModal';
+import { WELCOME_ROUTE } from '../../../shared/consts/routes';
+import { sizeFormat } from '../../../shared/utils/sizeFormat';
 import styles from '../styles/accountSettings.module.scss';
 
 const AccountSettings = () => {

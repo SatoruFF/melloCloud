@@ -1,12 +1,13 @@
 import { ReducersMapObject, configureStore } from '@reduxjs/toolkit';
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 
-import userReducer from './reducers/userSlice';
-import fileReducer from './reducers/fileSlice';
-import messagesReducer from './reducers/messagesSlice';
-import { userApi } from '../../shared/api/user';
+import { restoreScrollReducer } from '../../features/restoreScroll';
 import { fileApi } from '../../shared/api/file';
 import { messageApi } from '../../shared/api/messages';
+import { userApi } from '../../shared/api/user';
+import fileReducer from './reducers/fileSlice';
+import messagesReducer from './reducers/messagesSlice';
+import userReducer from './reducers/userSlice';
 import { StateSchema } from './types/state';
 
 const rootReducers: ReducersMapObject<StateSchema> = {
@@ -16,6 +17,7 @@ const rootReducers: ReducersMapObject<StateSchema> = {
   [userApi.reducerPath]: userApi.reducer,
   [fileApi.reducerPath]: fileApi.reducer,
   [messageApi.reducerPath]: messageApi.reducer,
+  ui: restoreScrollReducer,
 };
 
 export const store = configureStore({

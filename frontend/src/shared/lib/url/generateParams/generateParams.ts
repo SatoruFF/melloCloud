@@ -1,4 +1,4 @@
-export const generateParams = (parent: number, sort?: string, search?: string): string => {
+export const generateParams = ({ parent, sort, search }) => {
   let URL = '';
   if (search && search !== '') {
     return (URL = `?search=${search}`);

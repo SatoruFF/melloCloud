@@ -1,11 +1,11 @@
 import { useLocation } from 'react-router-dom';
 
-import Register from '../../../widgets/register/ui/Register';
-import Login from '../../../widgets/login/ui/Login';
 import ParticleEffect from '../../../shared/ui/particleEffect/ParticleEffect';
+import Login from '../../../widgets/login/ui/Login';
+import Register from '../../../widgets/register/ui/Register';
 
-import styles from '../styles/auth.module.scss';
 import cn from 'classnames';
+import styles from '../styles/auth.module.scss';
 
 const Authorization = () => {
   const whereIAm = useLocation();

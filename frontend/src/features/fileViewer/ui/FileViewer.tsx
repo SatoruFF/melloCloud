@@ -1,8 +1,8 @@
-import { Image, Modal, Button } from 'antd';
+import { FileFilled, FolderFilled, PlayCircleOutlined } from '@ant-design/icons';
+import { Button, Image, Modal } from 'antd';
+import cn from 'classnames';
 import { useState } from 'react';
 import ReactPlayer from 'react-player';
-import { FolderFilled, FileFilled, PlayCircleOutlined } from '@ant-design/icons';
-import cn from 'classnames';
 import styles from '../styles/fileViewer.module.scss';
 
 const FileViewer = ({ type, url }) => {

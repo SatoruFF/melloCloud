@@ -1,7 +1,6 @@
 // import { pool } from "./db.js";
 // import { DataTypes } from "sequelize";
 
-
 // // User data table
 // export const User = pool.define('user', {
 //     id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
@@ -32,7 +31,6 @@
 // // Relation - one-to-many(one user can have many files)
 // User.hasMany(File)
 // File.belongsTo(User)
-
 
 // // Relation - many-to-one (many files can be located in one folder)
 // File.belongsTo(File, { as: 'parent', foreignKey: 'parentId' });

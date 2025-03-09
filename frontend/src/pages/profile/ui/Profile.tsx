@@ -1,17 +1,17 @@
-import _ from 'lodash-es';
-import { Button, Upload, message, Typography, Col, Row, Statistic, Card, Spin } from 'antd';
 import { PieChartOutlined } from '@ant-design/icons';
-import type { UploadProps } from 'antd';
 import { unwrapResult } from '@reduxjs/toolkit';
+import { Button, Card, Col, Row, Spin, Statistic, Typography, Upload, message } from 'antd';
+import type { UploadProps } from 'antd';
 import cn from 'classnames';
+import _ from 'lodash-es';
 import { useTranslation } from 'react-i18next';
 
+import { deleteAvatar, setAvatar } from '../../../app/store/reducers/userSlice';
 import { useAppDispatch, useAppSelector } from '../../../app/store/store';
 import { useDeleteAvatarMutation } from '../../../shared/api/file';
-import { setAvatar, deleteAvatar } from '../../../app/store/reducers/userSlice';
-import { sizeFormat } from '../../../shared/utils/sizeFormat';
 import { Variables } from '../../../shared/api/localVariables';
 import avatarIcon from '../../../shared/assets/avatar-icon.png';
+import { sizeFormat } from '../../../shared/utils/sizeFormat';
 import styles from '../styles/profile.module.scss';
 
 const { Paragraph } = Typography;

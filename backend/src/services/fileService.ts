@@ -1,16 +1,9 @@
-import _ from 'lodash';
 import createError from 'http-errors';
+import _ from 'lodash';
 import 'dotenv/config.js';
 
-import { prisma, s3 } from '../configs/config.js';
-
-interface File {
-  userId: number;
-  path: string;
-  name?: string;
-  type: string | 'dir' | 'file';
-  url?: string;
-}
+import { FETCH_LIMIT, prisma, s3 } from '../configs/config.js';
+import { IFile, ISearchParams } from './../types/File';
 
 interface CreateDirResponse {
   message: string;
@@ -30,7 +23,7 @@ interface IS3 {
 
 class FileServiceClass {
   // create dir or file
-  async createDir(file: File): Promise<CreateDirResponse> {
+  async createDir(file: IFile): Promise<CreateDirResponse> {
     let folderPath = `${file.userId}/${file.path}`;
 
     if (!folderPath.endsWith('/')) {
@@ -56,7 +49,7 @@ class FileServiceClass {
   }
 
   // delete file or directory
-  async deleteBucketFile(file: File): Promise<DeleteFileResponse> {
+  async deleteBucketFile(file: IFile): Promise<DeleteFileResponse> {
     if (file.type === 'dir') {
       let filePath = `${String(file.userId)}/${file.path}`;
 
@@ -114,7 +107,11 @@ class FileServiceClass {
   }
 
   // get files with search params
-  async getFiles(sort, search, parentId, userId) {
+  async getFiles(searchParams: ISearchParams) {
+    const { sort, search, parentId, userId, offset = 0 } = searchParams;
+
+    const limit = searchParams.limit || FETCH_LIMIT;
+
     let files: any;
 
     // find by file name
@@ -123,51 +120,34 @@ class FileServiceClass {
         where: { userId },
       });
 
-      files = _.filter(files, file => _.includes(file.name, search));
+      files = _.filter(files, file => _.includes(file.name, search)); // TODO: replace to ilike and add ::text == ::text option (equal) (or contains)
 
       return files;
     }
 
+    // FIXME: typo
+    const queryOptions: any = {
+      where: {
+        AND: [{ userId }, { parentId }],
+      },
+      take: limit, // analog LIMIT https://www.prisma.io/docs/orm/prisma-client/queries/pagination
+      skip: offset, // analog OFFSET
+    };
+
     // find with sort query
     switch (sort) {
       case 'name':
-        files = await prisma.file.findMany({
-          where: {
-            AND: [{ userId }, { parentId }],
-          },
-          orderBy: { name: 'asc' },
-        });
-
+        queryOptions.orderBy = { name: 'asc' };
         break;
       case 'type':
-        files = await prisma.file.findMany({
-          where: {
-            AND: [{ userId }, { parentId }],
-          },
-          orderBy: { type: 'asc' },
-        });
-
+        queryOptions.orderBy = { type: 'asc' };
         break;
       case 'date':
-        files = await prisma.file.findMany({
-          where: {
-            AND: [{ userId }, { parentId }],
-          },
-          orderBy: { createdAt: 'asc' },
-        });
-        break;
-
-      default:
-        files = await prisma.file.findMany({
-          where: {
-            AND: [{ userId }, { parentId }],
-          },
-        });
-
+        queryOptions.orderBy = { createdAt: 'asc' };
         break;
     }
 
-    return files;
+    return await prisma.file.findMany(queryOptions);
   }
 
   // upload file

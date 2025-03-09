@@ -1,7 +1,7 @@
-import { Avatar, List, Input } from 'antd';
+import { Avatar, Input, List } from 'antd';
 import cn from 'classnames';
-import styles from './messages.module.scss';
 import { useState } from 'react';
+import styles from './messages.module.scss';
 
 const Messages = () => {
   const initialMessages = [

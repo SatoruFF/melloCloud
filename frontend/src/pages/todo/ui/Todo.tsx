@@ -1,7 +1,7 @@
-import { useState } from 'react';
-import { Input, Button, List, Checkbox } from 'antd';
-import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
+import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
+import { Button, Checkbox, Input, List } from 'antd';
 import cn from 'classnames';
+import { useState } from 'react';
 import styles from './todo.module.scss';
 
 const Todo = () => {

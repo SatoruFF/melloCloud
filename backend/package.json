@@ -12,6 +12,8 @@
     "start:prisma": "concurrently \"npx tsc --watch\" \"nodemon dist/app.js\" \"prisma studio\"",
     "start:node": "concurrently \"npx tsc --watch\" \"nodemon dist/app.js\"",
     "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx}\"",
+    "lint": "pnpm biome check src",
+    "lint:fix": "pnpm biome check --write src",
     "test": "jest",
     "prepare": "husky"
   },
@@ -63,6 +65,7 @@
     "ws": "^8.18.1"
   },
   "devDependencies": {
+    "@biomejs/biome": "1.9.4",
     "@typescript-eslint/eslint-plugin": "^8.21.0",
     "@typescript-eslint/parser": "^8.21.0",
     "eslint": "^9.21.0",

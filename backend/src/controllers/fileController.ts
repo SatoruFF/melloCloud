@@ -3,13 +3,13 @@ import { Request, Response } from 'express';
 
 // services
 import { prisma } from '../configs/config.js';
-import { FileService } from '../services/fileService.js';
 import { Avatar } from '../helpers/avatar.js';
+import { FileService } from '../services/fileService.js';
 
-// Utils
-import _ from 'lodash';
 import { PassThrough } from 'stream';
 import createError from 'http-errors';
+// Utils
+import _ from 'lodash';
 import { logger } from '../configs/logger.js';
 import 'dotenv/config.js';
 
@@ -83,11 +83,20 @@ class FileControllerClass {
    */
   async getFiles(req, res) {
     try {
-      const { sort, search } = req.query;
-      let parentId = parseInt(req.query.parent) || null;
+      const { sort, search, limit, offset } = req.query;
+      const parentId = parseInt(req.query.parent) || null;
       const userId = _.get(req, ['user', 'id']);
 
-      const files = await FileService.getFiles(sort, search, parentId, userId);
+      const searchParams = {
+        sort,
+        limit,
+        offset,
+        search,
+        parentId,
+        userId,
+      };
+
+      const files = await FileService.getFiles(searchParams);
 
       return res.json(files);
     } catch (error: any) {

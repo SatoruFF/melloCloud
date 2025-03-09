@@ -1,8 +1,8 @@
 import cn from 'classnames';
-import styles from './notes.module.scss';
 import React from 'react';
-import NotesSidebar from '../../../widgets/notesSidebar/ui/NotesSidebar';
 import { Editor } from '../../../widgets/editor';
+import NotesSidebar from '../../../widgets/notesSidebar/ui/NotesSidebar';
+import styles from './notes.module.scss';
 
 const Notes = () => {
   return (

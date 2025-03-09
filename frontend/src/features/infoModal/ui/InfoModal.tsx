@@ -1,7 +1,7 @@
-import _ from 'lodash';
 import { Form, Input, Modal } from 'antd';
-import { useTranslation } from 'react-i18next';
+import _ from 'lodash';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useAppSelector } from '../../../app/store/store';
 import { useChangeInfoMutation } from '../../../shared/api/user';

@@ -22,4 +22,4 @@ export const mailTemplate: string = `<!DOCTYPE html>
     </div>
 </body>
 </html>
-`
+`;

@@ -1,15 +1,15 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import useSound from 'use-sound';
 
-import Header from '../../../features/pomodoro/ui/Header';
-import Controls from '../../../features/pomodoro/ui/Controls';
-import TimerDisplay from '../../../features/pomodoro/ui/TimerDisplay';
 import Button from '../../../features/pomodoro/ui/Button';
+import Controls from '../../../features/pomodoro/ui/Controls';
+import Header from '../../../features/pomodoro/ui/Header';
 import Settings from '../../../features/pomodoro/ui/Settings';
+import TimerDisplay from '../../../features/pomodoro/ui/TimerDisplay';
 
+import cn from 'classnames';
 import timesUpSfx from '../../../shared/assets/timesUp.mp3';
 import styles from '../styles/pomodoro.module.scss';
-import cn from 'classnames';
 
 function PomodoroTimer() {
   const [settingsVisible, setSettingsVisible] = useState(false);

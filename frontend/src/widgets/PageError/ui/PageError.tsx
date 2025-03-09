@@ -1,8 +1,8 @@
-import { useTranslation } from 'react-i18next';
-import { useState } from 'react';
-import { Button, Collapse } from 'antd';
 import { CopyOutlined } from '@ant-design/icons';
+import { Button, Collapse } from 'antd';
 import cn from 'classnames';
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import styles from './PageError.module.scss';
 

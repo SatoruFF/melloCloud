@@ -1,11 +1,11 @@
+import { Avatar, List } from 'antd';
+import cn from 'classnames';
 import React from 'react';
 import { useState } from 'react';
-import { List, Avatar } from 'antd';
 import { ResizableBox } from 'react-resizable';
-import cn from 'classnames';
 
-import styles from './users-list.module.scss';
 import { Search } from '../../../shared';
+import styles from './users-list.module.scss';
 
 const UsersList: React.FC = () => {
   const [search, onSearch] = useState('');

@@ -1,8 +1,8 @@
-import ejs from "ejs";
-import { mailTemplate } from "../configs/mailTemplate.js";
+import ejs from 'ejs';
+import { mailTemplate } from '../configs/mailTemplate.js';
 
-export const getTemplate = (userData) => {
+export const getTemplate = userData => {
   const htmlEmail = ejs.render(mailTemplate, userData);
 
-  return htmlEmail
+  return htmlEmail;
 };

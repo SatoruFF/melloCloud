@@ -1,7 +1,7 @@
 import { Button } from 'antd';
-import { LinkProps, NavLink } from 'react-router-dom';
 // import { REGISTRATION_ROUTE } from 'path';
 import { FC } from 'react';
+import { LinkProps, NavLink } from 'react-router-dom';
 
 interface ILink extends LinkProps {
   route: string;

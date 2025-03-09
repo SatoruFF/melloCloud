@@ -1,12 +1,12 @@
-import { Suspense, useCallback } from 'react';
 import { Spin } from 'antd';
-import { Routes, Route, Navigate } from 'react-router-dom';
 import cn from 'classnames';
+import { Suspense, useCallback } from 'react';
+import { Navigate, Route, Routes } from 'react-router-dom';
 
 import { useAppSelector } from '../../../store/store';
 
+import { IRoute, routes } from '../../../../shared/config/routeConfig/routes';
 import { NOT_FOUND } from '../../../../shared/consts/routes';
-import { routes, IRoute } from '../../../../shared/config/routeConfig/routes';
 import { RequireAuth } from './RequireAuth';
 
 const AppRouter = () => {
@@ -31,7 +31,7 @@ const AppRouter = () => {
 
   if (isUserLoading) return <Spin />; // FIXME: perhabs not needed anymore
 
-  // TODO: здесь желательно вместо спина добавить виджет PageLoader
+  // TODO: здесь желательно вместо спина добавить виджет PageLoader со скелетоном
   return (
     <Routes>
       {routes.map(renderWithWrapper)}

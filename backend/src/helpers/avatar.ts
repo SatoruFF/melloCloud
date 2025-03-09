@@ -1,13 +1,13 @@
 // @ts-nocheck
 // FIXME: remove this in future
 // base
-import { prisma, imagekit } from '../configs/config.js';
+import { imagekit, prisma } from '../configs/config.js';
 
+import createError from 'http-errors';
+import _ from 'lodash';
+import { createReadStream } from 'streamifier';
 // utils
 import { v4 as uuidv4 } from 'uuid';
-import _ from 'lodash';
-import createError from 'http-errors';
-import { createReadStream } from 'streamifier';
 
 class AvatarClass {
   async uploadAvatar(fileBuffer, userId) {

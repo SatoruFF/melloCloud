@@ -52,7 +52,7 @@ export const fileApi = createApi({
       }),
     }),
     getFiles: builder.query<any, any>({
-      query: (dirId: string) => `file${dirId ? dirId : ''}`,
+      query: (params: string) => `file${params ? params : ''}`,
     }),
   }),
 });

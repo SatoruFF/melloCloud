@@ -13,6 +13,7 @@ export const useHover = (): useHoverResult => {
   const onMouseEnter = useCallback(() => {
     setIsHover(true);
   }, []);
+
   const onMouseLeave = useCallback(() => {
     setIsHover(false);
   }, []);

@@ -12,8 +12,8 @@
     "build:prod": "cross-env MODE=production vite build",
     "test": "jest test.js --roots src",
     "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx}\"",
-    "lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\"",
-    "lint:fix": "eslint \"src/**/*.{js,jsx,ts,tsx}\" --fix",
+    "lint": "pnpm biome check src",
+    "lint:fix": "pnpm biome check --write src",
     "lint:scss": "npx stylelint \"**/*.scss\"",
     "lint:scss:fix": "npx stylelint \"**/*.scss\" --fix",
     "test:unit": "vitest",
@@ -72,6 +72,7 @@
     "zod": "^3.24.2"
   },
   "devDependencies": {
+    "@biomejs/biome": "1.9.4",
     "@chromatic-com/storybook": "^3.2.4",
     "@eslint/js": "^9.21.0",
     "@storybook/addon-essentials": "^8.5.8",

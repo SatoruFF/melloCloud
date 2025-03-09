@@ -1,12 +1,16 @@
-import React, { useState } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
-import { Button, notification, Drawer, Divider, Tooltip } from 'antd';
-import { ApiOutlined, SettingOutlined, MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
-import { motion } from 'framer-motion';
-import { useMediaQuery } from 'react-responsive';
+import { ApiOutlined, MenuFoldOutlined, MenuUnfoldOutlined, SettingOutlined } from '@ant-design/icons';
+import { Button, Divider, Drawer, Tooltip, notification } from 'antd';
 import cn from 'classnames';
+import { motion } from 'framer-motion';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useMediaQuery } from 'react-responsive';
+import { NavLink, useNavigate } from 'react-router-dom';
 
+import { logout } from '../../../app/store/reducers/userSlice';
+import { useAppDispatch, useAppSelector } from '../../../app/store/store';
+import WorkspacesDropdown from '../../../features/workspaceDropdown/ui/WorkspacesDropdown';
+import avatarIcon from '../../../shared/assets/avatar-icon.png';
 import {
   FILE_ROUTE,
   LOGIN_ROUTE,
@@ -14,15 +18,11 @@ import {
   REGISTRATION_ROUTE,
   WELCOME_ROUTE,
 } from '../../../shared/consts/routes';
-import { useAppDispatch, useAppSelector } from '../../../app/store/store';
-import { logout } from '../../../app/store/reducers/userSlice';
 import AccountSettings from '../../accountSettings/ui/AccountSettings.';
-import avatarIcon from '../../../shared/assets/avatar-icon.png';
-import WorkspacesDropdown from '../../../features/workspaceDropdown/ui/WorkspacesDropdown';
 
 import mainLogo from '../../../shared/assets/octopus-kid.jpg';
-import styles from '../styles/navbar.module.scss';
 import LanguageSwitcher from '../../languageSwitcher/ui/LanguageSwitcher';
+import styles from '../styles/navbar.module.scss';
 
 // TODO: add storybook
 const MyNavbar: React.FC = () => {
@@ -48,7 +48,7 @@ const MyNavbar: React.FC = () => {
   };
 
   return (
-    <div className={cn(styles.navbar)} data-testid="navbar">
+    <header className={cn(styles.navbar)} data-testid="navbar">
       <div className={cn(styles.baseItems)}>
         <LanguageSwitcher />
         <div className={cn(styles.mainLogo)}>
@@ -149,7 +149,7 @@ const MyNavbar: React.FC = () => {
           </div>
         </div>
       )}
-    </div>
+    </header>
   );
 };
 

@@ -1,17 +1,17 @@
-import _ from 'lodash-es';
 import { QuestionCircleOutlined } from '@ant-design/icons';
+import { unwrapResult } from '@reduxjs/toolkit';
 import { Button, Popconfirm, Tooltip, message } from 'antd';
 import { motion } from 'framer-motion';
-import { unwrapResult } from '@reduxjs/toolkit';
+import _ from 'lodash-es';
 
-import { useAppDispatch, useAppSelector } from '../../../app/store/store';
 import { pushToPath, pushToStack, setDir, setFiles } from '../../../app/store/reducers/fileSlice';
+import { useAppDispatch, useAppSelector } from '../../../app/store/store';
+import FileViewer from '../../../features/fileViewer/ui/FileViewer';
 import { useDeleteFileMutation, useDownloadFileMutation, useGetFilesQuery } from '../../../shared/api/file';
 import { sizeFormat } from '../../../shared/utils/sizeFormat';
-import FileViewer from '../../../features/fileViewer/ui/FileViewer';
 
-import styles from '../styles/file.module.scss';
 import cn from 'classnames';
+import styles from '../styles/file.module.scss';
 import { FileProps } from '../types/file';
 
 const File: React.FC<FileProps> = ({ file }) => {

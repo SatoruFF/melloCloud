@@ -1,15 +1,15 @@
-import { Dropdown, MenuProps, Space } from 'antd';
-import { useTranslation } from 'react-i18next';
 import {
+  ApiOutlined,
+  CarryOutOutlined,
   DownOutlined,
   FieldTimeOutlined,
-  SendOutlined,
-  SnippetsOutlined,
-  CarryOutOutlined,
   FolderOpenOutlined,
-  ApiOutlined,
+  SendOutlined,
   SettingOutlined,
+  SnippetsOutlined,
 } from '@ant-design/icons';
+import { Dropdown, MenuProps, Space } from 'antd';
+import { useTranslation } from 'react-i18next';
 import { NavLink } from 'react-router-dom';
 // import { useMediaQuery } from "react-responsive";
 import { CHATS_ROUTE, FILE_ROUTE, NOTES_ROUTE, POMODORO_ROUTE, TODO_ROUTE } from '../../../shared/consts/routes';

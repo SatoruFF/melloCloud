@@ -1,6 +1,6 @@
-import "dotenv/config";
-import _ from "lodash";
-import jwt from "jsonwebtoken";
+import 'dotenv/config';
+import jwt from 'jsonwebtoken';
+import _ from 'lodash';
 
 const accessSecretKey = process.env.ACCESS_SECRET_KEY;
 const refreshSecretKey = process.env.REFRESH_SECRET_KEY;

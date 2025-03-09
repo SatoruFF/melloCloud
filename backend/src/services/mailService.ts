@@ -1,11 +1,11 @@
 // @ts-nocheck
 // FIXME: remove this in future
-import _ from "lodash";
+import _ from 'lodash';
 
-import "dotenv/config.js";
-import nodemailer from "nodemailer";
+import 'dotenv/config.js';
+import nodemailer from 'nodemailer';
 
-import { getTemplate } from "../utils/getTemplate.js";
+import { getTemplate } from '../utils/getTemplate.js';
 
 class MailServiceClass {
   transport: any;
@@ -26,8 +26,8 @@ class MailServiceClass {
     await this.transport.sendMail({
       from: process.env.SMTP_USER,
       to,
-      subject: `Account activation on ${process.env.SEVICE_NAME || "mello"}`,
-      text: "",
+      subject: `Account activation on ${process.env.SEVICE_NAME || 'mello'}`,
+      text: '',
       html: getTemplate(userData),
     });
   }

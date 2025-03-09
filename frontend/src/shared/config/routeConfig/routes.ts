@@ -1,18 +1,18 @@
-import { FC, lazy, ReactElement } from 'react';
+import { FC, ReactElement, lazy } from 'react';
 import React from 'react';
 
 import {
-  WELCOME_ROUTE,
-  REGISTRATION_ROUTE,
-  LOGIN_ROUTE,
-  FILE_ROUTE,
-  PROFILE_ROUTE,
-  POMODORO_ROUTE,
-  CHATS_ROUTE,
-  NOTES_ROUTE,
-  TODO_ROUTE,
   ACTIVATION_ROUTE,
+  CHATS_ROUTE,
+  FILE_ROUTE,
+  LOGIN_ROUTE,
+  NOTES_ROUTE,
   NOT_FOUND,
+  POMODORO_ROUTE,
+  PROFILE_ROUTE,
+  REGISTRATION_ROUTE,
+  TODO_ROUTE,
+  WELCOME_ROUTE,
 } from '../../consts/routes';
 
 import { NotFoundPage } from '../../../pages/notFoundPage';

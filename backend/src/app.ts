@@ -2,15 +2,15 @@
 import express, { Express, Response } from 'express';
 import router from './routes/index.js';
 
+import cookieParser from 'cookie-parser';
 // middleware
 import cors from 'cors';
-import cookieParser from 'cookie-parser';
 import fileUpload from 'express-fileupload';
 import { routesMiddleWare } from './middleware/routes.middleware.js';
 
+import qs from 'qs';
 // utils
 import { logger } from './configs/logger.js';
-import qs from 'qs';
 import 'dotenv/config.js';
 
 // performing

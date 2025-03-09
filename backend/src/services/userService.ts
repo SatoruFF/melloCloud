@@ -1,18 +1,18 @@
+import { prisma } from '../configs/config.js';
+import { UserDto } from '../helpers/dtos/user-dto.js';
 // @ts-nocheck
 // FIXME: remove this in future
 // base
 import { FileService } from './fileService.js';
 import { MailService } from './mailService.js';
-import { prisma } from '../configs/config.js';
-import { UserDto } from '../helpers/dtos/user-dto.js';
 
+import bcrypt from 'bcrypt';
 // utils
 import _ from 'lodash';
-import bcrypt from 'bcrypt';
 import 'dotenv/config.js';
+import createError from 'http-errors';
 // import { v4 as uuidv4 } from "uuid";
 import { generateJwt } from '../utils/generateJwt.js';
-import createError from 'http-errors';
 import { validateAccessToken, validateRefreshToken } from '../utils/validateJwt.js';
 
 interface IUserData {
@@ -41,7 +41,7 @@ class UserServiceClass {
 
       const hashPassword = await bcrypt.hash(password, 5);
 
-      let invite = await trx.invite.create({
+      const invite = await trx.invite.create({
         data: {
           userName,
           email,

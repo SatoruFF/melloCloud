@@ -1,15 +1,15 @@
+import { InboxOutlined } from '@ant-design/icons';
 import { Button, Modal, Upload, message } from 'antd';
 import type { UploadProps } from 'antd';
-import { InboxOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 
+import { addNewFile } from '../../../app/store/reducers/fileSlice';
 import { useAppSelector } from '../../../app/store/store';
 import { useAppDispatch } from '../../../app/store/store';
-import { addNewFile } from '../../../app/store/reducers/fileSlice';
 import { Variables } from '../../../shared/api/localVariables';
 
-import styles from '../styles/uploadModal.module.scss';
 import cn from 'classnames';
+import styles from '../styles/uploadModal.module.scss';
 
 const { Dragger } = Upload;
 

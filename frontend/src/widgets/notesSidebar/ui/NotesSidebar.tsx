@@ -1,5 +1,5 @@
-import { Layout, Menu, Avatar, Typography } from 'antd';
-import { SearchOutlined, SettingOutlined, FileAddOutlined, DeleteOutlined } from '@ant-design/icons';
+import { DeleteOutlined, FileAddOutlined, SearchOutlined, SettingOutlined } from '@ant-design/icons';
+import { Avatar, Layout, Menu, Typography } from 'antd';
 import cn from 'classnames';
 import styles from './notes-sidebar.module.scss';
 

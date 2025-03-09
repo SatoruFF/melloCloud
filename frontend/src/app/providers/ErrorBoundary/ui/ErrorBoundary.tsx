@@ -1,8 +1,8 @@
-import React, { ErrorInfo, ReactNode, Suspense } from 'react';
-import { withTranslation } from 'react-i18next';
-import type { TFunction } from 'i18next';
 import { Spin } from 'antd';
 import cn from 'classnames';
+import type { TFunction } from 'i18next';
+import React, { ErrorInfo, ReactNode, Suspense } from 'react';
+import { withTranslation } from 'react-i18next';
 
 import { PageError } from '../../../../widgets/PageError';
 import styles from './error-boundary.module.scss';

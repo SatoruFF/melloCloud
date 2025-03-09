@@ -1,5 +1,5 @@
-import jwt from "jsonwebtoken";
-import "dotenv/config";
+import jwt from 'jsonwebtoken';
+import 'dotenv/config';
 
 const accessSecretKey = process.env.ACCESS_SECRET_KEY;
 const refreshSecretKey = process.env.REFRESH_SECRET_KEY;
@@ -11,8 +11,8 @@ export const generateJwt = (payload: number | string) => {
     },
     accessSecretKey as string,
     {
-      expiresIn: "1h",
-    }
+      expiresIn: '1h',
+    },
   );
 
   const refreshToken = jwt.sign(
@@ -21,8 +21,8 @@ export const generateJwt = (payload: number | string) => {
     },
     refreshSecretKey as string,
     {
-      expiresIn: "30d",
-    }
+      expiresIn: '30d',
+    },
   );
 
   return { accessToken, refreshToken };

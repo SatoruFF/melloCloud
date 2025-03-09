@@ -1,18 +1,18 @@
-import { useState } from 'react';
-import { Form, Input, Checkbox, Button, Spin, message, notification } from 'antd';
-import Divider from 'antd/es/divider';
-import { NavLink, useNavigate } from 'react-router-dom';
 import { SmileOutlined } from '@ant-design/icons';
 import { unwrapResult } from '@reduxjs/toolkit';
+import { Button, Checkbox, Form, Input, Spin, message, notification } from 'antd';
+import Divider from 'antd/es/divider';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { NavLink, useNavigate } from 'react-router-dom';
 
-import { FILE_ROUTE, REGISTRATION_ROUTE } from '../../../shared/consts/routes';
-import { useAppDispatch } from '../../../app/store/store';
 import { setUser } from '../../../app/store/reducers/userSlice';
+import { useAppDispatch } from '../../../app/store/store';
 import { userApi } from '../../../shared/api/user';
+import { FILE_ROUTE, REGISTRATION_ROUTE } from '../../../shared/consts/routes';
 
-import styles from '../styles/auth.module.scss';
 import cn from 'classnames';
+import styles from '../styles/auth.module.scss';
 
 const Login = () => {
   const { t } = useTranslation();

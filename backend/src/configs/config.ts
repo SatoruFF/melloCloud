@@ -1,10 +1,12 @@
-import "dotenv/config";
+import 'dotenv/config';
 
-// services
-import ImageKit from "imagekit";
-import AWS from "aws-sdk";
 // import { S3 } from "@aws-sdk/client-s3";
-import { Prisma, PrismaClient } from "@prisma/client";
+import { PrismaClient } from '@prisma/client';
+import AWS from 'aws-sdk';
+// services
+import ImageKit from 'imagekit';
+
+export const FETCH_LIMIT = process.env.FETCH_LIMIT || 10000;
 
 interface ImageKitConfig {
   publicKey: string;
@@ -30,13 +32,13 @@ AWS.config.update({
 });
 
 export const s3: any = new AWS.S3({
-  endpoint: "https://storage.yandexcloud.net",
+  endpoint: 'https://storage.yandexcloud.net',
 });
 
 // prisma init
 export const prisma = new PrismaClient({
-  log: ["query", "info", "error"],
-  errorFormat: "pretty",
+  log: ['query', 'info', 'error'],
+  errorFormat: 'pretty',
   transactionOptions: {
     maxWait: 10000, // default: 2000
     timeout: 20000, // default: 5000

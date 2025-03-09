@@ -1,7 +1,7 @@
-import { Navigate, useLocation } from 'react-router-dom';
-import { useAppSelector } from '../../../store/store';
-import { WELCOME_ROUTE } from '../../../../shared/consts/routes';
 import { ReactNode } from 'react';
+import { Navigate, useLocation } from 'react-router-dom';
+import { WELCOME_ROUTE } from '../../../../shared/consts/routes';
+import { useAppSelector } from '../../../store/store';
 
 export function RequireAuth({ children }: { children: ReactNode }) {
   const isAuth = useAppSelector(state => state.users.isAuth);
