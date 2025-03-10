@@ -6,7 +6,7 @@ import cn from 'classnames';
 import { memo, useCallback } from 'react';
 import { IFile } from '../../../entities/file';
 import { ObservablePage } from '../../../shared';
-import styles from '../styles/fileList.module.scss';
+import styles from './fileList.module.scss';
 
 // const mockFiles = new Array(1000).fill({
 //   id: '10',
@@ -22,7 +22,7 @@ const Filelist: React.FC = () => {
   const fileView = useAppSelector(state => state.files.view);
 
   const onLoadNextPart = useCallback(() => {
-    debugger;
+    // debugger;
     console.log(123); // TODO: add offset and limit logic with state and add loading
   }, []);
 

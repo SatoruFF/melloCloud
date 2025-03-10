@@ -19,7 +19,7 @@ export const useInfiniteScroll = ({ callback, triggerRef, wrapperRef }: IUseInfi
 
     const options = {
       root: wrapperElement,
-      rootMargin: '100px', // extend scope to100px
+      rootMargin: '0px', // extend scope to100px
       threshold: 0.1, // 10% from elem visibility
     };
 

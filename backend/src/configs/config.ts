@@ -8,6 +8,8 @@ import ImageKit from 'imagekit';
 
 export const FETCH_LIMIT = process.env.FETCH_LIMIT || 10000;
 
+export const port = Number(process.env.PORT || 3002);
+
 interface ImageKitConfig {
   publicKey: string;
   privateKey: string;

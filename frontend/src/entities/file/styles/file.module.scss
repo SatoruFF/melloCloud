@@ -126,11 +126,11 @@
     @extend %secondFont;
   }
 
-  .file-btns {
+  .fileBtn {
     display: none;
   }
   &:hover {
-    .file-btns {
+    .fileBtn {
       display: block;
     }
   }

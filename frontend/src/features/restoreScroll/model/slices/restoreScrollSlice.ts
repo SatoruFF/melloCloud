@@ -4,7 +4,7 @@ const initialState = {
   scroll: {},
 };
 
-const restoreScrollSice = createSlice({
+const restoreScrollSlice = createSlice({
   name: 'restoreSlice',
   initialState,
   reducers: {
@@ -14,5 +14,5 @@ const restoreScrollSice = createSlice({
   },
 });
 
-export const { actions: restoreScrollActions } = restoreScrollSice;
-export const { reducer: restoreScrollReducer } = restoreScrollSice;
+export const { actions: restoreScrollActions } = restoreScrollSlice;
+export const { reducer: restoreScrollReducer } = restoreScrollSlice;

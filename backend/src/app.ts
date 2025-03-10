@@ -1,5 +1,5 @@
 // bases
-import express, { Express, Response } from 'express';
+import express, { type Express, type Response } from 'express';
 import router from './routes/index.js';
 
 import cookieParser from 'cookie-parser';
@@ -17,11 +17,15 @@ import 'dotenv/config.js';
 import cluster from 'cluster';
 import { cpus } from 'os';
 import { limiter } from './configs/rateLimiter.js';
+import { port } from './configs/config.js';
+import { setupWebSocketServer } from './helpers/setupWebSocket.js';
 const numCPU = cpus().length;
 
 // base consts
 const app: Express = express();
-const port = process.env.PORT || 3002;
+
+// WS
+// setupWebSocketServer();
 
 // middleware
 app.use(
@@ -38,7 +42,7 @@ app.use(fileUpload({}));
 app.use(limiter);
 // app.use(express.static('static'))
 
-app.set('query parser', function (str) {
+app.set('query parser', str => {
   const depth = 15;
   return qs.parse(str, { depth });
 });
@@ -60,11 +64,11 @@ if (cluster.isPrimary) {
     cluster.fork();
   }
 
-  cluster.on('online', function (worker) {
+  cluster.on('online', worker => {
     logger.info('Worker ' + worker.process.pid + ' is alive.');
   });
 
-  cluster.on('exit', function (worker, code, signal) {
+  cluster.on('exit', (worker, code, signal) => {
     logger.error('worker ' + worker.process.pid + ' died.');
   });
 } else {
