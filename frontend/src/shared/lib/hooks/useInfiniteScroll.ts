@@ -20,7 +20,7 @@ export const useInfiniteScroll = ({ callback, triggerRef, wrapperRef }: IUseInfi
     const options = {
       root: wrapperElement,
       rootMargin: '0px', // extend scope to100px
-      threshold: 0.1, // 10% from elem visibility
+      threshold: 0.5, // 50% from elem visibility
     };
 
     observer = new IntersectionObserver(([entry]) => {
