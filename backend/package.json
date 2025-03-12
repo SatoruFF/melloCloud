@@ -12,8 +12,8 @@
     "start:prisma": "concurrently \"npx tsc --watch\" \"nodemon dist/app.js\" \"prisma studio\"",
     "start:node": "concurrently \"npx tsc --watch\" \"nodemon dist/app.js\"",
     "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx}\"",
-    "lint": "pnpm biome check src",
-    "lint:fix": "pnpm biome check --write src",
+    "lint": "pnpm oxlint lint src",
+    "lint:fix": "pnpm oxlint lint src --fix",
     "test": "jest",
     "prepare": "husky"
   },
@@ -76,9 +76,13 @@
     "eslint-plugin-n": "^15.0.0 || ^16.0.0 ",
     "eslint-plugin-promise": "^6.0.0",
     "husky": "^9.1.7",
-    "jest": "^29.7.0"
+    "jest": "^29.7.0",
+    "oxlint": "^0.15.14"
   },
   "prisma": {
     "schema": "src/prisma/schema.prisma"
+  },
+  "lint-staged": {
+    "**/*.{js,mjs,cjs,jsx,ts,mts,cts,tsx,vue,astro,svelte}": "oxlint"
   }
 }
