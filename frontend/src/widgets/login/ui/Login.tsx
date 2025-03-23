@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { NavLink, useNavigate } from 'react-router-dom';
 
-import { setUser } from '../../../app/store/reducers/userSlice';
+import { setUser } from '../../../entities/user/model/slice/userSlice';
 import { useAppDispatch } from '../../../app/store/store';
 import { userApi } from '../../../shared/api/user';
 import { FILE_ROUTE, REGISTRATION_ROUTE } from '../../../shared/consts/routes';
@@ -33,11 +33,10 @@ const Login = () => {
       const user: any = await setLogin({
         email,
         password,
-      });
+      }).unwrap();
       if (logError) {
         return message.error(`error: ${logError.error}`); // idk why, but if stat code != 200, this code does not fall to catch
       }
-      unwrapResult(user);
       const userData = user.data ? user.data : user;
       dispatch(setUser(userData as any));
       notification.open({

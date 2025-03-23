@@ -12,8 +12,8 @@
     "start:prisma": "concurrently \"npx tsc --watch\" \"nodemon dist/app.js\" \"prisma studio\"",
     "start:node": "concurrently \"npx tsc --watch\" \"nodemon dist/app.js\"",
     "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx}\"",
-    "lint": "pnpm oxlint lint src",
-    "lint:fix": "pnpm oxlint lint src --fix",
+    "lint": "pnpm biome check src",
+    "lint:fix": "pnpm biome check --write src",
     "test": "jest",
     "prepare": "husky"
   },

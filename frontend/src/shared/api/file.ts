@@ -1,5 +1,8 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import _ from 'lodash-es';
 import { Variables } from './localVariables';
+import { addQueryParams } from '../lib/url/addQueryParams/addQueryParams';
+import { generateParams } from '../lib/url/generateParams/generateParams';
 
 const url = Variables.File_URL;
 
@@ -52,7 +55,13 @@ export const fileApi = createApi({
       }),
     }),
     getFiles: builder.query<any, any>({
-      query: (params: string) => `file${params ? params : ''}`,
+      query: (params: Record<string, string>) => {
+        console.log('⚠ :: params:', params);
+        params = { ..._.omitBy(params, value => value === '' || value === undefined), limit: '50' };
+        addQueryParams(params);
+        const queryParams = generateParams(params);
+        return `file${queryParams ? queryParams : ''}`;
+      },
     }),
   }),
 });

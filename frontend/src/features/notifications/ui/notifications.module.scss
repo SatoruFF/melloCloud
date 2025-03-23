@@ -1,0 +1,40 @@
+.notifications {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+
+  .iconWrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .icon {
+    font-size: 24px;
+    color: white;
+    transition: color 0.3s ease;
+
+    &:hover {
+      color: #40a9ff; // Цвет иконки при наведении
+    }
+  }
+
+  .badge {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background-color: #ff4d4f; // Красный цвет для счетчика
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+    border-radius: 50%;
+    padding: 4px 8px;
+    min-width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+}

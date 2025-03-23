@@ -10,8 +10,7 @@ import { NOT_FOUND } from '../../../../shared/consts/routes';
 import { RequireAuth } from './RequireAuth';
 
 const AppRouter = () => {
-  const isAuth = useAppSelector(state => state.users.isAuth);
-  const isUserLoading = useAppSelector(state => state.users.isUserLoading);
+  const isUserLoading = useAppSelector(state => state.user.isUserLoading);
 
   const renderWithWrapper = useCallback((route: IRoute) => {
     const element = (
@@ -24,7 +23,7 @@ const AppRouter = () => {
       <Route
         key={route.path}
         path={route.path}
-        element={route.private ? <RequireAuth>{element}</RequireAuth> : element}
+        element={route.private ? <RequireAuth roles={route?.roles}>{element}</RequireAuth> : element}
       />
     );
   }, []);

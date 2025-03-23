@@ -1,5 +1,5 @@
-import { Spin } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
+import { Spin } from 'antd';
 import cn from 'classnames';
 import { useTranslation } from 'react-i18next';
 import styles from './spinner.module.scss';

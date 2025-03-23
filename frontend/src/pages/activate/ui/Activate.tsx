@@ -4,7 +4,7 @@ import cn from 'classnames';
 import _ from 'lodash-es';
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { setUser } from '../../../app/store/reducers/userSlice';
+import { setUser } from '../../../entities/user/model/slice/userSlice';
 import { useAppDispatch, useAppSelector } from '../../../app/store/store';
 import { useActivateUserMutation } from '../../../shared/api/user';
 
@@ -12,7 +12,7 @@ import { FILE_ROUTE } from '../../../shared/consts/routes';
 import styles from '../styles/activate.module.scss';
 
 const Activate = () => {
-  const user = useAppSelector(state => state.users.currentUser);
+  const user = useAppSelector(state => state.user);
   const [searchParams] = useSearchParams();
   const [activateUser, { isLoading, isSuccess, isError, error }]: any = useActivateUserMutation();
   const [status, setStatus] = useState<'idle' | 'success' | 'error' | 'loading'>('idle');

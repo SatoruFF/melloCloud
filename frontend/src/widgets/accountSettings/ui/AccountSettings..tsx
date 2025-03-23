@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
-import { logout } from '../../../app/store/reducers/userSlice';
+import { logout } from '../../../entities/user/model/slice/userSlice';
 import { useAppDispatch, useAppSelector } from '../../../app/store/store';
 import DeleteModal from '../../../features/deleteModal/ui/DeleteModal';
 import InfoModal from '../../../features/infoModal/ui/InfoModal';
@@ -20,7 +20,7 @@ const AccountSettings = () => {
   const [changePassModal, setChangePassModal] = useState(false);
   const [deleteModal, setDeleteModal] = useState(false);
 
-  const user = useAppSelector(state => state.users.currentUser);
+  const user = useAppSelector(state => state.user);
   const totalSpace = sizeFormat(user.diskSpace);
   const usedSize = sizeFormat(user.usedSpace);
 

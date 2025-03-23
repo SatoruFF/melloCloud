@@ -5,7 +5,7 @@ import React, { ErrorInfo, ReactNode, Suspense } from 'react';
 import { withTranslation } from 'react-i18next';
 
 import { PageError } from '../../../../widgets/PageError';
-import styles from './error-boundary.module.scss';
+// import styles from './error-boundary.module.scss';
 
 interface ErrorBoundaryProps {
   children: ReactNode;

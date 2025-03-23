@@ -7,7 +7,7 @@ import storageIcon from '../../../shared/assets/cloud-data.png';
 import desktopIcon from '../../../shared/assets/desktop.png';
 import gitIcon from '../../../shared/assets/github-icon.png';
 import mobileIcon from '../../../shared/assets/mobile-phone.png';
-import mainLogo from '../../../shared/assets/octopus-kid.jpg';
+import mainLogo from '../../../shared/assets/octop-main.png';
 import telegramLogo from '../../../shared/assets/telegram.png';
 import twitterLogo from '../../../shared/assets/twitter.png';
 

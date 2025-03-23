@@ -3,9 +3,9 @@ import { Button, Modal, Upload, message } from 'antd';
 import type { UploadProps } from 'antd';
 import { useTranslation } from 'react-i18next';
 
-import { addNewFile } from '../../../app/store/reducers/fileSlice';
 import { useAppSelector } from '../../../app/store/store';
 import { useAppDispatch } from '../../../app/store/store';
+import { addNewFile } from '../../../entities/file/model/slice/fileSlice';
 import { Variables } from '../../../shared/api/localVariables';
 
 import cn from 'classnames';

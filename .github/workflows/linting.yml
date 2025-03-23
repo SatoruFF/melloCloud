@@ -2,9 +2,9 @@ name: linting, tests
 
 on:
   push:
-    branches: [master]
+    branches: [master, dev]
   pull_request:
-    branches: [master]
+    branches: [master, dev]
 
 jobs:
   frontend:
@@ -23,7 +23,7 @@ jobs:
           cache: "npm"
 
       - name: Install frontend dependencies
-        run: npm install
+        run: npm ci --force
 
       - name: Run frontend linting
         run: npm run lint
@@ -54,7 +54,7 @@ jobs:
           cache: "npm"
 
       - name: Install backend dependencies
-        run: npm install
+        run: npm ci --force
 
       - name: Run backend linting
         run: npm run lint

@@ -7,7 +7,7 @@ import { messageApi } from '../../../shared/api/messages';
 import { userApi } from '../../../shared/api/user';
 
 export interface StateSchema {
-  users: UserSchema; // Тип для состояния пользователей
+  user: UserSchema; // Тип для состояния пользователей
   files: FileListSchema; // Тип для состояния файлов
   messages: MessageSchema; // Тип для состояния сообщений
   [userApi.reducerPath]: ReturnType<typeof userApi.reducer>; // Тип для API пользователей

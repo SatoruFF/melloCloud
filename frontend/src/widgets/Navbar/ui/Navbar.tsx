@@ -2,12 +2,12 @@ import { ApiOutlined, MenuFoldOutlined, MenuUnfoldOutlined, SettingOutlined } fr
 import { Button, Divider, Drawer, Tooltip, notification } from 'antd';
 import cn from 'classnames';
 import { motion } from 'framer-motion';
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useMediaQuery } from 'react-responsive';
 import { NavLink, useNavigate } from 'react-router-dom';
 
-import { logout } from '../../../app/store/reducers/userSlice';
+import { logout } from '../../../entities/user/model/slice/userSlice';
 import { useAppDispatch, useAppSelector } from '../../../app/store/store';
 import WorkspacesDropdown from '../../../features/workspaceDropdown/ui/WorkspacesDropdown';
 import avatarIcon from '../../../shared/assets/avatar-icon.png';
@@ -20,6 +20,7 @@ import {
 } from '../../../shared/consts/routes';
 import AccountSettings from '../../accountSettings/ui/AccountSettings.';
 
+import { Notifications } from '../../../features/notifications';
 import mainLogo from '../../../shared/assets/octopus-kid.jpg';
 import LanguageSwitcher from '../../languageSwitcher/ui/LanguageSwitcher';
 import styles from '../styles/navbar.module.scss';
@@ -27,8 +28,8 @@ import styles from '../styles/navbar.module.scss';
 // TODO: add storybook
 const MyNavbar: React.FC = () => {
   const { t } = useTranslation();
-  const isAuth = useAppSelector(state => state.users.isAuth);
-  const user = useAppSelector(state => state.users.currentUser);
+  const isAuth = useAppSelector(state => state.user.isAuth);
+  const user = useAppSelector(state => state.user);
   const [profile, setProfile] = useState(false);
   const [burger, setBurger] = useState(false);
   const dispatch = useAppDispatch();
@@ -36,7 +37,7 @@ const MyNavbar: React.FC = () => {
   const avatar = user.avatar ? user.avatar : avatarIcon;
   const isTabletOrMobile = useMediaQuery({ query: '(max-width: 1224px)' });
 
-  const logOut = () => {
+  const logOut = useCallback(() => {
     dispatch(logout());
     navigate(WELCOME_ROUTE);
     notification.open({
@@ -45,7 +46,7 @@ const MyNavbar: React.FC = () => {
       placement: 'topLeft',
       icon: <ApiOutlined style={{ color: '#ff7875' }} />,
     });
-  };
+  }, []);
 
   return (
     <header className={cn(styles.navbar)} data-testid="navbar">
@@ -82,6 +83,7 @@ const MyNavbar: React.FC = () => {
                 </div>
               </Tooltip>
             )}
+            <Notifications />
             <div className={cn(styles.avatar)}>
               <img src={avatar} onClick={() => navigate(PROFILE_ROUTE)} />
             </div>

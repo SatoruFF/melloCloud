@@ -7,12 +7,20 @@ import {
   SendOutlined,
   SettingOutlined,
   SnippetsOutlined,
+  UserOutlined,
 } from '@ant-design/icons';
 import { Dropdown, MenuProps, Space } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { NavLink } from 'react-router-dom';
 // import { useMediaQuery } from "react-responsive";
-import { CHATS_ROUTE, FILE_ROUTE, NOTES_ROUTE, POMODORO_ROUTE, TODO_ROUTE } from '../../../shared/consts/routes';
+import {
+  ADMIN_PANEL,
+  CHATS_ROUTE,
+  FILE_ROUTE,
+  NOTES_ROUTE,
+  POMODORO_ROUTE,
+  TODO_ROUTE,
+} from '../../../shared/consts/routes';
 
 const WorkspacesDropdown = ({ viewAll, logOut, setProfile }: { viewAll: boolean; logOut: any; setProfile: any }) => {
   const { t } = useTranslation();
@@ -35,6 +43,12 @@ const WorkspacesDropdown = ({ viewAll, logOut, setProfile }: { viewAll: boolean;
     },
     {
       key: '4',
+      label: <NavLink to={ADMIN_PANEL}>{t('tabs.admin-panel')}</NavLink>,
+      danger: false,
+      icon: <UserOutlined />,
+    },
+    {
+      key: '5',
       label: <NavLink to={POMODORO_ROUTE}>{t('tabs.pomodoro')}</NavLink>,
       danger: true,
       icon: <FieldTimeOutlined />,
@@ -44,17 +58,17 @@ const WorkspacesDropdown = ({ viewAll, logOut, setProfile }: { viewAll: boolean;
   if (viewAll) {
     items.push(
       {
-        key: '5',
+        key: '6',
         label: <NavLink to={FILE_ROUTE}>{t('tabs.files')}</NavLink>,
         icon: <FolderOpenOutlined />,
       },
       {
-        key: '6',
+        key: '7',
         label: <div onClick={() => setProfile(true)}>{t('tabs.settings')}</div>,
         icon: <SettingOutlined />,
       },
       {
-        key: '7',
+        key: '8',
         label: <div onClick={() => logOut()}>{t('auth.logout')}</div>,
         icon: <ApiOutlined />,
       },

@@ -3,7 +3,7 @@ import _ from 'lodash';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useAppSelector } from '../../../app/store/store';
+import { useAppDispatch, useAppSelector } from '../../../app/store/store';
 import { useChangeInfoMutation } from '../../../shared/api/user';
 
 const InfoModal = ({ status, def }) => {
@@ -11,7 +11,7 @@ const InfoModal = ({ status, def }) => {
   const [userName, setUserName] = useState();
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();
-  const user = useAppSelector(state => state.users.currentUser);
+  const user = useAppSelector(state => state.user);
   const [changeUser, { data, isLoading, isError }] = useChangeInfoMutation();
   const changeInfo = () => {
     def(false);

@@ -67,7 +67,8 @@
     "chats": "Чаты",
     "notes": "Заметки",
     "to-do": "Задачи",
-    "pomodoro": "Pomodoro"
+    "pomodoro": "Pomodoro",
+    "admin-panel": "Панель администратора"
   },
   "buttons": {
     "ok": "ок",

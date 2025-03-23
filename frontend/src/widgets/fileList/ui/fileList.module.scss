@@ -1,9 +1,7 @@
-@use '../../../shared/styles/tmp.scss';
+@import '../../../shared/styles/tmp.scss';
 
 .filelistWrapper {
-  height: 90%;
   box-sizing: border-box;
-  position: relative;
   .fileListHeader {
     width: 100%;
     display: grid;

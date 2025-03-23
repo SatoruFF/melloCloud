@@ -1,7 +1,7 @@
 import { Avatar, List } from 'antd';
 import cn from 'classnames';
 import React from 'react';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { ResizableBox } from 'react-resizable';
 
 import { Search } from '../../../shared';

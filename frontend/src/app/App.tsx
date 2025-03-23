@@ -8,7 +8,7 @@ import './styles/global.scss';
 import { useAuthQuery } from '../shared/api/user';
 import MyNavbar from '../widgets/Navbar/ui/Navbar';
 import { ErrorBoundary } from './providers/ErrorBoundary';
-import { setUser } from './store/reducers/userSlice';
+import { setUser } from '../entities/user/model/slice/userSlice';
 import { useAppDispatch } from './store/store';
 
 function App() {

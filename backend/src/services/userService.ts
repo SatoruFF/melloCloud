@@ -1,5 +1,5 @@
 import { prisma } from '../configs/config.js';
-import { UserDto } from '../helpers/dtos/user-dto.js';
+import { IUserModel, UserDto } from '../helpers/dtos/user-dto.js';
 // @ts-nocheck
 // FIXME: remove this in future
 // base
@@ -125,18 +125,16 @@ class UserServiceClass {
       const usedSpace = user.usedSpace.toString();
 
       const userDto = new UserDto({
+        id: user.id,
+        userName: user.userName,
+        email: user.email,
+        diskSpace,
+        usedSpace,
+        avatar: user.avatar,
+        isActivated: user.isActivated,
+        role: user.role,
         token: accessToken,
         refreshToken,
-        user: {
-          id: user.id,
-          userName: user.userName,
-          email: user.email,
-          diskSpace,
-          usedSpace,
-          avatar: user.avatar,
-          isActivated: user.isActivated,
-          role: user.role,
-        },
       });
 
       return userDto;
@@ -172,17 +170,15 @@ class UserServiceClass {
       const usedSpace = user.usedSpace.toString();
 
       const userDto = new UserDto({
+        id: user.id,
+        userName: user.userName,
+        email: user.email,
+        diskSpace,
+        usedSpace,
+        avatar: user.avatar,
+        role: user.role,
         token: accessToken,
         refreshToken,
-        user: {
-          id: user.id,
-          userName: user.userName,
-          email: user.email,
-          diskSpace,
-          usedSpace,
-          avatar: user.avatar,
-          role: user.role,
-        },
       });
 
       return userDto;
@@ -202,17 +198,15 @@ class UserServiceClass {
     const usedSpace = user.usedSpace.toString();
 
     return new UserDto({
+      id: user.id,
+      userName: user.userName,
+      email: user.email,
+      diskSpace,
+      usedSpace,
+      avatar: user.avatar,
+      role: user.role,
       token: accessToken,
       refreshToken,
-      user: {
-        id: user.id,
-        userName: user.userName,
-        email: user.email,
-        diskSpace,
-        usedSpace,
-        avatar: user.avatar,
-        role: user.role,
-      },
     });
   }
 
@@ -280,7 +274,7 @@ class UserServiceClass {
       });
 
       return new UserDto({
-        user,
+        ...user,
         token: accessToken,
       });
     });

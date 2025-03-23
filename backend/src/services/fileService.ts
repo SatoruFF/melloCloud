@@ -110,7 +110,7 @@ class FileServiceClass {
   async getFiles(searchParams: ISearchParams) {
     const { sort, search, parentId, userId, offset = 0 } = searchParams;
 
-    const limit = searchParams.limit || FETCH_LIMIT;
+    const limit = !isNaN(Number(searchParams.limit)) ? searchParams.limit : Number(FETCH_LIMIT);
 
     let files: any;
 

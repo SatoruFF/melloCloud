@@ -1,14 +1,12 @@
-interface IUserModel {
-  user: {
-    id: number;
-    userName: string;
-    email: string;
-    diskSpace?: string | number;
-    usedSpace?: string | number;
-    avatar?: string | null;
-    role?: string;
-    isActivated?: boolean;
-  };
+export interface IUserModel {
+  id: number;
+  userName: string;
+  email: string;
+  diskSpace?: string | number;
+  usedSpace?: string | number;
+  avatar?: string | null;
+  role?: string;
+  isActivated?: boolean;
   token: string;
   refreshToken: string;
 }
@@ -24,23 +22,22 @@ export class UserDto {
     role: string;
     isActivated: boolean;
   };
+
   token: string;
   refreshToken: string;
 
   constructor(model: IUserModel) {
-    const { user, token, refreshToken } = model;
-
+    const { id, userName, email, diskSpace, usedSpace, avatar, role, isActivated, token, refreshToken } = model;
     this.user = {
-      id: user.id,
-      userName: user.userName,
-      email: user.email,
-      diskSpace: user.diskSpace,
-      usedSpace: user.usedSpace,
-      avatar: user.avatar || '',
-      role: user.role || 'USER',
-      isActivated: user.isActivated || false,
+      id,
+      userName,
+      email,
+      diskSpace,
+      usedSpace,
+      avatar: avatar || '',
+      role: role || 'USER',
+      isActivated: isActivated || false,
     };
-
     this.token = token;
     this.refreshToken = refreshToken;
   }

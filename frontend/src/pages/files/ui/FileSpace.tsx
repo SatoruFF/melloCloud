@@ -2,20 +2,27 @@ import { AppstoreOutlined, LeftOutlined, UnorderedListOutlined, UploadOutlined }
 import { Breadcrumb, Button, Input, Modal, Select, Spin, message } from 'antd';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import _ from 'lodash-es';
+import cn from 'classnames';
 
 import { unwrapResult } from '@reduxjs/toolkit';
-import { addNewFile, popToPath, popToStack, setDir, setFiles, setView } from '../../../app/store/reducers/fileSlice';
 import { useAppSelector } from '../../../app/store/store';
 import { useAppDispatch } from '../../../app/store/store';
+import {
+  addNewFile,
+  popToPath,
+  popToStack,
+  setDir,
+  setFiles,
+  setView,
+} from '../../../entities/file/model/slice/fileSlice';
 import UploadModal from '../../../features/uploadModal/ui/UploadModal';
 import { useCreateDirMutation, useGetFilesQuery } from '../../../shared/api/file';
-import { generateParams } from '../../../shared/lib/url/generateParams/generateParams';
 import Filelist from '../../../widgets/fileList/ui/Filelist';
 
-import cn from 'classnames';
 import { Search } from '../../../shared';
 import diskBack from '../../../shared/assets/disk-back.jpg';
-import styles from '../styles/fileSpace.module.scss';
+import styles from './fileSpace.module.scss';
 
 const FileSpace = () => {
   const { t } = useTranslation();
@@ -34,8 +41,8 @@ const FileSpace = () => {
   const onSearch = useCallback((value: string) => setSearch(value), []);
 
   //RTK query
-  const params = generateParams({ parent: currentDir, sort, search });
-  const { data, isLoading, refetch } = useGetFilesQuery(params ? params : null);
+  const params = { parent: currentDir, sort, search };
+  const { data, isLoading, refetch } = useGetFilesQuery(!_.isEmpty(params) ? params : null);
   const [addFile, { data: dirData, error: dirError }] = useCreateDirMutation();
 
   useEffect(() => {

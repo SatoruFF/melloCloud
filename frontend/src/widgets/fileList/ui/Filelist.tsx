@@ -7,18 +7,10 @@ import { memo, useCallback } from 'react';
 import { IFile } from '../../../entities/file';
 import { ObservablePage } from '../../../shared';
 import styles from './fileList.module.scss';
-
-// const mockFiles = new Array(1000).fill({
-//   id: '10',
-//   name: 'landscape.png',
-//   type: 'file',
-//   size: 3245678,
-//   url: 'https://img.icons8.com/?size=512&id=44442&format=png',
-//   updatedAt: '2023-10-06T16:49:28',
-// });
+import { getFilesSelector } from '../../../entities/file/model/selectors/getFiles';
 
 const Filelist: React.FC = () => {
-  const files = useAppSelector(state => state.files.files);
+  const files = useAppSelector(getFilesSelector);
   const fileView = useAppSelector(state => state.files.view);
 
   const onLoadNextPart = useCallback(() => {

@@ -16,6 +16,11 @@ interface IPage {
   onScrollEnd?: () => void;
 }
 
+/**
+ * ObservablePage component that wraps its children in a scrollable section.
+ * It saves the scroll position for each path and restores it on re-render.
+ * It also supports infinite scrolling by triggering a callback when the user scrolls to the end.
+ */
 const ObservablePage = ({ children, onScrollEnd }: IPage) => {
   const wrapperRef = useRef(null) as RefObject<HTMLDivElement | null>;
   const triggerRef = useRef(null) as RefObject<HTMLDivElement | null>;
@@ -36,7 +41,6 @@ const ObservablePage = ({ children, onScrollEnd }: IPage) => {
   });
 
   const onScrollHandler = useThrottle((e: UIEvent<HTMLDivElement>) => {
-    console.log('23', e.currentTarget.scrollTop);
     dispatch(
       restoreScrollActions.setScrollPosition({
         position: e.currentTarget.scrollTop || 0,

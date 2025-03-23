@@ -2,15 +2,16 @@ import type { BaseQueryFn, FetchArgs, FetchBaseQueryError } from '@reduxjs/toolk
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { Mutex } from 'async-mutex';
 
-import { logout, setUser, setUserLoading } from '../../app/store/reducers/userSlice';
+import { logout, setUser, setUserLoading } from '../../entities/user/model/slice/userSlice';
 import { Variables } from './localVariables';
 
 // create a new mutex
 const mutex = new Mutex();
 
 interface RegisterRequest {
-  firstName: string;
-  lastName: string;
+  // firstName: string;
+  // lastName: string;
+  userName: string;
   email: string;
   password: string;
 }

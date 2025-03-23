@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { NavLink, useNavigate } from 'react-router-dom';
 
-import { setUser } from '../../../app/store/reducers/userSlice';
+import { setUser } from '../../../entities/user/model/slice/userSlice';
 import { useAppDispatch } from '../../../app/store/store';
 import { userApi } from '../../../shared/api/user';
 import { ACTIVATION_ROUTE, LOGIN_ROUTE } from '../../../shared/consts/routes';

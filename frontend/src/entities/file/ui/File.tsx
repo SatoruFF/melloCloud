@@ -4,14 +4,14 @@ import { Button, Popconfirm, Tooltip, message } from 'antd';
 import { motion } from 'framer-motion';
 import _ from 'lodash-es';
 
-import { pushToPath, pushToStack, setDir, setFiles } from '../../../app/store/reducers/fileSlice';
 import { useAppDispatch, useAppSelector } from '../../../app/store/store';
 import FileViewer from '../../../features/fileViewer/ui/FileViewer';
 import { useDeleteFileMutation, useDownloadFileMutation, useGetFilesQuery } from '../../../shared/api/file';
 import { sizeFormat } from '../../../shared/utils/sizeFormat';
+import { pushToPath, pushToStack, setDir, setFiles } from '../model/slice/fileSlice';
 
 import cn from 'classnames';
-import styles from '../styles/file.module.scss';
+import styles from './file.module.scss';
 import { FileProps } from '../types/file';
 
 const File: React.FC<FileProps> = ({ file }) => {

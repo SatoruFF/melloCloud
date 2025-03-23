@@ -6,7 +6,7 @@ import cn from 'classnames';
 import _ from 'lodash-es';
 import { useTranslation } from 'react-i18next';
 
-import { deleteAvatar, setAvatar } from '../../../app/store/reducers/userSlice';
+import { deleteAvatar, setAvatar } from '../../../entities/user/model/slice/userSlice';
 import { useAppDispatch, useAppSelector } from '../../../app/store/store';
 import { useDeleteAvatarMutation } from '../../../shared/api/file';
 import { Variables } from '../../../shared/api/localVariables';
@@ -18,7 +18,7 @@ const { Paragraph } = Typography;
 
 const Profile = () => {
   const { t } = useTranslation();
-  const user = useAppSelector(state => state.users.currentUser);
+  const user = useAppSelector(state => state.user);
   const totalSpace = sizeFormat(user.diskSpace);
   const usedSize = sizeFormat(user.usedSpace);
   const dispatch = useAppDispatch();

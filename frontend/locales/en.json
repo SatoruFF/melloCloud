@@ -67,7 +67,8 @@
     "chats": "Chats",
     "notes": "Notes",
     "to-do": "To-do",
-    "pomodoro": "Pomodoro"
+    "pomodoro": "Pomodoro",
+    "admin-panel": "Admin panel"
   },
   "buttons": {
     "ok": "ok",

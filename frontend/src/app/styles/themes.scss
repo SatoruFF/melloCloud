@@ -1,0 +1,21 @@
+.lightTheme {
+  --primary-color: #ffffff; /* Основной цвет фона */
+  --secondary-color: #f0f0f0; /* Вторичный цвет фона */
+  --text-color: #333333; /* Цвет текста */
+  --accent-color: #007bff; /* Акцентный цвет (например, для кнопок) */
+  --border-color: #dddddd; /* Цвет границ */
+  --error-color: #ff4444; /* Цвет для ошибок */
+  --success-color: #00c851; /* Цвет для успешных действий */
+  --font-family: 'Arial', sans-serif; /* Шрифт */
+}
+
+.darkTheme {
+  --primary-color: #121212; /* Основной цвет фона */
+  --secondary-color: #1e1e1e; /* Вторичный цвет фона */
+  --text-color: #e0e0e0; /* Цвет текста */
+  --accent-color: #bb86fc; /* Акцентный цвет (например, для кнопок) */
+  --border-color: #333333; /* Цвет границ */
+  --error-color: #cf6679; /* Цвет для ошибок */
+  --success-color: #03dac6; /* Цвет для успешных действий */
+  --font-family: 'Arial', sans-serif; /* Шрифт */
+}
