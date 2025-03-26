@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import cn from 'classnames';
 import UploadModal from '../../../features/uploadModal/ui/UploadModal';
 import Filelist from '../../../widgets/fileList/ui/Filelist';
-import { Search } from '../../../shared';
+import { Search, Spinner } from '../../../shared';
 import diskBack from '../../../shared/assets/disk-back.jpg';
 import styles from './fileSpace.module.scss';
 import { useFiles } from '../lib/hooks/useFiles';
@@ -29,7 +29,7 @@ const FileSpace = () => {
   } = useFiles();
 
   if (isLoading || !data) {
-    return <Spin style={{ width: '100%', height: '100%', marginTop: '400px' }} />;
+    return <Spinner fullscreen />;
   }
 
   return (

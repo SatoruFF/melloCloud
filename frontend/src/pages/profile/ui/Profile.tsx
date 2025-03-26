@@ -13,6 +13,7 @@ import { Variables } from '../../../shared/api/localVariables';
 import avatarIcon from '../../../shared/assets/avatar-icon.png';
 import { sizeFormat } from '../../../shared/utils/sizeFormat';
 import styles from '../styles/profile.module.scss';
+import { Spinner } from '../../../shared';
 
 const { Paragraph } = Typography;
 
@@ -84,7 +85,7 @@ const Profile = () => {
             <img src={avatar} alt="avatar" loading="lazy" />
             <div className={cn(styles.profileBtns)}>
               {rmAvatarLoad ? (
-                <Spin style={{ marginRight: '35px' }} />
+                <Spinner />
               ) : (
                 <Button type="primary" danger onClick={() => changeAvatarHandler()}>
                   {t('buttons.delete-avatar')}

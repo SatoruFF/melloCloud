@@ -13,6 +13,7 @@ import { ACTIVATION_ROUTE, LOGIN_ROUTE } from '../../../shared/consts/routes';
 
 import cn from 'classnames';
 import styles from '../styles/auth.module.scss';
+import { Spinner } from '../../../shared';
 
 const Register = () => {
   const { t } = useTranslation();
@@ -83,7 +84,7 @@ const Register = () => {
       </Form>
       <div>
         {isLoading ? (
-          <Spin />
+          <Spinner />
         ) : (
           <Button onClick={() => handleCreate()} type="primary" htmlType="submit">
             {t('auth.submit')}

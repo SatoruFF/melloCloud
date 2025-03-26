@@ -1,0 +1,5 @@
+.fullscreenWrapper {
+  height: 90vh; // FIXME ! need calculate
+  width: 100%;
+  @extend %centerTemplate;
+}

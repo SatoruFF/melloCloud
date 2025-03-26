@@ -14,7 +14,7 @@ const FileViewer = ({ type, url }) => {
   const isImage = type == 'png' || type == 'jpg' || type == 'jpeg' || type == 'gif';
   const isPlayer = type == 'mp4' || type == 'webm' || type == 'ogv' || type == 'mp3' || type == 'hls' || type == 'dash';
   // need to destructure, cause in future this a big module
-  const determineViewer = (fileType: string, url: any) => {
+  const determineViewer = (fileType: string, url: string) => {
     if (fileType === 'dir') {
       // return <FolderFilled className={cn(styles.folder)} />;
       return <Folder size={50} className={cn(styles.folder)} />;

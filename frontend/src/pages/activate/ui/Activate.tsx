@@ -89,7 +89,7 @@ const Activate = () => {
         </div>
         <h1>Activation Email Sent</h1>
         <p className={cn(styles.activateInfo)}>
-          We have sent an activation email {_.isEmpty(user) ? '' : `(${user.email})`} to your registered email address.
+          We have sent an activation email {_.isEmpty(user) ? '' : `(${user?.email})`} to your registered email address.
           Please check your inbox to activate your account.
         </p>
         <p className={cn(styles.activateWarning)}>

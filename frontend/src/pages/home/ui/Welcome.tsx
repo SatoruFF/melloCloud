@@ -18,12 +18,6 @@ import styles from '../styles/welcome.module.scss';
 const Welcome = () => {
   const { t } = useTranslation();
 
-  // For test error boundary
-  // useEffect(() => {
-  //   if (Math.random() < 0.5) {
-  //     throw new Error();
-  //   }
-  // }, []);
   return (
     <div className={cn(styles.welcomeWrapper)}>
       <Anchor

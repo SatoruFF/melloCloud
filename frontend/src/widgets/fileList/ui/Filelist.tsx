@@ -13,7 +13,7 @@ import {
   getFilesSelector,
   getFilesViewSelector,
 } from '../../../entities/file/model/selectors/getFiles';
-import { setOffset } from '../../../entities/file/model/slice/fileSlice';
+// import { setOffset } from '../../../entities/file/model/slice/fileSlice';
 import { ObservablePage } from '../../../shared';
 import styles from './fileList.module.scss';
 
@@ -33,8 +33,6 @@ const Filelist: React.FC = () => {
     if (isFetchingRef.current || filesLoading) return;
 
     isFetchingRef.current = true;
-
-    console.log(hasMoreFiles, filesLoading);
 
     if (hasMoreFiles) {
       // dispatch(setOffset(offset + limit));

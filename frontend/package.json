@@ -62,7 +62,6 @@
     "react-i18next": "^15.4.1",
     "react-player": "^2.16.0",
     "react-redux": "^9.2.0",
-    "react-resizable": "^3.0.5",
     "react-router-dom": "^7.4.0",
     "react-selecto": "^1.26.3",
     "react-tsparticles": "^2.12.2",
@@ -158,7 +157,7 @@
   },
   "lint-staged": {
     "**/*.{js,mjs,cjs,jsx,ts,mts,cts,tsx,vue,astro,svelte}": [
-      "oxlint"
+      "pnpm run lint:fix"
     ]
   }
 }
