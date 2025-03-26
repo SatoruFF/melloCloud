@@ -1,22 +1,49 @@
 import { Empty } from 'antd';
-import { useAppSelector } from '../../../app/store/store';
+import { useAppDispatch, useAppSelector } from '../../../app/store/store';
 import File from '../../../entities/file/ui/File';
 
 import cn from 'classnames';
-import { memo, useCallback } from 'react';
-import { IFile } from '../../../entities/file';
+import { memo, useCallback, useEffect, useRef } from 'react';
+import type { IFile } from '../../../entities/file';
+import {
+  getFilesHasMoreSelector,
+  getFilesLimitSelector,
+  getFilesLoadingSelector,
+  getFilesOffsetSelector,
+  getFilesSelector,
+  getFilesViewSelector,
+} from '../../../entities/file/model/selectors/getFiles';
+import { setOffset } from '../../../entities/file/model/slice/fileSlice';
 import { ObservablePage } from '../../../shared';
 import styles from './fileList.module.scss';
-import { getFilesSelector } from '../../../entities/file/model/selectors/getFiles';
 
 const Filelist: React.FC = () => {
   const files = useAppSelector(getFilesSelector);
-  const fileView = useAppSelector(state => state.files.view);
+  const fileView = useAppSelector(getFilesViewSelector);
+  const limit = useAppSelector(getFilesLimitSelector);
+  const offset = useAppSelector(getFilesOffsetSelector);
+  const filesLoading = useAppSelector(getFilesLoadingSelector);
+  const hasMoreFiles = useAppSelector(getFilesHasMoreSelector);
+
+  const dispatch = useAppDispatch();
+  const isFetchingRef = useRef(false);
 
   const onLoadNextPart = useCallback(() => {
-    // debugger;
-    console.log(123); // TODO: add offset and limit logic with state and add loading
-  }, []);
+    // debugger
+    if (isFetchingRef.current || filesLoading) return;
+
+    isFetchingRef.current = true;
+
+    console.log(hasMoreFiles, filesLoading);
+
+    if (hasMoreFiles) {
+      // dispatch(setOffset(offset + limit));
+    }
+  }, [offset, limit, filesLoading]);
+
+  useEffect(() => {
+    isFetchingRef.current = false;
+  }, [offset]);
 
   if (files.length === 0) {
     return (
@@ -26,7 +53,7 @@ const Filelist: React.FC = () => {
     );
   }
 
-  if (fileView == 'plate') {
+  if (fileView === 'plate') {
     return (
       <ObservablePage onScrollEnd={onLoadNextPart}>
         <div className={cn(styles.filePlateListWrapper, 'animate__animated animate__fadeIn')}>

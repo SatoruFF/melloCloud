@@ -27,3 +27,5 @@ dist-ssr
 .loki/report.json
 .loki/report.html
 html
+
+dev-dist

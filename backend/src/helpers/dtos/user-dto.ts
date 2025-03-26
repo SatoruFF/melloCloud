@@ -2,8 +2,8 @@ export interface IUserModel {
   id: number;
   userName: string;
   email: string;
-  diskSpace?: string | number;
-  usedSpace?: string | number;
+  diskSpace?: string | number | bigint;
+  usedSpace?: string | number | bigint;
   avatar?: string | null;
   role?: string;
   isActivated?: boolean;

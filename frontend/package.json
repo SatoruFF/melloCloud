@@ -54,6 +54,7 @@
     "i18next-http-backend": "^3.0.2",
     "is-image-url": "^1.1.8",
     "lodash-es": "^4.17.21",
+    "lucide-react": "^0.484.0",
     "proptypes": "^1.1.0",
     "react": "^19.0.0",
     "react-circular-progressbar": "^2.2.0",

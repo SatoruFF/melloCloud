@@ -1,9 +1,10 @@
 import { FileFilled, FolderFilled, PlayCircleOutlined } from '@ant-design/icons';
 import { Button, Image, Modal } from 'antd';
+import { Folder } from 'lucide-react';
 import cn from 'classnames';
 import { useState } from 'react';
 import ReactPlayer from 'react-player';
-import styles from '../styles/fileViewer.module.scss';
+import styles from './fileViewer.module.scss';
 
 const FileViewer = ({ type, url }) => {
   const [isOpenPlayer, setIsOpenPlayer] = useState(false);
@@ -15,7 +16,8 @@ const FileViewer = ({ type, url }) => {
   // need to destructure, cause in future this a big module
   const determineViewer = (fileType: string, url: any) => {
     if (fileType === 'dir') {
-      return <FolderFilled className={cn(styles.folder)} />;
+      // return <FolderFilled className={cn(styles.folder)} />;
+      return <Folder size={50} className={cn(styles.folder)} />;
     } else if (isImage) {
       return <Image src={url} className={cn(styles.imageFile)} />;
     } else if (isPlayer) {

@@ -1,100 +1,32 @@
+import { memo } from 'react';
 import { AppstoreOutlined, LeftOutlined, UnorderedListOutlined, UploadOutlined } from '@ant-design/icons';
-import { Breadcrumb, Button, Input, Modal, Select, Spin, message } from 'antd';
-import { useCallback, useEffect, useState } from 'react';
+import { Breadcrumb, Button, Input, Modal, Select, Spin } from 'antd';
 import { useTranslation } from 'react-i18next';
-import _ from 'lodash-es';
 import cn from 'classnames';
-
-import { unwrapResult } from '@reduxjs/toolkit';
-import { useAppSelector } from '../../../app/store/store';
-import { useAppDispatch } from '../../../app/store/store';
-import {
-  addNewFile,
-  popToPath,
-  popToStack,
-  setDir,
-  setFiles,
-  setView,
-} from '../../../entities/file/model/slice/fileSlice';
 import UploadModal from '../../../features/uploadModal/ui/UploadModal';
-import { useCreateDirMutation, useGetFilesQuery } from '../../../shared/api/file';
 import Filelist from '../../../widgets/fileList/ui/Filelist';
-
 import { Search } from '../../../shared';
 import diskBack from '../../../shared/assets/disk-back.jpg';
 import styles from './fileSpace.module.scss';
+import { useFiles } from '../lib/hooks/useFiles';
 
 const FileSpace = () => {
   const { t } = useTranslation();
-  //Redux state
-  const dispatch = useAppDispatch();
-  const currentDir = useAppSelector(state => state.files.currentDir);
-  const dirStack = useAppSelector(state => state.files.dirStack);
-  const paths = useAppSelector(state => state.files.paths);
-
-  //states
-  const [modal, setModal] = useState(false);
-  const [uploadModal, setUploadModal] = useState(false);
-  const [folderName, setFolderName] = useState('');
-  const [sort, setSort]: any = useState('');
-  const [search, setSearch] = useState('');
-  const onSearch = useCallback((value: string) => setSearch(value), []);
-
-  //RTK query
-  const params = { parent: currentDir, sort, search };
-  const { data, isLoading, refetch } = useGetFilesQuery(!_.isEmpty(params) ? params : null);
-  const [addFile, { data: dirData, error: dirError }] = useCreateDirMutation();
-
-  useEffect(() => {
-    refetch();
-  }, [sort]);
-
-  useEffect(() => {
-    if (data) {
-      dispatch(setFiles(data));
-    }
-  }, [data, currentDir]);
-
-  useEffect(() => {
-    dispatch(setDir(currentDir));
-  }, [currentDir]);
-
-  useEffect(() => {
-    if (dirData) {
-      dispatch(addNewFile(dirData));
-      refetch();
-    }
-    if (dirError) {
-      message.error('Create dir error');
-    }
-  }, [dirData, dirError]);
-
-  const goBack = () => {
-    if (dirStack.length > 0) {
-      dispatch(popToStack());
-      dispatch(popToPath());
-    }
-  };
-
-  // create new folder
-  const addNewFolder = async () => {
-    try {
-      if (folderName.length === 0) {
-        return message.info('The file name should not be empty');
-      }
-      const folderNameValid = folderName.replace(/[^\p{L}\d\s]/gu, '').trim();
-      const response: any = await addFile({
-        name: folderNameValid,
-        type: 'dir',
-        parent: currentDir,
-      });
-      unwrapResult(response);
-      setModal(false);
-      setFolderName('');
-    } catch (e: any) {
-      message.error(`Request failed: ${e.data.message}`);
-    }
-  };
+  const {
+    modal,
+    uploadModal,
+    folderName,
+    setModal,
+    setUploadModal,
+    setFolderName,
+    setSort,
+    onSearch,
+    goBack,
+    addNewFolder,
+    data,
+    isLoading,
+    paths,
+  } = useFiles();
 
   if (isLoading || !data) {
     return <Spin style={{ width: '100%', height: '100%', marginTop: '400px' }} />;
@@ -105,13 +37,12 @@ const FileSpace = () => {
       <img src={diskBack} className={cn(styles.diskBackgroundImg)} loading="lazy" />
       <div className={cn(styles.diskNav)}>
         <div className={cn(styles.diskControlBtns)}>
-          <Button onClick={() => goBack()}>
+          <Button onClick={goBack}>
             <LeftOutlined />
           </Button>
           <Button onClick={() => setModal(true)}>
             <p className={cn(styles.diskCreateFolderTxt)}>{t('files.create-new-folder')}</p>
           </Button>
-
           <Button
             icon={<UploadOutlined />}
             onClick={() => setUploadModal(true)}
@@ -132,8 +63,8 @@ const FileSpace = () => {
           />
           <Search placeholder={t('files.search-placeholder')} className={cn(styles.searchFiles)} onSearch={onSearch} />
           <div className={cn(styles.visual)}>
-            <UnorderedListOutlined className={cn(styles.visualByList)} onClick={() => dispatch(setView('list'))} />
-            <AppstoreOutlined className={cn(styles.visualByFile)} onClick={() => dispatch(setView('plate'))} />
+            <UnorderedListOutlined className={cn(styles.visualByList)} />
+            <AppstoreOutlined className={cn(styles.visualByFile)} />
           </div>
           <Breadcrumb separator=">" className={cn(styles.breadcrumb)} items={paths} />
         </div>
@@ -159,4 +90,4 @@ const FileSpace = () => {
   );
 };
 
-export default FileSpace;
+export default memo(FileSpace);

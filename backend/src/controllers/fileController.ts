@@ -2,7 +2,7 @@
 import { Request, Response } from 'express';
 
 // services
-import { prisma } from '../configs/config.js';
+import { FETCH_LIMIT, prisma } from '../configs/config.js';
 import { Avatar } from '../helpers/avatar.js';
 import { FileService } from '../services/fileService.js';
 

@@ -1,5 +1,6 @@
 import createError from 'http-errors';
 import _ from 'lodash';
+import type { Prisma } from '@prisma/client';
 import 'dotenv/config.js';
 
 import { FETCH_LIMIT, prisma, s3 } from '../configs/config.js';
@@ -108,25 +109,23 @@ class FileServiceClass {
 
   // get files with search params
   async getFiles(searchParams: ISearchParams) {
-    const { sort, search, parentId, userId, offset = 0 } = searchParams;
+    const { sort, search, parentId, userId, limit: filesLimit, offset: filesOffset = 0 } = searchParams;
 
-    const limit = !isNaN(Number(searchParams.limit)) ? searchParams.limit : Number(FETCH_LIMIT);
-
-    let files: any;
+    const limit = Number(filesLimit) || Number(FETCH_LIMIT);
+    const offset = Number(filesOffset) || 0;
 
     // find by file name
     if (search) {
-      files = await prisma.file.findMany({
-        where: { userId },
+      return await prisma.file.findMany({
+        where: {
+          userId,
+          name: { contains: search, mode: 'insensitive' }, // ILIKE analog in Prisma
+        },
       });
-
-      files = _.filter(files, file => _.includes(file.name, search)); // TODO: replace to ilike and add ::text == ::text option (equal) (or contains)
-
-      return files;
     }
 
     // FIXME: typo
-    const queryOptions: any = {
+    const queryOptions: Prisma.FileFindManyArgs = {
       where: {
         AND: [{ userId }, { parentId }],
       },

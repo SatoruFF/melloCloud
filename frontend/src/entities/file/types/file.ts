@@ -5,6 +5,10 @@ export interface FileListSchema {
   dirStack: number[] | [];
   view: string;
   paths: any[];
+  limit: number;
+  offset: number;
+  hasMore: boolean;
+  loading: boolean;
 }
 
 export interface IFile {

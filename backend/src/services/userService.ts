@@ -280,10 +280,11 @@ class UserServiceClass {
     });
   }
 
-  async logout(refreshToken: string) {
+  async logout(id, refreshToken: string) {
     return prisma.$transaction(async trx => {
       const user = await trx.user.update({
         where: {
+          id,
           refreshToken,
         },
         data: { refreshToken: null },

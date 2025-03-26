@@ -56,7 +56,6 @@ export const fileApi = createApi({
     }),
     getFiles: builder.query<any, any>({
       query: (params: Record<string, string>) => {
-        console.log('⚠ :: params:', params);
         params = { ..._.omitBy(params, value => value === '' || value === undefined), limit: '50' };
         addQueryParams(params);
         const queryParams = generateParams(params);

@@ -1,4 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 export interface fileInterface {
   files: [];
@@ -6,6 +6,8 @@ export interface fileInterface {
   dirStack: number[] | [];
   view: string;
   paths: any[];
+  limit: number;
+  offset: 0;
 }
 
 const initialState: fileInterface = {
@@ -14,6 +16,8 @@ const initialState: fileInterface = {
   dirStack: [],
   view: 'list',
   paths: [{ title: 'Root' }],
+  limit: 50,
+  offset: 0,
 };
 
 export const fileSlice = createSlice({
@@ -44,9 +48,33 @@ export const fileSlice = createSlice({
     setView: (state: any, action) => {
       state.view = action.payload;
     },
+    setLimit: (state: any, action: PayloadAction<number>) => {
+      state.limit = action.payload;
+    },
+    setOffset: (state: any, action: PayloadAction<number>) => {
+      state.offset = action.payload;
+    },
+    setHasMore: (state: any, action: PayloadAction<boolean>) => {
+      state.hasMore = action.payload;
+    },
+    setLoading: (state: any, action: PayloadAction<boolean>) => {
+      state.loading = action.payload;
+    },
   },
 });
 
-export const { setFiles, setDir, addNewFile, pushToStack, popToStack, setView, pushToPath, popToPath } =
-  fileSlice.actions;
+export const {
+  setFiles,
+  setDir,
+  addNewFile,
+  pushToStack,
+  popToStack,
+  setView,
+  pushToPath,
+  popToPath,
+  setLimit,
+  setOffset,
+  setLoading,
+  setHasMore,
+} = fileSlice.actions;
 export default fileSlice.reducer;

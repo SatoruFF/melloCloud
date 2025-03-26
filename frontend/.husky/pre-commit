@@ -1,4 +1,4 @@
 npm run test:unit
-nm run lint:scss
-nm run test:ui
-nm run format
+npm run lint:scss
+npm run test:ui
+npm run format

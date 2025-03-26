@@ -17,9 +17,9 @@ export function setupWebSocketServer() {
 
         const messageData = parseJSON(messageString);
 
-        const savedMessage = await MessageService.handleMessage(messageData);
+        // const savedMessage = await MessageService.handleMessage(messageData);
 
-        ws.send(JSON.stringify({ status: 'success', message: savedMessage }));
+        // ws.send(JSON.stringify({ status: 'success', message: savedMessage }));
       } catch (error) {
         logger.error('Error handling message:', error);
 
