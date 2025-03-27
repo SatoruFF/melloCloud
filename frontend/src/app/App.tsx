@@ -1,4 +1,3 @@
-import { Spin } from 'antd';
 import { Suspense, useEffect } from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { AppRouter } from './providers/router';
@@ -10,6 +9,7 @@ import MyNavbar from '../widgets/Navbar/ui/Navbar';
 import { ErrorBoundary } from './providers/ErrorBoundary';
 import { setUser } from '../entities/user/model/slice/userSlice';
 import { useAppDispatch } from './store/store';
+import { Spinner } from '../shared';
 
 function App() {
   const dispatch = useAppDispatch();
@@ -26,14 +26,14 @@ function App() {
   }, [data]);
 
   if (isLoading) {
-    return <Spin style={{ width: '100%', height: '100vh', marginTop: '400px' }} />;
+    return <Spinner fullscreen />;
   }
 
   // suspense need for i18n
   return (
     <BrowserRouter>
       <ErrorBoundary>
-        <Suspense fallback={<Spin style={{ width: '100%', height: '100vh', marginTop: '400px' }} />}>
+        <Suspense fallback={<Spinner fullscreen />}>
           <MyNavbar />
           <AppRouter />
         </Suspense>
