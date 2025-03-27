@@ -1,20 +1,10 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { Variables } from './localVariables';
+import { Variables } from '../../../../shared/consts/localVariables';
+import { rtkApi } from '../../../../shared/api/rtkApi';
 
 const url = Variables.Message_URL;
 
-export const messageApi = createApi({
-  reducerPath: 'messageApi',
-  baseQuery: fetchBaseQuery({
-    baseUrl: url,
-    prepareHeaders: headers => {
-      const token = localStorage.getItem('token');
-      if (token) {
-        headers.set('Authorization', `Bearer ${token}`);
-      }
-      return headers;
-    },
-  }),
+/// TODO: add types for the returned types like build.query<Notification[], null>
+export const messageApi = rtkApi.injectEndpoints({
   endpoints: builder => ({
     sendMessage: builder.mutation<any, any>({
       query: body => ({
@@ -23,10 +13,11 @@ export const messageApi = createApi({
         body,
       }),
     }),
-    deleteMessage: builder.mutation<any, any>({
+    deleteMessage: builder.mutation<{ messageId: string }, any>({
       query: ({ messageId }) => ({
         url: `message/delete?id=${messageId}`,
         method: 'DELETE',
+        body: { messageId },
       }),
     }),
     getMessages: builder.query<any, any>({

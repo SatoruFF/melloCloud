@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useAppDispatch, useAppSelector } from '../../../app/store/store';
-import { useChangeInfoMutation } from '../../../shared/api/user';
+import { useChangeInfoMutation } from '../../../entities/user/model/api/user';
 
 const InfoModal = ({ status, def }) => {
   const { t } = useTranslation();

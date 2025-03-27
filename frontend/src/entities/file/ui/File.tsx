@@ -6,7 +6,7 @@ import _ from 'lodash-es';
 
 import { useAppDispatch, useAppSelector } from '../../../app/store/store';
 import FileViewer from '../../../features/fileViewer/ui/FileViewer';
-import { useDeleteFileMutation, useDownloadFileMutation, useGetFilesQuery } from '../../../shared/api/file';
+import { useDeleteFileMutation, useDownloadFileMutation, useGetFilesQuery } from '../model/api/fileApi';
 import { sizeFormat } from '../../../shared/utils/sizeFormat';
 import { pushToPath, pushToStack, setDir, setFiles } from '../model/slice/fileSlice';
 

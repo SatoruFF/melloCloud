@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { setUser } from '../../../entities/user/model/slice/userSlice';
 import { useAppDispatch } from '../../../app/store/store';
-import { userApi } from '../../api/user';
+import { userApi } from '../../../entities/user/model/api/user';
 import { ACTIVATION_ROUTE, FILE_ROUTE } from '../../consts/routes';
 
 export const useAuth = () => {

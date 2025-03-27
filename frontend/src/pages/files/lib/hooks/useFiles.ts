@@ -14,7 +14,7 @@ import {
   setView,
 } from '../../../../entities/file/model/slice/fileSlice';
 import { useAppDispatch, useAppSelector } from '../../../../app/store/store';
-import { useCreateDirMutation, useGetFilesQuery } from '../../../../shared/api/file';
+import { useCreateDirMutation, useGetFilesQuery } from '../../../../entities/file/model/api/fileApi';
 import {
   getFilesLimitSelector,
   getFilesOffsetSelector,

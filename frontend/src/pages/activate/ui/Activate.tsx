@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { setUser } from '../../../entities/user/model/slice/userSlice';
 import { useAppDispatch, useAppSelector } from '../../../app/store/store';
-import { useActivateUserMutation } from '../../../shared/api/user';
+import { useActivateUserMutation } from '../../../entities/user/model/api/user';
 
 import { FILE_ROUTE } from '../../../shared/consts/routes';
 import styles from '../styles/activate.module.scss';

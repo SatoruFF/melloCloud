@@ -2,9 +2,9 @@ import { FileListSchema } from '../../../entities/file';
 import { MessageSchema } from '../../../entities/message';
 import { UserSchema } from '../../../entities/user';
 import { IRestoreScroll } from '../../../features/restoreScroll';
-import { fileApi } from '../../../shared/api/file';
-import { messageApi } from '../../../shared/api/messages';
-import { userApi } from '../../../shared/api/user';
+import { fileApi } from '../../../entities/file/model/api/fileApi';
+import { messageApi } from '../../../entities/message/model/api/messagesApi';
+import { userApi } from '../../../entities/user/model/api/user';
 
 export interface StateSchema {
   user: UserSchema; // Тип для состояния пользователей

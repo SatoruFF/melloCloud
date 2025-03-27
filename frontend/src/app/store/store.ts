@@ -3,9 +3,9 @@ import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 
 import fileReducer from '../../entities/file/model/slice/fileSlice';
 import { restoreScrollReducer } from '../../features/restoreScroll';
-import { fileApi } from '../../shared/api/file';
-import { messageApi } from '../../shared/api/messages';
-import { userApi } from '../../shared/api/user';
+import { fileApi } from '../../entities/file/model/api/fileApi';
+import { messageApi } from '../../entities/message/model/api/messagesApi';
+import { userApi } from '../../entities/user/model/api/user';
 import messagesReducer from '../../entities/message/model/slice/messagesSlice';
 import userReducer from '../../entities/user/model/slice/userSlice';
 import { StateSchema } from './types/state';

@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { useAppSelector } from '../../../app/store/store';
 import { useAppDispatch } from '../../../app/store/store';
 import { addNewFile } from '../../../entities/file/model/slice/fileSlice';
-import { Variables } from '../../../shared/api/localVariables';
+import { Variables } from '../../../shared/consts/localVariables';
 
 import cn from 'classnames';
 import styles from '../styles/uploadModal.module.scss';

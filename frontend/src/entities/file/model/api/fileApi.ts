@@ -1,23 +1,9 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import _ from 'lodash-es';
-import { Variables } from './localVariables';
-import { addQueryParams } from '../lib/url/addQueryParams/addQueryParams';
-import { generateParams } from '../lib/url/generateParams/generateParams';
+import { addQueryParams } from '../../../../shared/lib/url/addQueryParams/addQueryParams';
+import { generateParams } from '../../../../shared/lib/url/generateParams/generateParams';
+import { rtkApi } from '../../../../shared/api/rtkApi';
 
-const url = Variables.File_URL;
-
-export const fileApi = createApi({
-  reducerPath: 'fileApi',
-  baseQuery: fetchBaseQuery({
-    baseUrl: url,
-    prepareHeaders: headers => {
-      const token = localStorage.getItem('token');
-      if (token) {
-        headers.set('Authorization', `Bearer ${token}`);
-      }
-      return headers;
-    },
-  }),
+export const fileApi = rtkApi.injectEndpoints({
   endpoints: builder => ({
     createDir: builder.mutation<any, any>({
       query: body => ({

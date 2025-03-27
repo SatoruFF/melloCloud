@@ -8,8 +8,8 @@ import { useTranslation } from 'react-i18next';
 
 import { deleteAvatar, setAvatar } from '../../../entities/user/model/slice/userSlice';
 import { useAppDispatch, useAppSelector } from '../../../app/store/store';
-import { useDeleteAvatarMutation } from '../../../shared/api/file';
-import { Variables } from '../../../shared/api/localVariables';
+import { useDeleteAvatarMutation } from '../../../entities/file/model/api/fileApi';
+import { Variables } from '../../../shared/consts/localVariables';
 import avatarIcon from '../../../shared/assets/avatar-icon.png';
 import { sizeFormat } from '../../../shared/utils/sizeFormat';
 import styles from '../styles/profile.module.scss';

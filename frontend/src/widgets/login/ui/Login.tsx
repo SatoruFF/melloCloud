@@ -8,7 +8,7 @@ import { NavLink, useNavigate } from 'react-router-dom';
 
 import { setUser } from '../../../entities/user/model/slice/userSlice';
 import { useAppDispatch } from '../../../app/store/store';
-import { userApi } from '../../../shared/api/user';
+import { userApi } from '../../../entities/user/model/api/user';
 import { FILE_ROUTE, REGISTRATION_ROUTE } from '../../../shared/consts/routes';
 
 import cn from 'classnames';

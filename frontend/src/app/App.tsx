@@ -5,7 +5,7 @@ import { AppRouter } from './providers/router';
 
 import './styles/global.scss';
 
-import { useAuthQuery } from '../shared/api/user';
+import { useAuthQuery } from '../entities/user/model/api/user';
 import MyNavbar from '../widgets/Navbar/ui/Navbar';
 import { ErrorBoundary } from './providers/ErrorBoundary';
 import { setUser } from '../entities/user/model/slice/userSlice';
