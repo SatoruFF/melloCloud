@@ -59,7 +59,7 @@ const Activate = () => {
           <p>
             {_.isEmpty(user)
               ? 'Your account has been activated. You can now log in.'
-              : `Account for ${user.email} has been activated.`}
+              : `Account for ${user?.email} has been activated.`}
           </p>
         </div>
       </div>
