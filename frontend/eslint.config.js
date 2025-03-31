@@ -29,6 +29,7 @@ export default {
   ],
   rules: {
     ...config.rules, // Наследуем стандартные правила
+    'no-console': "error",
     'react/react-in-jsx-scope': 'off',
     'import/prefer-default-export': 'off', // Убираем преференцию для default export
     'i18next/no-literal-string': [

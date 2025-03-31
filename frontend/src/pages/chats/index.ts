@@ -1,3 +1,3 @@
-import Chats from './ui/Chats';
+import Chats from "./ui/Chats";
 
 export { Chats };

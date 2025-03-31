@@ -1,3 +1,3 @@
-import InfoModal from './ui/InfoModal';
+import InfoModal from "./ui/InfoModal";
 
 export { InfoModal };

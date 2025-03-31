@@ -1,5 +1,5 @@
 const EditorWithDrawing = () => {
-  return <></>;
+	return <></>;
 };
 
 export default EditorWithDrawing;

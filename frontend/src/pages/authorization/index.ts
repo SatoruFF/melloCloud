@@ -1,3 +1,3 @@
-import Authorization from './ui/Authorization';
+import Authorization from "./ui/Authorization";
 
 export { Authorization };

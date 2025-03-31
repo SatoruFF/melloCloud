@@ -1,6 +1,6 @@
-import { ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
-import { UserRolesType } from '../../../../entities/user/model/types/user';
+import type { UserRolesType } from '../../../../entities/user/model/types/user';
 import { WELCOME_ROUTE } from '../../../../shared/consts/routes';
 import { useAppSelector } from '../../../store/store';
 

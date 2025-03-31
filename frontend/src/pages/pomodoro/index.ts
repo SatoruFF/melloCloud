@@ -1,3 +1,3 @@
-import PomodoroTimer from './ui/PomodoroTimer';
+import PomodoroTimer from "./ui/PomodoroTimer";
 
 export { PomodoroTimer };

@@ -1,3 +1,3 @@
-import PasswordModal from './ui/PasswordModal';
+import PasswordModal from "./ui/PasswordModal";
 
 export { PasswordModal };

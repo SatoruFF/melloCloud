@@ -1,3 +1,3 @@
-import AdminPanel from './ui/AdminPanel';
+import AdminPanel from "./ui/AdminPanel";
 
 export default AdminPanel;

@@ -17,7 +17,7 @@ import 'dotenv/config.js';
 import cluster from 'cluster';
 import { cpus } from 'os';
 import { limiter } from './configs/rateLimiter.js';
-import { port } from './configs/config.js';
+import { PORT } from './configs/config.js';
 import { setupWebSocketServer } from './helpers/setupWebSocket.js';
 const numCPU = cpus().length;
 
@@ -75,8 +75,8 @@ if (cluster.isPrimary) {
   // main def
   const start = async () => {
     try {
-      app.listen(port, () => {
-        logger.info(`⚡️[server]: 🚀 Server is running at: ${port}`);
+      app.listen(PORT, () => {
+        logger.info(`⚡️[server]: 🚀 Server is running at: ${PORT}`);
       });
     } catch (e) {
       logger.warn(e);

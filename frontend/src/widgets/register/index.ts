@@ -1,3 +1,3 @@
-import Register from './ui/Register';
+import Register from "./ui/Register";
 
 export { Register };

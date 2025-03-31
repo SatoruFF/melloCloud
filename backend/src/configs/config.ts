@@ -1,4 +1,6 @@
-import 'dotenv/config';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 // import { S3 } from "@aws-sdk/client-s3";
 import { PrismaClient } from '@prisma/client';
@@ -8,7 +10,14 @@ import ImageKit from 'imagekit';
 
 export const FETCH_LIMIT = process.env.FETCH_LIMIT || 10000;
 
-export const port = Number(process.env.PORT || 3002);
+export const PORT = Number(process.env.PORT || 3002);
+export const PORT_HTTP = process.env.PORT_HTTP ?? '80';
+export const PORT_HTTPS = process.env.PORT_HTTPS ?? '443';
+export const HTTPS = process.env.HTTPS === 'true';
+export const HTTPS_FORCE = process.env.HTTPS_FORCE === 'true';
+export const HTTPS_CERTIFICATE_PATH = process.env.HTTPS_CERTIFICATE_PATH ?? '';
+export const HTTPS_KEY_PATH = process.env.HTTPS_KEY_PATH ?? '';
+export const ROOT_DIR = process.env.ROOT_DIR ?? process.cwd();
 
 interface ImageKitConfig {
   publicKey: string;

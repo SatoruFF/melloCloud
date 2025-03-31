@@ -1,5 +1,5 @@
 const RestoreScroll = () => {
-  return <></>;
+	return <></>;
 };
 
 export default RestoreScroll;

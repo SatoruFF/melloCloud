@@ -1,3 +1,3 @@
-import Editor from './ui/Editor';
+import Editor from "./ui/Editor";
 
 export { Editor };

@@ -1,3 +1,3 @@
-import WorkspacesDropdown from './ui/WorkspacesDropdown';
+import WorkspacesDropdown from "./ui/WorkspacesDropdown";
 
 export { WorkspacesDropdown };

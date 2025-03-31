@@ -1,3 +1,3 @@
-import AccountSettings from './ui/AccountSettings.';
+import AccountSettings from "./ui/AccountSettings.";
 
 export { AccountSettings };

@@ -1,7 +1,7 @@
-import React from 'react';
-import { Skeleton } from 'antd';
+import { Skeleton } from "antd";
+import type React from "react";
 
-interface ISkeletonProps {}
+type ISkeletonProps = {};
 
 const AppSkeleton: React.FC = (props: ISkeletonProps) => <Skeleton active />;
 

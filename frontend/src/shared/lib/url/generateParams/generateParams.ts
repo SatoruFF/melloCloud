@@ -1,6 +1,9 @@
-import qs from 'qs';
+import qs from "qs";
 
-export const generateParams = params => {
-  const queryString = qs.stringify(params, { skipNulls: true, addQueryPrefix: true });
-  return queryString;
+export const generateParams = (params) => {
+	const queryString = qs.stringify(params, {
+		skipNulls: true,
+		addQueryPrefix: true,
+	});
+	return queryString;
 };

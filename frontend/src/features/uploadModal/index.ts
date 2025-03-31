@@ -1,3 +1,3 @@
-import UploadModal from './ui/UploadModal';
+import UploadModal from "./ui/UploadModal";
 
 export { UploadModal };

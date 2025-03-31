@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import click
 import os
 
@@ -20,7 +22,7 @@ TEMPLATES = {
 @click.argument("layer", type=click.Choice(["component", "feature"]))
 @click.argument("name")
 @click.option("--path", default="src", help="Base path for generation")
-def generate(layer, name, path):
+def generate(layer, name, path) -> None:
     """Generate fsd layer or segment"""
     target_path = os.path.join(path, layer, name)
 

@@ -2,5 +2,5 @@
 export type ScrollSchema = Record<string, number>;
 
 export interface IRestoreScroll {
-  scroll: ScrollSchema;
+	scroll: ScrollSchema;
 }
