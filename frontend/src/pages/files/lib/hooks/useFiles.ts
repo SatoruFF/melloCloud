@@ -19,6 +19,7 @@ import {
   setFiles,
   setHasMore,
   setLoading,
+  setOffset,
   setView,
 } from '../../../../entities/file/model/slice/fileSlice';
 
@@ -66,6 +67,7 @@ export const useFiles = () => {
   }, [limit, offset, files, isLoading]);
 
   useEffect(() => {
+    dispatch(setOffset(0));
     refetch();
   }, [sort, search]);
 
