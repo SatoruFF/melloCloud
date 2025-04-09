@@ -36,7 +36,7 @@ const Filelist: React.FC = () => {
 
     // !!! FIXME
     if (hasMoreFiles) {
-      dispatch(setOffset(offset + 10));
+      dispatch(setOffset(offset + 50));
     }
   }, [limit, filesLoading]);
 

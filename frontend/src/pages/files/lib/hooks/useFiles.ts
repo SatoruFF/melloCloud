@@ -11,6 +11,7 @@ import {
   getFilesSelector,
 } from '../../../../entities/file/model/selectors/getFiles';
 import {
+  addFiles,
   addNewFile,
   popToPath,
   popToStack,
@@ -34,6 +35,7 @@ export const useFiles = () => {
   const [uploadModal, setUploadModal] = useState(false);
   const [folderName, setFolderName] = useState('');
   const [sort, setSort]: any = useState('');
+  const [fileView, setFileView] = useState<'list' | 'plate'>('list');
   const [search, setSearch] = useState('');
   const [searchParams] = useSearchParams();
 
@@ -68,12 +70,20 @@ export const useFiles = () => {
   }, [sort, search]);
 
   useEffect(() => {
+    fileView && dispatch(setView(fileView));
+  }, [fileView]);
+
+  useEffect(() => {
     dispatch(setLoading(isLoading));
   }, [isLoading]);
 
   useEffect(() => {
     if (data) {
-      dispatch(setFiles(data));
+      if (offset === 0) {
+        dispatch(setFiles(data)); // первый запрос — перезапись
+      } else {
+        dispatch(addFiles(data)); // последующие — добавление
+      }
     }
   }, [data, currentDir]);
 
@@ -126,6 +136,7 @@ export const useFiles = () => {
     setModal,
     setUploadModal,
     setFolderName,
+    setFileView,
     setSort,
     setSearch,
     onSearch,
