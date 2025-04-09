@@ -1,0 +1,55 @@
+# Main domain with frontend and API
+mellocloud.net, www.mellocloud.net {
+	encode gzip
+	log
+
+	# Proxy frontend (Vite)
+	@frontend not path /api/* /socket.io/* /portainer/*
+	handle @frontend {
+		reverse_proxy frontend:5173
+	}
+
+	# Proxy API requests
+	handle_path /api/* {
+		reverse_proxy backend:1337
+	}
+
+	# Proxy WebSocket requests (e.g., socket.io)
+	handle_path /socket.io/* {
+		reverse_proxy backend:1337
+	}
+
+	# Allow search engine indexing
+	handle /robots.txt {
+		respond "User-agent: *\nAllow: /" 200 {
+			content_type text/plain
+		}
+	}
+
+	# Proxy Portainer interface at /portainer
+	handle_path /portainer/* {
+		uri strip_prefix /portainer
+		reverse_proxy portainer:9000
+	}
+}
+
+# Separate domain for API
+api.mellocloud.net {
+	encode gzip
+	log
+
+	# Proxy all requests to the backend
+	reverse_proxy backend:1337
+
+	# Allow search engine indexing
+	handle /robots.txt {
+		respond "User-agent: *\nAllow: /" 200 {
+			content_type text/plain
+		}
+	}
+}
+
+# Redirect HTTP to HTTPS (Caddy does this automatically, but can be explicit)
+http://mellocloud.net, http://www.mellocloud.net, http://api.mellocloud.net {
+	redir https://{host}{uri}
+}
