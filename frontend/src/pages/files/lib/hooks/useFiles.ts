@@ -72,6 +72,10 @@ export const useFiles = () => {
   }, [sort, search]);
 
   useEffect(() => {
+    dispatch(setOffset(0));
+  }, [currentDir]);
+
+  useEffect(() => {
     fileView && dispatch(setView(fileView));
   }, [fileView]);
 

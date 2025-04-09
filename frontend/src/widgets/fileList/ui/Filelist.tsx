@@ -14,7 +14,7 @@ import {
   getFilesViewSelector,
 } from '../../../entities/file/model/selectors/getFiles';
 import { setOffset } from '../../../entities/file/model/slice/fileSlice';
-import { ObservablePage } from '../../../shared';
+import { AppSkeleton, ObservablePage } from '../../../shared';
 import styles from './fileList.module.scss';
 
 const Filelist: React.FC = () => {
@@ -51,6 +51,8 @@ const Filelist: React.FC = () => {
       </h1>
     );
   }
+
+  if (filesLoading) return <AppSkeleton />; // FIXME: not work if i want
 
   if (fileView === 'plate') {
     return (
