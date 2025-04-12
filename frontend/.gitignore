@@ -29,3 +29,4 @@ dist-ssr
 html
 
 dev-dist
+/dev-dist
