@@ -1,4 +1,4 @@
-@import '../../../shared/styles/tmp.scss';
+@use '../../../shared/styles/tmp.scss' as *;
 
 // TODO: unset useless rules, after move from file space
 .diskWrapper {

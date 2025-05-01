@@ -57,7 +57,8 @@ export default defineConfig({
   css: {
     preprocessorOptions: {
       scss: {
-        additionalData: `@import "${path.resolve(__dirname, 'src/shared/styles/tmp.scss')}";`, // global scss templates import
+        api: 'modern-compiler',
+        additionalData: `@use "${path.resolve(__dirname, 'src/shared/styles/tmp.scss')}" as *;`, // global scss templates import
       },
     },
   },

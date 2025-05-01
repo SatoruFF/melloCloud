@@ -1,4 +1,4 @@
-@import '../../../shared/styles/tmp.scss';
+@use '../../../shared/styles/tmp.scss' as *;
 @import url('https://fonts.googleapis.com/css2?family=Sono&display=swap');
 
 .pageErrorWrapper {

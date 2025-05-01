@@ -1,4 +1,4 @@
-@import '../../../shared/styles/tmp.scss';
+@use '../../../shared/styles/tmp.scss' as *;
 %file-image {
   .image-file {
     max-width: 95px;
