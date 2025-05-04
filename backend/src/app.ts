@@ -1,5 +1,6 @@
 // bases
 import express, { type Express, type Response } from 'express';
+import http from 'http';
 import router from './routes/index.js';
 
 import cookieParser from 'cookie-parser';
@@ -23,9 +24,6 @@ const numCPU = cpus().length;
 
 // base consts
 const app: Express = express();
-
-// WS
-// setupWebSocketServer();
 
 // middleware
 app.use(
@@ -75,6 +73,11 @@ if (cluster.isPrimary) {
   // main def
   const start = async () => {
     try {
+      const server = http.createServer(app);
+
+      // WebSocket server
+      setupWebSocketServer(server);
+
       app.listen(PORT, () => {
         logger.info(`⚡️[server]: 🚀 Server is running at: ${PORT}`);
       });

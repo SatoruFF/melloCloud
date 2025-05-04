@@ -1,1 +1,2 @@
+npm lint:fix
 npm test

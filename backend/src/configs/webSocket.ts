@@ -1,8 +1,11 @@
 import { WebSocketServer } from 'ws';
-import { port } from './config';
+import { PORT } from './config';
 
+/**
+ * @deprecated
+ */
 const WSConfig = {
-  port: port + 2,
+  port: PORT,
   perMessageDeflate: {
     zlibDeflateOptions: {
       // See zlib defaults.
@@ -24,6 +27,6 @@ const WSConfig = {
   },
 };
 
-export function getWebSocketConnection() {
-  return new WebSocketServer(WSConfig);
+export function getWebSocketConnection(server) {
+  return new WebSocketServer({ server });
 }

@@ -1,25 +1,26 @@
+import http from 'http';
 import { MessageService } from '../services/messagesService';
 import { getWebSocketConnection } from '../configs/webSocket';
 import { logger } from '../configs/logger';
-import type { IMessage } from '../types/Message';
 import parseJSON from './parseJson';
 
-export function setupWebSocketServer() {
-  const wss = getWebSocketConnection();
+import type { IMessage } from '../types/Message';
+
+export function setupWebSocketServer(server: http.Server) {
+  const wss = getWebSocketConnection(server);
 
   wss.on('connection', ws => {
     logger.info('New WebSocket connection');
 
-    // Обработка входящих сообщений
     ws.on('message', async message => {
       try {
         const messageString = message.toString ? message.toString() : message;
 
         const messageData = parseJSON(messageString);
 
-        // const savedMessage = await MessageService.handleMessage(messageData);
+        const savedMessage = await MessageService.saveMessage<IMessage>(messageData);
 
-        // ws.send(JSON.stringify({ status: 'success', message: savedMessage }));
+        ws.send(JSON.stringify({ status: 'success', message: savedMessage }));
       } catch (error) {
         logger.error('Error handling message:', error);
 

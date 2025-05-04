@@ -46,9 +46,10 @@ export const s3: any = new AWS.S3({
   endpoint: 'https://storage.yandexcloud.net',
 });
 
+const PRISMA_LOGS = process.env.PRISMA_LOGS === 'true';
 // prisma init
 export const prisma = new PrismaClient({
-  log: ['query', 'info', 'error'],
+  log: PRISMA_LOGS ? ['query', 'info', 'error'] : [],
   errorFormat: 'pretty',
   transactionOptions: {
     maxWait: 10000, // default: 2000
