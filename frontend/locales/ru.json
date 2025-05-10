@@ -60,6 +60,9 @@
       "date": "Дата"
     }
   },
+  "messages": {
+    "messages-input-placeholder": "Введите сообщение..."
+  },
   "workspace": "Пространство",
   "tabs": {
     "files": "Файлы",

@@ -1,7 +1,14 @@
+export interface Message {
+  self: boolean;
+  sender: string;
+  text: string;
+  time: string;
+}
+
 export interface MessageSchema {
-	messages: any[];
-	currentChat: any;
-	chatStack: number[] | [];
-	view: string;
-	paths: any[];
+  messages: Message[];
+  currentChat: any;
+  chatStack: number[] | [];
+  view: string;
+  paths: any[];
 }

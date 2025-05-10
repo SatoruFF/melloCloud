@@ -1,2 +1,2 @@
-import type { MessageSchema } from "./types/message";
-export type { MessageSchema };
+import type { MessageSchema, Message } from './types/message';
+export type { MessageSchema, Message };

@@ -1,0 +1,74 @@
+.wrapper {
+  position: relative;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: url('./../../../shared/assets/clouds-blur.jpg') no-repeat center center;
+    background-size: cover;
+    filter: blur(4px);
+    z-index: 0;
+  }
+}
+
+.messageList {
+  height: 100%;
+  padding: 10px;
+  overflow-y: auto;
+  backdrop-filter: blur(0);
+}
+
+.lazyBackground {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: blur(10px);
+  z-index: -1;
+}
+
+.messageItem {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 10px;
+
+  &.self {
+    justify-content: flex-end;
+
+    .messageContent {
+      background: #1890ff;
+      color: white;
+    }
+  }
+}
+
+.avatar {
+  background-color: #1890ff;
+  color: white;
+  margin-right: 8px;
+}
+
+.messageContent {
+  max-width: 70%;
+  padding: 8px 12px;
+  border-radius: 12px;
+  background: #f0f0f0;
+  font-size: 14px;
+}
+
+.self .messageContent {
+  background: #1890ff;
+  color: white;
+}
+
+.messageTime {
+  font-size: 10px;
+  color: white;
+  text-align: right;
+  margin-top: 4px;
+}

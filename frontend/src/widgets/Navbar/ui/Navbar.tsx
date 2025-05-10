@@ -24,12 +24,14 @@ import { Notifications } from '../../../features/notifications';
 import mainLogo from '../../../shared/assets/octopus-kid.jpg';
 import LanguageSwitcher from '../../languageSwitcher/ui/LanguageSwitcher';
 import styles from '../styles/navbar.module.scss';
+import { getUserSelector } from '../../../entities/user';
 
 // TODO: add storybook
 const MyNavbar: React.FC = () => {
   const { t } = useTranslation();
   const isAuth = useAppSelector(state => state.user.isAuth);
-  const user = useAppSelector(state => state.user);
+  const user = useAppSelector(getUserSelector);
+  console.log('⚠ :: user:', user);
   const [profile, setProfile] = useState(false);
   const [burger, setBurger] = useState(false);
   const dispatch = useAppDispatch();
@@ -78,7 +80,7 @@ const MyNavbar: React.FC = () => {
             {!isTabletOrMobile && (
               <Tooltip title="Account Settings">
                 <div className={cn(styles.userInfo)} onClick={() => setProfile(true)}>
-                  <p>{user.userName}</p>
+                  <p>{user?.userName}</p>
                   <SettingOutlined />
                 </div>
               </Tooltip>

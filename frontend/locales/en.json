@@ -60,6 +60,9 @@
       "date": "date"
     }
   },
+  "messages": {
+    "messages-input-placeholder": "write message..."
+  },
   "workspace": "workspace",
   "tabs": {
     "files": "Files",

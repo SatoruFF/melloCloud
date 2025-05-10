@@ -1,91 +1,62 @@
-import { Avatar, Input, List } from "antd";
-import cn from "classnames";
-import { useState } from "react";
-import styles from "./messages.module.scss";
+import { Avatar, Input, List, Button } from 'antd';
+import cn from 'classnames';
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Send } from 'lucide-react';
+import MessagesList from './MessagesList';
+import { Message } from '../../../entities/message/index';
+
+import styles from './messages.module.scss';
 
 const Messages = () => {
-	const initialMessages = [
-		{
-			id: 1,
-			sender: "Alice",
-			text: "Привет! Как дела?",
-			time: "10:30",
-			self: false,
-		},
-		{
-			id: 2,
-			sender: "Me",
-			text: "Привет! Все хорошо, а у тебя?",
-			time: "10:32",
-			self: true,
-		},
-		{
-			id: 3,
-			sender: "Alice",
-			text: "Тоже отлично! Чем занимаешься?",
-			time: "10:35",
-			self: false,
-		},
-		{ id: 4, sender: "Me", text: "Пишу код 😎", time: "10:36", self: true },
-	];
+  const { t } = useTranslation();
+  const initialMessages = [];
 
-	const [messages, setMessages] = useState(initialMessages);
-	const [inputValue, setInputValue] = useState("");
+  // FIXME: typo
+  const [messages, setMessages] = useState<Message[]>(initialMessages);
+  const [inputValue, setInputValue] = useState('');
 
-	const handleSendMessage = () => {
-		if (!inputValue.trim()) return;
+  const handleSendMessage = () => {
+    if (!inputValue.trim()) return;
 
-		const newMessage = {
-			id: messages.length + 1,
-			sender: "Me",
-			text: inputValue,
-			time: new Date().toLocaleTimeString([], {
-				hour: "2-digit",
-				minute: "2-digit",
-			}),
-			self: true,
-		};
+    const newMessage = {
+      id: messages.length + 1,
+      sender: 'Me',
+      text: inputValue,
+      time: new Date().toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit',
+      }),
+      self: true,
+    };
 
-		setMessages([...messages, newMessage]);
-		setInputValue("");
-	};
+    setMessages([...messages, newMessage]);
+    setInputValue('');
+  };
 
-	const handleInputKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-		if (e.key === "Enter" && !e.shiftKey) {
-			e.preventDefault();
-			handleSendMessage();
-		}
-	};
+  const handleInputKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSendMessage();
+    }
+  };
 
-	return (
-		<div className={styles.messagesWrapper}>
-			<List
-				className={styles.messageList}
-				dataSource={messages}
-				renderItem={(item) => (
-					<List.Item
-						className={cn(styles.messageItem, { [styles.self]: item.self })}
-					>
-						{!item.self && (
-							<Avatar className={styles.avatar}>{item.sender[0]}</Avatar>
-						)}
-						<div className={styles.messageContent}>
-							<div className={styles.messageText}>{item.text}</div>
-							<div className={styles.messageTime}>{item.time}</div>
-						</div>
-					</List.Item>
-				)}
-			/>
-			<Input.TextArea
-				placeholder="Введите сообщение..."
-				className={styles.input}
-				autoSize
-				value={inputValue}
-				onChange={(e) => setInputValue(e.target.value)}
-				onPressEnter={handleInputKeyDown}
-			/>
-		</div>
-	);
+  return (
+    <div className={styles.messagesWrapper}>
+      <MessagesList messages={messages} />
+      <div className={styles.inputWrapper}>
+        <Input.TextArea
+          placeholder={t('messages.messages-input-placeholder')}
+          className={styles.textArea}
+          autoSize={{ minRows: 1, maxRows: 4 }}
+          value={inputValue}
+          onChange={e => setInputValue(e.target.value)}
+          onPressEnter={handleInputKeyDown}
+        />
+        <Button type="text" icon={<Send />} onClick={handleSendMessage} className={styles.sendButton} />
+      </div>
+    </div>
+  );
 };
 
 export default Messages;
