@@ -16,3 +16,4 @@
     "editor.formatOnSave": true
   }
 }
+// why this workspace was created: https://github.com/biomejs/biome/issues/1556
