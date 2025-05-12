@@ -1,5 +1,4 @@
 import createError from "http-errors";
-import { v4 as uuidv4 } from "uuid";
 import _ from "lodash";
 import type { Prisma } from "@prisma/client";
 import "dotenv/config.js";

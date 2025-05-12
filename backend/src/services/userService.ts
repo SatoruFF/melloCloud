@@ -1,19 +1,20 @@
-import { prisma } from '../configs/config.js';
-import { IUserModel, UserDto } from '../helpers/dtos/user-dto.js';
+import { v4 as uuidv4 } from "uuid";
+import { prisma } from "../configs/config.js";
+import { IUserModel, UserDto } from "../helpers/dtos/user-dto.js";
 // @ts-nocheck
 // FIXME: remove this in future
 // base
-import { FileService } from './fileService.js';
-import { MailService } from './mailService.js';
+import { FileService } from "./fileService.js";
+import { MailService } from "./mailService.js";
 
-import bcrypt from 'bcrypt';
+import bcrypt from "bcrypt";
 // utils
-import _ from 'lodash';
-import 'dotenv/config.js';
-import createError from 'http-errors';
+import _ from "lodash";
+import "dotenv/config.js";
+import createError from "http-errors";
 // import { v4 as uuidv4 } from "uuid";
-import { generateJwt } from '../utils/generateJwt.js';
-import { validateAccessToken, validateRefreshToken } from '../utils/validateJwt.js';
+import { generateJwt } from "../utils/generateJwt.js";
+import { validateAccessToken, validateRefreshToken } from "../utils/validateJwt.js";
 
 interface IUserData {
   email: string;
@@ -21,11 +22,11 @@ interface IUserData {
   userName?: string | null;
 }
 
-const invitePrivateProps = ['activationToken', 'password'];
+const invitePrivateProps = ["activationToken", "password"];
 
 class UserServiceClass {
   async createInvite({ userName, email, password }: IUserData): Promise<any> {
-    return prisma.$transaction(async trx => {
+    return prisma.$transaction(async (trx) => {
       // Validate user data, cause user already may be exist
       const candidate = await trx.user.findUnique({
         where: {
@@ -62,7 +63,7 @@ class UserServiceClass {
   }
 
   async registration(userData: IUserData) {
-    return prisma.$transaction(async trx => {
+    return prisma.$transaction(async (trx) => {
       // Validate user data
 
       const { email, password, userName } = userData;
@@ -77,30 +78,21 @@ class UserServiceClass {
         throw createError(400, `User with email: ${userData.email} already exists`);
       }
 
-      // create user in dataBase
-      // const hashPassword = await bcrypt.hash(userData.password, 5);
-
       if (!password) {
         throw createError(400, `Cannot get user password from invite`);
       }
 
-      // let activationToken: string = uuidv4();
+      const storageGuid = uuidv4();
 
       const user = await trx.user.create({
         data: {
           userName,
           email,
           password,
+          storageGuid,
           // activationLink,
         },
       });
-
-      // activationToken = `${process.env.API_URL}/api/user/activate/${activationToken}`;
-
-      // await MailService.sendActivationMail(userData.email, {
-      //   ...user,
-      //   activationToken,
-      // });
 
       const { accessToken, refreshToken } = generateJwt(user.id);
 
@@ -116,7 +108,7 @@ class UserServiceClass {
         },
       });
 
-      const baseDir = { userId: user.id, path: '', type: 'dir', name: '' };
+      const baseDir = { userId: user.id, path: "", type: "dir", name: "", storageGuid };
 
       // create new base dir for user
       await FileService.createDir(baseDir);
@@ -142,7 +134,7 @@ class UserServiceClass {
   }
 
   async login(email: string, password: string) {
-    return prisma.$transaction(async trx => {
+    return prisma.$transaction(async (trx) => {
       const user: any = await trx.user.findUnique({
         where: {
           email,
@@ -211,11 +203,11 @@ class UserServiceClass {
   }
 
   async activate(activationToken: string) {
-    return prisma.$transaction(async trx => {
+    return prisma.$transaction(async (trx) => {
       const { payload: emailFromInvite } = validateAccessToken(activationToken) || {};
 
       if (!emailFromInvite) {
-        throw createError('401', 'Auth error, may be token is expired');
+        throw createError("401", "Auth error, may be token is expired");
       }
 
       const invite = await trx.invite.findFirst({
@@ -225,7 +217,7 @@ class UserServiceClass {
       });
 
       if (!invite) {
-        throw createError(404, 'Invite not found for email address: ' + emailFromInvite);
+        throw createError(404, "Invite not found for email address: " + emailFromInvite);
       }
 
       const { email, password, userName } = invite;
@@ -249,9 +241,9 @@ class UserServiceClass {
   }
 
   async refresh(refreshToken) {
-    return prisma.$transaction(async trx => {
+    return prisma.$transaction(async (trx) => {
       if (!refreshToken) {
-        throw createError(404, 'Not found token');
+        throw createError(404, "Not found token");
       }
 
       const userId = validateRefreshToken(refreshToken);
@@ -261,7 +253,7 @@ class UserServiceClass {
       });
 
       if (!foundedUser || !userId) {
-        throw createError(404, 'User not found');
+        throw createError(404, "User not found");
       }
 
       const { accessToken, refreshToken: newToken } = generateJwt(foundedUser.id);
@@ -281,7 +273,7 @@ class UserServiceClass {
   }
 
   async logout(id, refreshToken: string) {
-    return prisma.$transaction(async trx => {
+    return prisma.$transaction(async (trx) => {
       const user = await trx.user.update({
         where: {
           id,
