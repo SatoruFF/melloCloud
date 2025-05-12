@@ -1,17 +1,30 @@
 // base
-import { Request, Response } from 'express';
+import type { Request, Response } from "express";
 
 // services
-import { FETCH_LIMIT, prisma } from '../configs/config.js';
-import { Avatar } from '../helpers/avatar.js';
-import { FileService } from '../services/fileService.js';
+import { FETCH_LIMIT, prisma } from "../configs/config.js";
+import { Avatar } from "../helpers/avatar.js";
+import { FileService } from "../services/fileService.js";
 
-import { PassThrough } from 'stream';
-import createError from 'http-errors';
+import { PassThrough } from "stream";
+import createError from "http-errors";
 // Utils
-import _ from 'lodash';
-import { logger } from '../configs/logger.js';
-import 'dotenv/config.js';
+import _ from "lodash";
+import { logger } from "../configs/logger.js";
+import "dotenv/config.js";
+
+const getUserById = async (userId: number) => {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { storageGuid: true },
+  });
+
+  if (!user?.storageGuid) {
+    throw createError(500, "Storage GUID not found for user");
+  }
+
+  return user;
+};
 
 class FileControllerClass {
   /**
@@ -23,14 +36,14 @@ class FileControllerClass {
   async createDir(req: Request, res: Response) {
     try {
       const { name, type, parent } = req.body;
-      const userId = _.get(req, ['user', 'id']);
+      const userId = _.get(req, ["user", "id"]);
 
       const doubledFolder = await prisma.file.findFirst({
         where: { name, parentId: parent },
       });
 
       if (!_.isEmpty(doubledFolder)) {
-        return res.status(400).json({ message: 'Folder name is not unique!' });
+        throw createError(400, "Folder name is not unique!");
       }
 
       const fileInstance = {
@@ -38,8 +51,9 @@ class FileControllerClass {
         type,
         parentId: parent,
         userId,
-        path: '',
-        url: '',
+        path: "",
+        url: "",
+        storageGuid: user?.storageGuid,
       };
 
       let itemUrl;
@@ -53,10 +67,11 @@ class FileControllerClass {
         });
 
         if (_.isEmpty(parentFile)) {
-          throw createError(400, 'Parent directory not found');
+          throw createError(400, "Parent directory not found");
         }
 
         fileInstance.path = `${parentFile.path}/${name}`;
+
         itemUrl = await FileService.createDir(fileInstance);
       }
 
@@ -67,7 +82,7 @@ class FileControllerClass {
       });
 
       return res.json(file);
-    } catch (error: any) {
+    } catch (error: Error) {
       logger.error(error.message, error);
       return res.status(error.statusCode || 500).send({
         message: error.message,
@@ -84,10 +99,13 @@ class FileControllerClass {
   async getFiles(req, res) {
     try {
       const { sort, search, limit, offset } = req.query;
-      const parentId = parseInt(req.query.parent) || null;
-      const userId = _.get(req, ['user', 'id']);
+      const parentId = Number.parseInt(req.query.parent) || null;
+      const userId = _.get(req, ["user", "id"]);
+
+      const user = await getUserById(userId);
 
       const searchParams = {
+        storageGuid: user?.storageGuid,
         sort,
         limit,
         offset,
@@ -119,7 +137,9 @@ class FileControllerClass {
       const userId = req.user.id;
       const parentId = req.body.parent;
 
-      const savedFile = await FileService.uploadFile(file, userId, parentId);
+      const user = await getUserById(userId);
+
+      const savedFile = await FileService.uploadFile(file, userId, parentId, user.storageGuid);
 
       return res.json(savedFile);
     } catch (error: any) {
@@ -141,13 +161,15 @@ class FileControllerClass {
       const userId = req.user.id;
       const queryId = req.query.id;
 
-      const { s3object, file } = await FileService.downloadFile(queryId, userId);
+      const user = await getUserById(userId);
+
+      const { s3object, file } = await FileService.downloadFile(queryId, userId, user.storageGuid);
 
       const stream = new PassThrough();
       stream.end(s3object.Body);
 
-      res.setHeader('Content-disposition', 'attachment; filename=' + file.name);
-      res.setHeader('Content-type', file.type);
+      res.setHeader("Content-disposition", "attachment; filename=" + file.name);
+      res.setHeader("Content-type", file.type);
       res.attachment(file.name);
 
       stream.pipe(res);
@@ -170,7 +192,9 @@ class FileControllerClass {
       const fileId = Number(req.query.id);
       const userId = req.user.id;
 
-      const allFiles = await FileService.deleteFile(fileId, userId);
+      const user = await getUserById(userId);
+
+      const allFiles = await FileService.deleteFile(fileId, userId, user.storageGuid);
 
       return res.json(allFiles);
     } catch (error: any) {

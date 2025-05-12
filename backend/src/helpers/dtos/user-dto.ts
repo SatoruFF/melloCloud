@@ -2,6 +2,7 @@ export interface IUserModel {
   id: number;
   userName: string;
   email: string;
+  storageGuid: string;
   diskSpace?: string | number | bigint;
   usedSpace?: string | number | bigint;
   avatar?: string | null;
@@ -16,6 +17,7 @@ export class UserDto {
     id: number;
     userName: string;
     email: string;
+    storageGuid?: string;
     diskSpace: any;
     usedSpace: any;
     avatar: string;
@@ -34,8 +36,8 @@ export class UserDto {
       email,
       diskSpace,
       usedSpace,
-      avatar: avatar || '',
-      role: role || 'USER',
+      avatar: avatar || "",
+      role: role || "USER",
       isActivated: isActivated || false,
     };
     this.token = token;

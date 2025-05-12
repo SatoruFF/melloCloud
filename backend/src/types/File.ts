@@ -2,12 +2,13 @@ export interface IFile {
   userId: number;
   path: string;
   name?: string;
-  type: string | 'dir' | 'file';
+  type: string | "dir" | "file";
   url?: string;
 }
 
 export interface ISearchParams {
   userId: number;
+  storageGuid?: string;
   limit?: number;
   offset?: number;
   sort?: string;

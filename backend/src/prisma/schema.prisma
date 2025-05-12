@@ -17,6 +17,7 @@ model User {
   userName     String?
   email        String       @unique
   password     String
+  storageGuid  String       @unique
   diskSpace    BigInt       @default(104857600)
   usedSpace    BigInt       @default(0)
   avatar       String?

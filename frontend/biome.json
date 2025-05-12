@@ -11,6 +11,7 @@
     "lineEnding": "lf",
     "lineWidth": 120,
     "attributePosition": "auto",
+    "quoteStyle": "single",
     "bracketSpacing": true,
     "ignore": ["**/build", "**/coverage", "**/dist", "**/node_modules"]
   },
