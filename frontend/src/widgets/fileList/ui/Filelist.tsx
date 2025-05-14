@@ -1,10 +1,10 @@
-import { Empty } from 'antd';
-import { useAppDispatch, useAppSelector } from '../../../app/store/store';
-import File from '../../../entities/file/ui/File';
+import { Empty } from "antd";
+import { useAppDispatch, useAppSelector } from "../../../app/store/store";
+import File from "../../../entities/file/ui/File";
 
-import cn from 'classnames';
-import { memo, useCallback, useEffect, useRef } from 'react';
-import type { IFile } from '../../../entities/file';
+import cn from "classnames";
+import { memo, useCallback, useEffect, useRef } from "react";
+import type { IFile } from "../../../entities/file";
 import {
   getFilesHasMoreSelector,
   getFilesLimitSelector,
@@ -12,10 +12,10 @@ import {
   getFilesOffsetSelector,
   getFilesSelector,
   getFilesViewSelector,
-} from '../../../entities/file/model/selectors/getFiles';
-import { setOffset } from '../../../entities/file/model/slice/fileSlice';
-import { AppSkeleton, ObservablePage } from '../../../shared';
-import styles from './fileList.module.scss';
+} from "../../../entities/file/model/selectors/getFiles";
+import { setOffset } from "../../../entities/file/model/slice/fileSlice";
+import { AppSkeleton, ObservablePage } from "../../../shared";
+import styles from "./fileList.module.scss";
 
 const Filelist: React.FC = () => {
   const files = useAppSelector(getFilesSelector);
@@ -46,18 +46,18 @@ const Filelist: React.FC = () => {
 
   if (files.length === 0) {
     return (
-      <h1 className={cn(styles.filesNotFound, 'animate__animated animate__fadeIn')}>
-        <Empty className="emptyFolder" />
-      </h1>
+      <div className={cn(styles.filesNotFound, "animate__animated animate__fadeIn")}>
+        <Empty description={false} className="emptyFolder" />
+      </div>
     );
   }
 
   if (filesLoading) return <AppSkeleton />; // FIXME: not work if i want
 
-  if (fileView === 'plate') {
+  if (fileView === "plate") {
     return (
-      <ObservablePage onScrollEnd={onLoadNextPart}>
-        <div className={cn(styles.filePlateListWrapper, 'animate__animated animate__fadeIn')}>
+      <ObservablePage className={styles.observablePage} onScrollEnd={onLoadNextPart}>
+        <div className={cn(styles.filePlateListWrapper, "animate__animated animate__fadeIn")}>
           {files.map((file: IFile) => (
             <File key={Math.random()} file={file} />
           ))}
@@ -67,8 +67,8 @@ const Filelist: React.FC = () => {
   }
 
   return (
-    <ObservablePage onScrollEnd={onLoadNextPart}>
-      <div className={cn(styles.filelistWrapper, 'animate__animated animate__fadeIn')}>
+    <ObservablePage className={styles.observablePage} onScrollEnd={onLoadNextPart}>
+      <div className={cn(styles.filelistWrapper, "animate__animated animate__fadeIn")}>
         <div className={cn(styles.fileListHeader)}>
           <p className={cn(styles.name)}>Name</p>
           <p className={cn(styles.date)}>Date</p>

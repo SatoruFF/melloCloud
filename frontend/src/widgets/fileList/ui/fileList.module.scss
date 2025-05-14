@@ -1,7 +1,8 @@
-@use '../../../shared/styles/tmp.scss' as *;
+@use "../../../shared/styles/tmp.scss" as *;
 
 .filelistWrapper {
   box-sizing: border-box;
+  min-height: 100vh;
   .fileListHeader {
     width: 100%;
     display: grid;
@@ -51,18 +52,16 @@
 }
 
 .filesNotFound {
-  position: absolute;
-  z-index: 0;
+  flex: 1;
   width: 100%;
-  height: calc(100vh - 16vh);
-  box-sizing: border-box;
+  height: 100vh - $header-height - $file-toolbar-height;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   color: white;
   font-size: 24px;
-  @extend %centerTemplate, %mainFont;
-  .emptyFolder {
-    div {
-      color: white;
-      @extend %mainFont;
-    }
-  }
+  @extend %mainFont;
+}
+
+.observablePage {
 }

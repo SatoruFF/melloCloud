@@ -86,7 +86,6 @@ model File {
   updatedAt  DateTime? @updatedAt
 }
 
-
 // Define Chat data model
 model Chat {
   id         Int        @id @default(autoincrement())

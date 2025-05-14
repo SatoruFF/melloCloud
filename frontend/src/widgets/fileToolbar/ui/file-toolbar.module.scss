@@ -1,10 +1,13 @@
-@use '../../../shared/styles/tmp.scss' as *;
+@use "../../../shared/styles/tmp.scss" as *;
 
 // TODO: unset useless rules, after move from file space
 .diskWrapper {
+  height: $file-toolbar-height;
   background-color: #171717;
   position: relative;
   overflow: hidden;
+  padding: 10px;
+  box-sizing: border-box;
   .diskBackgroundImg {
     display: none; //!
     filter: brightness(30%);
@@ -17,7 +20,6 @@
 
   .diskControlBtns {
     width: 100%;
-    height: 7vh;
     display: flex;
     align-items: center;
     justify-content: baseline;
@@ -82,7 +84,7 @@
 }
 
 @media screen and (max-width: 992px) {
-  .disk-nav {
+  .diskWrapper {
     .diskControlBtns {
       height: auto;
       padding: 10px;
@@ -101,7 +103,7 @@
 }
 
 @media screen and (max-width: 576px) {
-  .disk-nav {
+  .diskWrapper {
     .diskControlBtns {
       .disk-order {
         width: 70px;

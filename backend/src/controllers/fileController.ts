@@ -35,11 +35,11 @@ class FileControllerClass {
    */
   async createDir(req: Request, res: Response) {
     try {
-      const { name, type, parent } = req.body;
+      const { name, type, parent: parentId } = req.body;
       const userId = _.get(req, ["user", "id"]);
 
       const doubledFolder = await prisma.file.findFirst({
-        where: { name, parentId: parent },
+        where: { name, parentId },
       });
 
       if (!_.isEmpty(doubledFolder)) {
@@ -51,21 +51,20 @@ class FileControllerClass {
       const fileInstance = {
         name,
         type,
-        parentId: parent,
+        parentId,
         userId,
         path: "",
         url: "",
         storageGuid: user?.storageGuid,
       };
 
-      let itemUrl;
-
-      if (parent == null) {
+      if (parentId == null) {
+        // If no parent, set path as the folder name
         fileInstance.path = name;
-        itemUrl = await FileService.createDir(fileInstance);
       } else {
+        // If parent exists, get its path and append the new folder name
         const parentFile = await prisma.file.findFirst({
-          where: { id: parent, userId },
+          where: { id: parentId, userId },
         });
 
         if (_.isEmpty(parentFile)) {
@@ -73,17 +72,23 @@ class FileControllerClass {
         }
 
         fileInstance.path = `${parentFile.path}/${name}`;
-
-        itemUrl = await FileService.createDir(fileInstance);
       }
 
-      fileInstance.url = itemUrl;
-
+      // First, create the file entry in the database
       const file = await prisma.file.create({
         data: fileInstance,
       });
 
-      return res.json(file);
+      // Then, create the corresponding directory in S3
+      const itemUrl = await FileService.createDir(fileInstance);
+
+      // Update the database record with the S3 URL
+      const updatedFile = await prisma.file.update({
+        where: { id: file.id },
+        data: { url: itemUrl },
+      });
+
+      return res.json(updatedFile);
     } catch (error: any) {
       logger.error(error.message, error);
       return res.status(error.statusCode || 500).send({

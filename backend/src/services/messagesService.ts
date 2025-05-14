@@ -1,14 +1,14 @@
-import _ from 'lodash';
-import { prisma } from '../configs/config';
-import { logger } from '../configs/logger';
-import type { IMessage } from '../types/Message';
-import { z } from 'zod';
+import _ from "lodash";
+import { prisma } from "../configs/config";
+import { logger } from "../configs/logger";
+import type { IMessage } from "../types/Message";
+import { z } from "zod";
 
 // Схема для валидации сообщений
 const messageSchema = z.object({
-  text: z.string().min(1, 'Text is required'),
-  senderId: z.number().int().positive('Sender ID must be a positive integer'),
-  chatId: z.number().int().positive('Chat ID must be a positive integer'),
+  text: z.string().min(1, "Text is required"),
+  senderId: z.number().int().positive("Sender ID must be a positive integer"),
+  chatId: z.number().int().positive("Chat ID must be a positive integer"),
 });
 
 class MessagesServiceClass<T extends IMessage> {
@@ -23,12 +23,12 @@ class MessagesServiceClass<T extends IMessage> {
    * @param message - Сообщение для сохранения.
    * @returns Сохраненное сообщение.
    */
-  static async saveMessage(message: IMessage) {
+  async saveMessage(message: IMessage) {
     try {
       // Валидация сообщения
       const validatedMessage = messageSchema.parse(message);
 
-      return await prisma.$transaction(async trx => {
+      return await prisma.$transaction(async (trx) => {
         const savedMessage = await trx.message.create({
           data: {
             text: validatedMessage.text,
@@ -37,12 +37,12 @@ class MessagesServiceClass<T extends IMessage> {
           },
         });
 
-        logger.info('Message saved to database:', savedMessage);
+        logger.info("Message saved to database:", savedMessage);
         return savedMessage;
       });
     } catch (error) {
-      logger.error('Error saving message:', error);
-      throw new Error('Failed to save message');
+      logger.error("Error saving message:", error);
+      throw new Error("Failed to save message");
     }
   }
 
@@ -55,14 +55,14 @@ class MessagesServiceClass<T extends IMessage> {
     try {
       const messages = await prisma.message.findMany({
         where: { chatId },
-        orderBy: { createdAt: 'asc' },
+        orderBy: { createdAt: "asc" },
       });
 
       logger.info(`Retrieved ${messages.length} messages for chat ${chatId}`);
       return messages;
     } catch (error) {
-      logger.error('Error retrieving messages:', error);
-      throw new Error('Failed to retrieve messages');
+      logger.error("Error retrieving messages:", error);
+      throw new Error("Failed to retrieve messages");
     }
   }
 
@@ -77,11 +77,11 @@ class MessagesServiceClass<T extends IMessage> {
         where: { id: messageId },
       });
 
-      logger.info('Message deleted:', deletedMessage);
+      logger.info("Message deleted:", deletedMessage);
       return deletedMessage;
     } catch (error) {
-      logger.error('Error deleting message:', error);
-      throw new Error('Failed to delete message');
+      logger.error("Error deleting message:", error);
+      throw new Error("Failed to delete message");
     }
   }
 
@@ -98,11 +98,11 @@ class MessagesServiceClass<T extends IMessage> {
         data: updates,
       });
 
-      logger.info('Message updated:', updatedMessage);
+      logger.info("Message updated:", updatedMessage);
       return updatedMessage;
     } catch (error) {
-      logger.error('Error updating message:', error);
-      throw new Error('Failed to update message');
+      logger.error("Error updating message:", error);
+      throw new Error("Failed to update message");
     }
   }
 

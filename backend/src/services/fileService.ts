@@ -26,7 +26,7 @@ type ExtendedFile = IFile & { storageGuid: string };
 
 class FileServiceClass {
   // create dir or file
-  async createDir(file: ExtendedFile): Promise<CreateDirResponse> {
+  async createDir(file: ExtendedFile): Promise<string> {
     let folderPath = `${file.storageGuid}/${file.path}`;
 
     if (!folderPath.endsWith("/")) {

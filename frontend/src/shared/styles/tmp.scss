@@ -1,10 +1,12 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins&family=Sono&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Poppins&family=Sono&display=swap");
 
 $light-text-color: #ffffff;
 
 $dark-text-color: #1e213f;
 
 $header-height: 10vh;
+
+$file-toolbar-height: 7vh;
 
 %centerTemplate {
   display: -ms-flexbox;
@@ -22,11 +24,11 @@ $header-height: 10vh;
 }
 
 %mainFont {
-  font-family: 'Sono', sans-serif;
+  font-family: "Sono", sans-serif;
 }
 
 %secondFont {
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
 }
 
 %backgroundPic {
