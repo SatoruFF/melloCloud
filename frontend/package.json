@@ -28,7 +28,7 @@
     "visual:report": "npm-run-all --serial visual:report:*",
     "visual:report:json": "node scripts/generate-visual-json-report.ts",
     "visual:report:html": "reg-cli --from .loki/report.json --report .loki/report.html",
-    "prepare": "husky"
+    "prepare": "husky && husky install"
   },
   "dependencies": {
     "@ant-design/icons": "^6.0.0",
@@ -159,6 +159,7 @@
   "lint-staged": {
     "**/*.{js,mjs,cjs,jsx,ts,mts,cts,tsx,vue,astro,svelte}": [
       "pnpm run lint:fix"
-    ]
+    ],
+    "*.scss": "stylelint --fix"
   }
 }
