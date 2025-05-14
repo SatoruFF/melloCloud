@@ -46,6 +46,8 @@ class FileControllerClass {
         throw createError(400, "Folder name is not unique!");
       }
 
+      const user = await getUserById(userId);
+
       const fileInstance = {
         name,
         type,
@@ -82,7 +84,7 @@ class FileControllerClass {
       });
 
       return res.json(file);
-    } catch (error: Error) {
+    } catch (error: any) {
       logger.error(error.message, error);
       return res.status(error.statusCode || 500).send({
         message: error.message,
@@ -139,7 +141,7 @@ class FileControllerClass {
 
       const user = await getUserById(userId);
 
-      const savedFile = await FileService.uploadFile(file, userId, parentId, user.storageGuid);
+      const savedFile = await FileService.uploadFile(file, userId, parentId);
 
       return res.json(savedFile);
     } catch (error: any) {
@@ -194,7 +196,7 @@ class FileControllerClass {
 
       const user = await getUserById(userId);
 
-      const allFiles = await FileService.deleteFile(fileId, userId, user.storageGuid);
+      const allFiles = await FileService.deleteFile(fileId, userId);
 
       return res.json(allFiles);
     } catch (error: any) {

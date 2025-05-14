@@ -1,4 +1,4 @@
-@use '../../../shared/styles/tmp.scss' as *;
+@use "../../../shared/styles/tmp.scss" as *;
 
 .activateContainer {
   display: flex;
@@ -46,4 +46,9 @@ p {
 .activateWarning {
   font-weight: bold;
   color: #e53935;
+}
+
+.loading {
+  height: 100vh - $header-height;
+  @extend %secondFont, %centerTemplate;
 }
