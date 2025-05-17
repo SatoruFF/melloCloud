@@ -1,4 +1,5 @@
 export interface Message {
+  id?: number;
   self: boolean;
   sender: string;
   text: string;

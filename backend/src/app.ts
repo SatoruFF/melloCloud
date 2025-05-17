@@ -1,7 +1,7 @@
 // bases
 import express, { type Express, type Response } from "express";
 import http from "http";
-import router from "./routes/index.js";
+import v1Router from "./routes/index.js";
 
 import cookieParser from "cookie-parser";
 // middleware
@@ -20,6 +20,7 @@ import { cpus } from "os";
 import { limiter } from "./configs/rateLimiter.js";
 import { PORT } from "./configs/config.js";
 import { setupWebSocketServer } from "./helpers/setupWebSocket.js";
+import { logRoutes } from "./helpers/logRoutes.js";
 const numCPU = cpus().length;
 
 // base consts
@@ -45,9 +46,11 @@ app.set("query parser", (str) => {
   return qs.parse(str, { depth });
 });
 
-app.use(routesMiddleWare);
+// TODO: application may be like: api.some.com/
+// need to enhance logic
+// app.use(routesMiddleWare);
 // routes
-app.use(router);
+app.use("/api/v1", v1Router);
 
 // check health
 app.all("/", (_, res: Response) => {
@@ -78,11 +81,11 @@ if (cluster.isPrimary) {
       // WebSocket server
       setupWebSocketServer(server);
 
-      app.listen(PORT, () => {
+      server.listen(PORT, () => {
         logger.info(`⚡️[server]: 🚀 Server is running at: ${PORT}`);
       });
     } catch (e) {
-      logger.warn(e);
+      logger.error(e.message);
     }
   };
 

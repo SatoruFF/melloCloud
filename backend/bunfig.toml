@@ -1,0 +1,6 @@
+entrypoints = ["src/app.ts"]
+outdir = "dist"
+target = "bun"
+minify = true
+sourcemap = true
+external = ["prisma"]

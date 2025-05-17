@@ -6,6 +6,7 @@
   "type": "module",
   "scripts": {
     "build": "npx tsc --noEmitOnError false",
+    "build:bun": "bun build",
     "start": "bun run src/app.ts",
     "dev": "bun run --hot src/app.ts",
     "postinstall": "npx prisma generate && npx prisma migrate dev",

@@ -12,6 +12,7 @@ import createError from "http-errors";
 import _ from "lodash";
 import { logger } from "../configs/logger.js";
 import "dotenv/config.js";
+import type { IFile } from "../types/File.js";
 
 const getUserById = async (userId: number) => {
   const user = await prisma.user.findUnique({
@@ -48,7 +49,7 @@ class FileControllerClass {
 
       const user = await getUserById(userId);
 
-      const fileInstance = {
+      const fileInstance: IFile = {
         name,
         type,
         parentId,

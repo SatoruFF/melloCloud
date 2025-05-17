@@ -1,6 +1,8 @@
 export interface IFile {
   userId: number;
   path: string;
+  storageGuid: string;
+  parentId?: null | number;
   name?: string;
   type: string | "dir" | "file";
   url?: string;
