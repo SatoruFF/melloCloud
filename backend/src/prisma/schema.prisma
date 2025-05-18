@@ -77,10 +77,10 @@ model File {
   size       Int?      @default(0)
   path       String?   @default("")
   url        String?   @default("")
-  parentId   Int?
   user       User?     @relation(fields: [userId], references: [id])
   userId     Int
   parent     File?     @relation("ChildToParent", fields: [parentId], references: [id])
+  parentId   Int?
   childs     File[]    @relation("ChildToParent")
   createdAt  DateTime? @default(now())
   updatedAt  DateTime? @updatedAt

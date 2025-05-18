@@ -1,52 +1,51 @@
-import { ApiOutlined, MenuFoldOutlined, MenuUnfoldOutlined, SettingOutlined } from '@ant-design/icons';
-import { Button, Divider, Drawer, Tooltip, notification } from 'antd';
-import cn from 'classnames';
-import { motion } from 'framer-motion';
-import React, { useCallback, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { useMediaQuery } from 'react-responsive';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { ApiOutlined, MenuFoldOutlined, MenuUnfoldOutlined, SettingOutlined } from "@ant-design/icons";
+import { Button, Divider, Drawer, Tooltip, notification } from "antd";
+import cn from "classnames";
+import { motion } from "framer-motion";
+import React, { useCallback, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { useMediaQuery } from "react-responsive";
+import { NavLink, useNavigate } from "react-router-dom";
 
-import { useAppDispatch, useAppSelector } from '../../../app/store/store';
-import { logout } from '../../../entities/user/model/slice/userSlice';
-import WorkspacesDropdown from '../../../features/workspaceDropdown/ui/WorkspacesDropdown';
-import avatarIcon from '../../../shared/assets/avatar-icon.png';
+import { useAppDispatch, useAppSelector } from "../../../app/store/store";
+import { logout } from "../../../entities/user/model/slice/userSlice";
+import WorkspacesDropdown from "../../../features/workspaceDropdown/ui/WorkspacesDropdown";
+import avatarIcon from "../../../shared/assets/avatar-icon.png";
 import {
   FILE_ROUTE,
   LOGIN_ROUTE,
   PROFILE_ROUTE,
   REGISTRATION_ROUTE,
   WELCOME_ROUTE,
-} from '../../../shared/consts/routes';
-import AccountSettings from '../../accountSettings/ui/AccountSettings.';
+} from "../../../shared/consts/routes";
+import AccountSettings from "../../accountSettings/ui/AccountSettings.";
 
-import { Notifications } from '../../../features/notifications';
-import mainLogo from '../../../shared/assets/octopus-kid.jpg';
-import LanguageSwitcher from '../../languageSwitcher/ui/LanguageSwitcher';
-import styles from '../styles/navbar.module.scss';
-import { getUserSelector } from '../../../entities/user';
+import { Notifications } from "../../../features/notifications";
+import mainLogo from "../../../shared/assets/octopus-kid.jpg";
+import LanguageSwitcher from "../../languageSwitcher/ui/LanguageSwitcher";
+import styles from "../styles/navbar.module.scss";
+import { getUserSelector } from "../../../entities/user";
 
 // TODO: add storybook
 const MyNavbar: React.FC = () => {
   const { t } = useTranslation();
-  const isAuth = useAppSelector(state => state.user.isAuth);
+  const isAuth = useAppSelector((state) => state.user.isAuth);
   const user = useAppSelector(getUserSelector);
-  console.log('⚠ :: user:', user);
   const [profile, setProfile] = useState(false);
   const [burger, setBurger] = useState(false);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const avatar = user.avatar ? user.avatar : avatarIcon;
-  const isTabletOrMobile = useMediaQuery({ query: '(max-width: 1224px)' });
+  const isTabletOrMobile = useMediaQuery({ query: "(max-width: 1224px)" });
 
   const logOut = useCallback(() => {
     dispatch(logout());
     navigate(WELCOME_ROUTE);
     notification.open({
-      message: 'You succesfully log out',
-      description: 'You have successfully logged out of your account',
-      placement: 'topLeft',
-      icon: <ApiOutlined style={{ color: '#ff7875' }} />,
+      message: "You succesfully log out",
+      description: "You have successfully logged out of your account",
+      placement: "topLeft",
+      icon: <ApiOutlined style={{ color: "#ff7875" }} />,
     });
   }, []);
 
@@ -65,11 +64,11 @@ const MyNavbar: React.FC = () => {
             <React.Fragment>
               <div className={cn(styles.navFiles)}>
                 <Button ghost>
-                  <NavLink to={FILE_ROUTE}>{t('files.my-files')}</NavLink>
+                  <NavLink to={FILE_ROUTE}>{t("files.my-files")}</NavLink>
                 </Button>
               </div>
               <Button className={cn(styles.mainLogout)} type="primary" onClick={() => logOut()}>
-                {t('auth.logout')}
+                {t("auth.logout")}
               </Button>
             </React.Fragment>
           )}
@@ -91,11 +90,11 @@ const MyNavbar: React.FC = () => {
             </div>
           </div>
           <Drawer
-            title={t('user.settings')}
+            title={t("user.settings")}
             placement="right"
             onClose={() => setProfile(false)}
             open={profile}
-            style={{ backgroundColor: 'white' }}
+            style={{ backgroundColor: "white" }}
           >
             <AccountSettings />
           </Drawer>
@@ -104,12 +103,12 @@ const MyNavbar: React.FC = () => {
         <div className={cn(styles.navItems)}>
           <div className={cn(styles.navItem)}>
             <Button ghost>
-              <NavLink to={LOGIN_ROUTE}>{t('auth.authorization')}</NavLink>
+              <NavLink to={LOGIN_ROUTE}>{t("auth.authorization")}</NavLink>
             </Button>
           </div>
           <div className={cn(styles.navItem)}>
             <Button ghost>
-              <NavLink to={REGISTRATION_ROUTE}>{t('auth.registration')}</NavLink>
+              <NavLink to={REGISTRATION_ROUTE}>{t("auth.registration")}</NavLink>
             </Button>
           </div>
           <div className={cn(styles.navBurger)}>

@@ -1,5 +1,5 @@
-import { WebSocketServer } from 'ws';
-import { PORT } from './config';
+import { WebSocketServer } from "ws";
+import { PORT } from "./config.js";
 
 /**
  * @deprecated

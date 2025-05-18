@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "cross-env MODE=development vite",
-    "dev:all": "concurrently \"cross-env MODE=development vite\" \"cd ../backend && npm run dev\"",
+    "dev:all": "concurrently \"cross-env MODE=development vite\" \"cd ../backend && npm run start:node\"",
     "build": "vite build",
     "preview": "vite preview",
     "build:dev": "cross-env MODE=development vite build",
@@ -28,7 +28,7 @@
     "visual:report": "npm-run-all --serial visual:report:*",
     "visual:report:json": "node scripts/generate-visual-json-report.ts",
     "visual:report:html": "reg-cli --from .loki/report.json --report .loki/report.html",
-    "prepare": "husky && husky install"
+    "prepare": "husky"
   },
   "dependencies": {
     "@ant-design/icons": "^6.0.0",

@@ -1,6 +1,6 @@
 import _ from "lodash";
 import "dotenv/config.js";
-import { NextFunction, Request, Response } from "express";
+import type { NextFunction, Request, Response } from "express";
 import createError from "http-errors";
 
 import { logger } from "../configs/logger.js";
@@ -53,6 +53,10 @@ class UserControllerClass {
   async auth(req: any, res: Response) {
     try {
       const id = req.user?.id;
+
+      if (!id) {
+        throw createError(401, "User not found");
+      }
 
       const userData = await UserService.auth(id);
 

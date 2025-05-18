@@ -1,6 +1,1 @@
-echo "🚀 Husky hook triggered"
-
-npm run test:unit
-npm run lint:fix
-npm run lint:scss
-npm run format
+pnpm test

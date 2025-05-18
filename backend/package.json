@@ -6,12 +6,13 @@
   "type": "module",
   "scripts": {
     "build": "npx tsc --noEmitOnError false",
-    "build:bun": "bun build",
-    "start": "bun run src/app.ts",
     "dev": "bun run --hot src/app.ts",
+    "start": "bun run src/app.ts",
+    "build:bun": "bun build",
     "postinstall": "npx prisma generate && npx prisma migrate dev",
+    "postinstall-dev": "npx prisma generate && npx prisma migrate dev",
     "start:prisma": "concurrently \"npx tsc --watch\" \"nodemon dist/app.js\" \"prisma studio\"",
-    "start:node": "concurrently \"npx tsc --watch\" \"nodemon dist/app.js\"",
+    "start:node": "concurrently \"npx tsc --watch\" \"wait-on dist/app.js && nodemon dist/app.js\"",
     "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx}\"",
     "lint": "pnpm biome check src",
     "lint:fix": "pnpm biome check --write src",
@@ -79,7 +80,8 @@
     "husky": "^9.1.7",
     "jest": "^29.7.0",
     "oxlint": "^0.15.14",
-    "ts-node": "^10.9.2"
+    "ts-node": "^10.9.2",
+    "wait-on": "^8.0.3"
   },
   "prisma": {
     "schema": "src/prisma/schema.prisma"

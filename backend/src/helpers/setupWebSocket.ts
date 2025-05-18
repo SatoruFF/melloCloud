@@ -1,10 +1,10 @@
 import type http from "http";
-import { MessageService } from "../services/messagesService";
-import { getWebSocketConnection } from "../configs/webSocket";
-import { logger } from "../configs/logger";
-import parseJSON from "./parseJson";
+import { MessageService } from "../services/messagesService.js";
+import { getWebSocketConnection } from "../configs/webSocket.js";
+import { logger } from "../configs/logger.js";
+import parseJSON from "./parseJson.js";
 
-import type { IMessage } from "../types/Message";
+import type { IMessage } from "../types/Message.js";
 
 export function setupWebSocketServer(server: http.Server) {
   const wss = getWebSocketConnection(server);

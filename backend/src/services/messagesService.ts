@@ -1,7 +1,7 @@
 import _ from "lodash";
-import { prisma } from "../configs/config";
-import { logger } from "../configs/logger";
-import type { IMessage } from "../types/Message";
+import { prisma } from "../configs/config.js";
+import { logger } from "../configs/logger.js";
+import type { IMessage } from "../types/Message.js";
 import { z } from "zod";
 
 // Схема для валидации сообщений

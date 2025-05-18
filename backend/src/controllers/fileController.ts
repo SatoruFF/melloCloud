@@ -49,7 +49,7 @@ class FileControllerClass {
 
       const user = await getUserById(userId);
 
-      const fileInstance: IFile = {
+      const fileInstance = {
         name,
         type,
         parentId,
@@ -76,6 +76,21 @@ class FileControllerClass {
       }
 
       // First, create the file entry in the database
+      // const file = await prisma.file.create({
+      //   data: {
+      //     name: fileInstance.name,
+      //     type: fileInstance.type,
+      //     path: fileInstance.path,
+      //     url: fileInstance.url,
+      //     userId: fileInstance.userId,
+      //     ...(fileInstance.parentId && {
+      //       parent: {
+      //         connect: { id: fileInstance.parentId },
+      //       },
+      //     }),
+      //   },
+      // });
+
       const file = await prisma.file.create({
         data: fileInstance,
       });
