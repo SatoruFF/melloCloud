@@ -1,7 +1,7 @@
 export interface Message {
   id?: number;
   self: boolean;
-  sender: string;
+  senderId: string;
   text: string;
   time: string;
 }
