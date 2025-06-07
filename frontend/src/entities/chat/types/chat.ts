@@ -1,12 +1,12 @@
 interface Receiver {
   id: string;
   userName: string;
-  avatar: string | null;
+  avatar?: string | null;
 }
 
 interface Chat {
   id: string;
-  title: string | null;
+  title?: string | null;
   receiver?: Receiver | null; // объект получателя (собеседника) для 1-1 чата
   lastMessage?: string | null;
   lastMessageTime?: string | null;

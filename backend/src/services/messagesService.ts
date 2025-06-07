@@ -21,6 +21,47 @@ class MessagesServiceClass<T extends IMessage> {
   }
 
   /**
+   * Получает сообщения по chatId с лимитом и офсетом, только если пользователь участвует в чате.
+   * @param userId - ID пользователя.
+   * @param chatId - ID чата.
+   * @param limit - Количество сообщений.
+   * @param offset - Смещение.
+   * @returns Список сообщений.
+   */
+  async getPaginatedMessagesByChatId({ userId, chatId, limit = 20, offset = 0 }) {
+    try {
+      // Проверка, что пользователь состоит в чате
+      const isUserInChat = await prisma.chatUser.findFirst({
+        where: {
+          chatId,
+          userId,
+        },
+      });
+
+      if (!isUserInChat) {
+        throw new Error("Access denied: user is not part of this chat.");
+      }
+
+      // Получение сообщений с пагинацией
+      const messages = await prisma.message.findMany({
+        where: { chatId },
+        orderBy: { createdAt: "desc" }, // Для чатов обычно от новых к старым
+        skip: offset,
+        take: limit,
+      });
+
+      logger.info(
+        `User ${userId} retrieved ${messages.length} messages from chat ${chatId} (offset: ${offset}, limit: ${limit})`
+      );
+
+      return messages;
+    } catch (error) {
+      logger.error("Error retrieving paginated messages:", error);
+      throw new Error("Failed to retrieve messages");
+    }
+  }
+
+  /**
    * Сохраняет сообщение в базу данных.
    * @param message - Сообщение для сохранения.
    * @returns Сохраненное сообщение.

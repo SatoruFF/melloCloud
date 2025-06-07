@@ -10,7 +10,7 @@ export const chatSlice = createSlice({
   name: "chat",
   initialState,
   reducers: {
-    setCurrentChat: (state, action: PayloadAction) => {
+    setCurrentChat: (state, action: PayloadAction<ChatSchema["currentChat"]>) => {
       state.currentChat = action.payload || null;
     },
   },

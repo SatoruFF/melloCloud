@@ -29,10 +29,9 @@ const ChatList: React.FC = () => {
   }, []);
 
   const filteredChats = useMemo(
-    () => chats.filter((chat) => (chat.name || "").toLowerCase().includes(search.toLowerCase())),
+    () => chats.filter((chat) => (chat.title || "").toLowerCase().includes(search.toLowerCase())),
     [chats, search]
   );
-
   const insertMention = useCallback(
     (userName: string) => {
       const user = mentionResults.find((u) => u.userName === userName);
@@ -42,8 +41,12 @@ const ChatList: React.FC = () => {
       setSearch(newSearch);
       setMentionSearch("");
 
+      // Найди, есть ли уже чат с этим пользователем
+      const existingChat = chats.find((chat) => chat.receiver?.id === user.id && !chat.isGroup);
+
       dispatch(
         setCurrentChat({
+          id: existingChat?.id ?? null,
           receiver: {
             id: user.id,
             userName: user.userName,
@@ -51,7 +54,7 @@ const ChatList: React.FC = () => {
         })
       );
     },
-    [search, mentionResults, dispatch]
+    [search, mentionResults, dispatch, chats]
   );
 
   if (isLoading) {
@@ -104,7 +107,7 @@ const ChatList: React.FC = () => {
               onClick={() => {
                 dispatch(
                   setCurrentChat({
-                    chatId: chat.id,
+                    id: chat.id || null,
                     receiver: {
                       id: chat.receiver?.id || null,
                       userName: chat.receiver?.userName || null,

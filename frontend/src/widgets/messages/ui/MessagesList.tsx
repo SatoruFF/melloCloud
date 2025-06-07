@@ -12,7 +12,6 @@ interface MessagesListProps {
 }
 
 const MessagesList = ({ messages }: MessagesListProps) => {
-  console.log("⚠ :: MessagesList :: messages:", messages);
   return (
     <div className={styles.wrapper}>
       {/* <img src={chatBackground} loading="lazy" alt="" aria-hidden className={styles.lazyBackground} /> */}

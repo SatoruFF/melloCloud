@@ -1,10 +1,12 @@
+import _ from "lodash-es";
 import { useEffect, useState, useRef } from "react";
+import { message as antdMessage } from "antd";
 import type { Message } from "../../../entities/message";
 import { getSocket } from "../lib/socket";
 import { useAppSelector } from "../../../app/store/store";
 import { getUserSelector } from "../../../entities/user";
 import { getCurrentChat } from "../../../entities/chat/model/selector/getChats";
-import _ from "lodash-es";
+import { useLazyGetMessagesQuery } from "../../../entities/message/model/api/messagesApi";
 
 export const useMessages = () => {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -12,6 +14,8 @@ export const useMessages = () => {
   const currentUser = useAppSelector(getUserSelector);
   const currentChat = useAppSelector(getCurrentChat);
   const currentChatIdRef = useRef<number | null>(null);
+
+  const [fetchMessagesQuery] = useLazyGetMessagesQuery();
 
   // Один раз инициализируем сокет
   useEffect(() => {
@@ -31,16 +35,32 @@ export const useMessages = () => {
     };
 
     return () => {
-      // НЕ закрываем сокет при смене чата
       // socketRef.current?.close();
     };
-  }, [currentChat?.receiver?.id]);
+  }, []);
 
-  // При смене чата обновляем список сообщений и реф
+  const fetchMessages = async (chatId: string | number, limit = 50, offset = 0) => {
+    try {
+      const result = await fetchMessagesQuery(String(chatId)).unwrap();
+      if (result) {
+        setMessages(result); // Тут можно сделать .reverse() если надо последние внизу
+      }
+    } catch (error) {
+      // TODO: не работает сейчас почему то
+      antdMessage.error("Failed to fetch messages");
+      console.error("Failed to fetch messages", error);
+    }
+  };
+
+  // При смене чата обновляем список сообщений и currentChatIdRef
   useEffect(() => {
-    setMessages([]);
-    currentChatIdRef.current = currentChat?.receiver?.id || null;
-  }, [currentChat?.receiver?.id]);
+    const chatId = currentChat?.id;
+    if (chatId) {
+      fetchMessages(chatId).then(() => {
+        currentChatIdRef.current = Number(chatId);
+      });
+    }
+  }, [currentChat?.id]);
 
   const sendMessage = (text: string) => {
     const currentUserId = currentUser?.id;
@@ -58,9 +78,8 @@ export const useMessages = () => {
       self: true,
     };
 
-    setMessages((prev) => [...prev, newMessage]);
     socketRef.current?.send(JSON.stringify(newMessage));
   };
 
-  return { messages, sendMessage };
+  return { messages, sendMessage, fetchMessages };
 };

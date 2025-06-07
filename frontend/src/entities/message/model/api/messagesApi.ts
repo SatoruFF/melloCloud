@@ -8,24 +8,24 @@ export const messageApi = rtkApi.injectEndpoints({
   endpoints: (builder) => ({
     sendMessage: builder.mutation<any, any>({
       query: (body) => ({
-        url: "message",
+        url: "messages",
         method: "POST",
         body,
       }),
     }),
     deleteMessage: builder.mutation<{ messageId: string }, any>({
       query: ({ messageId }) => ({
-        url: `message/delete?id=${messageId}`,
+        url: `messages/delete?id=${messageId}`,
         method: "DELETE",
         body: { messageId },
       }),
     }),
     getMessages: builder.query<any, any>({
-      query: (chatId: string) => `message?chatId=${chatId}`,
+      query: (chatId: string) => `messages?chatId=${chatId}`,
     }),
     editMessage: builder.mutation<any, any>({
       query: ({ messageId, newText }) => ({
-        url: `message/edit`,
+        url: `messages/edit`,
         method: "PUT",
         body: { messageId, newText },
       }),
@@ -33,5 +33,10 @@ export const messageApi = rtkApi.injectEndpoints({
   }),
 });
 
-export const { useGetMessagesQuery, useSendMessageMutation, useDeleteMessageMutation, useEditMessageMutation } =
-  messageApi;
+export const {
+  useGetMessagesQuery,
+  useLazyGetMessagesQuery,
+  useSendMessageMutation,
+  useDeleteMessageMutation,
+  useEditMessageMutation,
+} = messageApi;
