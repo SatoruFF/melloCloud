@@ -35,6 +35,7 @@ export function setupWebSocketServer(server: http.Server) {
 
     ws.on("message", async (message) => {
       try {
+        logger.info("Received message:", message); // TODO: remove
         const messageString = message.toString ? message.toString() : message;
         const messageData = parseJSON(messageString);
 
@@ -45,7 +46,6 @@ export function setupWebSocketServer(server: http.Server) {
 
         // Рассылка другим участникам
         for (const client of wss.clients) {
-          console.log("⚠ :: wss.clients.forEach :: client:", client);
           if (client.readyState === 1) {
             client.send(JSON.stringify(savedMessage));
           }

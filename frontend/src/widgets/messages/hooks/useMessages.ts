@@ -4,34 +4,42 @@ import { getSocket } from "../lib/socket";
 import { useAppSelector } from "../../../app/store/store";
 import { getUserSelector } from "../../../entities/user";
 import { getCurrentChat } from "../../../entities/chat/model/selector/getChats";
+import _ from "lodash-es";
 
 export const useMessages = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const socketRef = useRef<WebSocket | null>(null);
   const currentUser = useAppSelector(getUserSelector);
   const currentChat = useAppSelector(getCurrentChat);
+  const currentChatIdRef = useRef<number | null>(null);
 
-  // Установка сокета и обработка сообщений
+  // Один раз инициализируем сокет
   useEffect(() => {
     socketRef.current = getSocket();
 
     socketRef.current.onmessage = (event) => {
       const newMessage: Message = JSON.parse(event.data);
 
-      // Проверяем, что сообщение относится к текущему чату по receiver.id
-      // if (newMessage.senderId === currentChat?.receiver?.id || newMessage.receiverId === currentChat?.receiver?.id) {
-      setMessages((prev) => [...prev, newMessage]);
-      // }
+      // Фильтруем только сообщения текущего чата
+      if (newMessage.senderId === currentChatIdRef.current || newMessage.receiverId === currentChatIdRef.current) {
+        setMessages((prev) => [...prev, newMessage]);
+      }
+    };
+
+    socketRef.current.onerror = (err) => {
+      console.error("WebSocket error", err);
     };
 
     return () => {
-      socketRef.current?.close();
+      // НЕ закрываем сокет при смене чата
+      // socketRef.current?.close();
     };
   }, [currentChat?.receiver?.id]);
 
-  // Сброс сообщений при смене чата
+  // При смене чата обновляем список сообщений и реф
   useEffect(() => {
     setMessages([]);
+    currentChatIdRef.current = currentChat?.receiver?.id || null;
   }, [currentChat?.receiver?.id]);
 
   const sendMessage = (text: string) => {
@@ -51,7 +59,6 @@ export const useMessages = () => {
     };
 
     setMessages((prev) => [...prev, newMessage]);
-    console.log("⚠ :: sendMessage :: newMessage:", newMessage);
     socketRef.current?.send(JSON.stringify(newMessage));
   };
 

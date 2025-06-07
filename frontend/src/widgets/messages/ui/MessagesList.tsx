@@ -12,6 +12,7 @@ interface MessagesListProps {
 }
 
 const MessagesList = ({ messages }: MessagesListProps) => {
+  console.log("⚠ :: MessagesList :: messages:", messages);
   return (
     <div className={styles.wrapper}>
       {/* <img src={chatBackground} loading="lazy" alt="" aria-hidden className={styles.lazyBackground} /> */}
@@ -21,7 +22,7 @@ const MessagesList = ({ messages }: MessagesListProps) => {
         dataSource={messages}
         renderItem={(item) => (
           <List.Item className={cn(styles.messageItem, { [styles.self]: item.self })}>
-            {!item.self && <Avatar className={styles.avatar}>{item.sender[0]}</Avatar>}
+            {!item.self && <Avatar className={styles.avatar}>{item.senderId}</Avatar>}
             <div className={styles.messageContent}>
               <div className={styles.messageText}>{item.text}</div>
               <div className={styles.messageTime}>{item.time}</div>
