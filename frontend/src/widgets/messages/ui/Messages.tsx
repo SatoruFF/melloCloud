@@ -7,10 +7,13 @@ import { useMessages } from "../hooks/useMessages";
 import { useState } from "react";
 import { useAppSelector } from "../../../app/store/store";
 import { getCurrentChat } from "../../../entities/chat/model/selector/getChats";
+import { getUser } from "../../../entities/user/model/selectors/getUser";
 
 const Messages = () => {
   const { t } = useTranslation();
   const currentChat = useAppSelector(getCurrentChat);
+  const currentUser = useAppSelector(getUser); // FIXME: public api
+  const { id: currentUserId } = currentUser;
   const { messages, sendMessage } = useMessages();
   const [inputValue, setInputValue] = useState("");
 
@@ -43,7 +46,7 @@ const Messages = () => {
 
   return (
     <div className={styles.messagesWrapper}>
-      <MessagesList messages={messages} />
+      <MessagesList messages={messages} currentUserId={currentUserId} />
       <div className={styles.inputWrapper}>
         <Input.TextArea
           placeholder={t("messages.messages-input-placeholder")}

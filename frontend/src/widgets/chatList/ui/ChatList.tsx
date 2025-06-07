@@ -2,20 +2,29 @@ import type React from "react";
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { Avatar, List } from "antd";
 import cn from "classnames";
+import { Star } from "lucide-react"; // <-- импорт иконки
 
 import styles from "./chat-list.module.scss";
 import { AppSkeleton, Search } from "../../../shared";
 import { useGetChatsQuery } from "../../../entities/chat/model/api/chatApi";
 import { useSearchUsersQuery } from "../../../entities/user/model/api/user";
 import { NewChatButton, NewChatModal } from "../../../features/startNewChat";
-import { useAppDispatch } from "../../../app/store/store";
+import { useAppDispatch, useAppSelector } from "../../../app/store/store";
 import { setCurrentChat } from "../../../entities/chat/model/slice/chatSlice";
+import { getCurrentChat } from "../../../entities/chat/model/selector/getChats";
+import { getUserSelector } from "../../../entities/user"; // <-- получаем currentUser
+import { useTranslation } from "react-i18next"; // <-- i18n
 
 const ChatList: React.FC = () => {
+  const { t } = useTranslation();
+
   const [search, setSearch] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
   const [mentionSearch, setMentionSearch] = useState("");
   const dispatch = useAppDispatch();
+  const currentChat = useAppSelector(getCurrentChat);
+  const currentUser = useAppSelector(getUserSelector); // <-- текущий пользователь
+  const currentChatId = currentChat?.id;
 
   const { data: chats = [], isLoading } = useGetChatsQuery();
   const { data: mentionResults = [] } = useSearchUsersQuery(mentionSearch, {
@@ -41,7 +50,6 @@ const ChatList: React.FC = () => {
       setSearch(newSearch);
       setMentionSearch("");
 
-      // Найди, есть ли уже чат с этим пользователем
       const existingChat = chats.find((chat) => chat.receiver?.id === user.id && !chat.isGroup);
 
       dispatch(
@@ -98,13 +106,19 @@ const ChatList: React.FC = () => {
       <List
         dataSource={filteredChats}
         renderItem={(chat) => {
-          // TODO: add i18n
-          const title =
-            chat.title || (chat.isGroup ? `Группа #${chat.id}` : chat.receiver?.userName || `Пользователь #${chat.id}`);
+          // Проверяем, чат ли с самим собой
+          const isSelfChat = chat.receiver?.id === currentUser?.id;
+
+          const title = isSelfChat
+            ? t("chats.favorite")
+            : chat.title ||
+              (chat.isGroup ? `Группа #${chat.id}` : chat.receiver?.userName || `Пользователь #${chat.id}`);
+
+          const isActive = chat.id === currentChatId;
 
           return (
             <List.Item
-              className={styles.chatItem}
+              className={cn(styles.chatItem, { [styles.active]: isActive })}
               onClick={() => {
                 dispatch(
                   setCurrentChat({
@@ -118,7 +132,13 @@ const ChatList: React.FC = () => {
               }}
             >
               <List.Item.Meta
-                avatar={<Avatar src={chat.receiver?.avatar}>{title[0]}</Avatar>}
+                avatar={
+                  isSelfChat ? (
+                    <Star className={styles.favoriteIcon} /> // иконка вместо аватара
+                  ) : (
+                    <Avatar src={chat.receiver?.avatar}>{title[0]}</Avatar>
+                  )
+                }
                 title={title}
                 description={title}
               />

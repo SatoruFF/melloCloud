@@ -43,7 +43,7 @@ export const useMessages = () => {
     try {
       const result = await fetchMessagesQuery(String(chatId)).unwrap();
       if (result) {
-        setMessages(result); // Тут можно сделать .reverse() если надо последние внизу
+        setMessages([...result].reverse());
       }
     } catch (error) {
       // TODO: не работает сейчас почему то

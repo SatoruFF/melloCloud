@@ -1,18 +1,19 @@
-import { Anchor, Button, message } from 'antd';
-import cn from 'classnames';
-import { LazyMotion, domAnimation, motion } from 'framer-motion';
-import { useTranslation } from 'react-i18next';
+import { Anchor, Button, message } from "antd";
+import cn from "classnames";
+import { LazyMotion, domAnimation, motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
+import { Monitor, Smartphone } from "lucide-react";
 
-import storageIcon from '../../../shared/assets/cloud-data.png';
-import desktopIcon from '../../../shared/assets/desktop.png';
-import gitIcon from '../../../shared/assets/github-icon.png';
-import mobileIcon from '../../../shared/assets/mobile-phone.png';
-import mainLogo from '../../../shared/assets/mello-sora.png';
-import telegramLogo from '../../../shared/assets/telegram.png';
-import twitterLogo from '../../../shared/assets/twitter.png';
+import storageIcon from "../../../shared/assets/cloud-data.png";
+import desktopIcon from "../../../shared/assets/desktop.png";
+import gitIcon from "../../../shared/assets/github-icon.png";
+import mobileIcon from "../../../shared/assets/mobile-phone.png";
+import mainLogo from "../../../shared/assets/mello-sora.png";
+import telegramLogo from "../../../shared/assets/telegram.png";
+import twitterLogo from "../../../shared/assets/twitter.png";
 
-import ParticleEffect from '../../../shared/ui/particleEffect/ParticleEffect';
-import styles from '../styles/welcome.module.scss';
+import ParticleEffect from "../../../shared/ui/particleEffect/ParticleEffect";
+import styles from "../styles/welcome.module.scss";
 // import { useEffect } from 'react';
 
 const Welcome = () => {
@@ -24,19 +25,19 @@ const Welcome = () => {
         className={cn(styles.welcomeAnchor)}
         items={[
           {
-            key: 'part-1',
-            href: '#part-1',
-            title: t('home-anchor.title'),
+            key: "part-1",
+            href: "#part-1",
+            title: t("home-anchor.title"),
           },
           {
-            key: 'part-2',
-            href: '#part-2',
-            title: t('home-anchor.more'),
+            key: "part-2",
+            href: "#part-2",
+            title: t("home-anchor.more"),
           },
           {
-            key: 'part-3',
-            href: '#part-3',
-            title: t('home-anchor.about'),
+            key: "part-3",
+            href: "#part-3",
+            title: t("home-anchor.about"),
           },
         ]}
       />
@@ -59,11 +60,11 @@ const Welcome = () => {
           </g>
         </svg>
         <div className={cn(styles.contextMax)}>
-          <div className={cn(styles.welcomeCard, 'animate__animated animate__fadeIn')}>
+          <div className={cn(styles.welcomeCard, "animate__animated animate__fadeIn")}>
             <div className={cn(styles.leftSide)}>
-              <div className={cn(styles.welcomeTitle)}>{t('primary-name')}</div>
-              <div className={cn(styles.welcomeDescription, 'animate__animated animate__fadeInDown')}>
-                {t('about-product')}
+              <div className={cn(styles.welcomeTitle)}>{t("primary-name")}</div>
+              <div className={cn(styles.welcomeDescription, "animate__animated animate__fadeInDown")}>
+                {t("about-product")}
               </div>
             </div>
             <div className={cn(styles.rightSide)}>
@@ -78,20 +79,22 @@ const Welcome = () => {
       {/* second content space */}
       <div className={cn(styles.welcomeMore)} id="part-2">
         <ParticleEffect />
-        <div className={cn(styles.moreTitle)}>{t('want-more')}</div>
+        <div className={cn(styles.moreTitle)}>{t("want-more")}</div>
         <div className={cn(styles.contentMax)}>
           <div className={cn(styles.moreContent)}>
             <div className={cn(styles.moreDesktopCard)}>
-              <img src={desktopIcon} alt="desktop" loading="lazy" />
-              <div className={cn(styles.moreDescription)}>{t('desktop')}</div>
-              <Button type="primary" onClick={() => message.info('coming soon...')}>
+              {/* <img src={desktopIcon} alt="desktop" loading="lazy" /> */}
+              <Monitor size={120} />
+              <div className={cn(styles.moreDescription)}>{t("desktop")}</div>
+              <Button type="primary" onClick={() => message.info("coming soon...")}>
                 download
               </Button>
             </div>
 
             <div className={cn(styles.moreMobileCard)}>
-              <img src={mobileIcon} alt="mobile" loading="lazy" />
-              <div className={cn(styles.moreDescription)}>{t('mobile')}</div>
+              {/* <img src={mobileIcon} alt="mobile" loading="lazy" /> */}
+              <Smartphone size={120} />
+              <div className={cn(styles.moreDescription)}>{t("mobile")}</div>
               <Button type="primary">
                 <a href="https://wdfiles.ru/775e318" target="_blank" rel="noreferrer">
                   download
@@ -104,13 +107,13 @@ const Welcome = () => {
 
       {/* third content space */}
       <div className={cn(styles.welcomeAbout)} id="part-3">
-        <div className={cn(styles.aboutTitle)}>{t('about-title')}</div>
+        <div className={cn(styles.aboutTitle)}>{t("about-title")}</div>
         <div className={cn(styles.contentMax)}>
           <div className={cn(styles.aboutContent)}>
-            <div className={cn(styles.aboutDescription)}>{t('about-description')}</div>
-            <div className={cn(styles.aboutLinks, 'aboutLinks')}>
+            <div className={cn(styles.aboutDescription)}>{t("about-description")}</div>
+            <div className={cn(styles.aboutLinks, "aboutLinks")}>
               <img src={storageIcon} alt="storage" loading="lazy" className={cn(styles.storageLogo)} />
-              <div className={cn(styles.socials, 'socials')}>
+              <div className={cn(styles.socials, "socials")}>
                 <div className={cn(styles.socialsItem)}>
                   <a href="https://t.me/AlexDayy" target="_blank" rel="noreferrer">
                     <img src={telegramLogo} alt="telegram" loading="lazy" />
@@ -122,7 +125,7 @@ const Welcome = () => {
                   </a>
                 </div>
                 <div className={cn(styles.socialsItem)}>
-                  <img src={twitterLogo} alt="twitter" loading="lazy" />{' '}
+                  <img src={twitterLogo} alt="twitter" loading="lazy" />{" "}
                 </div>
               </div>
               <div className={cn(styles.aboutSignature)}>Made by SatoruF</div>

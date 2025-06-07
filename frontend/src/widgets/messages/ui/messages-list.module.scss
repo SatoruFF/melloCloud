@@ -1,6 +1,6 @@
 .wrapper {
   position: relative;
-  height: 100%;
+  height: calc(100% - 36px); // - input
   width: 100%;
   overflow: hidden;
 
@@ -8,18 +8,34 @@
     content: "";
     position: absolute;
     inset: 0;
-    background: url("./../../../shared/assets/clouds-blur.jpg") no-repeat center center;
+    background: linear-gradient(135deg, #c0e8ff 0%, #f0f9ff 50%, #aee3f9 100%);
     background-size: cover;
-    filter: blur(4px);
+    filter: blur(6px);
     z-index: 0;
+  }
+
+  // I hope is really not will affect for another lists
+  :global(.ant-list-item) {
+    border-bottom: none !important;
+    padding: 0 !important;
+    margin-bottom: 12px; // 👈 добавляем отступ между сообщениями
+  }
+
+  :global(.ant-list-item-meta) {
+    margin-bottom: 0 !important;
   }
 }
 
 .messageList {
   height: 100%;
-  padding: 10px;
+  padding: 16px 12px;
   overflow-y: auto;
-  backdrop-filter: blur(0);
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  scroll-behavior: smooth;
 }
 
 .lazyBackground {
@@ -34,15 +50,16 @@
 
 .messageItem {
   display: flex;
-  align-items: flex-start;
-  margin-bottom: 10px;
+  align-items: flex-end;
+  gap: 8px;
 
   &.self {
     justify-content: flex-end;
 
     .messageContent {
-      background: #1890ff;
-      color: white;
+      background: rgba(24, 144, 255, 0.9);
+      color: #fff;
+      align-self: flex-end;
     }
   }
 }
@@ -50,25 +67,33 @@
 .avatar {
   background-color: #1890ff;
   color: white;
-  margin-right: 8px;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  flex-shrink: 0;
 }
 
 .messageContent {
   max-width: 70%;
-  padding: 8px 12px;
+  padding: 10px 14px;
   border-radius: 12px;
-  background: #f0f0f0;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(6px);
   font-size: 14px;
-}
-
-.self .messageContent {
-  background: #1890ff;
-  color: white;
+  line-height: 1.4;
+  color: #333;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  word-break: break-word;
+  position: relative;
 }
 
 .messageTime {
   font-size: 10px;
-  color: white;
+  color: rgba(0, 0, 0, 0.4);
   text-align: right;
   margin-top: 4px;
 }

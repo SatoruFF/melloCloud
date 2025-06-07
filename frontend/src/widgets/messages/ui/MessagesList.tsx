@@ -11,23 +11,31 @@ interface MessagesListProps {
   messages: Message[];
 }
 
-const MessagesList = ({ messages }: MessagesListProps) => {
+interface MessagesListProps {
+  messages: Message[];
+  currentUserId: number;
+}
+
+const MessagesList = ({ messages, currentUserId }: MessagesListProps) => {
   return (
     <div className={styles.wrapper}>
-      {/* <img src={chatBackground} loading="lazy" alt="" aria-hidden className={styles.lazyBackground} /> */}
-
       <List
+        rowKey="id"
         className={styles.messageList}
         dataSource={messages}
-        renderItem={(item) => (
-          <List.Item className={cn(styles.messageItem, { [styles.self]: item.self })}>
-            {!item.self && <Avatar className={styles.avatar}>{item.senderId}</Avatar>}
-            <div className={styles.messageContent}>
-              <div className={styles.messageText}>{item.text}</div>
-              <div className={styles.messageTime}>{item.time}</div>
-            </div>
-          </List.Item>
-        )}
+        renderItem={(item) => {
+          const isSelf = item.senderId == currentUserId;
+
+          return (
+            <List.Item className={cn(styles.messageItem, { [styles.self]: isSelf })}>
+              {/* {!isSelf && <Avatar className={styles.avatar}>{item.senderId}</Avatar>} */}
+              <div className={styles.messageContent}>
+                <div className={styles.messageText}>{item.text}</div>
+                <div className={styles.messageTime}>12:34</div> {/* временно, если нет данных */}
+              </div>
+            </List.Item>
+          );
+        }}
       />
     </div>
   );

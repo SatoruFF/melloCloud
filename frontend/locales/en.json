@@ -76,6 +76,7 @@
     }
   },
   "chats": {
+    "favorite": "favorite",
     "new-chat": "New chat",
     "start-new-chat": "Start new chat",
     "search-users": "Search users...",
