@@ -28,5 +28,11 @@ const WSConfig = {
 };
 
 export function getWebSocketConnection(server) {
-  return new WebSocketServer({ server });
+  return new WebSocketServer({
+    server,
+    handleProtocols: (protocols, request) => {
+      const token = protocols[0]; // Наш токен
+      return token; // Эхо обратно клиенту — иначе соединение разорвётся
+    },
+  });
 }

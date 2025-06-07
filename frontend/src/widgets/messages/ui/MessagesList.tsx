@@ -1,9 +1,9 @@
-import { Avatar, List } from 'antd';
-import cn from 'classnames';
+import { Avatar, List } from "antd";
+import cn from "classnames";
 
-import styles from './messages-list.module.scss';
-import { memo } from 'react';
-import { Message } from '../../../entities/message/index';
+import styles from "./messages-list.module.scss";
+import { memo } from "react";
+import { Message } from "../../../entities/message/index";
 
 // import chatBackground from '../../../shared/assets/welcome-back.jpg';
 
@@ -12,6 +12,7 @@ interface MessagesListProps {
 }
 
 const MessagesList = ({ messages }: MessagesListProps) => {
+  console.log("⚠ :: MessagesList :: messages:", messages);
   return (
     <div className={styles.wrapper}>
       {/* <img src={chatBackground} loading="lazy" alt="" aria-hidden className={styles.lazyBackground} /> */}
@@ -19,7 +20,7 @@ const MessagesList = ({ messages }: MessagesListProps) => {
       <List
         className={styles.messageList}
         dataSource={messages}
-        renderItem={item => (
+        renderItem={(item) => (
           <List.Item className={cn(styles.messageItem, { [styles.self]: item.self })}>
             {!item.self && <Avatar className={styles.avatar}>{item.sender[0]}</Avatar>}
             <div className={styles.messageContent}>

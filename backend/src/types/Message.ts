@@ -3,4 +3,5 @@ export interface IMessage {
   senderId: number;
   chatId: number;
   createdAt?: Date;
+  receiverId?: number; // Optional for private chats
 }

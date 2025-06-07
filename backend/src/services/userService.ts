@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from "uuid";
 import { prisma } from "../configs/config.js";
-import { IUserModel, UserDto } from "../helpers/dtos/user-dto.js";
+import { type IUserModel, UserDto } from "../helpers/dtos/user-dto.js";
 // @ts-nocheck
 // FIXME: remove this in future
 // base
@@ -36,6 +36,15 @@ class UserServiceClass {
 
       if (candidate) {
         throw createError(400, `User with email: ${email} already exists`);
+      }
+
+      // Check by userName
+      const existingUserName = await trx.user.findFirst({
+        where: { userName },
+      });
+
+      if (existingUserName) {
+        throw createError(400, `User with username: ${userName} already exists`);
       }
 
       let { accessToken: activationToken } = generateJwt(email);
@@ -108,7 +117,13 @@ class UserServiceClass {
         },
       });
 
-      const baseDir = { userId: user.id, path: "", type: "dir", name: "", storageGuid };
+      const baseDir = {
+        userId: user.id,
+        path: "",
+        type: "dir",
+        name: "",
+        storageGuid,
+      };
 
       // create new base dir for user
       await FileService.createDir(baseDir);
@@ -286,6 +301,22 @@ class UserServiceClass {
       });
 
       return user;
+    });
+  }
+
+  async search(context, query: string): Promise<IUserModel[]> {
+    return await context.prisma.user.findMany({
+      where: {
+        userName: {
+          contains: query,
+          mode: "insensitive",
+        },
+      },
+      select: {
+        id: true,
+        userName: true,
+        // avatar: true
+      },
     });
   }
 }

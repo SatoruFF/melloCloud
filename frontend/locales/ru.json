@@ -75,8 +75,15 @@
       "date": "Дата"
     }
   },
+  "chats": {
+    "new-chat": "Новый чат",
+    "start-new-chat": "Начать новый чат",
+    "search-users": "Поиск пользователей...",
+    "write-message": "Написать сообщение"
+  },
   "messages": {
-    "messages-input-placeholder": "Введите сообщение..."
+    "messages-input-placeholder": "Написать сообщение...",
+    "start-new-chat": "Начните новый диалог, выбрав пользователя или начав ввод с @username"
   },
   "workspace": "Пространство",
   "tabs": {

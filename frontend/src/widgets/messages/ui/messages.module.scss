@@ -1,5 +1,5 @@
-@use '../../../shared/styles/tmp.scss' as *;
-@import url('https://fonts.googleapis.com/css2?family=Sono&display=swap');
+@use "../../../shared/styles/tmp.scss" as *;
+@import url("https://fonts.googleapis.com/css2?family=Sono&display=swap");
 
 .messagesWrapper {
   display: flex;
@@ -8,7 +8,6 @@
   width: 100%;
   border-radius: 8px;
   overflow: hidden;
-  background: #fff;
   position: relative;
 }
 
@@ -50,6 +49,7 @@
   font-size: 14px;
   padding: 8px 12px;
   border: 1px solid #d9d9d9;
+  background: white;
 
   &:focus {
     border-color: #1890ff;

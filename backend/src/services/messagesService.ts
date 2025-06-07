@@ -3,12 +3,14 @@ import { prisma } from "../configs/config.js";
 import { logger } from "../configs/logger.js";
 import type { IMessage } from "../types/Message.js";
 import { z } from "zod";
+import { ChatService } from "./chatService.js";
 
 // Схема для валидации сообщений
 const messageSchema = z.object({
   text: z.string().min(1, "Text is required"),
   senderId: z.number().int().positive("Sender ID must be a positive integer"),
-  chatId: z.number().int().positive("Chat ID must be a positive integer"),
+  receiverId: z.number().int().positive("Receiver ID must be a positive integer").optional(),
+  chatId: z.number().int().positive("Chat ID must be a positive integer").optional(),
 });
 
 class MessagesServiceClass<T extends IMessage> {
@@ -23,17 +25,23 @@ class MessagesServiceClass<T extends IMessage> {
    * @param message - Сообщение для сохранения.
    * @returns Сохраненное сообщение.
    */
-  async saveMessage(message: IMessage) {
+  async saveMessage(context, message: IMessage) {
     try {
       // Валидация сообщения
       const validatedMessage = messageSchema.parse(message);
 
-      return await prisma.$transaction(async (trx) => {
+      return context.prisma.$transaction(async (trx) => {
+        const chatId = await ChatService.getOrCreatePrivateChat(trx, {
+          senderId: message.senderId,
+          receiverId: message.receiverId,
+          text: validatedMessage.text,
+        });
+
         const savedMessage = await trx.message.create({
           data: {
             text: validatedMessage.text,
             senderId: validatedMessage.senderId,
-            chatId: validatedMessage.chatId,
+            chatId,
           },
         });
 

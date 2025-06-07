@@ -35,7 +35,8 @@
         "noWith": "error",
         "useLiteralKeys": "error",
         "useRegexLiterals": "error",
-        "noStaticOnlyClass": "warn"
+        "noStaticOnlyClass": "warn",
+        "noForEach": "off"
       },
       "correctness": {
         "noConstAssign": "error",
@@ -153,7 +154,8 @@
         "useNumericLiterals": "error",
         "useShorthandAssign": "error",
         "useSingleVarDeclarator": "error",
-        "useTemplate": "error"
+        "useTemplate": "error",
+        "useNodejsImportProtocol": "off"
       },
       "suspicious": {
         "noAsyncPromiseExecutor": "error",

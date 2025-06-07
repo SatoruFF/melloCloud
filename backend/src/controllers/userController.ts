@@ -131,20 +131,37 @@ class UserControllerClass {
     }
   }
 
-  async changeInfo(req: Request, res: Response) {
+  async search(req: any, res: Response) {
     try {
-      // const {email, firstName, lastName} = req.body
-      // const user = await User.findOne({where: {id: req.user.id}})
-      // user.email = email
-      // user.firstName = firstName
-      // user.lastName = lastName
-      // user.save()
-      // return res.json(user)
+      const query = req.query.query?.toString().toLowerCase();
+
+      if (!query) throw createError(400, "Empty query");
+
+      const users = await UserService.search(req.context, query);
+
+      return res.json(users);
     } catch (error: any) {
-      return res.status(error.statusCode || 500).send({
+      logger.error(error.message, error);
+      res.status(error.statusCode || 500).send({
         message: error.message,
       });
     }
+  }
+
+  async changeInfo(req: Request, res: Response) {
+    // try {
+    //   // const {email, firstName, lastName} = req.body
+    //   // const user = await User.findOne({where: {id: req.user.id}})
+    //   // user.email = email
+    //   // user.firstName = firstName
+    //   // user.lastName = lastName
+    //   // user.save()
+    //   // return res.json(user)
+    // } catch (error: any) {
+    //   return res.status(error.statusCode || 500).send({
+    //     message: error.message,
+    //   });
+    // }
   }
 }
 

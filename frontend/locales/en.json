@@ -75,8 +75,15 @@
       "date": "date"
     }
   },
+  "chats": {
+    "new-chat": "New chat",
+    "start-new-chat": "Start new chat",
+    "search-users": "Search users...",
+    "write-message": "Write message"
+  },
   "messages": {
-    "messages-input-placeholder": "write message..."
+    "messages-input-placeholder": "write message...",
+    "start-new-chat": "Open a new dialog by selecting a user or starting typing @username"
   },
   "workspace": "workspace",
   "tabs": {

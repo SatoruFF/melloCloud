@@ -1,5 +1,12 @@
 import { Variables } from "../../../shared/consts/localVariables";
 
-export const socket = () => {
-  return new WebSocket(Variables.Socket_URL);
+// singleton in HMR mode
+let socketInstance: WebSocket | null = null;
+
+export const getSocket = () => {
+  if (!socketInstance || socketInstance.readyState === WebSocket.CLOSED) {
+    const token = localStorage.getItem("token") || "";
+    socketInstance = new WebSocket(Variables.Socket_URL, token);
+  }
+  return socketInstance;
 };

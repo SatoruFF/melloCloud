@@ -89,7 +89,7 @@ model File {
 // Define Chat data model
 model Chat {
   id         Int        @id @default(autoincrement())
-  name       String?    // Название чата (только для групповых)
+  title      String?    // Название чата (только для групповых), либо последнее сообщение
   isGroup    Boolean    @default(false) // Флаг группового чата
   users      ChatUser[] // Пользователи в чате
   messages   Message[]  // Сообщения в чате

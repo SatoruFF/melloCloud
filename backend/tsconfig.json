@@ -13,7 +13,10 @@
     "noImplicitAny": false,
     "moduleResolution": "node",
     // "bun-types" is the important part
-    "types": ["bun-types"]
+    "types": [
+      //"bun-types"
+    ],
+    "typeRoots": ["./node_modules/@types", "./types"]
   },
   "include": ["src/**/*.ts", "src/**/*.js"],
   "exclude": ["node_modules", "dist", "bun.lockb", "bunfig.toml"]

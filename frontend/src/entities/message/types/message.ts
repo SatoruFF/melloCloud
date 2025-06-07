@@ -2,6 +2,8 @@ export interface Message {
   id?: number;
   self: boolean;
   senderId: string;
+  chatId: number | string;
+  receiverId: number | string;
   text: string;
   time: string;
 }

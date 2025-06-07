@@ -5,10 +5,10 @@
   overflow: hidden;
 
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     inset: 0;
-    background: url('./../../../shared/assets/clouds-blur.jpg') no-repeat center center;
+    background: url("./../../../shared/assets/clouds-blur.jpg") no-repeat center center;
     background-size: cover;
     filter: blur(4px);
     z-index: 0;

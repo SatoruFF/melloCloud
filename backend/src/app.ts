@@ -2,12 +2,12 @@
 import express, { type Express, type Response } from "express";
 import http from "http";
 import v1Router from "./routes/index.js";
+import { setupWebSocketServer } from "./helpers/setupWebSocket.js";
 
 import cookieParser from "cookie-parser";
 // middleware
 import cors from "cors";
 import fileUpload from "express-fileupload";
-import { routesMiddleWare } from "./middleware/routes.middleware.js";
 
 import qs from "qs";
 // utils
@@ -19,8 +19,6 @@ import cluster from "cluster";
 import { cpus } from "os";
 import { limiter } from "./configs/rateLimiter.js";
 import { PORT } from "./configs/config.js";
-import { setupWebSocketServer } from "./helpers/setupWebSocket.js";
-import { logRoutes } from "./helpers/logRoutes.js";
 const numCPU = cpus().length;
 
 // base consts

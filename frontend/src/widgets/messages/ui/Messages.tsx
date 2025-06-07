@@ -1,13 +1,16 @@
-import { Avatar, Input, Button } from "antd";
+import { Avatar, Input, Button, Empty } from "antd";
 import { useTranslation } from "react-i18next";
 import { Send } from "lucide-react";
 import MessagesList from "./MessagesList";
 import styles from "./messages.module.scss";
 import { useMessages } from "../hooks/useMessages";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useAppSelector } from "../../../app/store/store";
+import { getCurrentChat } from "../../../entities/chat/model/selector/getChats";
 
 const Messages = () => {
   const { t } = useTranslation();
+  const currentChat = useAppSelector(getCurrentChat);
   const { messages, sendMessage } = useMessages();
   const [inputValue, setInputValue] = useState("");
 
@@ -23,6 +26,10 @@ const Messages = () => {
       handleSendMessage();
     }
   };
+
+  if (!currentChat) {
+    return <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={<span>💬 {t("messages.start-new-chat")}</span>} />;
+  }
 
   return (
     <div className={styles.messagesWrapper}>
