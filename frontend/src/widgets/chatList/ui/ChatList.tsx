@@ -136,7 +136,9 @@ const ChatList: React.FC = () => {
                   isSelfChat ? (
                     <Star className={styles.favoriteIcon} /> // иконка вместо аватара
                   ) : (
-                    <Avatar src={chat.receiver?.avatar}>{title[0]}</Avatar>
+                    <Avatar className={cn(styles.userAvatar)} src={chat.receiver?.avatar}>
+                      {title[0]}
+                    </Avatar>
                   )
                 }
                 title={title}
