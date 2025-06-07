@@ -19,9 +19,9 @@ export const useMessages = () => {
       const newMessage: Message = JSON.parse(event.data);
 
       // Проверяем, что сообщение относится к текущему чату по receiver.id
-      if (newMessage.senderId === currentChat?.receiver?.id || newMessage.receiverId === currentChat?.receiver?.id) {
-        setMessages((prev) => [...prev, newMessage]);
-      }
+      // if (newMessage.senderId === currentChat?.receiver?.id || newMessage.receiverId === currentChat?.receiver?.id) {
+      setMessages((prev) => [...prev, newMessage]);
+      // }
     };
 
     return () => {
@@ -51,6 +51,7 @@ export const useMessages = () => {
     };
 
     setMessages((prev) => [...prev, newMessage]);
+    console.log("⚠ :: sendMessage :: newMessage:", newMessage);
     socketRef.current?.send(JSON.stringify(newMessage));
   };
 

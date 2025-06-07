@@ -3,7 +3,7 @@ import cn from "classnames";
 
 import styles from "./messages-list.module.scss";
 import { memo } from "react";
-import { Message } from "../../../entities/message/index";
+import type { Message } from "../../../entities/message/index";
 
 // import chatBackground from '../../../shared/assets/welcome-back.jpg';
 
@@ -12,7 +12,6 @@ interface MessagesListProps {
 }
 
 const MessagesList = ({ messages }: MessagesListProps) => {
-  console.log("⚠ :: MessagesList :: messages:", messages);
   return (
     <div className={styles.wrapper}>
       {/* <img src={chatBackground} loading="lazy" alt="" aria-hidden className={styles.lazyBackground} /> */}

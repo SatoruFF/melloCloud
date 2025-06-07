@@ -44,8 +44,10 @@ const ChatList: React.FC = () => {
 
       dispatch(
         setCurrentChat({
-          receiverId: user.id,
-          receiverUsername: user.userName,
+          receiver: {
+            id: user.id,
+            userName: user.userName,
+          },
         })
       );
     },
@@ -103,8 +105,10 @@ const ChatList: React.FC = () => {
                 dispatch(
                   setCurrentChat({
                     chatId: chat.id,
-                    receiverId: chat.receiver?.id || null,
-                    receiverUsername: chat.receiver?.userName || null,
+                    receiver: {
+                      id: chat.receiver?.id || null,
+                      userName: chat.receiver?.userName || null,
+                    },
                   })
                 );
               }}
@@ -112,9 +116,7 @@ const ChatList: React.FC = () => {
               <List.Item.Meta
                 avatar={<Avatar src={chat.receiver?.avatar}>{title[0]}</Avatar>}
                 title={title}
-                description={
-                  chat.isGroup ? `Групповой чат #${chat.id}` : `Собеседник: ${chat.receiver?.userName || "-"}`
-                }
+                description={title}
               />
             </List.Item>
           );
