@@ -21,7 +21,7 @@ import {
 import AccountSettings from "../../accountSettings/ui/AccountSettings.";
 
 import { Notifications } from "../../../features/notifications";
-import mainLogo from "../../../shared/assets/octopus-kid.jpg";
+import mainLogo from "../../../shared/assets/octop-navbar-white.png";
 import LanguageSwitcher from "../../languageSwitcher/ui/LanguageSwitcher";
 import styles from "../styles/navbar.module.scss";
 import { getUserSelector } from "../../../entities/user";

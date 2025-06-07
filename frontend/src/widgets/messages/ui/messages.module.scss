@@ -32,7 +32,7 @@
   display: flex;
   align-items: flex-end;
   padding: 10px;
-  gap: 10px;
+  gap: 10px; // Отступы между элементами
   background: #fafafa;
   border-top: 1px solid #d9d9d9;
   position: absolute;
@@ -57,8 +57,51 @@
   }
 }
 
+/* Обёртка для кнопок рядом с инпутом */
+.buttonsWrapper {
+  display: flex;
+  gap: 8px; // расстояние между кнопками
+  align-items: center;
+}
+
+/* Общие стили для всех кнопок (иконок) */
+.voiceButton,
+.attachButton,
 .sendButton {
   box-sizing: border-box;
-  padding: 7px;
-  height: 100%;
+  padding: 6px;
+  height: 36px;
+  width: 36px;
+  border-radius: 50%;
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #555;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+  font-size: 18px;
+
+  &:hover {
+    background-color: #e6f7ff;
+    color: #1890ff;
+  }
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.5);
+  }
+}
+
+/* Можно добавить отдельный цвет для кнопки отправки */
+.sendButton {
+  color: #1890ff;
+
+  &:hover {
+    background-color: #bae7ff;
+    color: #096dd9;
+  }
 }

@@ -98,6 +98,7 @@ const ChatList: React.FC = () => {
       <List
         dataSource={filteredChats}
         renderItem={(chat) => {
+          // TODO: add i18n
           const title =
             chat.title || (chat.isGroup ? `Группа #${chat.id}` : chat.receiver?.userName || `Пользователь #${chat.id}`);
 

@@ -1,10 +1,10 @@
-import { Avatar, Input, Button, Empty } from "antd";
+import { Avatar, Input, Button, Empty, Tooltip } from "antd";
 import { useTranslation } from "react-i18next";
-import { Send } from "lucide-react";
+import { Send, Mic, Paperclip } from "lucide-react";
 import MessagesList from "./MessagesList";
 import styles from "./messages.module.scss";
 import { useMessages } from "../hooks/useMessages";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useAppSelector } from "../../../app/store/store";
 import { getCurrentChat } from "../../../entities/chat/model/selector/getChats";
 
@@ -27,6 +27,16 @@ const Messages = () => {
     }
   };
 
+  const handleVoiceMessage = () => {
+    // Здесь добавь логику записи голосового сообщения
+    alert("Функция голосового сообщения пока не реализована");
+  };
+
+  const handleAttachFile = () => {
+    // Можно открыть диалог выбора файла
+    alert("Функция прикрепления файла пока не реализована");
+  };
+
   if (!currentChat) {
     return <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={<span>💬 {t("messages.start-new-chat")}</span>} />;
   }
@@ -43,7 +53,33 @@ const Messages = () => {
           onChange={(e) => setInputValue(e.target.value)}
           onPressEnter={handleInputKeyDown}
         />
-        <Button type="text" icon={<Send />} onClick={handleSendMessage} className={styles.sendButton} />
+        <div className={styles.buttonsWrapper}>
+          <Tooltip title="Голосовое сообщение">
+            <Button
+              type="text"
+              icon={<Mic />}
+              onClick={handleVoiceMessage}
+              className={styles.voiceButton}
+              aria-label="Voice message"
+            />
+          </Tooltip>
+          <Tooltip title="Прикрепить файл">
+            <Button
+              type="text"
+              icon={<Paperclip />}
+              onClick={handleAttachFile}
+              className={styles.attachButton}
+              aria-label="Attach file"
+            />
+          </Tooltip>
+          <Button
+            type="text"
+            icon={<Send />}
+            onClick={handleSendMessage}
+            className={styles.sendButton}
+            aria-label="Send message"
+          />
+        </div>
       </div>
     </div>
   );

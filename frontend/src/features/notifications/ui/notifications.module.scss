@@ -8,6 +8,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    width: 32px;
+    height: 32px;
   }
 
   .icon {
@@ -22,19 +24,20 @@
 
   .badge {
     position: absolute;
-    top: -8px;
-    right: -8px;
-    background-color: #ff4d4f; // Красный цвет для счетчика
+    top: -4px;
+    right: -4px;
+    background-color: #ff4d4f;
     color: white;
-    font-size: 12px;
-    font-weight: bold;
+    font-size: 11px;
+    font-weight: 600;
     border-radius: 50%;
-    padding: 4px 8px;
+    padding: 0 6px;
     min-width: 20px;
     height: 20px;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    line-height: 1;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
   }
 }
