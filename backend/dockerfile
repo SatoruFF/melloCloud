@@ -22,7 +22,8 @@ COPY package*.json ./
 COPY src/prisma ./prisma/
 
 RUN rm -rf node_modules
-RUN npm install
+# FIXME
+RUN npm install --legacy-peer-deps
 # Устанавливаем зависимости через Bun
 # RUN bun install --frozen-lockfile
 
