@@ -4,7 +4,7 @@ import { rtkApi } from "../../../../shared/api/rtkApi";
 export const chatApi = rtkApi.injectEndpoints({
   endpoints: (builder) => ({
     getChats: builder.query<any, any>({
-      query: () => "chat",
+      query: () => "chats",
     }),
   }),
   overrideExisting: false, // ?

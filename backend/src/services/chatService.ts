@@ -55,7 +55,7 @@ class ChatServiceClass {
 
       return {
         id: chat.id,
-        title: lastMessage?.content || null,
+        title: lastMessage?.text || chat.title || null,
         isGroup,
         createdAt: chat.createdAt,
         updatedAt: chat.updatedAt,

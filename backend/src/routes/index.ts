@@ -7,7 +7,7 @@ const router: Router = Router();
 
 router.use("/user", regRouter);
 router.use("/file", fileRouter);
-router.use("/chat", chatsRouter);
+router.use("/chats", chatsRouter);
 router.use("/messages", messagesRouter);
 
 export default router;

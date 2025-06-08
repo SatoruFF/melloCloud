@@ -1,0 +1,39 @@
+.modal {
+  .ant-modal-content {
+    border-radius: 16px;
+    padding: 24px;
+    background: #fdfdfd;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.input {
+  margin-bottom: 16px;
+  border-radius: 12px;
+}
+
+.userListWrapper {
+  max-height: 250px;
+  overflow-y: auto;
+  margin-bottom: 16px;
+}
+
+.userItem {
+  padding: 12px;
+  transition: background 0.2s ease;
+  cursor: pointer;
+  border-radius: 8px;
+
+  &:hover {
+    background: #f0f0f0;
+  }
+}
+
+.avatar {
+  background-color: #007aff;
+  color: white;
+}
+
+.messageArea {
+  border-radius: 12px;
+}

@@ -50,6 +50,7 @@ const ChatList: React.FC = () => {
       setSearch(newSearch);
       setMentionSearch("");
 
+      // FIXME
       const existingChat = chats.find((chat) => chat.receiver?.id === user.id && !chat.isGroup);
 
       dispatch(
@@ -81,7 +82,12 @@ const ChatList: React.FC = () => {
     <div className={cn(styles.usersListWrapper)}>
       <NewChatButton onClick={() => setModalOpen(true)} />
       <div className={styles.searchWrapper}>
-        <Search value={search} onSearch={handleSearch} className={styles.searchChats} />
+        <Search
+          value={search}
+          onSearch={handleSearch}
+          className={styles.searchChats}
+          placeholder={t("chats.search-placeholder")}
+        />
         {mentionResults.length > 0 && (
           <div className={styles.mentionDropdown}>
             {mentionResults.map((user) => (
@@ -134,14 +140,14 @@ const ChatList: React.FC = () => {
               <List.Item.Meta
                 avatar={
                   isSelfChat ? (
-                    <Star className={styles.favoriteIcon} /> // иконка вместо аватара
+                    <Star className={styles.favoriteIcon} />
                   ) : (
                     <Avatar className={cn(styles.userAvatar)} src={chat.receiver?.avatar}>
-                      {title[0]}
+                      {title[0] || "unknown"}
                     </Avatar>
                   )
                 }
-                title={title}
+                title={isSelfChat ? t("chats.favorite") : chat.receiver?.userName || "unknown"}
                 description={title}
               />
             </List.Item>

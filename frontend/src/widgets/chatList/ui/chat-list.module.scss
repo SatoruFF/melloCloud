@@ -15,6 +15,7 @@
 
 .searchChats {
   width: 100%;
+  flex: 1;
   margin-bottom: 10px;
 }
 
@@ -26,7 +27,6 @@
 .searchWrapper {
   position: relative;
   width: 100%;
-  max-width: 400px; // или под размер инпута
 }
 
 .favoriteIcon {

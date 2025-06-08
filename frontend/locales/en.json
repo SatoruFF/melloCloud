@@ -80,13 +80,15 @@
     "new-chat": "New chat",
     "start-new-chat": "Start new chat",
     "search-users": "Search users...",
-    "write-message": "Write message"
+    "write-message": "Write message",
+    "search-placeholder": "Find users(@) or messages",
+    "no-users-found": "Users not found"
   },
   "messages": {
     "messages-input-placeholder": "write message...",
     "start-new-chat": "Open a new dialog by selecting a user or starting typing @username"
   },
-  "workspace": "workspace",
+  "workspace": "workspaces",
   "tabs": {
     "files": "Files",
     "settings": "Settings",

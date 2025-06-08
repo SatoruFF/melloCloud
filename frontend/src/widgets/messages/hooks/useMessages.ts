@@ -25,8 +25,12 @@ export const useMessages = () => {
       const newMessage: Message = JSON.parse(event.data);
 
       // Фильтруем только сообщения текущего чата
-      if (newMessage.senderId === currentChatIdRef.current || newMessage.receiverId === currentChatIdRef.current) {
-        setMessages((prev) => [...prev, newMessage]);
+      if (newMessage.chatId === currentChatIdRef.current) {
+        // FIXME: походу сокет отправляет сообщения дважды
+        setMessages((prev) => {
+          const alreadyExists = prev.some((msg) => msg.id === newMessage.id);
+          return alreadyExists ? prev : [...prev, newMessage];
+        });
       }
     };
 
