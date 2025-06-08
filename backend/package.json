@@ -10,7 +10,6 @@
     "start": "node dist/app.js",
     "start:bun": "bun run src/app.ts",
     "build:bun": "bun build",
-    "postinstall": "npx prisma generate && npx prisma migrate dev",
     "postinstall-dev": "npx prisma generate && npx prisma migrate dev",
     "start:prisma": "concurrently \"npx tsc --watch\" \"nodemon dist/app.js\" \"prisma studio\"",
     "start:node": "concurrently \"npx tsc --watch\" \"wait-on dist/app.js && nodemon dist/app.js\"",

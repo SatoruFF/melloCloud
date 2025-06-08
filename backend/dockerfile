@@ -40,4 +40,4 @@ RUN npm run build
 EXPOSE 1337
 
 # Команда для запуска через bun
-CMD ["pnpm", "run", "start"]
+CMD ["npm", "run", "start"]

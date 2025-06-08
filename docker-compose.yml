@@ -36,6 +36,7 @@ services:
       - "host.docker.internal:host-gateway"
       - "backend:172.18.0.4"
     restart: on-failure
+    command: sh -c "npx prisma migrate deploy && npm run start"
 
   frontend:
     container_name: mello-frontend
