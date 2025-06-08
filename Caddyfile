@@ -22,7 +22,7 @@ mellocloud.net, www.mellocloud.net {
 	# Allow search engine indexing
 	handle /robots.txt {
 		respond "User-agent: *\nAllow: /" 200 {
-			content_type text/plain
+			header Content-Type text/plain
 		}
 	}
 
@@ -44,7 +44,7 @@ api.mellocloud.net {
 	# Allow search engine indexing
 	handle /robots.txt {
 		respond "User-agent: *\nAllow: /" 200 {
-			content_type text/plain
+			header Content-Type text/plain
 		}
 	}
 }
