@@ -15,23 +15,6 @@ MelloCloud is a personal workspace application that unifies cloud storage, chat,
 - Sass (SCSS) for styling
 - Ant Design UI library
 
-## Backend# OceanCloud
-
-Your lightweight, cross-platform personal workspace for cloud, chat, files, and tasks — all in one app.
-
-## Overview
-
-OceanCloud is a personal workspace application that unifies cloud storage, chat, file management, and task tracking in a single, easy-to-use platform. It is designed to be lightweight and cross-platform, making it accessible and efficient on any device.
-
-## Frontend
-
-- React with TypeScript
-- React Router for navigation
-- Vite for fast development
-- Redux Toolkit with RTK Query for state management and data fetching
-- Sass (SCSS) for styling
-- Ant Design UI library
-
 ## Backend
 
 - Node.js with Express framework
