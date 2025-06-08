@@ -16,7 +16,7 @@ WORKDIR /app
 COPY package*.json ./ 
 
 # Копируем папку prisma
-COPY prisma ./prisma/
+COPY src/prisma ./prisma/
 
 RUN rm -rf node_modules
 RUN npm install
