@@ -15,15 +15,16 @@ WORKDIR /app
 # Устанавливаем pnpm
 RUN npm install -g pnpm
 
-# Копируем package.json и package-lock.json
-COPY package*.json ./ 
+# Копируем файлы зависимостей
+COPY pnpm-lock.yaml ./
+COPY package.json ./
 
 # Копируем папку prisma
 COPY src/prisma ./src/prisma
 
 RUN rm -rf node_modules
 # FIXME
-RUN npm install --legacy-peer-deps
+RUN pnpm install
 # Устанавливаем зависимости через Bun
 # RUN bun install --frozen-lockfile
 
@@ -34,7 +35,7 @@ COPY . .
 RUN npx prisma generate
 
 # Выполняем сборку
-RUN npm run build
+RUN pnpm build
 
 # Открываем порты
 EXPOSE 1337
