@@ -5,19 +5,19 @@ FROM node:22-alpine as build
 WORKDIR /app
 
 # Устанавливаем pnpm
-RUN npm install -g pnpm
+# RUN npm install -g pnpm
 
 # Копируем файлы package.json и package-lock.json (если есть) для установки зависимостей
 COPY package*.json ./ 
 
-# Устанавливаем зависимости
-RUN pnpm install 
+# FIXME Устанавливаем зависимости
+RUN npm install --legacy-peer-deps
 
 # Копируем остальные файлы проекта
 COPY . .
 
 # Выполняем сборку фронтенда
-RUN pnpm run build 
+RUN npm run build 
 
 # Стейдж для деплоя через nginx
 FROM nginx:stable-alpine
