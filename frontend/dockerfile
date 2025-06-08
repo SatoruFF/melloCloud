@@ -10,8 +10,8 @@ WORKDIR /app
 # Копируем файлы package.json и package-lock.json (если есть) для установки зависимостей
 COPY package*.json ./ 
 
-# FIXME Устанавливаем зависимости
-RUN npm install
+# FIXME Устанавливаем зависимости (легаси депенденсы из-за 19го реакта)
+RUN npm install --legacy-peer-deps
 
 # Копируем остальные файлы проекта
 COPY . .
