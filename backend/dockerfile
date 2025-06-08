@@ -13,7 +13,7 @@ RUN apt-get update && apt-get install -y openssl
 WORKDIR /app
 
 # Устанавливаем pnpm
-RUN npm install -g pnpm
+# RUN npm install -g pnpm
 
 # Копируем файлы зависимостей
 COPY pnpm-lock.yaml ./
@@ -24,7 +24,7 @@ COPY src/prisma ./src/prisma
 
 RUN rm -rf node_modules
 # FIXME
-RUN pnpm install
+RUN npm install
 # Устанавливаем зависимости через Bun
 # RUN bun install --frozen-lockfile
 
@@ -35,7 +35,7 @@ COPY . .
 RUN npx prisma generate
 
 # Выполняем сборку
-RUN pnpm build
+RUN npm build
 
 # Открываем порты
 EXPOSE 1337
