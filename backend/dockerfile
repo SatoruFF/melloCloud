@@ -19,7 +19,7 @@ RUN npm install -g pnpm
 COPY package*.json ./ 
 
 # Копируем папку prisma
-COPY src/prisma ./prisma/
+COPY src/prisma ./src/prisma
 
 RUN rm -rf node_modules
 # FIXME
