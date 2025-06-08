@@ -1,4 +1,10 @@
 {
+  "home": {
+    "primary-name": "Mello",
+    "about-product": "Your lightweight, cross-platform personal workspace for cloud, chat, files, and tasks — all in one app.",
+    "get-started": "Get Started",
+    "download": "Download"
+  },
   "primary-name": "Mello",
   "about-product": "Mello is a cloud-based platform that allows you to organize your workspace together with a team or with other users.",
   "want-more": "Want more?",

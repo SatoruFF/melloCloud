@@ -1,39 +1,115 @@
-# oceanCloud
+# MelloCloud
 
-## This is a pet-project
+Your lightweight, cross-platform personal workspace for cloud, chat, files, and tasks — all in one app.
 
-> In this project we are making cloud storage
+## Overview
 
-## Frontend:
+MelloCloud is a personal workspace application that unifies cloud storage, chat, file management, and task tracking in a single, easy-to-use platform. It is designed to be lightweight and cross-platform, making it accessible and efficient on any device.
 
-- React/ts/react-router/vite
-- redux-toolkit/rtk-query
-- sass(scss)
-- ant design
+## Frontend
 
-## Back-end:
+- React with TypeScript
+- React Router for navigation
+- Vite for fast development
+- Redux Toolkit with RTK Query for state management and data fetching
+- Sass (SCSS) for styling
+- Ant Design UI library
 
-- NodeJS/express
-- jwt
-- swagger
-- sequelize -> prisma
-- postgres
-- local save files-> aws S3
+## Backend# OceanCloud
 
-## Deploy
+Your lightweight, cross-platform personal workspace for cloud, chat, files, and tasks — all in one app.
 
-- onRender
+## Overview
 
-# How to start
+OceanCloud is a personal workspace application that unifies cloud storage, chat, file management, and task tracking in a single, easy-to-use platform. It is designed to be lightweight and cross-platform, making it accessible and efficient on any device.
 
-- cd client
-- npm install
-- npm run dev
+## Frontend
 
-- create postgres db
-- cd server
-- configure .env
-- npm install
-- npm run dev
+- React with TypeScript
+- React Router for navigation
+- Vite for fast development
+- Redux Toolkit with RTK Query for state management and data fetching
+- Sass (SCSS) for styling
+- Ant Design UI library
 
-# TODO: add more details
+## Backend
+
+- Node.js with Express framework
+- JWT for authentication
+- Swagger for API documentation
+- Prisma ORM (migrated from Sequelize)
+- PostgreSQL database
+- File storage migrated from local to AWS S3
+
+## Deployment
+
+- Hosted on Render
+
+## Getting Started
+
+### Frontend
+
+```bash
+cd client
+npm install
+npm run dev
+```
+
+### Backend
+
+1. Create a PostgreSQL database
+2. Configure environment variables in `.env`
+3. Install dependencies and start the server
+
+```bash
+cd server
+npm install
+npm run dev
+```
+
+## TODO
+
+- Add more detailed documentation
+- Improve testing coverage
+- Add CI/CD pipeline
+- Enhance UI/UX design
+
+- Node.js with Express framework
+- JWT for authentication
+- Swagger for API documentation
+- Prisma ORM (migrated from Sequelize)
+- PostgreSQL database
+- File storage migrated from local to AWS S3
+
+## Deployment
+
+- Hosted on Yandex (migrated from render)
+
+## Getting Started
+
+### Frontend
+
+```bash
+cd client
+npm install
+npm run dev
+```
+
+### Backend
+
+1. Create a PostgreSQL database
+2. Configure environment variables in `.env`
+3. Install dependencies and start the server
+
+```bash
+cd server
+npm install
+npm run dev
+```
+
+## TODO
+
+- Add more detailed documentation
+- Improve testing coverage
+- Add CI/CD pipeline
+- Enhance UI/UX design

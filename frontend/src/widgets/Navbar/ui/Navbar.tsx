@@ -21,7 +21,8 @@ import {
 import AccountSettings from "../../accountSettings/ui/AccountSettings.";
 
 import { Notifications } from "../../../features/notifications";
-import mainLogo from "../../../shared/assets/octop-navbar-white.png";
+// import mainLogo from "../../../shared/assets/octop-navbar-white.png";
+import mainLogo from "../../../shared/assets/octopus-kid.jpg";
 import LanguageSwitcher from "../../languageSwitcher/ui/LanguageSwitcher";
 import styles from "../styles/navbar.module.scss";
 import { getUserSelector } from "../../../entities/user";
@@ -67,9 +68,6 @@ const MyNavbar: React.FC = () => {
                   <NavLink to={FILE_ROUTE}>{t("files.my-files")}</NavLink>
                 </Button>
               </div>
-              <Button className={cn(styles.mainLogout)} type="primary" onClick={() => logOut()}>
-                {t("auth.logout")}
-              </Button>
             </React.Fragment>
           )}
 
@@ -88,6 +86,9 @@ const MyNavbar: React.FC = () => {
             <div className={cn(styles.avatar)}>
               <img src={avatar} onClick={() => navigate(PROFILE_ROUTE)} />
             </div>
+            <Button className={cn(styles.mainLogout)} type="primary" onClick={() => logOut()}>
+              {t("auth.logout")}
+            </Button>
           </div>
           <Drawer
             title={t("user.settings")}

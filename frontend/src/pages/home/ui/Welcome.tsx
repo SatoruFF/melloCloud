@@ -8,12 +8,12 @@ import storageIcon from "../../../shared/assets/cloud-data.png";
 import desktopIcon from "../../../shared/assets/desktop.png";
 import gitIcon from "../../../shared/assets/github-icon.png";
 import mobileIcon from "../../../shared/assets/mobile-phone.png";
-import mainLogo from "../../../shared/assets/mello-sora.png";
+import mainLogo from "../../../shared/assets/mello-sora-white.png";
 import telegramLogo from "../../../shared/assets/telegram.png";
 import twitterLogo from "../../../shared/assets/twitter.png";
 
 import ParticleEffect from "../../../shared/ui/particleEffect/ParticleEffect";
-import styles from "../styles/welcome.module.scss";
+import styles from "./welcome.module.scss";
 // import { useEffect } from 'react';
 
 const Welcome = () => {
@@ -41,7 +41,7 @@ const Welcome = () => {
           },
         ]}
       />
-      <div className={cn(styles.welcomeMain)} id="part-1">
+      {/* <div className={cn(styles.welcomeMain)} id="part-1">
         <svg className={cn(styles.wave)} viewBox="0 0 2 1" preserveAspectRatio="none">
           <defs>
             <path
@@ -74,6 +74,30 @@ const Welcome = () => {
             </div>
           </div>
         </div>
+      </div> */}
+
+      {/* first content space */}
+      <div className={cn(styles.heroSection)} id="part-1">
+        <div className={cn(styles.heroBackground)} />
+        <div className={cn(styles.heroContent)}>
+          <div className={styles.heroLeft}>
+            <h1 className={styles.heroTitle}>{t("home.primary-name")}</h1>
+            <p className={styles.heroSubtitle}>{t("home.about-product")}</p>
+            <Button type="primary" size="large" className={styles.heroCTA}>
+              {t("home.get-started")}
+            </Button>
+          </div>
+          <div className={styles.heroRight}>
+            <motion.img
+              src={mainLogo}
+              alt="logo"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+              className={styles.heroImage}
+            />
+          </div>
+        </div>
       </div>
 
       {/* second content space */}
@@ -82,23 +106,19 @@ const Welcome = () => {
         <div className={cn(styles.moreTitle)}>{t("want-more")}</div>
         <div className={cn(styles.contentMax)}>
           <div className={cn(styles.moreContent)}>
-            <div className={cn(styles.moreDesktopCard)}>
-              {/* <img src={desktopIcon} alt="desktop" loading="lazy" /> */}
-              <Monitor size={120} />
+            <div className={cn(styles.moreCard)}>
+              <Monitor size={80} color="#ffffffcc" />
               <div className={cn(styles.moreDescription)}>{t("desktop")}</div>
-              <Button type="primary" onClick={() => message.info("coming soon...")}>
-                download
+              <Button type="primary" ghost onClick={() => alert("coming soon...")}>
+                {t("home.download")}
               </Button>
             </div>
 
-            <div className={cn(styles.moreMobileCard)}>
-              {/* <img src={mobileIcon} alt="mobile" loading="lazy" /> */}
-              <Smartphone size={120} />
+            <div className={cn(styles.moreCard)}>
+              <Smartphone size={80} color="#ffffffcc" />
               <div className={cn(styles.moreDescription)}>{t("mobile")}</div>
-              <Button type="primary">
-                <a href="https://wdfiles.ru/775e318" target="_blank" rel="noreferrer">
-                  download
-                </a>
+              <Button type="primary" ghost onClick={() => alert("coming soon...")}>
+                {t("home.download")}
               </Button>
             </div>
           </div>
@@ -107,29 +127,30 @@ const Welcome = () => {
 
       {/* third content space */}
       <div className={cn(styles.welcomeAbout)} id="part-3">
-        <div className={cn(styles.aboutTitle)}>{t("about-title")}</div>
-        <div className={cn(styles.contentMax)}>
-          <div className={cn(styles.aboutContent)}>
-            <div className={cn(styles.aboutDescription)}>{t("about-description")}</div>
-            <div className={cn(styles.aboutLinks, "aboutLinks")}>
-              <img src={storageIcon} alt="storage" loading="lazy" className={cn(styles.storageLogo)} />
-              <div className={cn(styles.socials, "socials")}>
-                <div className={cn(styles.socialsItem)}>
-                  <a href="https://t.me/AlexDayy" target="_blank" rel="noreferrer">
-                    <img src={telegramLogo} alt="telegram" loading="lazy" />
-                  </a>
-                </div>
-                <div className={cn(styles.socialsItem)}>
-                  <a href="https://github.com/SatoruFF" target="_blank" rel="noreferrer">
-                    <img src={gitIcon} alt="instagram" loading="lazy" />
-                  </a>
-                </div>
-                <div className={cn(styles.socialsItem)}>
-                  <img src={twitterLogo} alt="twitter" loading="lazy" />{" "}
-                </div>
+        <div className={cn(styles.particleBg)}>
+          <ParticleEffect />
+        </div>
+
+        <div className={cn(styles.aboutCard)}>
+          <div className={styles.aboutTitle}>{t("about-title")}</div>
+          <div className={styles.aboutDescription}>{t("about-description")}</div>
+
+          <div className={styles.socialsWrap}>
+            <img src={storageIcon} alt="storage" className={styles.storageLogo} />
+
+            <div className={styles.socials}>
+              <a href="https://t.me/AlexDayy" target="_blank" rel="noreferrer" className={styles.socialsItem}>
+                <img src={telegramLogo} alt="telegram" />
+              </a>
+              <a href="https://github.com/SatoruFF" target="_blank" rel="noreferrer" className={styles.socialsItem}>
+                <img src={gitIcon} alt="github" />
+              </a>
+              <div className={styles.socialsItem}>
+                <img src={twitterLogo} alt="twitter" />
               </div>
-              <div className={cn(styles.aboutSignature)}>Made by SatoruF</div>
             </div>
+
+            <div className={styles.signature}>Made by SatoruF</div>
           </div>
         </div>
       </div>
