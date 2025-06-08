@@ -41,7 +41,11 @@ const Messages = () => {
   };
 
   if (!currentChat) {
-    return <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={<span>💬 {t("messages.start-new-chat")}</span>} />;
+    return (
+      <div className={styles.emptyWrapper}>
+        <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={<span>💬 {t("messages.start-new-chat")}</span>} />
+      </div>
+    );
   }
 
   return (

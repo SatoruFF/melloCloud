@@ -106,3 +106,14 @@
     color: #096dd9;
   }
 }
+
+.emptyWrapper {
+  background-color: #fff;
+  height: calc(100vh - $header-height);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: 20px;
+  box-sizing: border-box;
+}
