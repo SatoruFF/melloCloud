@@ -54,12 +54,6 @@ npm run dev
 
 - Add more detailed documentation
 - Improve testing coverage
-- Add CI/CD pipeline
+- Enhance CI/CD pipeline
 - Enhance UI/UX design
-
-- Node.js with Express framework
-- JWT for authentication
 - Swagger for API documentation
-- Prisma ORM (migrated from Sequelize)
-- PostgreSQL database
-- File storage migrated from local to AWS S3
