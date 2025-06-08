@@ -8,13 +8,13 @@ WORKDIR /app
 COPY package*.json ./ 
 
 # Устанавливаем зависимости
-RUN npm install 
+RUN pnpm install 
 
 # Копируем остальные файлы проекта
 COPY . .
 
 # Выполняем сборку фронтенда
-RUN npm run build 
+RUN pnpm run build 
 
 # Стейдж для деплоя через nginx
 FROM nginx:stable-alpine
