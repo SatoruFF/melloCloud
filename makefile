@@ -1,3 +1,6 @@
+setup: 
+	./setup.sh
+
 up:
 	docker-compose up -d --build
 
