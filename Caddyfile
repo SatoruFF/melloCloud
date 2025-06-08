@@ -3,12 +3,6 @@ mellocloud.net, www.mellocloud.net {
 	encode gzip
 	log
 
-	# Proxy frontend (Vite)
-	@frontend not path /api/* /socket.io/* /portainer/*
-	handle @frontend {
-		reverse_proxy frontend:5173
-	}
-
 	# Proxy API requests
 	handle_path /api/* {
 		reverse_proxy backend:1337
@@ -19,6 +13,12 @@ mellocloud.net, www.mellocloud.net {
 		reverse_proxy backend:1337
 	}
 
+	# Proxy Portainer interface at /portainer
+	handle_path /portainer/* {
+		uri strip_prefix /portainer
+		reverse_proxy portainer:9000
+	}
+
 	# Allow search engine indexing
 	handle /robots.txt {
 		respond "User-agent: *\nAllow: /" 200 {
@@ -26,10 +26,9 @@ mellocloud.net, www.mellocloud.net {
 		}
 	}
 
-	# Proxy Portainer interface at /portainer
-	handle_path /portainer/* {
-		uri strip_prefix /portainer
-		reverse_proxy portainer:9000
+	# Proxy frontend (Vite) — fallback for all other requests
+	handle {
+		reverse_proxy frontend:5173
 	}
 }
 
