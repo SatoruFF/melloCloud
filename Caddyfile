@@ -3,6 +3,12 @@ mellocloud.net, www.mellocloud.net {
 	encode gzip
 	log
 
+	# Proxy frontend (Vite)
+	@frontend not path /api/* /socket.io/* /portainer/*
+	handle @frontend {
+		reverse_proxy frontend:5173
+	}
+
 	# Proxy API requests
 	handle_path /api/* {
 		reverse_proxy backend:1337
@@ -13,22 +19,16 @@ mellocloud.net, www.mellocloud.net {
 		reverse_proxy backend:1337
 	}
 
+	# Allow search engine indexing
+	handle /robots.txt {
+		header Content-Type text/plain
+		respond "User-agent: *\nAllow: /" 200
+	}
+
 	# Proxy Portainer interface at /portainer
 	handle_path /portainer/* {
 		uri strip_prefix /portainer
 		reverse_proxy portainer:9000
-	}
-
-	# Allow search engine indexing
-	handle /robots.txt {
-		respond "User-agent: *\nAllow: /" 200 {
-			header Content-Type text/plain
-		}
-	}
-
-	# Proxy frontend (Vite) — fallback for all other requests
-	handle {
-		reverse_proxy frontend:5173
 	}
 }
 
@@ -42,13 +42,12 @@ api.mellocloud.net {
 
 	# Allow search engine indexing
 	handle /robots.txt {
-		respond "User-agent: *\nAllow: /" 200 {
-			header Content-Type text/plain
-		}
+		header Content-Type text/plain
+		respond "User-agent: *\nAllow: /" 200
 	}
 }
 
-# Redirect HTTP to HTTPS (Caddy does this automatically, but can be explicit)
+# Redirect HTTP to HTTPS (optional — Caddy does it automatically)
 http://mellocloud.net, http://www.mellocloud.net, http://api.mellocloud.net {
 	redir https://{host}{uri}
 }
