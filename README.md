@@ -26,7 +26,7 @@ MelloCloud is a personal workspace application that unifies cloud storage, chat,
 
 ## Deployment
 
-- Hosted on Render
+- Hosted on Yandex (migrated from render)
 
 ## Getting Started
 
@@ -63,36 +63,3 @@ npm run dev
 - Prisma ORM (migrated from Sequelize)
 - PostgreSQL database
 - File storage migrated from local to AWS S3
-
-## Deployment
-
-- Hosted on Yandex (migrated from render)
-
-## Getting Started
-
-### Frontend
-
-```bash
-cd client
-npm install
-npm run dev
-```
-
-### Backend
-
-1. Create a PostgreSQL database
-2. Configure environment variables in `.env`
-3. Install dependencies and start the server
-
-```bash
-cd server
-npm install
-npm run dev
-```
-
-## TODO
-
-- Add more detailed documentation
-- Improve testing coverage
-- Add CI/CD pipeline
-- Enhance UI/UX design
