@@ -19,9 +19,9 @@ COPY package*.json ./
 COPY prisma ./prisma/
 
 RUN rm -rf node_modules
-# RUN npm install
+RUN npm install
 # Устанавливаем зависимости через Bun
-RUN bun install --frozen-lockfile
+# RUN bun install --frozen-lockfile
 
 # Копируем все файлы проекта в контейнер
 COPY . .
@@ -30,7 +30,7 @@ COPY . .
 RUN npx prisma generate
 
 # Выполняем сборку
-# RUN npm run build
+RUN npm run build
 
 # Открываем порты
 EXPOSE 1337

@@ -7,7 +7,8 @@
   "scripts": {
     "build": "npx tsc --noEmitOnError false",
     "dev": "bun run --hot src/app.ts",
-    "start": "bun run src/app.ts",
+    "start": "node dist/app.js",
+    "start:bun": "bun run src/app.ts",
     "build:bun": "bun build",
     "postinstall": "npx prisma generate && npx prisma migrate dev",
     "postinstall-dev": "npx prisma generate && npx prisma migrate dev",
