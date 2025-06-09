@@ -14,6 +14,7 @@
   height: 48px;
   border-radius: 50%;
   object-fit: cover;
+  box-sizing: border-box;
 }
 
 .avatarFallback {
@@ -33,7 +34,7 @@
 }
 
 .chatName {
-  font-size: 18px;
+  font-size: 15px;
   font-weight: 600;
   color: #333;
 }
