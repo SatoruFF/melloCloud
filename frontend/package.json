@@ -32,9 +32,9 @@
   },
   "dependencies": {
     "@ant-design/icons": "^6.0.0",
-    "@blocksuite/blocks": "0.19.5",
-    "@blocksuite/presets": "0.19.5",
-    "@blocksuite/store": "0.20.0",
+    "@blocknote/core": "0.32.0-hackdays.0",
+    "@blocknote/mantine": "^0.32.0-hackdays.0",
+    "@blocknote/react": "^0.32.0-hackdays.0",
     "@cyntler/react-doc-viewer": "^1.17.0",
     "@reduxjs/toolkit": "^2.6.1",
     "@tsparticles/engine": "^3.8.1",
