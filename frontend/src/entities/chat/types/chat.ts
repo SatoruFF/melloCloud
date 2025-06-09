@@ -2,6 +2,7 @@ interface Receiver {
   id: string;
   userName: string;
   avatar?: string | null;
+  status?: string | null;
 }
 
 interface Chat {

@@ -215,7 +215,7 @@
   }
 
   .welcomeMore {
-    height: 60vh;
+    height: 70vh;
     width: 100%;
     background: radial-gradient(circle at center, #0e0e0e 0%, #000000 100%);
     position: relative;
@@ -288,6 +288,8 @@
 
 .welcomeAbout {
   position: relative;
+  padding-top: 20px;
+  padding-bottom: 20px;
   width: 100%;
   height: 100vh;
   background: linear-gradient(135deg, #2f1a7a, #3e0c57);
