@@ -1,65 +1,90 @@
-import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
-import { Button, Checkbox, Input, List } from "antd";
-import cn from "classnames";
-import { useState } from "react";
+import React, { useState } from "react";
+import { Button, Input, Card } from "antd";
+import { PlusOutlined, DeleteOutlined } from "@ant-design/icons";
 import styles from "./todo.module.scss";
 
-const Todo = () => {
-	const [tasks, setTasks] = useState([]);
-	const [taskText, setTaskText] = useState("");
-
-	const addTask = () => {
-		if (taskText.trim()) {
-			setTasks([...tasks, { text: taskText, completed: false }]);
-			setTaskText("");
-		}
-	};
-
-	const toggleTask = (index) => {
-		const newTasks = [...tasks];
-		newTasks[index].completed = !newTasks[index].completed;
-		setTasks(newTasks);
-	};
-
-	const deleteTask = (index) => {
-		setTasks(tasks.filter((_, i) => i !== index));
-	};
-
-	return (
-		<div className={cn(styles.todoWrapper)}>
-			<div className={cn(styles.todoHeader)}>
-				<Input
-					placeholder="Add a task..."
-					value={taskText}
-					onChange={(e) => setTaskText(e.target.value)}
-					onPressEnter={addTask}
-				/>
-				<Button type="primary" icon={<PlusOutlined />} onClick={addTask} />
-			</div>
-			<List
-				className={cn(styles.todoList)}
-				dataSource={tasks}
-				renderItem={(item, index) => (
-					<List.Item className={cn(styles.todoItem)}>
-						<Checkbox
-							checked={item.completed}
-							onChange={() => toggleTask(index)}
-						>
-							<span className={cn({ [styles.completed]: item.completed })}>
-								{item.text}
-							</span>
-						</Checkbox>
-						<Button
-							type="text"
-							icon={<DeleteOutlined />}
-							onClick={() => deleteTask(index)}
-							danger
-						/>
-					</List.Item>
-				)}
-			/>
-		</div>
-	);
+type Task = {
+  id: string;
+  text: string;
+  status: "todo" | "inprogress" | "done";
 };
 
-export default Todo;
+const Kanban = () => {
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [newTaskText, setNewTaskText] = useState("");
+  const [draggedTaskId, setDraggedTaskId] = useState<string | null>(null);
+
+  const addTask = () => {
+    const trimmed = newTaskText.trim();
+    if (!trimmed) return;
+    setTasks([...tasks, { id: Date.now().toString(), text: trimmed, status: "todo" }]);
+    setNewTaskText("");
+  };
+
+  const deleteTask = (id: string) => {
+    setTasks(tasks.filter((t) => t.id !== id));
+  };
+
+  const onDragStart = (e: React.DragEvent, id: string) => {
+    setDraggedTaskId(id);
+    e.dataTransfer.effectAllowed = "move";
+  };
+
+  const onDrop = (e: React.DragEvent, status: Task["status"]) => {
+    e.preventDefault();
+    if (!draggedTaskId) return;
+    setTasks(tasks.map((t) => (t.id === draggedTaskId ? { ...t, status } : t)));
+    setDraggedTaskId(null);
+  };
+
+  const onDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+  };
+
+  const statuses: { key: Task["status"]; label: string }[] = [
+    { key: "todo", label: "To Do" },
+    { key: "inprogress", label: "In Progress" },
+    { key: "done", label: "Done" },
+  ];
+
+  return (
+    <div className={styles.kanbanWrapper}>
+      <div className={styles.inputRow}>
+        <Input
+          placeholder="New task"
+          value={newTaskText}
+          onChange={(e) => setNewTaskText(e.target.value)}
+          onPressEnter={addTask}
+          allowClear
+          size="large"
+        />
+        <Button type="primary" icon={<PlusOutlined />} onClick={addTask} size="large" />
+      </div>
+
+      <div className={styles.board}>
+        {statuses.map(({ key, label }) => (
+          <div key={key} className={styles.column} onDrop={(e) => onDrop(e, key)} onDragOver={onDragOver}>
+            <h2 className={styles.columnTitle}>{label}</h2>
+            {tasks
+              .filter((task) => task.status === key)
+              .map((task) => (
+                <Card
+                  key={task.id}
+                  className={styles.taskCard}
+                  draggable
+                  onDragStart={(e) => onDragStart(e, task.id)}
+                  actions={[
+                    <DeleteOutlined key="delete" onClick={() => deleteTask(task.id)} style={{ color: "red" }} />,
+                  ]}
+                >
+                  {task.text}
+                </Card>
+              ))}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default Kanban;
