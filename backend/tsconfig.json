@@ -11,6 +11,7 @@
     "lib": ["ESNext"],
     "skipLibCheck": true,
     "noImplicitAny": false,
+    "noEmitOnError": false, // ?
     "moduleResolution": "node",
     // "bun-types" is the important part
     "types": [

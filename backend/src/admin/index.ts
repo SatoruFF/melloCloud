@@ -1,7 +1,9 @@
 import AdminJS from "adminjs";
 import AdminJSExpress from "@adminjs/express";
+// @ts-ignore
 import { Database, Resource } from "@adminjs/prisma";
-import { prisma } from "../configs/config";
+import type { Express } from "express";
+// import { prisma } from "../configs/config";
 
 // 👇 Регистрируем адаптер
 AdminJS.registerAdapter({ Database, Resource });
@@ -11,7 +13,7 @@ const runAdmin = async (app: Express) => {
     rootPath: "/admin",
     // FIXME: Uncomment and configure resources if you have any
     // resources: [
-    //   { resource: prisma.user }, // пример, если у тебя есть таблица `User`
+    //   { resource: prisma.user },
     // ],
     branding: {
       companyName: "My Admin",
