@@ -9,4 +9,4 @@ export const CHATS_ROUTE: string = "/chats";
 export const NOTES_ROUTE: string = "/notes";
 export const TODO_ROUTE: string = "/to-do";
 export const POMODORO_ROUTE: string = "/pomodoro";
-export const ADMIN_PANEL: string = "/admin";
+// export const ADMIN_PANEL: string = "/admin";

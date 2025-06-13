@@ -4,31 +4,31 @@ mellocloud.net, www.mellocloud.net {
 	log
 
 	# Proxy frontend (Vite)
-	@frontend not path /api/* /socket.io/* /portainer/*
+	@frontend not path /api* /socket.io* /portainer*
 	handle @frontend {
 		reverse_proxy frontend:5173
 	}
 
 	# Proxy API requests
-	handle_path /api/* {
+	handle_path /api* {
 		reverse_proxy backend:1337
 	}
 
 	# Proxy WebSocket requests (e.g., socket.io)
-	handle_path /socket.io/* {
+	handle_path /socket.io* {
 		reverse_proxy backend:1337
+	}
+
+		# Proxy Portainer interface at /portainer
+	handle_path /portainer* {
+		# uri strip_prefix /portainer
+		reverse_proxy portainer:9000
 	}
 
 	# Allow search engine indexing
 	handle /robots.txt {
 		header Content-Type text/plain
 		respond "User-agent: *\nAllow: /" 200
-	}
-
-	# Proxy Portainer interface at /portainer
-	handle_path /portainer/* {
-		uri strip_prefix /portainer
-		reverse_proxy portainer:9000
 	}
 }
 

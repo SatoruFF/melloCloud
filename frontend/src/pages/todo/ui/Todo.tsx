@@ -73,9 +73,7 @@ const Kanban = () => {
                   className={styles.taskCard}
                   draggable
                   onDragStart={(e) => onDragStart(e, task.id)}
-                  actions={[
-                    <DeleteOutlined key="delete" onClick={() => deleteTask(task.id)} style={{ color: "red" }} />,
-                  ]}
+                  actions={[<DeleteOutlined key="delete" onClick={() => deleteTask(task.id)} />]}
                 >
                   {task.text}
                 </Card>

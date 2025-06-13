@@ -4,15 +4,18 @@ import http from "http";
 import v1Router from "./routes/index.js";
 import { setupWebSocketServer } from "./helpers/setupWebSocket.js";
 
-import cookieParser from "cookie-parser";
 // middleware
+import cookieParser from "cookie-parser";
 import cors from "cors";
 import fileUpload from "express-fileupload";
 
-import qs from "qs";
 // utils
+import qs from "qs";
 import { logger } from "./configs/logger.js";
 import "dotenv/config.js";
+
+// admin
+import runAdmin from "./admin/index.js";
 
 // performing
 import cluster from "cluster";
@@ -44,7 +47,7 @@ app.set("query parser", (str) => {
   return qs.parse(str, { depth });
 });
 
-// TODO: application may be like: api.some.com/
+// TODO: application may be like: api.some.com/, but in current time is a caddy do
 // need to enhance logic
 // app.use(routesMiddleWare);
 // routes
@@ -75,6 +78,10 @@ if (cluster.isPrimary) {
   const start = async () => {
     try {
       const server = http.createServer(app);
+
+      // 👇 Подключаем AdminJS
+      await runAdmin(app);
+      logger.info("AdminJS is mounted");
 
       // WebSocket server
       setupWebSocketServer(server);

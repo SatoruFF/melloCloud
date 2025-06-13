@@ -5,39 +5,82 @@
 
   .iconWrapper {
     position: relative;
+    width: 36px;
+    height: 36px;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 32px;
-    height: 32px;
   }
 
   .icon {
-    font-size: 24px;
-    color: white;
+    font-size: 28px;
+    color: #fff;
     transition: color 0.3s ease;
 
     &:hover {
-      color: #40a9ff; // Цвет иконки при наведении
+      color: #40a9ff;
     }
   }
 
   .badge {
     position: absolute;
-    top: -4px;
-    right: -4px;
+    top: -6px;
+    right: -6px;
     background-color: #ff4d4f;
     color: white;
-    font-size: 11px;
-    font-weight: 600;
+    font-size: 12px;
+    font-weight: 700;
     border-radius: 50%;
-    padding: 0 6px;
-    min-width: 20px;
-    height: 20px;
+    padding: 0 7px;
+    min-width: 22px;
+    height: 22px;
     display: flex;
     align-items: center;
     justify-content: center;
-    line-height: 1;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
   }
+}
+
+.drawer {
+  .ant-drawer-header {
+    border-bottom: 1px solid #f0f0f0;
+    font-weight: 600;
+    font-size: 18px;
+  }
+
+  .ant-drawer-body {
+    background-color: #fafafa;
+  }
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.listItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  font-size: 16px;
+  color: #333;
+  border-bottom: 1px solid #e8e8e8;
+  transition: background-color 0.2s ease;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:hover {
+    background-color: #f0f5ff;
+  }
+}
+
+.itemIcon {
+  width: 20px;
+  height: 20px;
+  color: #1890ff;
+  flex-shrink: 0;
 }

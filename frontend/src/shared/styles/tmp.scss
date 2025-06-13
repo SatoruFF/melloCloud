@@ -8,6 +8,10 @@ $header-height: 10vh;
 
 $file-toolbar-height: 7vh;
 
+$main-font: "Sono", sans-serif;
+
+$second-font: "Poppins", sans-serif;
+
 %centerTemplate {
   display: -ms-flexbox;
   display: -webkit-flex;
@@ -24,11 +28,11 @@ $file-toolbar-height: 7vh;
 }
 
 %mainFont {
-  font-family: "Sono", sans-serif;
+  font-family: $main-font;
 }
 
 %secondFont {
-  font-family: "Poppins", sans-serif;
+  font-family: $second-font;
 }
 
 %backgroundPic {

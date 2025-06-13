@@ -94,6 +94,27 @@
     "messages-input-placeholder": "write message...",
     "start-new-chat": "Open a new dialog by selecting a user or starting typing @username"
   },
+  "notifications": {
+    "title": "Notifications",
+    "openDrawer": "Open notifications",
+    "newMessage": "🔔 New message",
+    "fileUploaded": "📁 File uploaded",
+    "authSuccess": "✅ Auth success"
+  },
+  "pomodoro": {
+    "title": "Pomodoro timer",
+    "start": "Start",
+    "pause": "Pause",
+    "reset": "Reset",
+    "settings": "Settings",
+    "workTime": "Work time",
+    "shortBreak": "Short break",
+    "longBreak": "Long break",
+    "workMinutes": "Work (min)",
+    "breakMinutes": "Break (min)",
+    "longBreakMinutes": "Long break (min)",
+    "cyclesBeforeLongBreak": "Cycles before long break"
+  },
   "workspace": "workspaces",
   "tabs": {
     "files": "Files",
