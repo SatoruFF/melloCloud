@@ -7,6 +7,6 @@ export const FILE_ROUTE: string = "/files";
 export const PROFILE_ROUTE: string = "/profile";
 export const CHATS_ROUTE: string = "/chats";
 export const NOTES_ROUTE: string = "/notes";
-export const TODO_ROUTE: string = "/to-do";
+export const PLANNER_ROUTE: string = "/planner";
 export const POMODORO_ROUTE: string = "/pomodoro";
 // export const ADMIN_PANEL: string = "/admin";

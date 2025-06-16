@@ -19,7 +19,7 @@ import {
   FILE_ROUTE,
   NOTES_ROUTE,
   POMODORO_ROUTE,
-  TODO_ROUTE,
+  PLANNER_ROUTE,
 } from "../../../shared/consts/routes";
 
 const WorkspacesDropdown = ({ viewAll, logOut, setProfile }: { viewAll: boolean; logOut: any; setProfile: any }) => {
@@ -38,7 +38,7 @@ const WorkspacesDropdown = ({ viewAll, logOut, setProfile }: { viewAll: boolean;
     },
     {
       key: "3",
-      label: <NavLink to={TODO_ROUTE}>{t("tabs.to-do")}</NavLink>,
+      label: <NavLink to={PLANNER_ROUTE}>{t("tabs.planner")}</NavLink>,
       icon: <CarryOutOutlined />,
     },
     {

@@ -28,7 +28,10 @@
     "role": "Роль",
     "edit": "Редактировать",
     "total-space": "Общий размер",
-    "used-space": "Использованный размер"
+    "used-space": "Использованный размер",
+    "profile-info": "Информация профиля",
+    "actions": "Действия",
+    "disk": "Дисковое пространство"
   },
   "auth": {
     "authorization": "Войти",
@@ -49,6 +52,9 @@
     "have-account": "Уже есть аккаунт?",
     "create-profile": "Создать профиль",
     "change-profile-info": "Изменить настройки профиля",
+    "logout-success": "Вы успешно вышли",
+    "change-password": "Изменить пароль",
+    "delete-account": "Удалить аккаунт",
     "activate": {
       "invalidToken": "Некорректный токен",
       "errorWithAccount": "Ошибка при активации аккаунта: {{message}}",
@@ -121,7 +127,7 @@
     "settings": "Settings",
     "chats": "Чаты",
     "notes": "Заметки",
-    "to-do": "Задачи",
+    "planner": "Планнер",
     "pomodoro": "Pomodoro",
     "admin-panel": "Панель администратора"
   },

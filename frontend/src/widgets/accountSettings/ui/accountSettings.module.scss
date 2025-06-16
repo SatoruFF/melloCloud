@@ -1,0 +1,40 @@
+@use "../../../shared/styles/tmp.scss" as *;
+
+.settingsPage {
+  padding: 24px;
+
+  .card {
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    background-color: #fff;
+    @extend %mainFont;
+
+    h4 {
+      margin-bottom: 16px;
+      font-weight: 600;
+      color: #1f1f1f;
+    }
+  }
+
+  .cardContent {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    .ant-typography {
+      font-size: 15px;
+    }
+
+    strong {
+      font-weight: 600;
+    }
+
+    button {
+      @extend %secondFont;
+    }
+  }
+
+  .logoutButton {
+    margin-top: 8px;
+  }
+}

@@ -3,7 +3,7 @@ import React from "react";
 
 import {
   ACTIVATION_ROUTE,
-  ADMIN_PANEL,
+  // ADMIN_PANEL,
   CHATS_ROUTE,
   FILE_ROUTE,
   LOGIN_ROUTE,
@@ -12,7 +12,7 @@ import {
   POMODORO_ROUTE,
   PROFILE_ROUTE,
   REGISTRATION_ROUTE,
-  TODO_ROUTE,
+  PLANNER_ROUTE,
   WELCOME_ROUTE,
 } from "../../consts/routes";
 
@@ -67,7 +67,7 @@ const privateRoutes: IRoute[] = createRoutes([
   { path: PROFILE_ROUTE, element: Profile, private: true },
   { path: CHATS_ROUTE, element: Chats, private: true },
   { path: NOTES_ROUTE, element: Notes, private: true },
-  { path: TODO_ROUTE, element: Todo, private: true },
+  { path: PLANNER_ROUTE, element: Todo, private: true },
   { path: POMODORO_ROUTE, element: Pomodoro, private: true },
   // {
   // 	path: ADMIN_PANEL,

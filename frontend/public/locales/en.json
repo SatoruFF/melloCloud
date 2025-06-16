@@ -24,11 +24,14 @@
     "about": "About"
   },
   "user": {
-    "settings": "settings",
+    "settings": "Settings",
     "role": "Role",
     "edit": "Edit",
     "total-space": "Total space",
-    "used-space": "Used space"
+    "used-space": "Used space",
+    "profile-info": "Profile info",
+    "actions": "Actions",
+    "disk": "Disk space"
   },
   "auth": {
     "authorization": "authorization",
@@ -49,6 +52,9 @@
     "have-account": "Already have account?",
     "create-profile": "Create profile",
     "change-profile-info": "Change profile info",
+    "logout-success": "Logout success",
+    "change-password": "Change password",
+    "delete-account": "Delete account",
     "activate": {
       "invalidToken": "Invalid token",
       "errorWithAccount": "Error with activate account: {{message}}",
@@ -121,7 +127,7 @@
     "settings": "Settings",
     "chats": "Chats",
     "notes": "Notes",
-    "to-do": "To-do",
+    "planner": "Planner",
     "pomodoro": "Pomodoro",
     "admin-panel": "Admin panel"
   },
