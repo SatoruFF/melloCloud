@@ -1,5 +1,5 @@
-@use '../../../shared/styles/tmp.scss' as *;
-@import url('https://fonts.googleapis.com/css2?family=Sono&display=swap');
+@use "../../../shared/styles/tmp.scss" as *;
+@import url("https://fonts.googleapis.com/css2?family=Sono&display=swap");
 
 .navbar {
   width: 100%;
@@ -13,6 +13,38 @@
   align-items: center;
   position: relative;
   z-index: 2;
+
+  .applicationName {
+    font-size: 1.75rem;
+    font-weight: 700;
+    // background: linear-gradient(135deg, #4f46e5, #3b82f6, #0ea5e9, #6366f1);
+    // -webkit-background-clip: text;
+    // -webkit-text-fill-color: transparent;
+    color: #ffffff; /* fallback */
+    // text-shadow: 0 2px 20px rgba(0, 0, 30, 0.6);
+    letter-spacing: 0.05em;
+    transition: transform 0.3s ease;
+    margin-left: 50px;
+    cursor: pointer;
+    animation: fadeInSlide 0.6s ease-out forwards;
+    @extend %secondFont;
+  }
+
+  .applicationName:hover {
+    transform: scale(1.05);
+  }
+
+  @keyframes fadeInSlide {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
   .mainLogo img {
     &:hover {
       cursor: pointer;
@@ -67,7 +99,7 @@
   a {
     text-decoration: none;
     color: white;
-    font-family: 'Sono', sans-serif;
+    font-family: "Sono", sans-serif;
     font-size: 14px;
     text-transform: lowercase;
   }

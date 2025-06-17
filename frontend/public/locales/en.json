@@ -1,4 +1,5 @@
 {
+  "application-name": "Mello.",
   "home": {
     "primary-name": "Mello",
     "about-product": "Your lightweight, cross-platform personal workspace for cloud, chat, files, and tasks — all in one app.",
@@ -106,6 +107,12 @@
     "newMessage": "🔔 New message",
     "fileUploaded": "📁 File uploaded",
     "authSuccess": "✅ Auth success"
+  },
+  "planner": {
+    "tabs": {
+      "kanban": "Kanban",
+      "calendar": "Calendar"
+    }
   },
   "pomodoro": {
     "title": "Pomodoro timer",

@@ -41,7 +41,7 @@
   display: flex;
   gap: 24px;
   justify-content: center;
-  overflow-x: auto;
+  // overflow-x: auto;
   padding-bottom: 20px;
 }
 
@@ -68,8 +68,6 @@
   background: linear-gradient(135deg, #764ba2, #9b59b6);
   color: white;
   border-radius: 14px;
-  padding: 16px 20px;
-  margin-bottom: 16px;
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
   font-size: 16px;
   font-weight: 500;

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Button, Input, Card } from "antd";
 import { PlusOutlined, DeleteOutlined } from "@ant-design/icons";
-import styles from "./todo.module.scss";
+import styles from "./kanban.module.scss";
 
 type Task = {
   id: string;

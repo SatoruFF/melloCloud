@@ -24,7 +24,7 @@ import { Notifications } from "../../../features/notifications";
 // import mainLogo from "../../../shared/assets/octop-navbar-white.png";
 import mainLogo from "../../../shared/assets/octopus-kid.jpg";
 import LanguageSwitcher from "../../languageSwitcher/ui/LanguageSwitcher";
-import styles from "../styles/navbar.module.scss";
+import styles from "./navbar.module.scss";
 import { getUserSelector } from "../../../entities/user";
 
 // TODO: add storybook
@@ -54,8 +54,9 @@ const MyNavbar: React.FC = () => {
     <header className={cn(styles.navbar)} data-testid="navbar">
       <div className={cn(styles.baseItems)}>
         <LanguageSwitcher />
-        <div className={cn(styles.mainLogo)}>
-          <img src={mainLogo} alt="" onClick={() => navigate(WELCOME_ROUTE)} />
+        <div onClick={() => navigate(WELCOME_ROUTE)} className={cn(styles.mainLogo)}>
+          <p className={cn(styles.applicationName)}>{t("application-name")}</p>
+          {/* <img src={mainLogo} alt="" onClick={() => navigate(WELCOME_ROUTE)} /> */}
         </div>
       </div>
 

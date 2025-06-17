@@ -27,7 +27,7 @@ const Profile = lazy(() => import("../../../pages/profile/ui/Profile"));
 const Pomodoro = lazy(() => import("../../../pages/pomodoro/ui/PomodoroTimer"));
 const Chats = lazy(() => import("../../../pages/chats/ui/Chats"));
 const Notes = lazy(() => import("../../../pages/notes/ui/Notes"));
-const Todo = lazy(() => import("../../../pages/todo/ui/Todo"));
+const Planner = lazy(() => import("../../../pages/planner/ui/Planner"));
 const Activate = lazy(() => import("../../../pages/activate/ui/Activate"));
 // const AdminPanel = lazy(() => import("../../../pages/adminPanel/index"));
 
@@ -67,7 +67,7 @@ const privateRoutes: IRoute[] = createRoutes([
   { path: PROFILE_ROUTE, element: Profile, private: true },
   { path: CHATS_ROUTE, element: Chats, private: true },
   { path: NOTES_ROUTE, element: Notes, private: true },
-  { path: PLANNER_ROUTE, element: Todo, private: true },
+  { path: PLANNER_ROUTE, element: Planner, private: true },
   { path: POMODORO_ROUTE, element: Pomodoro, private: true },
   // {
   // 	path: ADMIN_PANEL,

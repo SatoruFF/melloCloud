@@ -1,0 +1,11 @@
+.planner {
+  display: flex;
+  height: 100vh - $header-height;
+}
+
+.content {
+  flex: 1;
+  box-sizing: border-box;
+  padding: 5px;
+  overflow-y: auto;
+}
