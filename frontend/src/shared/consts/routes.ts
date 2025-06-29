@@ -5,6 +5,7 @@ export const REGISTRATION_ROUTE: string = "/registration";
 export const ACTIVATION_ROUTE: string = "/activate";
 export const FILE_ROUTE: string = "/files";
 export const PROFILE_ROUTE: string = "/profile";
+export const PROFILE_MULTIPLE_ROUTE: string = "/profile/:id";
 export const CHATS_ROUTE: string = "/chats";
 export const NOTES_ROUTE: string = "/notes";
 export const PLANNER_ROUTE: string = "/planner";

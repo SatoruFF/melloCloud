@@ -15,11 +15,14 @@ import { Variables } from "../../../shared/consts/localVariables";
 import { sizeFormat } from "../../../shared/utils/sizeFormat";
 import styles from "./profile.module.scss";
 import { getUserSelector } from "../../../entities/user";
+import { useEffect } from "react";
+import { useParams } from "react-router-dom";
 
 const { Paragraph } = Typography;
 
 const Profile = () => {
   const { t } = useTranslation();
+  const { id } = useParams();
   const user = useAppSelector(getUserSelector);
   const totalSpace = sizeFormat(user.diskSpace);
   const usedSize = sizeFormat(user.usedSpace);
@@ -27,6 +30,11 @@ const Profile = () => {
   const token = localStorage.getItem("token");
   const avatar = user.avatar ? user.avatar : avatarIcon;
   const [removeAvatar, { isLoading: rmAvatarLoad }] = useDeleteAvatarMutation();
+
+  // useEffect(() => {
+  //   if (id) {
+  //   }
+  // }, []);
 
   const props: UploadProps = {
     name: "file",

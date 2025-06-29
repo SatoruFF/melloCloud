@@ -148,6 +148,25 @@ class UserControllerClass {
     }
   }
 
+  async getById(req: any, res: Response) {
+    try {
+      const { id } = req.params;
+
+      if (!id) throw createError(400, "Empty Params");
+
+      const user = await UserService.getById(req.context, Number(id));
+
+      if (!user) throw createError(404, "User not found");
+
+      return res.json(user);
+    } catch (error: any) {
+      logger.error(error.message, error);
+      res.status(error.statusCode || 500).send({
+        message: error.message,
+      });
+    }
+  }
+
   async changeInfo(req: Request, res: Response) {
     // try {
     //   // const {email, firstName, lastName} = req.body

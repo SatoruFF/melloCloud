@@ -1,5 +1,5 @@
 import { prisma } from "../configs/config.js";
-import { UserDto } from "../helpers/dtos/user-dto.js";
+import { UserDto } from "../dtos/user-dto.js";
 // utils
 import _ from "lodash";
 import "dotenv/config.js";

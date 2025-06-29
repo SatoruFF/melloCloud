@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from "uuid";
 import { prisma } from "../configs/config.js";
-import { type IUserModel, UserDto } from "../helpers/dtos/user-dto.js";
+import { type IUserModel, UserDto } from "../dtos/user-dto.js";
 // @ts-nocheck
 // FIXME: remove this in future
 // base
@@ -22,6 +22,7 @@ interface IUserData {
   userName?: string | null;
 }
 
+// TODO: DTO for user data
 const invitePrivateProps = ["activationToken", "password"];
 
 class UserServiceClass {
@@ -316,6 +317,20 @@ class UserServiceClass {
         id: true,
         userName: true,
         // avatar: true
+      },
+    });
+  }
+
+  async getById(context, id: number): Promise<IUserModel[]> {
+    return await context.prisma.user.findFirst({
+      where: {
+        id: {
+          equals: id,
+        },
+      },
+      select: {
+        id: true,
+        userName: true,
       },
     });
   }
