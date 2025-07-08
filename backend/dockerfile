@@ -34,9 +34,6 @@ COPY . .
 # Генерация Prisma Client для нужной платформы
 # RUN npx prisma generate
 
-# run migrations and setup database
-RUN npm run postinstall-prod
-
 # Выполняем сборку
 RUN npm run build
 
