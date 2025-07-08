@@ -24,7 +24,7 @@ COPY src/prisma ./src/prisma
 
 RUN rm -rf node_modules
 # FIXME
-RUN npm install --legacy-peer-deps
+RUN npm install --legacy-peer-deps --ignore-scripts
 # Устанавливаем зависимости через Bun
 # RUN bun install --frozen-lockfile
 
@@ -32,7 +32,7 @@ RUN npm install --legacy-peer-deps
 COPY . .
 
 # Генерация Prisma Client для нужной платформы
-# RUN npx prisma generate
+RUN npx prisma generate
 
 # Выполняем сборку
 RUN npm run build
@@ -40,5 +40,7 @@ RUN npm run build
 # Открываем порты
 EXPOSE 1337
 
+# Миграции выполняем при запуске контейнера, когда .env уже доступен
+CMD ["sh", "-c", "npx prisma migrate deploy && npm run start"]
 # Команда для запуска через bun
-CMD ["npm", "run", "start"]
+# CMD ["npm", "run", "start"]
