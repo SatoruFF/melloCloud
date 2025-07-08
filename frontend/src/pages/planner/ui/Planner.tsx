@@ -1,6 +1,6 @@
 // pages/planner/Planner.tsx
 import { useState } from "react";
-import styles from "./Planner.module.scss";
+import styles from "./planner.module.scss";
 import { PlannerTabs } from "../../../features/plannerTabs";
 import { KanbanBoard } from "../../../widgets/Kanban";
 import { CalendarView } from "../../../widgets/Calendar";
