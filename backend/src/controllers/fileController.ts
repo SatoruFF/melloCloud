@@ -75,22 +75,6 @@ class FileControllerClass {
         fileInstance.path = `${parentFile.path}/${name}`;
       }
 
-      // First, create the file entry in the database
-      // const file = await prisma.file.create({
-      //   data: {
-      //     name: fileInstance.name,
-      //     type: fileInstance.type,
-      //     path: fileInstance.path,
-      //     url: fileInstance.url,
-      //     userId: fileInstance.userId,
-      //     ...(fileInstance.parentId && {
-      //       parent: {
-      //         connect: { id: fileInstance.parentId },
-      //       },
-      //     }),
-      //   },
-      // });
-
       const file = await prisma.file.create({
         data: fileInstance,
       });
