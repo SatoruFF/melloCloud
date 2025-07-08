@@ -12,17 +12,12 @@ RUN apt-get update && apt-get install -y openssl
 # Установка рабочей директории
 WORKDIR /app
 
-# Устанавливаем pnpm
-# RUN npm install -g pnpm
-
 # Копируем файлы зависимостей
 COPY pnpm-lock.yaml ./
 COPY package.json ./
-
-# Копируем папку prisma
 COPY src/prisma ./src/prisma
 
-RUN rm -rf node_modules
+# RUN rm -rf node_modules
 # FIXME
 RUN npm install --legacy-peer-deps --ignore-scripts
 # Устанавливаем зависимости через Bun

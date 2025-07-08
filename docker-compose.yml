@@ -31,7 +31,8 @@ services:
     networks:
       - prod
     volumes:
-      - ./backend:/app
+      # - ./backend:/app
+      - ./backend/src:/app/src # Маппинг только исходного кода
     extra_hosts:
       - "host.docker.internal:host-gateway"
       - "backend:172.18.0.4"
