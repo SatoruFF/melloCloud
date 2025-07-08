@@ -14,11 +14,12 @@ mellocloud.net, www.mellocloud.net {
 		Referrer-Policy "strict-origin-when-cross-origin"
 	}
 
-	# Proxy frontend (Vite)
-	@frontend not path /api* /socket.io* /portainer*
-	handle @frontend {
-		reverse_proxy frontend:5173 {
-			# Health check and failover
+	# Proxy Portainer interface at /portainer (должно быть ПЕРВЫМ)
+	handle_path /portainer* {
+		# Remove /portainer prefix if Portainer expects clean paths
+		uri strip_prefix /portainer
+		reverse_proxy portainer:9000 {
+			# Health check
 			health_uri /
 			health_interval 10s
 			health_timeout 5s
@@ -48,22 +49,20 @@ mellocloud.net, www.mellocloud.net {
 		}
 	}
 
-	# Proxy Portainer interface at /portainer
-	handle_path /portainer* {
-		# Remove /portainer prefix if Portainer expects clean paths
-		uri strip_prefix /portainer
-		reverse_proxy portainer:9000 {
-			# Health check
-			health_uri /
-			health_interval 10s
-			health_timeout 5s
-		}
-	}
-
 	# Allow search engine indexing
 	handle /robots.txt {
 		header Content-Type text/plain
 		respond "User-agent: *\nAllow: /" 200
+	}
+
+	# Proxy frontend (Vite) - должно быть ПОСЛЕДНИМ как fallback
+	handle {
+		reverse_proxy frontend:5173 {
+			# Health check and failover
+			health_uri /
+			health_interval 10s
+			health_timeout 5s
+		}
 	}
 }
 
