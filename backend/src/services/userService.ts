@@ -7,7 +7,7 @@ import { type IUserModel, UserDto } from "../dtos/user-dto.js";
 import { FileService } from "./fileService.js";
 import { MailService } from "./mailService.js";
 
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 // utils
 import _ from "lodash";
 import "dotenv/config.js";
