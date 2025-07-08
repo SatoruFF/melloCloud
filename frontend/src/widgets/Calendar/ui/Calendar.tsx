@@ -6,7 +6,7 @@ import interactionPlugin from "@fullcalendar/interaction";
 import listPlugin from "@fullcalendar/list";
 import multiMonthPlugin from "@fullcalendar/multimonth";
 import * as Dialog from "@radix-ui/react-dialog";
-import styles from "./Calendar.module.scss";
+import styles from "./calendar.module.scss";
 
 export default function Calendar() {
   const [selectedEvent, setSelectedEvent] = useState<{
