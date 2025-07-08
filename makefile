@@ -22,6 +22,9 @@ rebuild:
 restart-caddy:
 	docker-compose restart web_server
 
+rebuild-caddy:
+	docker-compose build web_server && docker-compose up -d web_server
+
 clean-space:
 	@echo "🔍 Cleaning up caches and temporary files..."
 	sudo apt-get clean
