@@ -15,7 +15,7 @@ import { logger } from "./configs/logger.js";
 import "dotenv/config.js";
 
 // admin
-import runAdmin from "./admin/index.js";
+// import runAdmin from "./admin/index.js";
 
 // performing
 import cluster from "cluster";
@@ -80,8 +80,8 @@ if (cluster.isPrimary) {
       const server = http.createServer(app);
 
       // 👇 Подключаем AdminJS
-      await runAdmin(app);
-      logger.info("AdminJS is mounted");
+      // await runAdmin(app);
+      // logger.info("AdminJS is mounted");
 
       // WebSocket server
       setupWebSocketServer(server);
