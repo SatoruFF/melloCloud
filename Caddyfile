@@ -1,64 +1,53 @@
-# Main domain with frontend and API
+# Main domain with frontend
 mellocloud.net, www.mellocloud.net {
 	encode gzip
 	log
 
 	# Security headers
 	header {
-		# Remove server info
 		-Server
-		# Security headers
 		X-Content-Type-Options nosniff
 		X-Frame-Options DENY
 		X-XSS-Protection "1; mode=block"
 		Referrer-Policy "strict-origin-when-cross-origin"
 	}
 
-	# Proxy Portainer interface at /portainer (должно быть ПЕРВЫМ)
-	handle_path /portainer* {
-		# Remove /portainer prefix if Portainer expects clean paths
-		uri strip_prefix /portainer
-		reverse_proxy portainer:9000 {
-			# Health check
-			health_uri /
-			health_interval 10s
-			health_timeout 5s
-		}
-	}
-
-	# Proxy API requests
-	handle_path /api* {
-		reverse_proxy backend:1337 {
-			# Health check
-			health_uri /health
-			health_interval 10s
-			health_timeout 5s
-		}
-	}
-
-	# Proxy WebSocket requests (e.g., socket.io)
-	handle_path /socket.io* {
-		reverse_proxy backend:1337 {
-			# Enable WebSocket support
-			header_up Connection {>Connection}
-			header_up Upgrade {>Upgrade}
-			# Health check
-			health_uri /health
-			health_interval 10s
-			health_timeout 5s
-		}
-	}
-
-	# Allow search engine indexing
+	# Robots.txt
 	handle /robots.txt {
 		header Content-Type text/plain
 		respond "User-agent: *\nAllow: /" 200
 	}
 
-	# Proxy frontend (Vite) - должно быть ПОСЛЕДНИМ как fallback
+	# Proxy Portainer interface at /portainer
+	handle_path /portainer* {
+		reverse_proxy portainer:9000 {
+			# health_uri /api/system/status
+			# health_interval 30s
+			# health_timeout 10s
+		}
+	}
+
+	# Proxy API requests to backend
+	handle_path /api* {
+		reverse_proxy backend:1337 {
+			# health_uri /api/health
+			# health_interval 10s
+			# health_timeout 5s
+		}
+	}
+
+	# Proxy WebSocket requests
+	handle_path /socket.io* {
+		reverse_proxy backend:1337 {
+			header_up Connection {>Connection}
+			header_up Upgrade {>Upgrade}
+		}
+	}
+
+	# Frontend (должно быть последним)
 	handle {
 		reverse_proxy frontend:5173 {
-			# Health check and failover
+			# Простой health check для frontend
 			health_uri /
 			health_interval 10s
 			health_timeout 5s
@@ -66,33 +55,57 @@ mellocloud.net, www.mellocloud.net {
 	}
 }
 
-# Separate domain for API
+# API subdomain
 api.mellocloud.net {
 	encode gzip
 	log
 
-	# Security headers (less restrictive for API)
 	header {
 		-Server
 		X-Content-Type-Options nosniff
 	}
 
-	# Proxy all requests to the backend
 	reverse_proxy backend:1337 {
-		# Health check
-		health_uri /health
-		health_interval 10s
-		health_timeout 5s
-	}
-
-	# Allow search engine indexing
-	handle /robots.txt {
-		header Content-Type text/plain
-		respond "User-agent: *\nAllow: /" 200
+		# Убираем health check пока не исправим backend
 	}
 }
 
-# Redirect HTTP to HTTPS (optional — Caddy does it automatically)
-http://mellocloud.net, http://www.mellocloud.net, http://api.mellocloud.net {
+# Portainer subdomain
+portainer.mellocloud.net {
+	encode gzip
+	log
+
+	header {
+		-Server
+		X-Content-Type-Options nosniff
+		X-Frame-Options DENY
+	}
+
+	reverse_proxy portainer:9000 {
+		# Portainer health check (если нужен)
+		# health_uri /api/system/status
+		# health_interval 30s
+		# health_timeout 10s
+	}
+}
+
+# WebSocket subdomain (опционально)
+ws.mellocloud.net {
+	encode gzip
+	log
+
+	header {
+		-Server
+		X-Content-Type-Options nosniff
+	}
+
+	reverse_proxy backend:1337 {
+		header_up Connection {>Connection}
+		header_up Upgrade {>Upgrade}
+	}
+}
+
+# Redirect HTTP to HTTPS
+http://mellocloud.net, http://www.mellocloud.net, http://api.mellocloud.net, http://portainer.mellocloud.net, http://ws.mellocloud.net {
 	redir https://{host}{uri}
 }
