@@ -51,7 +51,8 @@ app.set("query parser", (str) => {
 // need to enhance logic
 // app.use(routesMiddleWare);
 // routes
-app.use("/api/v1", v1Router);
+app.use("/api/v1", v1Router); // https://mellocloud.net/api/v1
+app.use("/v1", v1Router); // https://api.mellocloud.net/v1
 
 // check health
 app.all("/", (_, res: Response) => {
