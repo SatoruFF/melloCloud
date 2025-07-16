@@ -1,19 +1,70 @@
-name: Deploy to Server
-
+name: Build and Deploy
 on:
   push:
     tags:
       - "*"
 
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME_FRONTEND: ${{ github.repository }}/frontend
+  IMAGE_NAME_BACKEND: ${{ github.repository }}/backend
 
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - name: Access to Server, Pull Git Changes, Rebuild and Restart Docker Compose
+      - name: Log in to Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GH_TOKEN }}
+
+      - name: Extract metadata for frontend
+        id: meta-frontend
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_FRONTEND }}
+          tags: |
+            type=ref,event=tag
+            type=raw,value=latest
+
+      - name: Extract metadata for backend
+        id: meta-backend
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_BACKEND }}
+          tags: |
+            type=ref,event=tag
+            type=raw,value=latest
+
+      - name: Build and push frontend
+        uses: docker/build-push-action@v5
+        with:
+          context: ./frontend
+          push: true
+          tags: ${{ steps.meta-frontend.outputs.tags }}
+          labels: ${{ steps.meta-frontend.outputs.labels }}
+
+      - name: Build and push backend
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend
+          push: true
+          tags: ${{ steps.meta-backend.outputs.tags }}
+          labels: ${{ steps.meta-backend.outputs.labels }}
+
+  deploy:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to server
         env:
           SERVER_USER: ${{ secrets.SERVER_USER }}
           SSHPASS: ${{ secrets.SERVER_PASSWORD }}
@@ -22,20 +73,13 @@ jobs:
           sshpass -e ssh -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP bash -c "
           echo ✅ SSH connection successful &&
           cd /home/satoru/melloCloud &&
-          echo ✅ Cleaning up unused Docker images and containers &&
-          docker system prune -af --volumes &&
           echo ✅ Pulling from GitHub &&
           git pull &&
-          echo ✅ Stopping running Docker containers, excluding portainer &&
-          running_containers=\$(docker ps -q --filter name=!portainer) &&
-          if [ -n \"\$running_containers\" ]; then
-            docker stop \$running_containers &&
-            docker rm \$running_containers
-          else
-            echo 'No running containers to stop.'
-          fi &&
-          echo ✅ Rebuilding and starting Docker Compose containers &&
-          docker-compose down &&
-          docker-compose up -d --build &&
+          echo ✅ Pulling new Docker images &&
+          docker-compose pull &&
+          echo ✅ Restarting services with new images &&
+          docker-compose up -d &&
+          echo ✅ Cleaning up old images &&
+          docker image prune -f &&
           echo ✅ Deployment completed successfully
           "

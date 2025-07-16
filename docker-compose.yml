@@ -1,8 +1,6 @@
 version: "3.8"
-
 networks:
   prod:
-
 services:
   web_server:
     image: caddy:latest
@@ -12,7 +10,7 @@ services:
       - "443:443"
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile
-      - caddy_data:/data # Caddy uses this to store certificates
+      - caddy_data:/data
       - caddy_config:/config
     depends_on:
       - backend
@@ -20,29 +18,25 @@ services:
       - portainer
     networks:
       - prod
-    restart: on-failure
+    restart: unless-stopped
 
   backend:
     container_name: mello-backend
-    build:
-      context: ./backend
+    image: ghcr.io/your-username/your-repo/backend:latest
     env_file:
       - ./.env
     networks:
       - prod
     volumes:
-      # - ./backend:/app
-      - ./backend/src:/app/src # Маппинг только исходного кода
+      - ./backend/src:/app/src
     extra_hosts:
       - "host.docker.internal:host-gateway"
       - "backend:172.18.0.4"
-    restart: on-failure
-    # command: sh -c "npx prisma migrate deploy && npm run start"
+    restart: unless-stopped
 
   frontend:
     container_name: mello-frontend
-    build:
-      context: ./frontend
+    image: ghcr.io/your-username/your-repo/frontend:latest
     env_file:
       - ./.env
     networks:
@@ -51,11 +45,11 @@ services:
       - ./frontend:/app
     ports:
       - "5173:5173"
-    restart: on-failure
+    restart: unless-stopped
 
   portainer:
     container_name: mello-portainer
-    image: portainer/portainer-ce
+    image: portainer/portainer-ce:latest
     networks:
       - prod
     ports:
@@ -63,27 +57,26 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - portainer_data:/data
-    restart: on-failure
+    restart: unless-stopped
+
+  # Watchtower for automatic updates
+  watchtower:
+    container_name: watchtower
+    image: containrrr/watchtower:latest
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /root/.docker/config.json:/config.json
+    environment:
+      - WATCHTOWER_CLEANUP=true
+      - WATCHTOWER_POLL_INTERVAL=300 # check every 5 minutes
+      - WATCHTOWER_ROLLING_RESTART=true
+      - WATCHTOWER_INCLUDE_STOPPED=true
+      - WATCHTOWER_REVIVE_STOPPED=false
+    restart: unless-stopped
+    networks:
+      - prod
 
 volumes:
   portainer_data:
   caddy_data:
   caddy_config:
-# with nginx instead of caddy
-
-# web_server:
-#   image: nginx:stable-alpine
-#   container_name: nginx-main
-#   ports:
-#     - "80:80"
-#     - "443:443"
-#   volumes:
-#     - "./nginx.conf:/etc/nginx/nginx.conf"
-#     - "/etc/letsencrypt:/etc/letsencrypt"
-#   depends_on:
-#     - backend
-#     - frontend
-#     - portainer
-#   networks:
-#     - prod
-#   restart: on-failure
