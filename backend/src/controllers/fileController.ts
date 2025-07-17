@@ -56,7 +56,7 @@ class FileControllerClass {
         userId,
         path: "",
         url: "",
-        storageGuid: user?.storageGuid,
+        // storageGuid: user?.storageGuid,
       };
 
       if (parentId == null) {
@@ -80,7 +80,10 @@ class FileControllerClass {
       });
 
       // Then, create the corresponding directory in S3
-      const itemUrl = await FileService.createDir(fileInstance);
+      const itemUrl = await FileService.createDir({
+        ...fileInstance,
+        storageGuid: user.storageGuid,
+      });
 
       // Update the database record with the S3 URL
       const updatedFile = await prisma.file.update({

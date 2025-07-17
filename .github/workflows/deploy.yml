@@ -1,8 +1,14 @@
 name: Build and Deploy
+
+# on:
+#   push:
+#     tags:
+#       - "*"
 on:
   push:
-    tags:
-      - "*"
+    branches:
+      - "**"
+
 
 env:
   REGISTRY: ghcr.io

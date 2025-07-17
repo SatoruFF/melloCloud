@@ -13,45 +13,60 @@
     filter: blur(6px);
     z-index: 0;
   }
-
-  // I hope is really not will affect for another lists
-  :global(.ant-list-item) {
-    border-bottom: none !important;
-    padding: 0 !important;
-    margin-bottom: 12px; // 👈 добавляем отступ между сообщениями
-  }
-
-  :global(.ant-list-item-meta) {
-    margin-bottom: 0 !important;
-  }
 }
 
 .messageList {
-  padding: 16px 12px 55px;
+  box-sizing: border-box;
   height: 100%;
-  overflow-y: auto;
+  padding: 1px 2px 50px; // Увеличиваем нижний паддинг для инпута
   position: relative;
   z-index: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  scroll-behavior: smooth;
+
+  .virtuosoContainer {
+    height: 100%;
+
+    // Стили для виртуализированного контейнера
+    > div {
+      // Контейнер сообщений
+      display: flex;
+      flex-direction: column;
+      gap: 12px; // Только gap
+      padding: 0;
+
+      // Убираем margin из элементов
+      > div {
+        margin: 0;
+
+        // Добавляем дополнительный отступ после последнего элемента через ::after
+        &:last-child::after {
+          content: "";
+          display: block;
+          height: 18px; // Дополнительный отступ
+        }
+      }
+    }
+  }
 }
 
-.lazyBackground {
-  position: absolute;
-  inset: 0;
-  width: 100%;
+.emptyState {
   height: 100%;
-  object-fit: cover;
-  filter: blur(10px);
-  z-index: -1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(0, 0, 0, 0.6);
+  font-size: 16px;
+  position: relative;
+  z-index: 1;
 }
 
 .messageItem {
   display: flex;
   align-items: flex-end;
   gap: 8px;
+  animation: fadeInUp 0.3s ease-out;
+  box-sizing: border-box;
+  margin-top: 10px;
+  margin-right: 5px;
 
   &.self {
     justify-content: flex-end;
@@ -60,6 +75,10 @@
       background: rgba(24, 144, 255, 0.9);
       color: #fff;
       align-self: flex-end;
+
+      .messageTime {
+        color: rgba(255, 255, 255, 0.7);
+      }
     }
   }
 }
@@ -89,6 +108,16 @@
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
   word-break: break-word;
   position: relative;
+  transition: all 0.2s ease;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+}
+
+.messageText {
+  margin-bottom: 4px;
 }
 
 .messageTime {
@@ -96,4 +125,35 @@
   color: rgba(0, 0, 0, 0.4);
   text-align: right;
   margin-top: 4px;
+}
+
+// Анимация появления сообщений
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Адаптивность
+@media (max-width: 768px) {
+  .messageContent {
+    max-width: 85%;
+    padding: 8px 12px;
+  }
+
+  .messageList {
+    padding: 12px 8px 45px;
+  }
+}
+
+@media (max-width: 480px) {
+  .messageContent {
+    max-width: 90%;
+    font-size: 13px;
+  }
 }

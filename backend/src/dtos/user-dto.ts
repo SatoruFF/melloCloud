@@ -41,6 +41,6 @@ export class UserDto {
       isActivated: isActivated || false,
     };
     this.token = token;
-    this.refreshToken = refreshToken;
+    // this.refreshToken = refreshToken;
   }
 }

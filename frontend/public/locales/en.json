@@ -99,7 +99,8 @@
   },
   "messages": {
     "messages-input-placeholder": "write message...",
-    "start-new-chat": "Open a new dialog by selecting a user or starting typing @username"
+    "start-new-chat": "Open a new dialog by selecting a user or starting typing @username",
+    "no-messages": "No messages"
   },
   "notifications": {
     "title": "Notifications",

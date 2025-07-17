@@ -78,6 +78,7 @@
     "react-selecto": "^1.26.3",
     "react-tsparticles": "^2.12.2",
     "react-virtualized-auto-sizer": "^1.0.25",
+    "react-virtuoso": "^4.13.0",
     "react-window": "^1.8.11",
     "react-window-infinite-loader": "^1.0.10",
     "redux-persist": "^6.0.0",

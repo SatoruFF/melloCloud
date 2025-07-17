@@ -1,4 +1,4 @@
-@use '../../../shared/styles/tmp.scss' as *;
+@use "../../../shared/styles/tmp.scss" as *;
 
 .allFileViewer {
   display: flex;
@@ -33,6 +33,9 @@
 }
 
 .imageFile {
+  max-width: 60px;
+  height: 100%;
+  object-fit: cover;
 }
 
 .playerModalFileViewer {

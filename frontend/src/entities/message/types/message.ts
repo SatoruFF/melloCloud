@@ -6,6 +6,7 @@ export interface Message {
   receiverId: number | string;
   text: string;
   time: string;
+  createdAt?: Date | string;
 }
 
 export interface MessageSchema {

@@ -99,7 +99,8 @@
   },
   "messages": {
     "messages-input-placeholder": "Написать сообщение...",
-    "start-new-chat": "Начните новый диалог, выбрав пользователя или начав ввод с @username"
+    "start-new-chat": "Начните новый диалог, выбрав пользователя или начав ввод с @username",
+    "no-messages": "Сообщений нет"
   },
   "notifications": {
     "title": "Уведомления",
