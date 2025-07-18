@@ -111,7 +111,14 @@ class FileServiceClass {
 
   // get files with search params
   async getFiles(searchParams: ISearchParams) {
-    const { sort, search, parentId, userId, limit: filesLimit, offset: filesOffset = 0 } = searchParams;
+    const {
+      sort,
+      search,
+      parentId,
+      userId,
+      limit: filesLimit,
+      offset: filesOffset = 0,
+    } = searchParams;
 
     const limit = Number(filesLimit) || Number(FETCH_LIMIT);
     const offset = Number(filesOffset) || 0;
@@ -121,6 +128,7 @@ class FileServiceClass {
       return await prisma.file.findMany({
         where: {
           userId,
+          parentId,
           name: { contains: search, mode: "insensitive" }, // ILIKE analog in Prisma
         },
       });
@@ -254,7 +262,10 @@ class FileServiceClass {
       });
 
       if (!_.isEmpty(existInnerContent)) {
-        throw createError(400, "You cannot delete a folder while it has content");
+        throw createError(
+          400,
+          "You cannot delete a folder while it has content",
+        );
       }
 
       if (!file) {

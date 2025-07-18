@@ -173,7 +173,11 @@ class FileControllerClass {
 
       const user = await getUserById(userId);
 
-      const { s3object, file } = await FileService.downloadFile(queryId, userId, user.storageGuid);
+      const { s3object, file } = await FileService.downloadFile(
+        queryId,
+        userId,
+        user.storageGuid,
+      );
 
       const stream = new PassThrough();
       stream.end(s3object.Body);

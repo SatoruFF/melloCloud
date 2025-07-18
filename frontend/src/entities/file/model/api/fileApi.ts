@@ -43,6 +43,7 @@ export const fileApi = rtkApi.injectEndpoints({
     }),
     getFiles: builder.query<any, any>({
       query: (params: Record<string, string>) => {
+        console.log();
         // sanitize params
         params = {
           ..._.omitBy(params, (value) => value === "" || value === undefined),
