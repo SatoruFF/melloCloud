@@ -3,7 +3,7 @@
 .filelistWrapper {
   box-sizing: border-box;
   min-height: 100vh - $header-height - $file-toolbar-height;
-  /* background: linear-gradient(135deg, #1e1e2e 0%, #2a2a3e 100%); */
+  background: linear-gradient(135deg, #1e1e2e 0%, #2a2a3e 100%);
   position: relative;
 
   // Добавляем subtle паттерн в фон
