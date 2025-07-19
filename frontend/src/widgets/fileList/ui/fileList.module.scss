@@ -3,7 +3,6 @@
 .filelistWrapper {
   box-sizing: border-box;
   min-height: 100vh - $header-height - $file-toolbar-height;
-  /* background: linear-gradient(135deg, #1e1e2e 0%, #2a2a3e 100%); */
   position: relative;
 
   // Добавляем subtle паттерн в фон
@@ -14,22 +13,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background-image:
-      radial-gradient(
-        circle at 20% 50%,
-        rgba(120, 119, 198, 0.1) 0%,
-        transparent 50%
-      ),
-      radial-gradient(
-        circle at 80% 20%,
-        rgba(255, 119, 198, 0.1) 0%,
-        transparent 50%
-      ),
-      radial-gradient(
-        circle at 40% 80%,
-        rgba(119, 198, 255, 0.1) 0%,
-        transparent 50%
-      );
+    background-image: $background-image;
     pointer-events: none;
   }
 
@@ -57,12 +41,7 @@
       left: 0;
       right: 0;
       height: 1px;
-      background: linear-gradient(
-        90deg,
-        transparent,
-        rgba(255, 255, 255, 0.2),
-        transparent
-      );
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
     }
 
     .name {
@@ -79,7 +58,6 @@
         left: 12px;
         right: 12px;
         height: 2px;
-        background: linear-gradient(90deg, #667eea, #764ba2);
         border-radius: 1px;
         opacity: 0;
         transition: opacity 0.3s ease;
@@ -105,7 +83,6 @@
         left: 12px;
         right: 12px;
         height: 2px;
-        background: linear-gradient(90deg, #f093fb, #f5576c);
         border-radius: 1px;
         opacity: 0;
         transition: opacity 0.3s ease;
@@ -213,12 +190,7 @@
     left: -100%;
     width: 100%;
     height: 100%;
-    background: linear-gradient(
-      90deg,
-      transparent,
-      rgba(255, 255, 255, 0.1),
-      transparent
-    );
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
     transition: left 0.5s ease;
   }
 
@@ -291,7 +263,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  color: #64748b;
+  // color: #64748b;
   font-size: 18px;
   @extend %mainFont;
   position: relative;
@@ -332,7 +304,7 @@
 // Добавляем красивый скроллбар
 .filelistWrapper {
   scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+  // scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
 
   &::-webkit-scrollbar {
     width: 8px;
@@ -343,11 +315,11 @@
   }
 
   &::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.2);
+    // background: rgba(255, 255, 255, 0.2);
     border-radius: 4px;
 
     &:hover {
-      background: rgba(255, 255, 255, 0.3);
+      // background: rgba(255, 255, 255, 0.3);
     }
   }
 }

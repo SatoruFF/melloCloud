@@ -3,9 +3,11 @@ import { visualizer } from 'rollup-plugin-visualizer';
 import react from '@vitejs/plugin-react';
 import svgr from 'vite-plugin-svgr';
 import { VitePWA } from 'vite-plugin-pwa';
-import path from 'path';
+import { posix } from 'path';
 
 // const mode = process.env.MODE || 'development';
+
+const tmpPath = posix.join('/src/shared/styles/tmp.scss');
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -58,7 +60,7 @@ export default defineConfig({
     preprocessorOptions: {
       scss: {
         api: 'modern-compiler',
-        additionalData: `@use "${path.resolve(__dirname, 'src/shared/styles/tmp.scss')}" as *;`, // global scss templates import
+        additionalData: `@use "${tmpPath}" as *;`, // global scss templates import
       },
     },
   },

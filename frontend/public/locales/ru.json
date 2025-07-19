@@ -88,6 +88,26 @@
       "date": "Дата"
     }
   },
+  "notes": {
+    "search": "Поиск",
+    "searchTooltip": "Поиск по заметкам",
+    "recent": "Недавние",
+    "recentTooltip": "Недавно просмотренные заметки",
+    "starred": "Избранное",
+    "starredTooltip": "Избранные заметки",
+    "folders": "Папки",
+    "foldersTooltip": "Организация заметок по папкам",
+    "tags": "Теги",
+    "tagsTooltip": "Просмотр заметок по тегам",
+    "newPage": "Новая страница",
+    "newPageTooltip": "Создать новую заметку",
+    "trash": "Корзина",
+    "trashTooltip": "Удаленные заметки",
+    "settings": "Настройки",
+    "settingsTooltip": "Настройки приложения",
+    "online": "Онлайн",
+    "version": "Версия"
+  },
   "chats": {
     "favorite": "Избранное",
     "new-chat": "Новый чат",

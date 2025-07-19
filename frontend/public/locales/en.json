@@ -88,6 +88,26 @@
       "date": "date"
     }
   },
+  "notes": {
+    "search": "Search",
+    "searchTooltip": "Search through your notes",
+    "recent": "Recent",
+    "recentTooltip": "Recently viewed notes",
+    "starred": "Starred",
+    "starredTooltip": "Your starred notes",
+    "folders": "Folders",
+    "foldersTooltip": "Organize notes in folders",
+    "tags": "Tags",
+    "tagsTooltip": "Browse notes by tags",
+    "newPage": "New Page",
+    "newPageTooltip": "Create a new note",
+    "trash": "Trash",
+    "trashTooltip": "Deleted notes",
+    "settings": "Settings",
+    "settingsTooltip": "Application settings",
+    "online": "Online",
+    "version": "Version"
+  },
   "chats": {
     "favorite": "favorite",
     "new-chat": "New chat",

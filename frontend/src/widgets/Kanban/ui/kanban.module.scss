@@ -1,9 +1,9 @@
 .kanbanContainer {
   min-height: 100vh - $header-height;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background-image: $background-image;
   padding: 20px;
   box-sizing: border-box;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-family: $second-font;
 }
 
 .kanbanHeader {

@@ -1,14 +1,14 @@
 .sidebar {
+  width: 100%;
   background: #f7f7f7;
-  height: 100vh;
-  padding: 16px;
 }
 
 .header {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding-bottom: 16px;
+  padding: 12px;
+  box-sizing: border-box;
   border-bottom: 1px solid #ddd;
 }
 
@@ -17,20 +17,35 @@
 }
 
 .username {
+  cursor: pointer;
   font-size: 16px;
 }
 
 .menu {
-  margin-top: 16px;
-  border-right: none;
+  width: 100%;
   background: transparent;
+  border-right: none;
 }
 
 .menuItem {
-  padding: 10px 16px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
   font-size: 14px;
+  border-radius: 6px;
+  transition: background 0.3s;
+
+  &::after {
+    display: none !important;
+  }
 }
 
 .menuItem:hover {
-  background: #e6f7ff;
+  background-color: #e6f7ff !important;
+}
+
+.ant-menu-item-selected {
+  background-color: #e6f7ff !important;
+  font-weight: 500;
 }

@@ -134,10 +134,10 @@ const UltraKanban = () => {
   return (
     <div className={cn(styles.kanbanContainer)}>
       <div className={cn(styles.kanbanHeader)}>
-        <h1 className={cn(styles.boardTitle)}>
+        {/* <h1 className={cn(styles.boardTitle)}>
           <span className={cn(styles.titleIcon)}>📋</span>
           Ultra Kanban Board
-        </h1>
+        </h1> */}
 
         <div className={cn(styles.addTaskSection)}>
           <div className={cn(styles.taskInputGroup)}>
