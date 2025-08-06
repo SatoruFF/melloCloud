@@ -1,8 +1,18 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
+import { Button, Input, Select, Card, Tag, Dropdown, Space, Typography, Badge, Empty } from "antd";
+import {
+  PlusOutlined,
+  DeleteOutlined,
+  EditOutlined,
+  MoreOutlined,
+  DragOutlined,
+  FileTextOutlined,
+} from "@ant-design/icons";
 import cn from "classnames";
-import { PlusOutlined, DeleteOutlined, EditOutlined, MoreOutlined } from "@ant-design/icons";
-
 import styles from "./kanban.module.scss";
+
+const { Text, Title } = Typography;
+const { Option } = Select;
 
 type Task = {
   id: string;
@@ -19,18 +29,11 @@ type Column = {
   order: number;
 };
 
-const defaultColumns: Column[] = [
-  { id: "1", title: "To Do", color: "#FF6B6B", order: 0 },
-  { id: "2", title: "In Progress", color: "#4ECDC4", order: 1 },
-  { id: "3", title: "Review", color: "#45B7D1", order: 2 },
-  { id: "4", title: "Done", color: "#96CEB4", order: 3 },
-];
-
-const UltraKanban = () => {
+const Kanban = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
-  const [columns, setColumns] = useState<Column[]>(defaultColumns);
+  const [columns, setColumns] = useState<Column[]>([]);
   const [newTaskText, setNewTaskText] = useState("");
-  const [newTaskColumn, setNewTaskColumn] = useState(columns[0]?.id || "");
+  const [newTaskColumn, setNewTaskColumn] = useState("");
   const [draggedTaskId, setDraggedTaskId] = useState<string | null>(null);
   const [dragOverColumn, setDragOverColumn] = useState<string | null>(null);
   const [showAddColumn, setShowAddColumn] = useState(false);
@@ -38,7 +41,16 @@ const UltraKanban = () => {
   const [editingColumn, setEditingColumn] = useState<string | null>(null);
   const [editColumnTitle, setEditColumnTitle] = useState("");
 
-  const colors = ["#FF6B6B", "#4ECDC4", "#45B7D1", "#96CEB4", "#F7DC6F", "#BB8FCE", "#85C1E9", "#F8C471"];
+  const gothicColors = [
+    "#8B5CF6", // purple
+    "#EF4444", // red
+    "#F59E0B", // amber
+    "#10B981", // emerald
+    "#3B82F6", // blue
+    "#EC4899", // pink
+    "#6366F1", // indigo
+    "#14B8A6", // teal
+  ];
 
   const addTask = () => {
     const trimmed = newTaskText.trim();
@@ -67,19 +79,30 @@ const UltraKanban = () => {
     const newColumn: Column = {
       id: Date.now().toString(),
       title: trimmed,
-      color: colors[columns.length % colors.length],
+      color: gothicColors[columns.length % gothicColors.length],
       order: columns.length,
     };
 
     setColumns((prev) => [...prev, newColumn].sort((a, b) => a.order - b.order));
     setNewColumnTitle("");
     setShowAddColumn(false);
+
+    // Set first column as default for new tasks
+    if (columns.length === 0) {
+      setNewTaskColumn(newColumn.id);
+    }
   };
 
   const deleteColumn = (columnId: string) => {
     if (columns.length <= 1) return;
     setColumns((prev) => prev.filter((c) => c.id !== columnId));
     setTasks((prev) => prev.filter((t) => t.columnId !== columnId));
+
+    // Update newTaskColumn if deleted column was selected
+    if (newTaskColumn === columnId) {
+      const remainingColumns = columns.filter((c) => c.id !== columnId);
+      setNewTaskColumn(remainingColumns[0]?.id || "");
+    }
   };
 
   const editColumn = (columnId: string, newTitle: string) => {
@@ -121,57 +144,153 @@ const UltraKanban = () => {
   const getPriorityColor = (priority: string) => {
     switch (priority) {
       case "high":
-        return "#FF4757";
+        return "#EF4444";
       case "medium":
-        return "#FFA502";
+        return "#F59E0B";
       case "low":
-        return "#2ED573";
+        return "#10B981";
       default:
-        return "#747D8C";
+        return "#6B7280";
     }
   };
 
-  return (
-    <div className={cn(styles.kanbanContainer)}>
-      <div className={cn(styles.kanbanHeader)}>
-        {/* <h1 className={cn(styles.boardTitle)}>
-          <span className={cn(styles.titleIcon)}>📋</span>
-          Ultra Kanban Board
-        </h1> */}
+  const getColumnMenu = (column: Column) => ({
+    items: [
+      {
+        key: "edit",
+        label: "Edit Column",
+        icon: <EditOutlined />,
+        onClick: () => {
+          setEditingColumn(column.id);
+          setEditColumnTitle(column.title);
+        },
+      },
+      ...(columns.length > 1
+        ? [
+            {
+              key: "delete",
+              label: "Delete Column",
+              icon: <DeleteOutlined />,
+              danger: true,
+              onClick: () => deleteColumn(column.id),
+            },
+          ]
+        : []),
+    ],
+  });
 
-        <div className={cn(styles.addTaskSection)}>
-          <div className={cn(styles.taskInputGroup)}>
-            <input
-              type="text"
-              placeholder="Add a new task..."
-              value={newTaskText}
-              onChange={(e) => setNewTaskText(e.target.value)}
-              onKeyPress={(e) => e.key === "Enter" && addTask()}
-              className={cn(styles.taskInput)}
-            />
-            <select
-              value={newTaskColumn}
-              onChange={(e) => setNewTaskColumn(e.target.value)}
-              className={cn(styles.columnSelect)}
-            >
-              {columns.map((col) => (
-                <option key={col.id} value={col.id}>
-                  {col.title}
-                </option>
-              ))}
-            </select>
-            <button onClick={addTask} className={cn(styles.addTaskBtn)}>
-              <PlusOutlined />
-            </button>
+  // Empty state when no columns
+  if (columns.length === 0) {
+    return (
+      <div className={cn(styles.kanbanContainer)}>
+        <div className={cn(styles.emptyState)}>
+          <Empty
+            image={<FileTextOutlined className={cn(styles.emptyIcon)} />}
+            description={
+              <div className={cn(styles.emptyDescription)}>
+                <Title level={3} className={cn(styles.emptyTitle)}>
+                  Welcome to Your Kanban Board
+                </Title>
+                <Text className={cn(styles.emptyText)}>Start by creating your first column to organize your tasks</Text>
+              </div>
+            }
+          />
+          <div className={cn(styles.addFirstColumn)}>
+            {showAddColumn ? (
+              <Card className={cn(styles.addColumnForm)}>
+                <Input
+                  placeholder="Enter column title (e.g., To Do, In Progress, Done)..."
+                  value={newColumnTitle}
+                  onChange={(e) => setNewColumnTitle(e.target.value)}
+                  onPressEnter={addColumn}
+                  autoFocus
+                  size="large"
+                  style={{ marginBottom: 16 }}
+                />
+                <Space>
+                  <Button type="primary" onClick={addColumn} size="large">
+                    Create Column
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      setShowAddColumn(false);
+                      setNewColumnTitle("");
+                    }}
+                    size="large"
+                  >
+                    Cancel
+                  </Button>
+                </Space>
+              </Card>
+            ) : (
+              <Button
+                type="primary"
+                icon={<PlusOutlined />}
+                onClick={() => setShowAddColumn(true)}
+                size="large"
+                className={cn(styles.createFirstColumnBtn)}
+              >
+                Create Your First Column
+              </Button>
+            )}
           </div>
         </div>
       </div>
+    );
+  }
 
+  return (
+    <div className={cn(styles.kanbanContainer)}>
+      {/* Gothic Header */}
+      <div className={cn(styles.kanbanHeader)}>
+        <Card className={cn(styles.addTaskCard)}>
+          <Space.Compact style={{ width: "100%" }}>
+            <Input
+              placeholder="What needs to be done?"
+              value={newTaskText}
+              onChange={(e) => setNewTaskText(e.target.value)}
+              onPressEnter={addTask}
+              size="large"
+              style={{ flex: 1 }}
+              className={cn(styles.taskInput)}
+            />
+            <Select
+              value={newTaskColumn}
+              onChange={setNewTaskColumn}
+              size="large"
+              style={{ minWidth: 160 }}
+              placeholder="Choose column"
+              className={cn(styles.columnSelect)}
+            >
+              {columns.map((col) => (
+                <Option key={col.id} value={col.id}>
+                  <Space>
+                    <div className={cn(styles.colorDot)} style={{ backgroundColor: col.color }} />
+                    {col.title}
+                  </Space>
+                </Option>
+              ))}
+            </Select>
+            <Button
+              type="primary"
+              icon={<PlusOutlined />}
+              onClick={addTask}
+              size="large"
+              className={cn(styles.addTaskBtn)}
+              disabled={!newTaskColumn}
+            >
+              Add Task
+            </Button>
+          </Space.Compact>
+        </Card>
+      </div>
+
+      {/* Kanban Board */}
       <div className={cn(styles.kanbanBoard)}>
         {columns
           .sort((a, b) => a.order - b.order)
           .map((column) => (
-            <div
+            <Card
               key={column.id}
               className={cn(styles.kanbanColumn, {
                 [styles.dragOver]: dragOverColumn === column.id,
@@ -179,55 +298,57 @@ const UltraKanban = () => {
               onDrop={(e) => onDrop(e, column.id)}
               onDragOver={onDragOver}
               onDragEnter={() => onDragEnter(column.id)}
-              style={{ "--column-color": column.color } as React.CSSProperties}
+              bodyStyle={{ padding: 0 }}
             >
-              <div className={cn(styles.columnHeader)}>
+              {/* Column Header */}
+              <div
+                className={cn(styles.columnHeader)}
+                style={{
+                  borderTopColor: column.color,
+                  background: `linear-gradient(135deg, ${column.color}15, ${column.color}05)`,
+                }}
+              >
                 {editingColumn === column.id ? (
-                  <div className={cn(styles.editColumnInput)}>
-                    <input
-                      type="text"
-                      value={editColumnTitle}
-                      onChange={(e) => setEditColumnTitle(e.target.value)}
-                      onKeyPress={(e) => e.key === "Enter" && editColumn(column.id, editColumnTitle)}
-                      onBlur={() => editColumn(column.id, editColumnTitle)}
-                      // autoFocus
-                      className={cn(styles.columnTitleInput)}
-                    />
-                  </div>
+                  <Input
+                    value={editColumnTitle}
+                    onChange={(e) => setEditColumnTitle(e.target.value)}
+                    onPressEnter={() => editColumn(column.id, editColumnTitle)}
+                    onBlur={() => editColumn(column.id, editColumnTitle)}
+                    autoFocus
+                    size="large"
+                    className={cn(styles.editInput)}
+                  />
                 ) : (
                   <div className={cn(styles.columnTitleContainer)}>
-                    <h3 className={cn(styles.columnTitle)}>{column.title}</h3>
-                    <span className={cn(styles.taskCount)}>{tasks.filter((t) => t.columnId === column.id).length}</span>
+                    <Space>
+                      <div className={cn(styles.columnColorIndicator)} style={{ backgroundColor: column.color }} />
+                      <Title level={4} className={cn(styles.columnTitle)}>
+                        {column.title}
+                      </Title>
+                      <Badge
+                        count={tasks.filter((t) => t.columnId === column.id).length}
+                        style={{
+                          backgroundColor: column.color,
+                          color: "#fff",
+                          fontWeight: 600,
+                        }}
+                      />
+                    </Space>
+                    <Dropdown menu={getColumnMenu(column)} trigger={["click"]}>
+                      <Button type="text" icon={<MoreOutlined />} className={cn(styles.columnMenuBtn)} />
+                    </Dropdown>
                   </div>
                 )}
-
-                <div className={cn(styles.columnActions)}>
-                  <button
-                    className={cn(styles.columnActionBtn)}
-                    onClick={() => {
-                      setEditingColumn(column.id);
-                      setEditColumnTitle(column.title);
-                    }}
-                  >
-                    <EditOutlined />
-                  </button>
-                  {columns.length > 1 && (
-                    <button
-                      className={cn(styles.columnActionBtn, styles.delete)}
-                      onClick={() => deleteColumn(column.id)}
-                    >
-                      <DeleteOutlined />
-                    </button>
-                  )}
-                </div>
               </div>
 
+              {/* Tasks Container */}
               <div className={cn(styles.tasksContainer)}>
                 {tasks
                   .filter((task) => task.columnId === column.id)
                   .map((task) => (
-                    <div
+                    <Card
                       key={task.id}
+                      size="small"
                       className={cn(styles.taskCard, {
                         [styles.dragging]: draggedTaskId === task.id,
                       })}
@@ -236,65 +357,84 @@ const UltraKanban = () => {
                       onDragEnd={onDragEnd}
                     >
                       <div className={cn(styles.taskContent)}>
-                        <div className={cn(styles.taskText)}>{task.text}</div>
+                        <div className={cn(styles.taskHeader)}>
+                          <Text strong className={cn(styles.taskText)}>
+                            {task.text}
+                          </Text>
+                          <div className={cn(styles.taskActions)}>
+                            <DragOutlined className={cn(styles.dragHandle)} />
+                            <Button
+                              type="text"
+                              icon={<DeleteOutlined />}
+                              onClick={() => deleteTask(task.id)}
+                              danger
+                              size="small"
+                              className={cn(styles.deleteBtn)}
+                            />
+                          </div>
+                        </div>
                         <div className={cn(styles.taskMeta)}>
-                          <div
-                            className={cn(styles.priorityIndicator)}
-                            style={{ backgroundColor: getPriorityColor(task.priority || "medium") }}
-                          />
-                          <span className={cn(styles.taskDate)}>{new Date(task.createdAt).toLocaleDateString()}</span>
+                          <Tag color={getPriorityColor(task.priority || "medium")} className={cn(styles.priorityTag)}>
+                            {task.priority?.toUpperCase()}
+                          </Tag>
+                          <Text type="secondary" className={cn(styles.taskDate)}>
+                            {new Date(task.createdAt).toLocaleDateString()}
+                          </Text>
                         </div>
                       </div>
-                      <div className={cn(styles.taskActions)}>
-                        <button className={cn(styles.taskActionBtn)} onClick={() => deleteTask(task.id)}>
-                          <DeleteOutlined />
-                        </button>
-                      </div>
-                    </div>
+                    </Card>
                   ))}
-              </div>
 
-              {tasks.filter((t) => t.columnId === column.id).length === 0 && (
-                <div className={cn(styles.emptyColumn)}>
-                  <div className={cn(styles.emptyIcon)}>📝</div>
-                  <p>No tasks yet</p>
-                </div>
-              )}
-            </div>
+                {/* Empty State */}
+                {tasks.filter((t) => t.columnId === column.id).length === 0 && (
+                  <div className={cn(styles.emptyColumn)}>
+                    <div className={cn(styles.emptyColumnIcon)}>✨</div>
+                    <Text type="secondary" className={cn(styles.emptyColumnText)}>
+                      Drop tasks here
+                    </Text>
+                  </div>
+                )}
+              </div>
+            </Card>
           ))}
 
+        {/* Add Column */}
         <div className={cn(styles.addColumnContainer)}>
           {showAddColumn ? (
-            <div className={cn(styles.addColumnForm)}>
-              <input
-                type="text"
+            <Card className={cn(styles.addColumnForm)}>
+              <Input
                 placeholder="Enter column title..."
                 value={newColumnTitle}
                 onChange={(e) => setNewColumnTitle(e.target.value)}
-                onKeyPress={(e) => e.key === "Enter" && addColumn()}
+                onPressEnter={addColumn}
                 autoFocus
-                className={cn(styles.columnTitleInput)}
+                size="large"
+                style={{ marginBottom: 16 }}
               />
-              <div className={cn(styles.addColumnActions)}>
-                <button onClick={addColumn} className={cn(styles.addColumnBtn)}>
+              <Space>
+                <Button type="primary" onClick={addColumn}>
                   Add Column
-                </button>
-                <button
+                </Button>
+                <Button
                   onClick={() => {
                     setShowAddColumn(false);
                     setNewColumnTitle("");
                   }}
-                  className={cn(styles.cancelBtn)}
                 >
                   Cancel
-                </button>
-              </div>
-            </div>
+                </Button>
+              </Space>
+            </Card>
           ) : (
-            <button className={cn(styles.addColumnTrigger)} onClick={() => setShowAddColumn(true)}>
-              <PlusOutlined />
-              <span>Add another list</span>
-            </button>
+            <Button
+              type="dashed"
+              icon={<PlusOutlined />}
+              className={cn(styles.addColumnTrigger)}
+              onClick={() => setShowAddColumn(true)}
+              block
+            >
+              Add Column
+            </Button>
           )}
         </div>
       </div>
@@ -302,4 +442,4 @@ const UltraKanban = () => {
   );
 };
 
-export default UltraKanban;
+export default Kanban;

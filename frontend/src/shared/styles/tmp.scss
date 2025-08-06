@@ -23,6 +23,27 @@ $background-image:
   text-align: center;
 }
 
+@mixin diskBackground {
+  background-color: #171717;
+  position: relative;
+  overflow: hidden;
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: $background-image;
+    pointer-events: none;
+  }
+
+  .diskBackgroundImg {
+    filter: brightness(30%);
+    @extend %backgroundPic;
+  }
+}
+
 %shadowTemplate {
   box-shadow:
     rgba(0, 0, 0, 0.16) 0px 3px 6px,

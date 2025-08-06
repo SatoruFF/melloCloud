@@ -1,0 +1,186 @@
+.shareDrawer {
+  .ant-drawer-body {
+    padding: 16px;
+  }
+}
+
+.shareContent {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.shareSection {
+  margin-bottom: 4px;
+}
+
+.sectionTitle {
+  margin-bottom: 12px !important;
+  display: flex;
+  align-items: center;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  color: #262626 !important;
+}
+
+.titleIcon {
+  margin-right: 8px;
+  color: #1890ff;
+}
+
+.shareInput {
+  background: #f5f5f5;
+  border: 1px solid #d9d9d9;
+
+  &:focus {
+    border-color: #1890ff;
+    box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.1);
+  }
+}
+
+.copyButton {
+  width: 40px;
+  border-left: none;
+
+  &:hover {
+    background: #f0f0f0;
+  }
+}
+
+.helpText {
+  display: block;
+  margin-top: 8px;
+  font-size: 12px;
+  color: #8c8c8c;
+}
+
+.divider {
+  margin: 16px 0 !important;
+}
+
+.inviteInput {
+  &.ant-input-status-error {
+    border-color: #ff4d4f;
+  }
+}
+
+.permissionSelect {
+  .ant-select-selector {
+    border-left: none;
+    border-right: none;
+  }
+}
+
+.inviteButton {
+  border-left: none;
+}
+
+.settingItem {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.settingInfo {
+  flex: 1;
+}
+
+.settingTitle {
+  display: block;
+  font-weight: 500;
+  color: #262626;
+  margin-bottom: 4px;
+}
+
+.settingDescription {
+  display: block;
+  font-size: 12px;
+  color: #8c8c8c;
+}
+
+.collaboratorsList {
+  .ant-list-item {
+    border-bottom: 1px solid #f0f0f0;
+    padding: 12px 0;
+  }
+
+  .ant-list-item:last-child {
+    border-bottom: none;
+  }
+}
+
+.collaboratorItem {
+  align-items: flex-start !important;
+}
+
+.collaboratorBadge {
+  .ant-badge-dot {
+    box-shadow: 0 0 0 1px #fff;
+  }
+}
+
+.collaboratorAvatar {
+  background: #1890ff;
+  font-size: 12px;
+}
+
+.collaboratorHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.collaboratorName {
+  font-weight: 500;
+  color: #262626;
+}
+
+.permissionTag {
+  font-size: 11px;
+  margin: 0;
+  border: none;
+
+  .anticon {
+    font-size: 10px;
+  }
+}
+
+.collaboratorMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.collaboratorEmail {
+  font-size: 12px;
+  color: #8c8c8c;
+}
+
+.collaboratorStatus {
+  font-size: 11px;
+  color: #bfbfbf;
+}
+
+.collaboratorPermissionSelect {
+  .ant-select-selector {
+    font-size: 12px;
+    height: 24px;
+
+    .ant-select-selection-item {
+      line-height: 22px;
+    }
+  }
+}
+
+.removeButton {
+  width: 24px;
+  height: 24px;
+  padding: 0;
+
+  &:hover {
+    background: #fff2f0;
+    border-color: #ffccc7;
+  }
+}

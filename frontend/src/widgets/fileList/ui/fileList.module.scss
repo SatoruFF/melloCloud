@@ -5,18 +5,6 @@
   min-height: 100vh - $header-height - $file-toolbar-height;
   position: relative;
 
-  // Добавляем subtle паттерн в фон
-  &::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-image: $background-image;
-    pointer-events: none;
-  }
-
   .fileListHeader {
     width: 100%;
     display: grid;

@@ -1,13 +1,12 @@
-@use '../../../shared/styles/tmp.scss' as *;
+@use "../../../shared/styles/tmp.scss" as *;
 
 .diskWrapper {
-  background-color: #171717;
   position: relative;
   overflow: hidden;
+
+  @include diskBackground;
   .diskBackgroundImg {
-    display: none; //!
-    filter: brightness(30%);
-    @extend %backgroundPic;
+    display: none; // !
   }
 
   .searchFiles {

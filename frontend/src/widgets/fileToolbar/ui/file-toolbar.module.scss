@@ -3,11 +3,15 @@
 // TODO: unset useless rules, after move from file space
 .diskWrapper {
   height: $file-toolbar-height;
-  background: linear-gradient(135deg, #1e1e2e 0%, #2a2a3e 100%);
+  // background: linear-gradient(135deg, #1e1e2e 0%, #2a2a3e 100%);
+  @include diskBackground;
   position: relative;
   overflow: hidden;
   padding: 20px;
   box-sizing: border-box;
+
+  @extend %centerTemplate;
+
   .diskBackgroundImg {
     display: none; //!
     filter: brightness(30%);

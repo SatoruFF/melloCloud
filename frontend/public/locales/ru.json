@@ -106,7 +106,47 @@
     "settings": "Настройки",
     "settingsTooltip": "Настройки приложения",
     "online": "Онлайн",
-    "version": "Версия"
+    "version": "Версия",
+    "notReady": "Документ не готов",
+    "saveFailed": "Ошибка сохранения",
+    "editor": {
+      "downloadFailed": "Не удалось сохранить"
+    },
+    "toolbar": {
+      "save": "Сохранить",
+      "share": "Поделиться",
+      "saved": "Документ сохранен",
+      "downloading": "Загрузка началась"
+    },
+    "share": {
+      "title": "Совместный доступ",
+      "shareLink": "Ссылка для доступа",
+      "copyLink": "Копировать ссылку",
+      "linkCopied": "Ссылка скопирована в буфер обмена",
+      "inviteUser": "Пригласить пользователя",
+      "emailPlaceholder": "email@example.com",
+      "enterEmail": "Введите email адрес",
+      "userInvited": "Пользователь приглашен",
+      "accessSettings": "Настройки доступа",
+      "publicAccess": "Публичный доступ",
+      "allowCopy": "Разрешить копирование",
+      "allowDownload": "Разрешить скачивание",
+      "collaborators": "Участники",
+      "permissionChanged": "Права доступа изменены",
+      "online": "В сети",
+      "lastSeen": "Был(а) {{time}}",
+      "allowComments": "Разрешить комментарии",
+      "allowCommentsDescription": "Разрешить комментарии",
+      "publicAccessDescription": "Публичные описания",
+      "allowDownloadDescription": "Разрешить скачивание",
+      "allowCopyDescription": "Разрешить копирование",
+      "shareLinkDescription": "Разрешить копирование документа"
+    },
+    "permissions": {
+      "read": "Читать",
+      "write": "Редактировать",
+      "admin": "Админ"
+    }
   },
   "chats": {
     "favorite": "Избранное",

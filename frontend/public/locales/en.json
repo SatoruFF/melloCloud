@@ -106,7 +106,47 @@
     "settings": "Settings",
     "settingsTooltip": "Application settings",
     "online": "Online",
-    "version": "Version"
+    "version": "Version",
+    "notReady": "Not ready document",
+    "saveFailed": "Save failed",
+    "editor": {
+      "downloadFailed": "Download failed"
+    },
+    "toolbar": {
+      "save": "Save",
+      "share": "Share",
+      "saved": "Document saved",
+      "downloading": "Download started"
+    },
+    "share": {
+      "title": "Collaborative Access",
+      "shareLink": "Access Link",
+      "copyLink": "Copy Link",
+      "linkCopied": "Link copied to clipboard",
+      "inviteUser": "Invite User",
+      "emailPlaceholder": "email@example.com",
+      "enterEmail": "Enter email address",
+      "userInvited": "User invited",
+      "accessSettings": "Access Settings",
+      "publicAccess": "Public Access",
+      "allowCopy": "Allow Copying",
+      "allowDownload": "Allow Download",
+      "collaborators": "Collaborators",
+      "permissionChanged": "Permission changed",
+      "online": "Online",
+      "lastSeen": "Last seen {{time}}",
+      "allowComments": "Allow comments",
+      "allowCommentsDescription": "Allow comments",
+      "publicAccessDescription": "Public access",
+      "allowDownloadDescription": "Allow download",
+      "allowCopyDescription": "Allow copy",
+      "shareLinkDescription": "Allow share link"
+    },
+    "permissions": {
+      "read": "Read",
+      "write": "Write",
+      "admin": "Admin"
+    }
   },
   "chats": {
     "favorite": "favorite",
