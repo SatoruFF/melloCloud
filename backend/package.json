@@ -13,7 +13,7 @@
     "postinstall-dev": "npx prisma generate && npx prisma migrate dev",
     "postinstall": "npx prisma generate && npx prisma migrate deploy",
     "start:prisma": "concurrently \"npx tsc --watch\" \"nodemon dist/app.js\" \"prisma studio\"",
-    "start:node": "concurrently \"npx tsc --watch\" \"wait-on dist/app.js && nodemon dist/app.js\"",
+    "dev:node": "concurrently \"npx tsc --watch\" \"wait-on dist/app.js && nodemon dist/app.js\"",
     "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx}\"",
     "lint": "pnpm biome check src",
     "lint:fix": "pnpm biome check --write src",

@@ -173,6 +173,38 @@
     "tabs": {
       "kanban": "Kanban",
       "calendar": "Calendar"
+    },
+    "kanban": {
+      "welcome": {
+        "title": "Welcome to Your Kanban Board",
+        "description": "Start by creating your first column to organize your tasks"
+      },
+      "columns": {
+        "add": "Add Column",
+        "edit": "Edit Column",
+        "delete": "Delete Column",
+        "create": "Create Column",
+        "createFirst": "Create Your First Column",
+        "enterTitle": "Enter column title...",
+        "enterTitlePlaceholder": "Enter column title (e.g., To Do, In Progress, Done)...",
+        "choose": "Choose column"
+      },
+      "tasks": {
+        "placeholder": "What needs to be done?",
+        "add": "Add Task",
+        "delete": "Delete Task",
+        "dropHere": "Drop tasks here",
+        "priority": {
+          "low": "LOW",
+          "medium": "MEDIUM",
+          "high": "HIGH"
+        }
+      },
+      "actions": {
+        "add": "Add",
+        "cancel": "Cancel",
+        "create": "Create"
+      }
     }
   },
   "pomodoro": {

@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import { Button, Input, Select, Card, Tag, Dropdown, Space, Typography, Badge, Empty } from "antd";
 import {
   PlusOutlined,
@@ -10,155 +9,51 @@ import {
 } from "@ant-design/icons";
 import cn from "classnames";
 import styles from "./kanban.module.scss";
+import { Column } from "../types/tasks";
+import { useTasks } from "../hooks";
+import { useTranslation } from "react-i18next";
 
 const { Text, Title } = Typography;
 const { Option } = Select;
 
-type Task = {
-  id: string;
-  text: string;
-  columnId: string;
-  createdAt: Date;
-  priority?: "low" | "medium" | "high";
-};
-
-type Column = {
-  id: string;
-  title: string;
-  color: string;
-  order: number;
-};
-
 const Kanban = () => {
-  const [tasks, setTasks] = useState<Task[]>([]);
-  const [columns, setColumns] = useState<Column[]>([]);
-  const [newTaskText, setNewTaskText] = useState("");
-  const [newTaskColumn, setNewTaskColumn] = useState("");
-  const [draggedTaskId, setDraggedTaskId] = useState<string | null>(null);
-  const [dragOverColumn, setDragOverColumn] = useState<string | null>(null);
-  const [showAddColumn, setShowAddColumn] = useState(false);
-  const [newColumnTitle, setNewColumnTitle] = useState("");
-  const [editingColumn, setEditingColumn] = useState<string | null>(null);
-  const [editColumnTitle, setEditColumnTitle] = useState("");
+  const {
+    tasks,
+    columns,
+    showAddColumn,
+    newTaskText,
+    newTaskColumn,
+    draggedTaskId,
+    dragOverColumn,
+    newColumnTitle,
+    editingColumn,
+    editColumnTitle,
+    setNewTaskText,
+    setNewTaskColumn,
+    setShowAddColumn,
+    setNewColumnTitle,
+    setEditingColumn,
+    setEditColumnTitle,
+    addTask,
+    deleteTask,
+    deleteColumn,
+    addColumn,
+    onDrop,
+    onDragStart,
+    onDragEnd,
+    onDragOver,
+    onDragEnter,
+    editColumn,
+    getPriorityColor,
+  } = useTasks();
 
-  const gothicColors = [
-    "#8B5CF6", // purple
-    "#EF4444", // red
-    "#F59E0B", // amber
-    "#10B981", // emerald
-    "#3B82F6", // blue
-    "#EC4899", // pink
-    "#6366F1", // indigo
-    "#14B8A6", // teal
-  ];
-
-  const addTask = () => {
-    const trimmed = newTaskText.trim();
-    if (!trimmed || !newTaskColumn) return;
-
-    const newTask: Task = {
-      id: Date.now().toString(),
-      text: trimmed,
-      columnId: newTaskColumn,
-      createdAt: new Date(),
-      priority: "medium",
-    };
-
-    setTasks((prev) => [...prev, newTask]);
-    setNewTaskText("");
-  };
-
-  const deleteTask = (id: string) => {
-    setTasks((prev) => prev.filter((t) => t.id !== id));
-  };
-
-  const addColumn = () => {
-    const trimmed = newColumnTitle.trim();
-    if (!trimmed) return;
-
-    const newColumn: Column = {
-      id: Date.now().toString(),
-      title: trimmed,
-      color: gothicColors[columns.length % gothicColors.length],
-      order: columns.length,
-    };
-
-    setColumns((prev) => [...prev, newColumn].sort((a, b) => a.order - b.order));
-    setNewColumnTitle("");
-    setShowAddColumn(false);
-
-    // Set first column as default for new tasks
-    if (columns.length === 0) {
-      setNewTaskColumn(newColumn.id);
-    }
-  };
-
-  const deleteColumn = (columnId: string) => {
-    if (columns.length <= 1) return;
-    setColumns((prev) => prev.filter((c) => c.id !== columnId));
-    setTasks((prev) => prev.filter((t) => t.columnId !== columnId));
-
-    // Update newTaskColumn if deleted column was selected
-    if (newTaskColumn === columnId) {
-      const remainingColumns = columns.filter((c) => c.id !== columnId);
-      setNewTaskColumn(remainingColumns[0]?.id || "");
-    }
-  };
-
-  const editColumn = (columnId: string, newTitle: string) => {
-    const trimmed = newTitle.trim();
-    if (!trimmed) return;
-
-    setColumns((prev) => prev.map((c) => (c.id === columnId ? { ...c, title: trimmed } : c)));
-    setEditingColumn(null);
-    setEditColumnTitle("");
-  };
-
-  const onDragStart = (e: React.DragEvent, taskId: string) => {
-    setDraggedTaskId(taskId);
-    e.dataTransfer.effectAllowed = "move";
-  };
-
-  const onDragEnd = () => {
-    setDraggedTaskId(null);
-    setDragOverColumn(null);
-  };
-
-  const onDrop = (e: React.DragEvent, columnId: string) => {
-    e.preventDefault();
-    if (!draggedTaskId) return;
-
-    setTasks((prev) => prev.map((t) => (t.id === draggedTaskId ? { ...t, columnId } : t)));
-    setDraggedTaskId(null);
-    setDragOverColumn(null);
-  };
-
-  const onDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-  };
-
-  const onDragEnter = (columnId: string) => {
-    setDragOverColumn(columnId);
-  };
-
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case "high":
-        return "#EF4444";
-      case "medium":
-        return "#F59E0B";
-      case "low":
-        return "#10B981";
-      default:
-        return "#6B7280";
-    }
-  };
+  const { t } = useTranslation();
 
   const getColumnMenu = (column: Column) => ({
     items: [
       {
         key: "edit",
-        label: "Edit Column",
+        label: t("planner.kanban.columns.edit"),
         icon: <EditOutlined />,
         onClick: () => {
           setEditingColumn(column.id);
@@ -169,7 +64,7 @@ const Kanban = () => {
         ? [
             {
               key: "delete",
-              label: "Delete Column",
+              label: t("planner.kanban.columns.delete"),
               icon: <DeleteOutlined />,
               danger: true,
               onClick: () => deleteColumn(column.id),
@@ -189,9 +84,9 @@ const Kanban = () => {
             description={
               <div className={cn(styles.emptyDescription)}>
                 <Title level={3} className={cn(styles.emptyTitle)}>
-                  Welcome to Your Kanban Board
+                  {t("planner.kanban.welcome.title")}
                 </Title>
-                <Text className={cn(styles.emptyText)}>Start by creating your first column to organize your tasks</Text>
+                <Text className={cn(styles.emptyText)}>{t("planner.kanban.welcome.description")}</Text>
               </div>
             }
           />
@@ -199,7 +94,7 @@ const Kanban = () => {
             {showAddColumn ? (
               <Card className={cn(styles.addColumnForm)}>
                 <Input
-                  placeholder="Enter column title (e.g., To Do, In Progress, Done)..."
+                  placeholder={t("planner.kanban.columns.enterTitlePlaceholder")}
                   value={newColumnTitle}
                   onChange={(e) => setNewColumnTitle(e.target.value)}
                   onPressEnter={addColumn}
@@ -209,7 +104,7 @@ const Kanban = () => {
                 />
                 <Space>
                   <Button type="primary" onClick={addColumn} size="large">
-                    Create Column
+                    {t("planner.kanban.columns.create")}
                   </Button>
                   <Button
                     onClick={() => {
@@ -218,7 +113,7 @@ const Kanban = () => {
                     }}
                     size="large"
                   >
-                    Cancel
+                    {t("kanban.actions.cancel")}
                   </Button>
                 </Space>
               </Card>
@@ -230,7 +125,7 @@ const Kanban = () => {
                 size="large"
                 className={cn(styles.createFirstColumnBtn)}
               >
-                Create Your First Column
+                {t("planner.kanban.columns.createFirst")}
               </Button>
             )}
           </div>
@@ -246,7 +141,7 @@ const Kanban = () => {
         <Card className={cn(styles.addTaskCard)}>
           <Space.Compact style={{ width: "100%" }}>
             <Input
-              placeholder="What needs to be done?"
+              placeholder={t("planner.kanban.tasks.placeholder")}
               value={newTaskText}
               onChange={(e) => setNewTaskText(e.target.value)}
               onPressEnter={addTask}
@@ -259,7 +154,7 @@ const Kanban = () => {
               onChange={setNewTaskColumn}
               size="large"
               style={{ minWidth: 160 }}
-              placeholder="Choose column"
+              placeholder={t("planner.kanban.columns.choose")}
               className={cn(styles.columnSelect)}
             >
               {columns.map((col) => (
@@ -279,7 +174,7 @@ const Kanban = () => {
               className={cn(styles.addTaskBtn)}
               disabled={!newTaskColumn}
             >
-              Add Task
+              {t("planner.kanban.tasks.add")}
             </Button>
           </Space.Compact>
         </Card>
@@ -375,7 +270,7 @@ const Kanban = () => {
                         </div>
                         <div className={cn(styles.taskMeta)}>
                           <Tag color={getPriorityColor(task.priority || "medium")} className={cn(styles.priorityTag)}>
-                            {task.priority?.toUpperCase()}
+                            {t(`planner.kanban.tasks.priority.${task.priority?.toLowerCase() || "medium"}`)}
                           </Tag>
                           <Text type="secondary" className={cn(styles.taskDate)}>
                             {new Date(task.createdAt).toLocaleDateString()}
@@ -390,7 +285,7 @@ const Kanban = () => {
                   <div className={cn(styles.emptyColumn)}>
                     <div className={cn(styles.emptyColumnIcon)}>✨</div>
                     <Text type="secondary" className={cn(styles.emptyColumnText)}>
-                      Drop tasks here
+                      {t("planner.kanban.tasks.dropHere")}
                     </Text>
                   </div>
                 )}
@@ -403,7 +298,7 @@ const Kanban = () => {
           {showAddColumn ? (
             <Card className={cn(styles.addColumnForm)}>
               <Input
-                placeholder="Enter column title..."
+                placeholder={t("planner.kanban.columns.enterTitle")}
                 value={newColumnTitle}
                 onChange={(e) => setNewColumnTitle(e.target.value)}
                 onPressEnter={addColumn}
@@ -413,7 +308,7 @@ const Kanban = () => {
               />
               <Space>
                 <Button type="primary" onClick={addColumn}>
-                  Add Column
+                  {t("planner.kanban.columns.add")}
                 </Button>
                 <Button
                   onClick={() => {
@@ -421,7 +316,7 @@ const Kanban = () => {
                     setNewColumnTitle("");
                   }}
                 >
-                  Cancel
+                  {t("planner.kanban.actions.cancel")}
                 </Button>
               </Space>
             </Card>
@@ -433,7 +328,7 @@ const Kanban = () => {
               onClick={() => setShowAddColumn(true)}
               block
             >
-              Add Column
+              {t("planner.kanban.columns.add")}
             </Button>
           )}
         </div>
