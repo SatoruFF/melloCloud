@@ -9,12 +9,14 @@ import {
 } from "@ant-design/icons";
 import cn from "classnames";
 import styles from "./kanban.module.scss";
-import { Column } from "../types/tasks";
+import { Column } from "../../../entities/task/types/tasks";
 import { useTasks } from "../hooks";
 import { useTranslation } from "react-i18next";
 
 const { Text, Title } = Typography;
 const { Option } = Select;
+
+// TODO: DESCTRUCTURE
 
 const Kanban = () => {
   const {

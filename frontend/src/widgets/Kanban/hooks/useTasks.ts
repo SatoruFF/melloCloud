@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import { Column, Task } from "../types/tasks";
+import { Column, Task } from "../../../entities/task/types/tasks";
 import { gothicColors } from "../variables/gothicColors";
 
 export const useTasks = () => {
