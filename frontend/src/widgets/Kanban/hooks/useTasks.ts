@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { Column, Task } from "../../../entities/task/types/tasks";
 import { gothicColors } from "../variables/gothicColors";
 
@@ -109,7 +109,7 @@ export const useTasks = () => {
     setDragOverColumn(columnId);
   }, []);
 
-  const getPriorityColor = (priority: string) => {
+  const getPriorityColor = useCallback((priority: string) => {
     switch (priority) {
       case "high":
         return "#EF4444";
@@ -120,7 +120,7 @@ export const useTasks = () => {
       default:
         return "#6B7280";
     }
-  };
+  }, []);
 
   return {
     tasks,
