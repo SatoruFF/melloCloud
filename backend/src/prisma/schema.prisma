@@ -41,7 +41,7 @@ model User {
   notes        Note[]       // Все заметки, принадлежащие пользователю
 
     // Обратная связь для задач
-  todos        ToDo[]       // Все задачи, принадлежащие пользователю
+  todos        Task[]       // Все задачи, принадлежащие пользователю
 }
 
 model UserConfig {
@@ -129,8 +129,8 @@ model Note {
   updatedAt DateTime @updatedAt // Дата обновления
 }
 
-// Define ToDo data model
-model ToDo {
+// Define Task data model
+model Task {
   id        Int      @id @default(autoincrement())
   title     String   // Название задачи
   content   String   // Содержание задачи

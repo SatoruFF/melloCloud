@@ -32,9 +32,9 @@
   },
   "dependencies": {
     "@ant-design/icons": "^6.0.0",
-    "@blocknote/core": "0.32.0-hackdays.0",
-    "@blocknote/mantine": "^0.32.0-hackdays.0",
-    "@blocknote/react": "^0.32.0-hackdays.0",
+    "@blocknote/core": "^0.35.0",
+    "@blocknote/mantine": "^0.35.0",
+    "@blocknote/react": "^0.35.0",
     "@cyntler/react-doc-viewer": "^1.17.0",
     "@fullcalendar/core": "^6.1.17",
     "@fullcalendar/daygrid": "^6.1.17",
