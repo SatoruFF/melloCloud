@@ -8,6 +8,7 @@ interface ITaskData {
   content: string;
   priority?: string;
   dueDate?: Date | string | null;
+  columnId?: number;
   userId: number;
 }
 
@@ -17,10 +18,11 @@ interface ITaskUpdate {
   priority?: string;
   isDone?: boolean;
   dueDate?: Date | string | null;
+  columnId?: number;
 }
 
 class TaskServiceClass {
-  async create({ title, content, priority = "LOW", dueDate, userId }: ITaskData) {
+  async create({ title, content, priority = "LOW", dueDate, columnId, userId }: ITaskData) {
     return prisma.$transaction(async (trx) => {
       // Validate required fields
       if (!title || !content) {
@@ -31,6 +33,20 @@ class TaskServiceClass {
       const validPriorities = ["LOW", "MEDIUM", "HIGH"];
       if (priority && !validPriorities.includes(priority.toUpperCase())) {
         throw createError(400, "Priority must be LOW, MEDIUM, or HIGH");
+      }
+
+      // Validate column if provided
+      if (columnId) {
+        const column = await trx.taskColumn.findFirst({
+          where: {
+            id: columnId,
+            userId,
+          },
+        });
+
+        if (!column) {
+          throw createError(400, "Column not found or doesn't belong to user");
+        }
       }
 
       // Parse dueDate if it's a string
@@ -50,6 +66,7 @@ class TaskServiceClass {
           content,
           priority: priority.toUpperCase(),
           dueDate: parsedDueDate,
+          columnId,
           userId,
         },
         include: {
@@ -60,6 +77,7 @@ class TaskServiceClass {
               email: true,
             },
           },
+          column: true,
         },
       });
 
@@ -72,6 +90,9 @@ class TaskServiceClass {
       where: {
         userId,
       },
+      include: {
+        column: true,
+      },
       orderBy: [
         { isDone: "asc" }, // Show pending tasks first
         { priority: "desc" }, // HIGH -> MEDIUM -> LOW
@@ -80,6 +101,53 @@ class TaskServiceClass {
     });
 
     return tasks;
+  }
+
+  // Get tasks by column
+  async getByColumn(columnId: number, userId: number) {
+    // First verify the column belongs to the user
+    const column = await prisma.taskColumn.findFirst({
+      where: {
+        id: columnId,
+        userId,
+      },
+    });
+
+    if (!column) {
+      throw createError(404, "Column not found");
+    }
+
+    const tasks = await prisma.task.findMany({
+      where: {
+        columnId,
+        userId,
+      },
+      include: {
+        column: true,
+      },
+      orderBy: [{ isDone: "asc" }, { priority: "desc" }, { createdAt: "desc" }],
+    });
+
+    return tasks;
+  }
+
+  // Get kanban board data (columns with tasks)
+  async getKanbanData(userId: number) {
+    const columns = await prisma.taskColumn.findMany({
+      where: {
+        userId,
+      },
+      include: {
+        tasks: {
+          orderBy: [{ isDone: "asc" }, { priority: "desc" }, { createdAt: "desc" }],
+        },
+      },
+      orderBy: {
+        order: "asc",
+      },
+    });
+
+    return columns;
   }
 
   async getById(id: number, userId: number) {
@@ -96,6 +164,7 @@ class TaskServiceClass {
             email: true,
           },
         },
+        column: true,
       },
     });
 
@@ -125,6 +194,20 @@ class TaskServiceClass {
         updateData.priority = updateData.priority.toUpperCase();
       }
 
+      // Validate column if provided
+      if (updateData.columnId) {
+        const column = await trx.taskColumn.findFirst({
+          where: {
+            id: updateData.columnId,
+            userId,
+          },
+        });
+
+        if (!column) {
+          throw createError(400, "Column not found or doesn't belong to user");
+        }
+      }
+
       // Parse dueDate if provided
       if (updateData.dueDate !== undefined) {
         if (updateData.dueDate && typeof updateData.dueDate === "string") {
@@ -149,6 +232,7 @@ class TaskServiceClass {
               email: true,
             },
           },
+          column: true,
         },
       });
 
@@ -209,6 +293,57 @@ class TaskServiceClass {
               email: true,
             },
           },
+          column: true,
+        },
+      });
+
+      return task;
+    });
+  }
+
+  // Move task to different column
+  async moveToColumn(id: number, columnId: number, userId: number) {
+    return prisma.$transaction(async (trx) => {
+      // Verify task belongs to user
+      const existingTask = await trx.task.findFirst({
+        where: {
+          id,
+          userId,
+        },
+      });
+
+      if (!existingTask) {
+        throw createError(404, "Task not found");
+      }
+
+      // Verify column belongs to user
+      const column = await trx.taskColumn.findFirst({
+        where: {
+          id: columnId,
+          userId,
+        },
+      });
+
+      if (!column) {
+        throw createError(404, "Column not found");
+      }
+
+      const task = await trx.task.update({
+        where: {
+          id,
+        },
+        data: {
+          columnId,
+        },
+        include: {
+          user: {
+            select: {
+              id: true,
+              userName: true,
+              email: true,
+            },
+          },
+          column: true,
         },
       });
 
@@ -235,6 +370,9 @@ class TaskServiceClass {
           },
         ],
       },
+      include: {
+        column: true,
+      },
       orderBy: [{ isDone: "asc" }, { priority: "desc" }, { createdAt: "desc" }],
     });
 
@@ -253,6 +391,9 @@ class TaskServiceClass {
         userId,
         priority,
       },
+      include: {
+        column: true,
+      },
       orderBy: [{ isDone: "asc" }, { createdAt: "desc" }],
     });
 
@@ -264,6 +405,9 @@ class TaskServiceClass {
       where: {
         userId,
         isDone,
+      },
+      include: {
+        column: true,
       },
       orderBy: [{ priority: "desc" }, { createdAt: "desc" }],
     });
@@ -280,6 +424,9 @@ class TaskServiceClass {
         dueDate: {
           lt: new Date(),
         },
+      },
+      include: {
+        column: true,
       },
       orderBy: [{ dueDate: "asc" }, { priority: "desc" }],
     });
@@ -299,6 +446,9 @@ class TaskServiceClass {
           gte: new Date(),
           lte: futureDate,
         },
+      },
+      include: {
+        column: true,
       },
       orderBy: [{ dueDate: "asc" }, { priority: "desc" }],
     });
@@ -320,10 +470,18 @@ class TaskServiceClass {
       }),
     ]);
 
+    // Группировка задач по приоритету
     const priorityStats = await prisma.task.groupBy({
       by: ["priority"],
       where: { userId, isDone: false },
       _count: { priority: true },
+    });
+
+    // Группировка задач по колонкам
+    const columnStats = await prisma.task.groupBy({
+      by: ["columnId"],
+      where: { userId },
+      _count: { columnId: true },
     });
 
     return {
@@ -335,7 +493,63 @@ class TaskServiceClass {
         acc[item.priority] = item._count.priority;
         return acc;
       }, {} as Record<string, number>),
+      byColumn: columnStats.reduce((acc, item) => {
+        if (item.columnId) {
+          acc[item.columnId] = item._count.columnId;
+        }
+        return acc;
+      }, {} as Record<number, number>),
     };
+  }
+
+  // Batch operations for kanban
+  async batchUpdateTasks(userId: number, updates: Array<{ id: number; columnId?: number; order?: number }>) {
+    return prisma.$transaction(async (trx) => {
+      const results = [];
+
+      for (const update of updates) {
+        // Verify task belongs to user
+        const existingTask = await trx.task.findFirst({
+          where: {
+            id: update.id,
+            userId,
+          },
+        });
+
+        if (!existingTask) {
+          continue; // Skip invalid tasks
+        }
+
+        // Verify column if provided
+        if (update.columnId) {
+          const column = await trx.taskColumn.findFirst({
+            where: {
+              id: update.columnId,
+              userId,
+            },
+          });
+
+          if (!column) {
+            continue; // Skip invalid columns
+          }
+        }
+
+        const updatedTask = await trx.task.update({
+          where: { id: update.id },
+          data: {
+            columnId: update.columnId,
+            // Note: order field would need to be added to schema if needed
+          },
+          include: {
+            column: true,
+          },
+        });
+
+        results.push(updatedTask);
+      }
+
+      return results;
+    });
   }
 }
 

@@ -1,4 +1,4 @@
-import { Button, Input, Select, Card, Tag, Dropdown, Space, Typography, Badge, Empty } from "antd";
+import { Button, Input, Select, Card, Tag, Dropdown, Space, Typography, Badge, Empty, Spin } from "antd";
 import {
   PlusOutlined,
   DeleteOutlined,
@@ -6,22 +6,23 @@ import {
   MoreOutlined,
   DragOutlined,
   FileTextOutlined,
+  LoadingOutlined,
 } from "@ant-design/icons";
 import cn from "classnames";
 import styles from "./kanban.module.scss";
-import { Column } from "../../../entities/task/types/tasks";
+import { TaskColumn } from "../../../entities/task/types/tasks";
 import { useTasks } from "../hooks";
 import { useTranslation } from "react-i18next";
 
 const { Text, Title } = Typography;
 const { Option } = Select;
 
-// TODO: DESCTRUCTURE
-
 const Kanban = () => {
   const {
     tasks,
     columns,
+    loading,
+    error,
     showAddColumn,
     newTaskText,
     newTaskColumn,
@@ -32,10 +33,10 @@ const Kanban = () => {
     editColumnTitle,
     setNewTaskText,
     setNewTaskColumn,
-    setShowAddColumn,
     setNewColumnTitle,
-    setEditingColumn,
     setEditColumnTitle,
+    setShowAddColumn,
+    setEditingColumn,
     addTask,
     deleteTask,
     deleteColumn,
@@ -47,18 +48,19 @@ const Kanban = () => {
     onDragEnter,
     editColumn,
     getPriorityColor,
+    refetchKanban,
   } = useTasks();
 
   const { t } = useTranslation();
 
-  const getColumnMenu = (column: Column) => ({
+  const getColumnMenu = (column: TaskColumn) => ({
     items: [
       {
         key: "edit",
         label: t("planner.kanban.columns.edit"),
         icon: <EditOutlined />,
         onClick: () => {
-          setEditingColumn(column.id);
+          setEditingColumn(column.id.toString());
           setEditColumnTitle(column.title);
         },
       },
@@ -75,6 +77,43 @@ const Kanban = () => {
         : []),
     ],
   });
+
+  // Show loading spinner during initial load
+  if (loading && columns.length === 0) {
+    return (
+      <div className={cn(styles.kanbanContainer)}>
+        <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "400px" }}>
+          <Spin size="large" indicator={<LoadingOutlined spin />} />
+        </div>
+      </div>
+    );
+  }
+
+  // FIXME: reused components
+  // Show error state
+  if (error) {
+    return (
+      <div className={cn(styles.kanbanContainer)}>
+        <div className={cn(styles.emptyState)}>
+          <Empty
+            description={
+              <div className={cn(styles.emptyDescription)}>
+                <Title level={3} className={cn(styles.emptyTitle)}>
+                  Error loading kanban board
+                </Title>
+                <Text className={cn(styles.emptyText)}>
+                  {typeof error === "string" ? error : "Failed to load data"}
+                </Text>
+              </div>
+            }
+          />
+          <Button type="primary" onClick={refetchKanban}>
+            Retry
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   // Empty state when no columns
   if (columns.length === 0) {
@@ -105,7 +144,7 @@ const Kanban = () => {
                   style={{ marginBottom: 16 }}
                 />
                 <Space>
-                  <Button type="primary" onClick={addColumn} size="large">
+                  <Button type="primary" onClick={addColumn} size="large" loading={loading}>
                     {t("planner.kanban.columns.create")}
                   </Button>
                   <Button
@@ -160,7 +199,7 @@ const Kanban = () => {
               className={cn(styles.columnSelect)}
             >
               {columns.map((col) => (
-                <Option key={col.id} value={col.id}>
+                <Option key={col.id} value={col.id.toString()}>
                   <Space>
                     <div className={cn(styles.colorDot)} style={{ backgroundColor: col.color }} />
                     {col.title}
@@ -175,6 +214,7 @@ const Kanban = () => {
               size="large"
               className={cn(styles.addTaskBtn)}
               disabled={!newTaskColumn}
+              loading={loading}
             >
               {t("planner.kanban.tasks.add")}
             </Button>
@@ -190,7 +230,7 @@ const Kanban = () => {
             <Card
               key={column.id}
               className={cn(styles.kanbanColumn, {
-                [styles.dragOver]: dragOverColumn === column.id,
+                [styles.dragOver]: dragOverColumn === column.id.toString(),
               })}
               onDrop={(e) => onDrop(e, column.id)}
               onDragOver={onDragOver}
@@ -205,7 +245,7 @@ const Kanban = () => {
                   background: `linear-gradient(135deg, ${column.color}15, ${column.color}05)`,
                 }}
               >
-                {editingColumn === column.id ? (
+                {editingColumn === column.id.toString() ? (
                   <Input
                     value={editColumnTitle}
                     onChange={(e) => setEditColumnTitle(e.target.value)}
@@ -223,7 +263,7 @@ const Kanban = () => {
                         {column.title}
                       </Title>
                       <Badge
-                        count={tasks.filter((t) => t.columnId === column.id).length}
+                        count={tasks.filter((t) => t.columnId?.toString() === column.id.toString()).length}
                         style={{
                           backgroundColor: column.color,
                           color: "#fff",
@@ -241,13 +281,13 @@ const Kanban = () => {
               {/* Tasks Container */}
               <div className={cn(styles.tasksContainer)}>
                 {tasks
-                  .filter((task) => task.columnId === column.id)
+                  .filter((task) => task.columnId?.toString() === column.id.toString())
                   .map((task) => (
                     <Card
                       key={task.id}
                       size="small"
                       className={cn(styles.taskCard, {
-                        [styles.dragging]: draggedTaskId === task.id,
+                        [styles.dragging]: draggedTaskId === task.id.toString(),
                       })}
                       draggable
                       onDragStart={(e) => onDragStart(e, task.id)}
@@ -256,7 +296,7 @@ const Kanban = () => {
                       <div className={cn(styles.taskContent)}>
                         <div className={cn(styles.taskHeader)}>
                           <Text strong className={cn(styles.taskText)}>
-                            {task.text}
+                            {task.title || task.content}
                           </Text>
                           <div className={cn(styles.taskActions)}>
                             <DragOutlined className={cn(styles.dragHandle)} />
@@ -267,15 +307,18 @@ const Kanban = () => {
                               danger
                               size="small"
                               className={cn(styles.deleteBtn)}
+                              loading={loading}
                             />
                           </div>
                         </div>
                         <div className={cn(styles.taskMeta)}>
-                          <Tag color={getPriorityColor(task.priority || "medium")} className={cn(styles.priorityTag)}>
+                          <Tag color={getPriorityColor(task.priority || "MEDIUM")} className={cn(styles.priorityTag)}>
                             {t(`planner.kanban.tasks.priority.${task.priority?.toLowerCase() || "medium"}`)}
                           </Tag>
                           <Text type="secondary" className={cn(styles.taskDate)}>
-                            {new Date(task.createdAt).toLocaleDateString()}
+                            {task.createdAt
+                              ? new Date(task.createdAt).toLocaleDateString()
+                              : new Date().toLocaleDateString()}
                           </Text>
                         </div>
                       </div>
@@ -283,7 +326,7 @@ const Kanban = () => {
                   ))}
 
                 {/* Empty State */}
-                {tasks.filter((t) => t.columnId === column.id).length === 0 && (
+                {tasks.filter((t) => t.columnId?.toString() === column.id.toString()).length === 0 && (
                   <div className={cn(styles.emptyColumn)}>
                     <div className={cn(styles.emptyColumnIcon)}>✨</div>
                     <Text type="secondary" className={cn(styles.emptyColumnText)}>
@@ -309,7 +352,7 @@ const Kanban = () => {
                 style={{ marginBottom: 16 }}
               />
               <Space>
-                <Button type="primary" onClick={addColumn}>
+                <Button type="primary" onClick={addColumn} loading={loading}>
                   {t("planner.kanban.columns.add")}
                 </Button>
                 <Button

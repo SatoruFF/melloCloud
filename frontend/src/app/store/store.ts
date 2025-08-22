@@ -10,16 +10,24 @@ import userReducer from "../../entities/user/model/slice/userSlice";
 import { restoreScrollReducer } from "../../features/restoreScroll";
 import type { StateSchema } from "./types/state";
 import { chatReducer } from "../../entities/chat";
+import { taskReducer } from "../../entities/task/model/slice/taskSlice";
+import { taskColumnReducer } from "../../entities/taskColumn/model/slice/taskColumn";
+import { taskApi } from "../../entities/task/model/api/taskApi";
+import { taskColumnApi } from "../../entities/taskColumn/model/api/taskColumnApi";
 
 const rootReducers: ReducersMapObject<StateSchema> = {
   user: userReducer,
   files: fileReducer,
   messages: messagesReducer,
   chat: chatReducer,
+  ui: restoreScrollReducer,
+  tasks: taskReducer,
+  taskColumns: taskColumnReducer,
+  [taskApi.reducerPath]: taskApi.reducer,
+  [taskColumnApi.reducerPath]: taskColumnApi.reducer,
   [userApi.reducerPath]: userApi.reducer,
   [fileApi.reducerPath]: fileApi.reducer,
   [messageApi.reducerPath]: messageApi.reducer,
-  ui: restoreScrollReducer,
 };
 
 export const store = configureStore({

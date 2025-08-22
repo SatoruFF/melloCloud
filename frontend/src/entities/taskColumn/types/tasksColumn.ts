@@ -4,7 +4,7 @@
 export type TaskPriority = "LOW" | "MEDIUM" | "HIGH";
 export type TaskStatus = "TODO" | "IN_PROGRESS" | "ON_HOLD" | "COMPLETED" | "CANCELLED";
 
-// 🔹 Пользователь (already have exists on another file)
+// 🔹 Пользователь
 export type User = {
   id: number;
   name: string;

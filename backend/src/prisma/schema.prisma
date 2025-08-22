@@ -40,8 +40,12 @@ model User {
   // Обратная связь для заметок
   notes        Note[]       // Все заметки, принадлежащие пользователю
 
-    // Обратная связь для задач
-  todos        Task[]       // Все задачи, принадлежащие пользователю
+  // Обратная связь для задач
+  todos        Task[]       // Все задачи, созданные пользователем
+  assignedTasks Task[]      @relation("AssignedTasks") // Все задачи, назначенные пользователю
+  
+  // Обратная связь для колонок канбана
+  columns      TaskColumn[]     // Все колонки канбана пользователя
 }
 
 model UserConfig {
@@ -99,11 +103,11 @@ model Chat {
 
 // Промежуточная таблица для связи многие-ко-многим (User <-> Chat)
 model ChatUser {
-  id        Int   @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())
   userId    Int
   chatId    Int
-  user      User  @relation(fields: [userId], references: [id])
-  chat      Chat  @relation(fields: [chatId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+  chat      Chat     @relation(fields: [chatId], references: [id])
   joinedAt  DateTime @default(now())
 }
 
@@ -129,16 +133,48 @@ model Note {
   updatedAt DateTime @updatedAt // Дата обновления
 }
 
-// Define Task data model
-model Task {
+// Define Column data model for Kanban
+model TaskColumn {
   id        Int      @id @default(autoincrement())
-  title     String   // Название задачи
-  content   String   // Содержание задачи
-  priority  String   @default("LOW") // Приоритет задачи (LOW, MEDIUM, HIGH)
-  isDone    Boolean  @default(false) // Статус выполнения задачи
-  dueDate   DateTime? // Срок выполнения задачи (необязательно)
+  title     String   // Название колонки
+  color     String   // Цвет колонки
+  order     Int      // Порядок колонки
   userId    Int      // Ссылка на пользователя
   user      User     @relation(fields: [userId], references: [id]) // Связь с пользователем
+  tasks     Task[]   // Задачи в этой колонке
   createdAt DateTime @default(now()) // Дата создания
   updatedAt DateTime @updatedAt // Дата обновления
+}
+
+// Define Task data model
+model Task {
+  id          Int      @id @default(autoincrement())
+  title       String   // Название задачи
+  content     String   // Содержание задачи
+  description String?  // Более подробное описание задачи
+  category    String?  // Категория задачи (например, "Работа", "Личное", "Учеба")
+  tag         String?  // Тег для дополнительной категоризации
+  priority    String   @default("LOW") // Приоритет задачи (LOW, MEDIUM, HIGH)
+  status      String   @default("TODO") // Статус задачи (TODO, IN_PROGRESS, ON_HOLD, COMPLETED, CANCELLED)
+  isDone      Boolean  @default(false) // Статус выполнения задачи (оставляем для обратной совместимости)
+  dueDate     DateTime? // Срок выполнения задачи (необязательно)
+  
+  // Связь с колонкой канбана
+  columnId    Int?     // ID колонки канбана (может быть null для обычных задач)
+  column      TaskColumn?  @relation(fields: [columnId], references: [id], onDelete: SetNull)
+  
+  // Связи с пользователями
+  userId      Int      // Создатель задачи
+  user        User     @relation(fields: [userId], references: [id]) // Связь с создателем
+  
+  assignedToId Int?    // Пользователь, которому назначена задача (может быть null)
+  assignedTo   User?   @relation("AssignedTasks", fields: [assignedToId], references: [id]) // Связь с исполнителем
+  
+  // Иерархия задач (подзадачи)
+  parentTaskId Int?    // Родительская задача
+  parentTask   Task?   @relation("SubTasks", fields: [parentTaskId], references: [id])
+  subTasks     Task[]  @relation("SubTasks") // Подзадачи
+  
+  createdAt   DateTime @default(now()) // Дата создания
+  updatedAt   DateTime @updatedAt // Дата обновления
 }

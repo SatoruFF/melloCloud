@@ -11,7 +11,7 @@ class TaskControllerClass {
   // Create task controller
   async create(req: any, res: Response, next: NextFunction) {
     try {
-      const { title, content, priority, dueDate } = req.body;
+      const { title, content, priority, dueDate, columnId } = req.body;
       const userId = req.user?.id;
 
       if (!userId) {
@@ -23,6 +23,7 @@ class TaskControllerClass {
         content,
         priority,
         dueDate,
+        columnId,
         userId,
       });
 
@@ -45,6 +46,49 @@ class TaskControllerClass {
       }
 
       const tasks = await TaskService.getAll(userId);
+
+      return res.json(tasks);
+    } catch (error: any) {
+      logger.error(error.message, error);
+      return res.status(error.statusCode || 500).send({
+        message: error.message,
+      });
+    }
+  }
+
+  // Get kanban board data (columns with tasks)
+  async getKanban(req: any, res: Response) {
+    try {
+      const userId = req.user?.id;
+
+      if (!userId) {
+        throw createError(401, "User not found");
+      }
+
+      const kanbanData = await TaskService.getKanbanData(userId);
+
+      return res.json(kanbanData);
+    } catch (error: any) {
+      logger.error(error.message, error);
+      return res.status(error.statusCode || 500).send({
+        message: error.message,
+      });
+    }
+  }
+
+  // Get tasks by column
+  async getByColumn(req: any, res: Response) {
+    try {
+      const { columnId } = req.params;
+      const userId = req.user?.id;
+
+      if (!userId) {
+        throw createError(401, "User not found");
+      }
+
+      if (!columnId) throw createError(400, "Empty column ID");
+
+      const tasks = await TaskService.getByColumn(Number(columnId), userId);
 
       return res.json(tasks);
     } catch (error: any) {
@@ -84,7 +128,7 @@ class TaskControllerClass {
   async update(req: any, res: Response) {
     try {
       const { id } = req.params;
-      const { title, content, priority, isDone, dueDate } = req.body;
+      const { title, content, priority, isDone, dueDate, columnId } = req.body;
       const userId = req.user?.id;
 
       if (!userId) {
@@ -99,6 +143,7 @@ class TaskControllerClass {
         priority,
         isDone,
         dueDate,
+        columnId,
       });
 
       return res.json(task);
@@ -146,6 +191,31 @@ class TaskControllerClass {
       if (!id) throw createError(400, "Empty task ID");
 
       const task = await TaskService.toggleComplete(Number(id), userId);
+
+      return res.json(task);
+    } catch (error: any) {
+      logger.error(error.message, error);
+      return res.status(error.statusCode || 500).send({
+        message: error.message,
+      });
+    }
+  }
+
+  // Move task to different column
+  async moveToColumn(req: any, res: Response) {
+    try {
+      const { id } = req.params;
+      const { columnId } = req.body;
+      const userId = req.user?.id;
+
+      if (!userId) {
+        throw createError(401, "User not found");
+      }
+
+      if (!id) throw createError(400, "Empty task ID");
+      if (!columnId) throw createError(400, "Empty column ID");
+
+      const task = await TaskService.moveToColumn(Number(id), Number(columnId), userId);
 
       return res.json(task);
     } catch (error: any) {
@@ -216,6 +286,92 @@ class TaskControllerClass {
 
       const isDone = status.toLowerCase() === "completed";
       const tasks = await TaskService.getByStatus(userId, isDone);
+
+      return res.json(tasks);
+    } catch (error: any) {
+      logger.error(error.message, error);
+      return res.status(error.statusCode || 500).send({
+        message: error.message,
+      });
+    }
+  }
+
+  // Get overdue tasks
+  async getOverdue(req: any, res: Response) {
+    try {
+      const userId = req.user?.id;
+
+      if (!userId) {
+        throw createError(401, "User not found");
+      }
+
+      const tasks = await TaskService.getOverdueTasks(userId);
+
+      return res.json(tasks);
+    } catch (error: any) {
+      logger.error(error.message, error);
+      return res.status(error.statusCode || 500).send({
+        message: error.message,
+      });
+    }
+  }
+
+  // Get upcoming tasks
+  async getUpcoming(req: any, res: Response) {
+    try {
+      const userId = req.user?.id;
+      const days = Number(req.query.days) || 7;
+
+      if (!userId) {
+        throw createError(401, "User not found");
+      }
+
+      const tasks = await TaskService.getUpcomingTasks(userId, days);
+
+      return res.json(tasks);
+    } catch (error: any) {
+      logger.error(error.message, error);
+      return res.status(error.statusCode || 500).send({
+        message: error.message,
+      });
+    }
+  }
+
+  // Get task statistics
+  async getStats(req: any, res: Response) {
+    try {
+      const userId = req.user?.id;
+
+      if (!userId) {
+        throw createError(401, "User not found");
+      }
+
+      const stats = await TaskService.getTaskStats(userId);
+
+      return res.json(stats);
+    } catch (error: any) {
+      logger.error(error.message, error);
+      return res.status(error.statusCode || 500).send({
+        message: error.message,
+      });
+    }
+  }
+
+  // Batch update tasks (for drag and drop)
+  async batchUpdate(req: any, res: Response) {
+    try {
+      const { updates } = req.body; // Array of { id, columnId, order }
+      const userId = req.user?.id;
+
+      if (!userId) {
+        throw createError(401, "User not found");
+      }
+
+      if (!updates || !Array.isArray(updates)) {
+        throw createError(400, "Invalid updates data");
+      }
+
+      const tasks = await TaskService.batchUpdateTasks(userId, updates);
 
       return res.json(tasks);
     } catch (error: any) {
