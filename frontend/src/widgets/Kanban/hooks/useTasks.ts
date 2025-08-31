@@ -45,6 +45,27 @@ import {
   setError as setColumnError,
 } from "../../../entities/taskColumn/model/slice/taskColumn";
 
+// Утилитарные функции для преобразования дат
+const serializeDates = <T extends Record<string, any>>(obj: T): T => {
+  const result = { ...obj };
+  for (const key in result) {
+    if (result[key] instanceof Date) {
+      result[key] = result[key].toISOString() as any;
+    }
+  }
+  return result;
+};
+
+const deserializeDates = <T extends Record<string, any>>(obj: T, dateFields: string[]): T => {
+  const result = { ...obj };
+  dateFields.forEach((field) => {
+    if (result[field] && typeof result[field] === "string") {
+      result[field] = new Date(result[field]) as any;
+    }
+  });
+  return result;
+};
+
 export const useTasks = () => {
   // Local UI state
   const [newTaskText, setNewTaskText] = useState("");
@@ -53,7 +74,6 @@ export const useTasks = () => {
   const [editColumnTitle, setEditColumnTitle] = useState("");
 
   const dispatch = useAppDispatch();
-  // const user = useAppSelector(getUserSelector);
 
   // Get data from Redux store
   const {
@@ -72,45 +92,50 @@ export const useTasks = () => {
     editingColumn,
   } = useAppSelector((state) => state.taskColumns);
 
-  // API hooks с проверкой на undefined
+  // API hooks
   const {
     data: kanbanData,
     error: kanbanError,
     isLoading: kanbanLoading,
     refetch: refetchKanban,
-  } = useGetKanbanDataQuery() || { data: null, error: null, isLoading: false, refetch: () => {} };
+  } = useGetKanbanDataQuery();
 
-  // Мутации с безопасной инициализацией
-  const [createTaskMutation, createTaskMutationResult] = useCreateTaskMutation?.() || [null, { isLoading: false }];
-  const [updateTaskMutation, updateTaskMutationResult] = useUpdateTaskMutation?.() || [null, { isLoading: false }];
-  const [deleteTaskMutation, deleteTaskMutationResult] = useDeleteTaskMutation?.() || [null, { isLoading: false }];
-  const [moveTaskMutation, moveTaskMutationResult] = useMoveTaskMutation?.() || [null, { isLoading: false }];
+  // Мутации
+  const [createTaskMutation, { isLoading: isCreatingTask }] = useCreateTaskMutation();
+  const [updateTaskMutation, { isLoading: isUpdatingTask }] = useUpdateTaskMutation();
+  const [deleteTaskMutation, { isLoading: isDeletingTask }] = useDeleteTaskMutation();
+  const [moveTaskMutation, { isLoading: isMovingTask }] = useMoveTaskMutation();
 
-  const [createColumnMutation, createColumnMutationResult] = useCreateColumnMutation?.() || [
-    null,
-    { isLoading: false },
-  ];
-  const [updateColumnMutation, updateColumnMutationResult] = useUpdateColumnMutation?.() || [
-    null,
-    { isLoading: false },
-  ];
-  const [deleteColumnMutation, deleteColumnMutationResult] = useDeleteColumnMutation?.() || [
-    null,
-    { isLoading: false },
-  ];
+  const [createColumnMutation, { isLoading: isCreatingColumn }] = useCreateColumnMutation();
+  const [updateColumnMutation, { isLoading: isUpdatingColumn }] = useUpdateColumnMutation();
+  const [deleteColumnMutation, { isLoading: isDeletingColumn }] = useDeleteColumnMutation();
 
   // Combined loading states
-  const loading =
-    kanbanLoading ||
-    taskLoading ||
-    columnLoading ||
-    createTaskMutationResult?.isLoading ||
-    updateTaskMutationResult?.isLoading ||
-    deleteTaskMutationResult?.isLoading ||
-    moveTaskMutationResult?.isLoading ||
-    createColumnMutationResult?.isLoading ||
-    updateColumnMutationResult?.isLoading ||
-    deleteColumnMutationResult?.isLoading;
+  const loading = useMemo(
+    () =>
+      kanbanLoading ||
+      taskLoading ||
+      columnLoading ||
+      isCreatingTask ||
+      isUpdatingTask ||
+      isDeletingTask ||
+      isMovingTask ||
+      isCreatingColumn ||
+      isUpdatingColumn ||
+      isDeletingColumn,
+    [
+      kanbanLoading,
+      taskLoading,
+      columnLoading,
+      isCreatingTask,
+      isUpdatingTask,
+      isDeletingTask,
+      isMovingTask,
+      isCreatingColumn,
+      isUpdatingColumn,
+      isDeletingColumn,
+    ]
+  );
 
   const error = kanbanError || taskError || columnError;
 
@@ -118,35 +143,39 @@ export const useTasks = () => {
   useEffect(() => {
     if (kanbanData) {
       try {
-        // Transform backend data to frontend format
-        const transformedColumns: TaskColumn[] = kanbanData.map((col: any) => ({
-          id: col.id,
-          title: col.title,
-          color: col.color,
-          order: col.order,
-          userId: col.userId,
-          createdAt: new Date(col.createdAt),
-          updatedAt: new Date(col.updatedAt),
-          tasks: col.tasks || [],
-        }));
+        // Transform backend data to frontend format с правильной сериализацией дат
+        const transformedColumns: TaskColumn[] = kanbanData.map((col: any) =>
+          serializeDates({
+            id: col.id,
+            title: col.title,
+            color: col.color,
+            order: col.order,
+            userId: col.userId,
+            createdAt: col.createdAt,
+            updatedAt: col.updatedAt,
+            tasks: col.tasks || [],
+          })
+        );
 
         const allTasks: Task[] = kanbanData.flatMap((col: any) =>
-          (col.tasks || []).map((task: any) => ({
-            id: task.id,
-            title: task.title,
-            content: task.content,
-            description: task.description,
-            category: task.category,
-            tag: task.tag,
-            priority: task.priority,
-            status: task.status,
-            isDone: task.isDone,
-            dueDate: task.dueDate ? new Date(task.dueDate) : null,
-            columnId: task.columnId || col.id,
-            userId: task.userId,
-            createdAt: task.createdAt ? new Date(task.createdAt) : new Date(),
-            updatedAt: task.updatedAt ? new Date(task.updatedAt) : new Date(),
-          }))
+          (col.tasks || []).map((task: any) =>
+            serializeDates({
+              id: task.id,
+              title: task.title,
+              content: task.content,
+              description: task.description,
+              category: task.category,
+              tag: task.tag,
+              priority: task.priority,
+              status: task.status,
+              isDone: task.isDone,
+              dueDate: task.dueDate || null,
+              columnId: task.columnId || col.id,
+              userId: task.userId,
+              createdAt: task.createdAt || new Date().toISOString(),
+              updatedAt: task.updatedAt || new Date().toISOString(),
+            })
+          )
         );
 
         dispatch(setColumns(transformedColumns));
@@ -157,7 +186,7 @@ export const useTasks = () => {
           setNewTaskColumn(transformedColumns[0].id.toString());
         }
       } catch (err) {
-        // console.error("Error processing kanban data:", err);
+        console.error("Error processing kanban data:", err);
         dispatch(setTaskError("Failed to process kanban data"));
       }
     }
@@ -165,11 +194,6 @@ export const useTasks = () => {
 
   // Task operations
   const addTask = useCallback(async () => {
-    if (!createTaskMutation) {
-      message.error("Task creation is not available");
-      return;
-    }
-
     const trimmed = newTaskText.trim();
     if (!trimmed || !newTaskColumn) return;
 
@@ -181,7 +205,9 @@ export const useTasks = () => {
         priority: "MEDIUM",
       }).unwrap();
 
-      dispatch(addTaskAction(newTask));
+      // Сериализуем даты перед добавлением в состояние
+      const serializedTask = serializeDates(newTask);
+      dispatch(addTaskAction(serializedTask));
       setNewTaskText("");
       message.success("Task created successfully");
     } catch (err: any) {
@@ -193,11 +219,6 @@ export const useTasks = () => {
 
   const deleteTask = useCallback(
     async (taskId: string | number) => {
-      if (!deleteTaskMutation) {
-        message.error("Task deletion is not available");
-        return;
-      }
-
       try {
         await deleteTaskMutation(taskId).unwrap();
         dispatch(deleteTaskAction(taskId));
@@ -213,36 +234,28 @@ export const useTasks = () => {
 
   const updateTask = useCallback(
     async (taskId: string | number, updates: Partial<Task>) => {
-      if (!updateTaskMutation) {
-        message.error("Task update is not available");
-        return;
+      try {
+        const updatedTask = await updateTaskMutation({
+          taskId,
+          ...updates,
+          columnId: updates.columnId ? Number(updates.columnId) : undefined,
+        }).unwrap();
+
+        // Сериализуем даты
+        const serializedTask = serializeDates(updatedTask);
+        dispatch(updateTaskAction({ id: taskId, updates: serializedTask }));
+        message.success("Task updated successfully");
+      } catch (err: any) {
+        const errorMsg = err?.data?.message || "Failed to update task";
+        dispatch(setTaskError(errorMsg));
+        message.error(errorMsg);
       }
-
-      // try {
-      //   const updatedTask = await updateTaskMutation({
-      //     taskId,
-      //     ...updates,
-      //     columnId: updates.columnId ? Number(updates.columnId) : undefined,
-      //   }).unwrap();
-
-      //   dispatch(updateTaskAction({ id: taskId, updates: updatedTask }));
-      //   message.success("Task updated successfully");
-      // } catch (err: any) {
-      //   const errorMsg = err?.data?.message || "Failed to update task";
-      //   dispatch(setTaskError(errorMsg));
-      //   message.error(errorMsg);
-      // }
     },
     [updateTaskMutation, dispatch]
   );
 
   // Column operations
   const addColumn = useCallback(async () => {
-    if (!createColumnMutation) {
-      message.error("Column creation is not available");
-      return;
-    }
-
     const trimmed = newColumnTitle.trim();
     if (!trimmed) return;
 
@@ -252,7 +265,9 @@ export const useTasks = () => {
         color: gothicColors[columns.length % gothicColors.length],
       }).unwrap();
 
-      dispatch(addColumnAction(newColumn));
+      // Сериализуем даты
+      const serializedColumn = serializeDates(newColumn);
+      dispatch(addColumnAction(serializedColumn));
       setNewColumnTitle("");
       dispatch(setShowAddColumn(false));
 
@@ -271,11 +286,6 @@ export const useTasks = () => {
 
   const deleteColumn = useCallback(
     async (columnId: string | number) => {
-      if (!deleteColumnMutation) {
-        message.error("Column deletion is not available");
-        return;
-      }
-
       if (columns.length <= 1) {
         message.warning("Cannot delete the last column");
         return;
@@ -303,11 +313,6 @@ export const useTasks = () => {
 
   const editColumn = useCallback(
     async (columnId: string | number, newTitle: string) => {
-      if (!updateColumnMutation) {
-        message.error("Column update is not available");
-        return;
-      }
-
       const trimmed = newTitle.trim();
       if (!trimmed) return;
 
@@ -317,7 +322,9 @@ export const useTasks = () => {
           title: trimmed,
         }).unwrap();
 
-        dispatch(updateColumnAction({ id: columnId, updates: updatedColumn }));
+        // Сериализуем даты
+        const serializedColumn = serializeDates(updatedColumn);
+        dispatch(updateColumnAction({ id: columnId, updates: serializedColumn }));
         dispatch(setEditingColumn(null));
         setEditColumnTitle("");
         message.success("Column updated successfully");
@@ -349,7 +356,7 @@ export const useTasks = () => {
   const onDrop = useCallback(
     async (e: React.DragEvent, columnId: string | number) => {
       e.preventDefault();
-      if (!draggedTask || !moveTaskMutation) return;
+      if (!draggedTask) return;
 
       // Don't move if already in the same column
       if (draggedTask.columnId?.toString() === columnId.toString()) {
@@ -409,11 +416,22 @@ export const useTasks = () => {
   // Derived values
   const draggedTaskId = draggedTask?.id?.toString() || null;
 
+  // Десериализуем даты для отображения
+  const tasksWithDates = useMemo(
+    () => tasks.map((task) => deserializeDates(task, ["createdAt", "updatedAt", "dueDate"])),
+    [tasks]
+  );
+
+  const columnsWithDates = useMemo(
+    () => columns.map((column) => deserializeDates(column, ["createdAt", "updatedAt"])),
+    [columns]
+  );
+
   return {
-    // Data
-    tasks: tasks || [],
-    columns: columns || [],
-    loading: loading || false,
+    // Data с десериализованными датами для отображения
+    tasks: tasksWithDates,
+    columns: columnsWithDates,
+    loading,
     error,
 
     // UI State
