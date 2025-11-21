@@ -3,7 +3,6 @@ import {
   FileAddOutlined,
   SearchOutlined,
   SettingOutlined,
-  FolderOutlined,
   StarOutlined,
   ClockCircleOutlined,
   TagOutlined,
@@ -14,13 +13,18 @@ import styles from "./notes-sidebar.module.scss";
 import { useTranslation } from "react-i18next";
 import { useAppSelector } from "../../../app/store/store";
 import { getUserSelector } from "../../../entities/user";
+import React from "react";
 
 const { Sider } = Layout;
 const { Text } = Typography;
 
-const NotesSidebar = () => {
-  const { t } = useTranslation();
+interface Props {
+  collapsed: boolean;
+  toggleCollapsed: () => void;
+}
 
+const NotesSidebar: React.FC<Props> = ({ collapsed, toggleCollapsed }) => {
+  const { t } = useTranslation();
   const { userName } = useAppSelector(getUserSelector);
 
   const menuItems = [
@@ -35,19 +39,12 @@ const NotesSidebar = () => {
       icon: <ClockCircleOutlined />,
       label: t("notes.recent"),
       tooltip: t("notes.recentTooltip"),
-      //   badge: 3,
     },
     {
       key: "starred",
       icon: <StarOutlined />,
       label: t("notes.starred"),
       tooltip: t("notes.starredTooltip"),
-    },
-    {
-      key: "folders",
-      icon: <FolderOutlined />,
-      label: t("notes.folders"),
-      tooltip: t("notes.foldersTooltip"),
     },
     {
       key: "tags",
@@ -67,7 +64,6 @@ const NotesSidebar = () => {
       icon: <DeleteOutlined />,
       label: t("notes.trash"),
       tooltip: t("notes.trashTooltip"),
-      //   badge: 5,
       className: styles.dangerAction,
     },
     {
@@ -80,40 +76,41 @@ const NotesSidebar = () => {
   ];
 
   return (
-    <Sider width={280} className={cn(styles.sidebar)}>
-      <div className={styles.header}>
-        <Avatar className={styles.avatar}>A</Avatar>
-        <Text strong className={styles.username}>
-          {userName}
-        </Text>
-      </div>
-      <Menu mode="vertical" className={styles.menu}>
-        {menuItems.map(({ key, icon, label, tooltip, badge, className }) => {
-          const itemContent = (
-            <span>
-              {badge ? (
-                <Badge count={badge} offset={[10, 0]}>
-                  {icon}
-                </Badge>
-              ) : (
-                icon
-              )}
-              <span>{label}</span>
-            </span>
-          );
+    <Sider
+      width={280}
+      collapsed={collapsed}
+      collapsible
+      onCollapse={toggleCollapsed}
+      collapsedWidth={60}
+      className={styles.sidebar}
+    >
+      {!collapsed && (
+        <div className={styles.header}>
+          <Avatar className={styles.avatar}>A</Avatar>
+          <Text strong className={styles.username}>
+            {userName}
+          </Text>
+        </div>
+      )}
 
-          return (
-            <Menu.Item
-              key={key}
-              icon={null} // иконка уже внутри itemContent
-              className={cn(styles.menuItem, className)}
-            >
-              <Tooltip title={tooltip} placement="right">
-                {itemContent}
-              </Tooltip>
-            </Menu.Item>
-          );
-        })}
+      <Menu mode="vertical" className={styles.menu}>
+        {menuItems.map(({ key, icon, label, tooltip, badge, className }) => (
+          <Menu.Item key={key} className={cn(styles.menuItem, className)}>
+            <Tooltip title={tooltip} placement="right">
+              <span>
+                {badge ? (
+                  <Badge count={badge} offset={[10, 0]}>
+                    {icon}
+                  </Badge>
+                ) : (
+                  icon
+                )}
+
+                {!collapsed && <span style={{ marginLeft: 12 }}>{label}</span>}
+              </span>
+            </Tooltip>
+          </Menu.Item>
+        ))}
       </Menu>
     </Sider>
   );

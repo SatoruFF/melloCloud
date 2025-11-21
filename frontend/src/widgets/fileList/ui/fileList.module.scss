@@ -119,6 +119,8 @@
   gap: 16px;
   position: relative;
   z-index: 1;
+  // FIXME
+  height: calc(100vh - $header-height - 50px); // Учитываем высоту header с кнопками
 
   // Добавляем анимацию появления элементов
   .file-item {
