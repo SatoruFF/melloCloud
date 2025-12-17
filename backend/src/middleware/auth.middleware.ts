@@ -11,7 +11,7 @@ const authMiddle = (req: any, res: Response, next: NextFunction) => {
   try {
     const token: string | undefined = req.headers.authorization?.split(" ")[1];
     if (!token) {
-      return res.status(401).json({ message: "Auth error" });
+      return res.status(401).json({ message: "Auth error with token" });
     }
     const decoded = jwt.verify(token, process.env.ACCESS_SECRET_KEY as string);
     const id = Number(decoded.payload) === decoded.payload ? decoded.payload : decoded;

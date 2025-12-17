@@ -89,6 +89,10 @@
     }
   },
   "notes": {
+    "title": "Notes",
+    "createNew": "Create new note",
+    "createFirst": "Create first note",
+    "empty": "Notes not found",
     "search": "Search",
     "searchTooltip": "Search through your notes",
     "recent": "Recent",
@@ -155,7 +159,10 @@
     "search-users": "Search users...",
     "write-message": "Write message",
     "search-placeholder": "Find users(@) or messages",
-    "no-users-found": "Users not found"
+    "no-users-found": "Users not found",
+    "error-title": "Error",
+    "error-loading": "Failed to load chats. Please try again.",
+    "error-search": "Search error"
   },
   "messages": {
     "messages-input-placeholder": "write message...",

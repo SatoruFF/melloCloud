@@ -1,3 +1,4 @@
+import { serializeMessage, deserializeMessage } from "./../helpers/messageSerializer";
 import _ from "lodash";
 import { prisma } from "../configs/config.js";
 import { logger } from "../configs/logger.js";
@@ -17,7 +18,7 @@ class MessagesServiceClass<T extends IMessage> {
   public message: T;
 
   constructor(message?: T) {
-    this.message = message || ({} as T); // Используем приведение типов вместо @ts-ignore
+    this.message = message || ({} as T);
   }
 
   /**
@@ -26,35 +27,41 @@ class MessagesServiceClass<T extends IMessage> {
    * @param chatId - ID чата.
    * @param limit - Количество сообщений.
    * @param offset - Смещение.
+   * @param decrypt - Расшифровать сообщения (по умолчанию true).
    * @returns Список сообщений.
    */
-  async getPaginatedMessagesByChatId({ userId, chatId, limit = 20, offset = 0 }) {
+  async getPaginatedMessagesByChatId({ userId, chatId, limit = 20, offset = 0, decrypt = true }) {
     try {
-      // Проверка, что пользователь состоит в чате
       const isUserInChat = await prisma.chatUser.findFirst({
-        where: {
-          chatId,
-          userId,
-        },
+        where: { chatId, userId },
       });
 
       if (!isUserInChat) {
         throw new Error("Access denied: user is not part of this chat.");
       }
 
-      // Получение сообщений с пагинацией
       const messages = await prisma.message.findMany({
         where: { chatId },
-        orderBy: { createdAt: "desc" }, // Для чатов обычно от новых к старым
+        orderBy: { createdAt: "desc" },
         skip: offset,
         take: limit,
       });
+
+      // Расшифровка сообщений если требуется
+      const processedMessages = decrypt
+        ? await Promise.all(
+            messages.map(async (msg) => ({
+              ...msg,
+              text: (await deserializeMessage<Partial<IMessage>>(msg.text))?.text || msg.text,
+            }))
+          )
+        : messages;
 
       logger.info(
         `User ${userId} retrieved ${messages.length} messages from chat ${chatId} (offset: ${offset}, limit: ${limit})`
       );
 
-      return messages;
+      return processedMessages;
     } catch (error) {
       logger.error("Error retrieving paginated messages:", error);
       throw new Error("Failed to retrieve messages");
@@ -62,14 +69,18 @@ class MessagesServiceClass<T extends IMessage> {
   }
 
   /**
-   * Сохраняет сообщение в базу данных.
+   * Сохраняет зашифрованное сообщение в базу данных.
+   * @param context - Контекст с prisma.
    * @param message - Сообщение для сохранения.
+   * @param encrypt - Шифровать сообщение (по умолчанию true).
    * @returns Сохраненное сообщение.
    */
-  async saveMessage(context, message: IMessage) {
+  async saveMessage(context, message: IMessage, encrypt = true) {
     try {
-      // Валидация сообщения
       const validatedMessage = messageSchema.parse(message);
+
+      // Шифруем текст сообщения
+      const textToSave = encrypt ? await serializeMessage({ text: validatedMessage.text }) : validatedMessage.text;
 
       return context.prisma.$transaction(async (trx) => {
         const chatId = await ChatService.getOrCreatePrivateChat(trx, {
@@ -80,13 +91,13 @@ class MessagesServiceClass<T extends IMessage> {
 
         const savedMessage = await trx.message.create({
           data: {
-            text: validatedMessage.text,
+            text: textToSave,
             senderId: validatedMessage.senderId,
             chatId,
           },
         });
 
-        logger.info("Message saved to database:", savedMessage);
+        logger.info("Encrypted message saved to database:", { id: savedMessage.id });
         return savedMessage;
       });
     } catch (error) {
@@ -98,17 +109,27 @@ class MessagesServiceClass<T extends IMessage> {
   /**
    * Получает сообщения по chatId.
    * @param chatId - ID чата.
+   * @param decrypt - Расшифровать сообщения (по умолчанию true).
    * @returns Список сообщений.
    */
-  static async getMessagesByChatId(chatId: number) {
+  static async getMessagesByChatId(chatId: number, decrypt = true) {
     try {
       const messages = await prisma.message.findMany({
         where: { chatId },
         orderBy: { createdAt: "asc" },
       });
 
+      const processedMessages = decrypt
+        ? await Promise.all(
+            messages.map(async (msg) => ({
+              ...msg,
+              text: (await deserializeMessage<{ text: string }>(msg.text)).text,
+            }))
+          )
+        : messages;
+
       logger.info(`Retrieved ${messages.length} messages for chat ${chatId}`);
-      return messages;
+      return processedMessages;
     } catch (error) {
       logger.error("Error retrieving messages:", error);
       throw new Error("Failed to retrieve messages");
@@ -135,16 +156,23 @@ class MessagesServiceClass<T extends IMessage> {
   }
 
   /**
-   * Обновляет сообщение.
+   * Обновляет сообщение (с шифрованием текста если требуется).
    * @param messageId - ID сообщения.
    * @param updates - Обновленные данные.
+   * @param encrypt - Шифровать текст (по умолчанию true).
    * @returns Обновленное сообщение.
    */
-  static async updateMessage(messageId: number, updates: Partial<IMessage>) {
+  static async updateMessage(messageId: number, updates: Partial<IMessage>, encrypt = true) {
     try {
+      const dataToUpdate = { ...updates };
+
+      if (updates.text && encrypt) {
+        dataToUpdate.text = await serializeMessage({ text: updates.text });
+      }
+
       const updatedMessage = await prisma.message.update({
         where: { id: messageId },
-        data: updates,
+        data: dataToUpdate,
       });
 
       logger.info("Message updated:", updatedMessage);

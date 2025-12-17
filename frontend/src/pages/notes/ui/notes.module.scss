@@ -1,5 +1,5 @@
+// FIXME: set in inner component?
 .notesWrapper {
-  display: flex;
   height: 100vh - $header-height;
   overflow: hidden;
 }
@@ -19,4 +19,53 @@
   height: 100%;
   overflow-y: auto;
   background: #fff;
+}
+
+.notesListWrapper {
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+
+    h1 {
+      margin: 0;
+      font-size: 28px;
+      font-weight: 600;
+    }
+  }
+
+  .loadingContainer,
+  .errorContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 400px;
+  }
+
+  .empty {
+    margin-top: 60px;
+  }
+
+  .noteCard {
+    height: 100%;
+    transition: all 0.3s ease;
+
+    &:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .cardDescription {
+      .date {
+        color: rgba(0, 0, 0, 0.45);
+        font-size: 12px;
+      }
+    }
+  }
 }

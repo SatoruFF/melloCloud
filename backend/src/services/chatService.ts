@@ -3,6 +3,7 @@ import { UserDto } from "../dtos/user-dto.js";
 // utils
 import _ from "lodash";
 import "dotenv/config.js";
+import { deserializeMessage, serializeMessage } from "../helpers/messageSerializer.js";
 
 class ChatServiceClass {
   async getUserChats(context, userId: number) {
@@ -37,38 +38,45 @@ class ChatServiceClass {
     }
 
     // TODO: need DTO & optimize wuth sel chat
-    return chats.map((chat) => {
-      const lastMessage = chat.messages[0];
-      const isGroup = chat.isGroup;
-      // FIXME: any
-      const uniqueUsers = _.uniqBy(chat.users, "userId") as any[];
-      const isSelfChat = uniqueUsers.length === 1 && (uniqueUsers[0] as any)?.userId == userId;
+    return Promise.all(
+      chats.map(async (chat) => {
+        const lastMessage = chat.messages[0];
+        const isGroup = chat.isGroup;
+        // FIXME: any
+        const uniqueUsers = _.uniqBy(chat.users, "userId") as any[];
+        const isSelfChat = uniqueUsers.length === 1 && (uniqueUsers[0] as any)?.userId == userId;
 
-      let receiver = null;
-      if (isGroup) {
-        receiver = null;
-      } else if (isSelfChat) {
-        receiver = chat.users[0]?.user;
-      } else {
-        receiver = chat.users.find((u) => u.userId !== userId)?.user;
-      }
+        let receiver = null;
+        if (isGroup) {
+          receiver = null;
+        } else if (isSelfChat) {
+          receiver = chat.users[0]?.user;
+        } else {
+          receiver = chat.users.find((u) => u.userId !== userId)?.user;
+        }
 
-      return {
-        id: chat.id,
-        title: lastMessage?.text || chat.title || null,
-        isGroup,
-        createdAt: chat.createdAt,
-        updatedAt: chat.updatedAt,
-        isSelfChat,
-        receiver: receiver
-          ? {
-              id: receiver.id,
-              userName: receiver.userName,
-              avatar: receiver.avatar,
-            }
-          : null,
-      };
-    });
+        const { text: deserializedTitle } =
+          (await deserializeMessage<{
+            text?: string;
+          }>(lastMessage?.text || chat.title || null)) || {};
+
+        return {
+          id: chat.id,
+          title: deserializedTitle,
+          isGroup,
+          createdAt: chat.createdAt,
+          updatedAt: chat.updatedAt,
+          isSelfChat,
+          receiver: receiver
+            ? {
+                id: receiver.id,
+                userName: receiver.userName,
+                avatar: receiver.avatar,
+              }
+            : null,
+        };
+      })
+    );
   }
 
   async findPrivateChat(prisma, userA: number, userB: number) {
@@ -110,10 +118,12 @@ class ChatServiceClass {
       return existingChat.id;
     }
 
+    const encryptedTitle = await serializeMessage(text || "");
+
     const newChat = await prisma.chat.create({
       data: {
         isGroup: false,
-        title: text || "",
+        title: text ? encryptedTitle : "",
         users: {
           create: [{ user: { connect: { id: senderId } } }, { user: { connect: { id: receiverId } } }],
         },

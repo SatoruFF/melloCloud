@@ -1,6 +1,5 @@
 import _ from "lodash-es";
 import { useEffect, useState, useRef } from "react";
-import { message as antdMessage } from "antd";
 import type { Message } from "../../../entities/message";
 import { getSocket } from "../lib/socket";
 import { useAppSelector } from "../../../app/store/store";
@@ -10,20 +9,19 @@ import { useLazyGetMessagesQuery } from "../../../entities/message/model/api/mes
 
 export const useMessages = () => {
   const [messages, setMessages] = useState<Message[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const socketRef = useRef<WebSocket | null>(null);
   const currentUser = useAppSelector(getUserSelector);
   const currentChat = useAppSelector(getCurrentChat);
   const currentChatIdRef = useRef<number | null>(null);
-
   const [fetchMessagesQuery] = useLazyGetMessagesQuery();
 
   // Один раз инициализируем сокет
   useEffect(() => {
     socketRef.current = getSocket();
-
     socketRef.current.onmessage = (event) => {
       const newMessage: Message = JSON.parse(event.data);
-
       // Фильтруем только сообщения текущего чата
       if (newMessage.chatId === currentChatIdRef.current) {
         // FIXME: походу сокет отправляет сообщения дважды
@@ -33,26 +31,28 @@ export const useMessages = () => {
         });
       }
     };
-
     socketRef.current.onerror = (err) => {
       console.error("WebSocket error", err);
     };
-
     return () => {
       // socketRef.current?.close();
     };
   }, []);
 
   const fetchMessages = async (chatId: string | number, limit = 50, offset = 0) => {
+    setIsLoading(true);
+    setError(null);
     try {
       const result = await fetchMessagesQuery(String(chatId)).unwrap();
       if (result) {
         setMessages([...result].reverse());
       }
     } catch (error) {
-      // TODO: не работает сейчас почему то
-      antdMessage.error("Failed to fetch messages");
-      console.error("Failed to fetch messages", error);
+      const errorMessage = "Failed to fetch messages";
+      setError(errorMessage);
+      console.error(errorMessage, error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -85,5 +85,5 @@ export const useMessages = () => {
     socketRef.current?.send(JSON.stringify(newMessage));
   };
 
-  return { messages, sendMessage, fetchMessages };
+  return { messages, sendMessage, fetchMessages, error, isLoading };
 };

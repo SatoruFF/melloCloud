@@ -17,6 +17,7 @@ import { useTranslation } from "react-i18next";
 const { Text, Title } = Typography;
 const { Option } = Select;
 
+// TODO: destructure
 const Kanban = () => {
   const {
     tasks,

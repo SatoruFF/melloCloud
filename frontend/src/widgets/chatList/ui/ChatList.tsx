@@ -1,6 +1,6 @@
 import type React from "react";
 import { memo, useCallback, useMemo, useState } from "react";
-import { Avatar, List } from "antd";
+import { Avatar, List, Alert } from "antd";
 import cn from "classnames";
 import { Star } from "lucide-react";
 
@@ -29,8 +29,8 @@ const ChatList: React.FC = () => {
   const currentUser = useAppSelector(getUserSelector);
   const currentChatId = currentChat?.id;
 
-  const { data: chats = [], isLoading } = useGetChatsQuery();
-  const { data: mentionResults = [] } = useSearchUsersQuery(mentionSearch, {
+  const { data: chats = [], isLoading, error: chatsError } = useGetChatsQuery();
+  const { data: mentionResults = [], error: mentionError } = useSearchUsersQuery(mentionSearch, {
     skip: mentionSearch.length < 1,
   });
 
@@ -53,8 +53,6 @@ const ChatList: React.FC = () => {
 
   const insertMention = useCallback(
     (userName: string, userId: number) => {
-      // Удаляем @username из строки поиска
-      const newSearch = search.replace(/@(\w{1,})$/, "");
       setSearch("");
       setMentionSearch("");
       setShowMentionDropdown(false);
@@ -86,6 +84,20 @@ const ChatList: React.FC = () => {
     );
   }
 
+  if (chatsError) {
+    return (
+      <div className={cn(styles.usersListWrapper)}>
+        <Alert
+          message={t("chats.error-title") || "Error"}
+          description={t("chats.error-loading") || "Failed to load chats. Please try again."}
+          type="error"
+          showIcon
+          style={{ margin: "16px" }}
+        />
+      </div>
+    );
+  }
+
   return (
     <div className={cn(styles.usersListWrapper)}>
       <NewChatButton onClick={() => setModalOpen(true)} />
@@ -104,6 +116,11 @@ const ChatList: React.FC = () => {
                 @{user.userName}
               </div>
             ))}
+          </div>
+        )}
+        {showMentionDropdown && mentionError && (
+          <div className={styles.mentionDropdown}>
+            <Alert message={t("chats.error-search") || "Search error"} type="error" showIcon size="small" />
           </div>
         )}
       </div>
