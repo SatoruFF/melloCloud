@@ -1,24 +1,32 @@
 import { Router } from "express";
 import { check } from "express-validator";
-import { UserController } from "../../controllers/userController";
+import { UserController } from "../../controllers/userController.js";
 
 const router: Router = Router();
 
-// AUTH ROUTES
+// ========================================
+// AUTH ROUTES (требуют авторизации)
+// ========================================
+
 router.get("/auth", UserController.auth);
-
-router.get("/refresh", UserController.refresh);
-
+router.get("/refresh", UserController.refresh); // refresh НЕ требуе
 router.post("/logout", UserController.logout);
+router.post("/logout-all", UserController.logoutAll); // НОВОЕ - выйти со всех устройств
 
-// ANOTHER ROUTES
+// ========================================
+// SESSION MANAGEMENT (требуют авторизации)
+// ========================================
 
-router.patch("/changeinfo", [check("email", "Uncorrect email").isEmail()], UserController.changeInfo);
+router.get("/sessions", UserController.getSessions);
+router.delete("/sessions/:sessionId", UserController.deleteSession);
+
+// ========================================
+// USER ROUTES (требуют авторизации)
+// ========================================
+
+router.patch("/changeinfo", [check("email", "Incorrect email").isEmail()], UserController.changeInfo);
 
 router.get("/search", UserController.search);
-
 router.get("/:id", UserController.getById);
-
-// router.get('/activate/:link', UserController.activate)
 
 export default router;

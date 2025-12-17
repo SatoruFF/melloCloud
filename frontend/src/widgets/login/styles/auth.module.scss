@@ -1,18 +1,21 @@
-@use '../../../shared/styles/tmp.scss' as *;
+@use "../../../shared/styles/tmp.scss" as *;
 
 .authWrapper {
   width: 100vw;
   height: 90vh;
+
   .authSpace {
     height: 100%;
     display: flex;
     align-items: center;
     flex-direction: row;
+
     .authLeftSide {
       background-color: black;
       width: 20%;
       height: 100%;
       @extend %centerTemplate;
+
       .leftSideTitle {
         font-size: 23px;
         color: white;
@@ -21,6 +24,7 @@
         @extend %mainFont;
       }
     }
+
     .authRightSide {
       background-size: cover;
       background-color: #111827;
@@ -29,9 +33,11 @@
       z-index: 1;
       position: relative;
       @extend %centerTemplate;
+
       .authBackgroundImg {
         @extend %backgroundPic;
       }
+
       .rightSideForm {
         padding: 20px;
         width: 400px;
@@ -39,13 +45,106 @@
         border-radius: 15px;
         background-color: white;
         @extend %shadowTemplate;
+
         .authFormTitle {
           width: 100%;
           font-size: 23px;
           margin-bottom: 15px;
+          text-align: center;
+          font-weight: 600;
         }
+
         * {
           @extend %secondFont;
+        }
+
+        // ========================================
+        // OAuth кнопки
+        // ========================================
+        .oauthButtons {
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+          margin-bottom: 15px;
+
+          .oauthButton {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px 15px;
+            height: auto;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: 1px solid #e0e0e0;
+
+            &:hover {
+              transform: translateY(-2px);
+              box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            }
+
+            // Google button
+            &:nth-child(1) {
+              color: #4285f4;
+              border-color: #4285f4;
+
+              &:hover {
+                background-color: #4285f4;
+                color: white;
+                border-color: #4285f4;
+              }
+            }
+
+            // Yandex button (третья кнопка теперь)
+            &:nth-child(3) {
+              color: #ff0000;
+              border-color: #ff0000;
+
+              &:hover {
+                background-color: #ff0000;
+                color: white;
+                border-color: #ff0000;
+              }
+            }
+
+            svg {
+              width: 18px;
+              height: 18px;
+            }
+          }
+
+          // Telegram Widget wrapper
+          .telegramButtonWrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 40px;
+            padding: 5px 0;
+
+            // Стили для Telegram iframe (он создается автоматически)
+            :global(iframe) {
+              border-radius: 8px;
+              border: none !important;
+            }
+          }
+        }
+
+        // Стили для разделителей
+        :global(.ant-divider) {
+          margin: 20px 0;
+          font-size: 13px;
+          color: #999;
+        }
+
+        // Стили для основной кнопки Submit
+        button[type="submit"] {
+          width: 100%;
+          height: 40px;
+          font-size: 15px;
+          font-weight: 600;
+          border-radius: 8px;
         }
       }
     }
@@ -57,8 +156,31 @@
     .authLeftSide {
       display: none !important;
     }
+
     .authRightSide {
       width: 100% !important;
+    }
+  }
+}
+
+@media screen and (max-width: 576px) {
+  .authWrapper {
+    .authRightSide {
+      .rightSideForm {
+        width: 90%;
+        padding: 15px;
+
+        .authFormTitle {
+          font-size: 20px;
+        }
+
+        .oauthButtons {
+          .oauthButton {
+            font-size: 13px;
+            padding: 8px 12px;
+          }
+        }
+      }
     }
   }
 }

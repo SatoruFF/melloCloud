@@ -58,6 +58,9 @@
     "mime-types": "^2.1.35",
     "nodemailer": "^6.9.9",
     "nodemon": "^3.1.9",
+    "passport": "^0.7.0",
+    "passport-google-oauth20": "^2.0.0",
+    "passport-yandex": "^0.0.5",
     "pg": "^8.10.0",
     "pg-hstore": "^2.3.4",
     "pm2": "^5.3.1",
@@ -74,6 +77,8 @@
   },
   "devDependencies": {
     "@biomejs/biome": "1.9.4",
+    "@types/passport": "^1.0.17",
+    "@types/passport-google-oauth20": "^2.0.17",
     "@typescript-eslint/eslint-plugin": "^8.21.0",
     "@typescript-eslint/parser": "^8.21.0",
     "eslint": "^9.21.0",
