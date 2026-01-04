@@ -1,8 +1,8 @@
-import type { BaseQueryFn, FetchArgs, FetchBaseQueryError } from "@reduxjs/toolkit/query";
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { Mutex } from "async-mutex";
-import { Variables } from "../../../../shared/consts/localVariables";
-import { logout, setUser, setUserLoading } from "../slice/userSlice";
+import type { BaseQueryFn, FetchArgs, FetchBaseQueryError } from '@reduxjs/toolkit/query';
+import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { Mutex } from 'async-mutex';
+import { Variables } from '../../../../shared/consts/localVariables';
+import { logout, setUser, setUserLoading } from '../slice/userSlice';
 
 const mutex = new Mutex();
 
@@ -28,11 +28,11 @@ interface Session {
 // Base query with parameters to auth with access token
 const baseQuery = fetchBaseQuery({
   baseUrl: Variables.BASE_API_URL,
-  credentials: "include", // ВАЖНО: для работы с cookies
+  // credentials: "include", // ВАЖНО: для работы с cookies
   prepareHeaders: (headers, { getState }) => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem('token');
     if (token) {
-      headers.set("Authorization", `Bearer ${token}`);
+      headers.set('Authorization', `Bearer ${token}`);
     }
     return headers;
   },
@@ -42,7 +42,7 @@ const baseQuery = fetchBaseQuery({
 const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryError> = async (
   args,
   api,
-  extraOptions
+  extraOptions,
 ) => {
   await mutex.waitForUnlock();
   let result = await baseQuery(args, api, extraOptions);
@@ -53,11 +53,11 @@ const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQue
       try {
         const refreshResult = await baseQuery(
           {
-            url: "/user/refresh",
-            method: "GET",
+            url: '/user/refresh',
+            method: 'GET',
           },
           api,
-          extraOptions
+          extraOptions,
         );
 
         if (refreshResult.data) {
@@ -81,47 +81,47 @@ const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQue
 };
 
 export const userApi = createApi({
-  reducerPath: "userApi",
-  tagTypes: ["User", "Sessions"],
+  reducerPath: 'userApi',
+  tagTypes: ['User', 'Sessions'],
   baseQuery: baseQueryWithReauth,
-  endpoints: (builder) => ({
+  endpoints: builder => ({
     // ========================================
     // СТАНДАРТНАЯ АВТОРИЗАЦИЯ
     // ========================================
     registration: builder.mutation<any, RegisterRequest>({
-      query: (body) => ({
-        url: "/auth/register",
-        method: "POST",
+      query: body => ({
+        url: '/auth/register',
+        method: 'POST',
         body,
       }),
     }),
 
     login: builder.mutation<any, LoginRequest>({
-      query: (body) => ({
-        url: "/auth/login",
-        method: "POST",
+      query: body => ({
+        url: '/auth/login',
+        method: 'POST',
         body,
       }),
-      invalidatesTags: ["Sessions"],
+      invalidatesTags: ['Sessions'],
     }),
 
     activateUser: builder.mutation<any, string>({
-      query: (token) => ({
+      query: token => ({
         url: `/auth/activate?token=${token}`,
-        method: "GET",
+        method: 'GET',
       }),
     }),
 
     auth: builder.query<any, void>({
-      query: () => "/user/auth",
+      query: () => '/user/auth',
     }),
 
     logout: builder.mutation<any, void>({
       query: () => ({
-        url: "/user/logout",
-        method: "POST",
+        url: '/user/logout',
+        method: 'POST',
       }),
-      invalidatesTags: ["Sessions"],
+      invalidatesTags: ['Sessions'],
     }),
 
     // ========================================
@@ -131,25 +131,25 @@ export const userApi = createApi({
     // Выйти со всех устройств
     logoutAll: builder.mutation<any, void>({
       query: () => ({
-        url: "/user/logout-all",
-        method: "POST",
+        url: '/user/logout-all',
+        method: 'POST',
       }),
-      invalidatesTags: ["Sessions"],
+      invalidatesTags: ['Sessions'],
     }),
 
     // Получить список активных сессий
     getSessions: builder.query<Session[], void>({
-      query: () => "/user/sessions",
-      providesTags: ["Sessions"],
+      query: () => '/user/sessions',
+      providesTags: ['Sessions'],
     }),
 
     // Удалить конкретную сессию
     deleteSession: builder.mutation<any, string>({
-      query: (sessionId) => ({
+      query: sessionId => ({
         url: `/user/sessions/${sessionId}`,
-        method: "DELETE",
+        method: 'DELETE',
       }),
-      invalidatesTags: ["Sessions"],
+      invalidatesTags: ['Sessions'],
     }),
 
     // ========================================
@@ -157,15 +157,15 @@ export const userApi = createApi({
     // ========================================
 
     changeInfo: builder.mutation<any, any>({
-      query: (body) => ({
-        url: "/user/changeinfo",
-        method: "PATCH",
+      query: body => ({
+        url: '/user/changeinfo',
+        method: 'PATCH',
         body,
       }),
     }),
 
     searchUsers: builder.query<any[], string>({
-      query: (query) => `/user/search?query=${query}`,
+      query: query => `/user/search?query=${query}`,
     }),
   }),
 });

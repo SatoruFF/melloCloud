@@ -1,10 +1,10 @@
-const isLocalhost = window.location.hostname.includes("localhost") || window.location.hostname === "127.0.0.1";
+const isLocalhost = window.location.hostname.includes('localhost') || window.location.hostname === '127.0.0.1';
 
 // Формируем базовый HTTP URL
-const _baseUrl: string = isLocalhost ? "http://localhost:10000/api/v1" : "https://api.mellocloud.net/v1";
+const _baseUrl: string = isLocalhost ? 'http://localhost:10000/api/v1' : 'https://api.mellocloud.net/v1';
 
 // Формируем базовый WS URL
-const _baseSocketUrl: string = isLocalhost ? "ws://localhost:10000" : "wss://api.mellocloud.net";
+const _baseSocketUrl: string = isLocalhost ? 'ws://localhost:10000' : 'wss://api.mellocloud.net';
 
 export const Variables = {
   // ========================================
@@ -56,4 +56,9 @@ export const Variables = {
   // ========================================
   Message_URL: `${_baseUrl}/messages`,
   Socket_URL: `${_baseSocketUrl}`,
+
+  // ========================================
+  // ANOTHER ONE
+  // ========================================
+  TELEGRAM_BOT_NAME: import.meta.env.VITE_TELEGRAM_BOT_NAME || 'YourBotName',
 } as const;

@@ -63,7 +63,7 @@ const Login = () => {
           });
           navigate(FILE_ROUTE);
         })
-        .catch((err) => {
+        .catch(() => {
           messageApi.error("Failed to get user data");
         });
     }
@@ -177,7 +177,7 @@ const Login = () => {
         {/* Telegram Login Widget */}
         <div className={styles.telegramButtonWrapper}>
           <TelegramLoginButton
-            botName={process.env.REACT_APP_TELEGRAM_BOT_NAME || "YourBotName"}
+            botName={Variables.TELEGRAM_BOT_NAME}
             onAuthCallback={handleTelegramAuth}
             buttonSize="large"
             usePic={false}
