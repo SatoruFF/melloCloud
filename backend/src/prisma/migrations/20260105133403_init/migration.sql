@@ -10,11 +10,25 @@ CREATE TABLE "User" (
     "avatar" TEXT,
     "role" TEXT NOT NULL DEFAULT 'USER',
     "isActivated" BOOLEAN NOT NULL DEFAULT false,
-    "refreshToken" TEXT,
+    "oauthProvider" TEXT,
+    "oauthId" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Session" (
+    "id" TEXT NOT NULL,
+    "userId" INTEGER NOT NULL,
+    "refreshToken" TEXT NOT NULL,
+    "userAgent" TEXT NOT NULL DEFAULT 'Unknown',
+    "ip" TEXT NOT NULL DEFAULT 'Unknown',
+    "lastActivity" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "Session_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -106,18 +120,38 @@ CREATE TABLE "Note" (
 );
 
 -- CreateTable
-CREATE TABLE "ToDo" (
+CREATE TABLE "TaskColumn" (
     "id" SERIAL NOT NULL,
     "title" TEXT NOT NULL,
-    "content" TEXT NOT NULL,
-    "priority" TEXT NOT NULL DEFAULT 'LOW',
-    "isDone" BOOLEAN NOT NULL DEFAULT false,
-    "dueDate" TIMESTAMP(3),
+    "color" TEXT NOT NULL,
+    "order" INTEGER NOT NULL,
     "userId" INTEGER NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "ToDo_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "TaskColumn_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Task" (
+    "id" SERIAL NOT NULL,
+    "title" TEXT NOT NULL,
+    "content" TEXT NOT NULL,
+    "description" TEXT,
+    "category" TEXT,
+    "tag" TEXT,
+    "priority" TEXT NOT NULL DEFAULT 'LOW',
+    "status" TEXT NOT NULL DEFAULT 'TODO',
+    "isDone" BOOLEAN NOT NULL DEFAULT false,
+    "dueDate" TIMESTAMP(3),
+    "columnId" INTEGER,
+    "userId" INTEGER NOT NULL,
+    "assignedToId" INTEGER,
+    "parentTaskId" INTEGER,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "Task_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
@@ -127,10 +161,31 @@ CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 CREATE UNIQUE INDEX "User_storageGuid_key" ON "User"("storageGuid");
 
 -- CreateIndex
+CREATE INDEX "User_email_idx" ON "User"("email");
+
+-- CreateIndex
+CREATE INDEX "User_oauthProvider_oauthId_idx" ON "User"("oauthProvider", "oauthId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Session_refreshToken_key" ON "Session"("refreshToken");
+
+-- CreateIndex
+CREATE INDEX "Session_userId_idx" ON "Session"("userId");
+
+-- CreateIndex
+CREATE INDEX "Session_refreshToken_idx" ON "Session"("refreshToken");
+
+-- CreateIndex
+CREATE INDEX "Session_lastActivity_idx" ON "Session"("lastActivity");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "Invite_email_key" ON "Invite"("email");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Invite_activationToken_key" ON "Invite"("activationToken");
+
+-- AddForeignKey
+ALTER TABLE "Session" ADD CONSTRAINT "Session_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "UserConfig" ADD CONSTRAINT "UserConfig_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -160,4 +215,16 @@ ALTER TABLE "Message" ADD CONSTRAINT "Message_chatId_fkey" FOREIGN KEY ("chatId"
 ALTER TABLE "Note" ADD CONSTRAINT "Note_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "ToDo" ADD CONSTRAINT "ToDo_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "TaskColumn" ADD CONSTRAINT "TaskColumn_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Task" ADD CONSTRAINT "Task_columnId_fkey" FOREIGN KEY ("columnId") REFERENCES "TaskColumn"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Task" ADD CONSTRAINT "Task_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Task" ADD CONSTRAINT "Task_assignedToId_fkey" FOREIGN KEY ("assignedToId") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Task" ADD CONSTRAINT "Task_parentTaskId_fkey" FOREIGN KEY ("parentTaskId") REFERENCES "Task"("id") ON DELETE SET NULL ON UPDATE CASCADE;

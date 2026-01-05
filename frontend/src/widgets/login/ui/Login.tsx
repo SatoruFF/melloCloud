@@ -14,6 +14,9 @@ import { Spinner } from "../../../shared";
 import { TelegramButton as TelegramLoginButton } from "../../../features/telegramLoginButton";
 import styles from "../styles/auth.module.scss";
 
+// FIXME
+const enableOauth = false;
+
 // TODO: REACT_APP_TELEGRAM_BOT_NAME=YourBotName
 
 const YandexIcon = () => (
@@ -166,28 +169,32 @@ const Login = () => {
         </Form.Item>
       </Form>
 
-      <Divider>Or continue with</Divider>
+      {enableOauth && (
+        <>
+          <Divider>Or continue with</Divider>
 
-      {/* OAuth Buttons */}
-      <div className={styles.oauthButtons}>
-        <Button className={styles.oauthButton} icon={<GoogleOutlined />} onClick={handleGoogleLogin} block>
-          Google
-        </Button>
+          {/* OAuth Buttons */}
+          <div className={styles.oauthButtons}>
+            <Button className={styles.oauthButton} icon={<GoogleOutlined />} onClick={handleGoogleLogin} block>
+              Google
+            </Button>
 
-        {/* Telegram Login Widget */}
-        <div className={styles.telegramButtonWrapper}>
-          <TelegramLoginButton
-            botName={Variables.TELEGRAM_BOT_NAME}
-            onAuthCallback={handleTelegramAuth}
-            buttonSize="large"
-            usePic={false}
-          />
-        </div>
+            {/* Telegram Login Widget */}
+            <div className={styles.telegramButtonWrapper}>
+              <TelegramLoginButton
+                botName={Variables.TELEGRAM_BOT_NAME}
+                onAuthCallback={handleTelegramAuth}
+                buttonSize="large"
+                usePic={false}
+              />
+            </div>
 
-        <Button className={styles.oauthButton} icon={<YandexIcon />} onClick={handleYandexLogin} block>
-          Yandex
-        </Button>
-      </div>
+            <Button className={styles.oauthButton} icon={<YandexIcon />} onClick={handleYandexLogin} block>
+              Yandex
+            </Button>
+          </div>
+        </>
+      )}
 
       <Divider orientation="left">{t("auth.no-account")}</Divider>
 
