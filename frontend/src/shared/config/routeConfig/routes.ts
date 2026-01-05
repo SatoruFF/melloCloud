@@ -1,5 +1,5 @@
-import { type FC, type ReactElement, lazy } from "react";
-import React from "react";
+import { type FC, type ReactElement, lazy } from 'react';
+import React from 'react';
 
 import {
   ACTIVATION_ROUTE,
@@ -14,21 +14,22 @@ import {
   REGISTRATION_ROUTE,
   PLANNER_ROUTE,
   WELCOME_ROUTE,
-} from "../../consts/routes";
+  NOTES_DETAIL_ROUTE,
+} from '../../consts/routes';
 
-import type { UserRolesType } from "../../../entities/user/model/types/user";
-import { NotFoundPage } from "../../../pages/notFoundPage";
-import { UserRoles } from "../../consts/roles";
+import type { UserRolesType } from '../../../entities/user/model/types/user';
+import { NotFoundPage } from '../../../pages/notFoundPage';
+import { UserRoles } from '../../consts/roles';
 
-const Welcome = lazy(() => import("../../../pages/home/ui/Welcome"));
-const Authorization = lazy(() => import("../../../pages/authorization/ui/Authorization"));
-const FileSpace = lazy(() => import("../../../pages/files/ui/FileSpace"));
-const Profile = lazy(() => import("../../../pages/profile/ui/Profile"));
-const Pomodoro = lazy(() => import("../../../pages/pomodoro/ui/PomodoroTimer"));
-const Chats = lazy(() => import("../../../pages/chats/ui/Chats"));
-const Notes = lazy(() => import("../../../pages/notes/ui/Notes"));
-const Planner = lazy(() => import("../../../pages/planner/ui/Planner"));
-const Activate = lazy(() => import("../../../pages/activate/ui/Activate"));
+const Welcome = lazy(() => import('../../../pages/home/ui/Welcome'));
+const Authorization = lazy(() => import('../../../pages/authorization/ui/Authorization'));
+const FileSpace = lazy(() => import('../../../pages/files/ui/FileSpace'));
+const Profile = lazy(() => import('../../../pages/profile/ui/Profile'));
+const Pomodoro = lazy(() => import('../../../pages/pomodoro/ui/PomodoroTimer'));
+const Chats = lazy(() => import('../../../pages/chats/ui/Chats'));
+const Notes = lazy(() => import('../../../pages/notes/ui/Notes'));
+const Planner = lazy(() => import('../../../pages/planner/ui/Planner'));
+const Activate = lazy(() => import('../../../pages/activate/ui/Activate'));
 // const AdminPanel = lazy(() => import("../../../pages/adminPanel/index"));
 
 export interface IRoute {
@@ -45,9 +46,9 @@ const createRoutes = (
     element: FC;
     private?: boolean;
     roles?: UserRolesType[];
-  }[]
+  }[],
 ): IRoute[] =>
-  routes.map((route) => ({
+  routes.map(route => ({
     ...route,
     element: React.createElement(route.element),
   }));
@@ -67,6 +68,7 @@ const privateRoutes: IRoute[] = createRoutes([
   { path: PROFILE_ROUTE, element: Profile, private: true },
   { path: CHATS_ROUTE, element: Chats, private: true },
   { path: NOTES_ROUTE, element: Notes, private: true },
+  { path: NOTES_DETAIL_ROUTE, element: Notes, private: true },
   { path: PLANNER_ROUTE, element: Planner, private: true },
   { path: POMODORO_ROUTE, element: Pomodoro, private: true },
   // {

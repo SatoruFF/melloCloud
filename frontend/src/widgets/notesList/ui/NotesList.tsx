@@ -10,26 +10,7 @@ import {
   useSearchNotesQuery,
 } from "../../../entities/note/model/api/noteApi";
 import styles from "./notesList.module.scss";
-
-const useTranslation = () => ({
-  t: (key: string) => {
-    const translations: Record<string, string> = {
-      "notes.title": "My Notes",
-      "notes.createNew": "New Note",
-      "notes.search": "Search notes...",
-      "notes.empty": "No notes yet",
-      "notes.untitled": "Untitled",
-      "notes.deleteConfirm": "Delete this note?",
-      "notes.deleteSuccess": "Note deleted successfully",
-      "notes.deleteFailed": "Failed to delete note",
-      "notes.createSuccess": "Note created successfully",
-      "notes.createFailed": "Failed to create note",
-      "common.yes": "Yes",
-      "common.no": "No",
-    };
-    return translations[key] || key;
-  },
-});
+import { useTranslation } from "react-i18next";
 
 const NotesList = () => {
   const { t } = useTranslation();
@@ -79,25 +60,9 @@ const NotesList = () => {
     [deleteNote, t]
   );
 
-  const handleCreateNote = useCallback(async () => {
-    try {
-      const result = await createNote({
-        title: t("notes.untitled"),
-        content: [
-          {
-            type: "paragraph",
-            content: "Start writing...",
-          },
-        ],
-      }).unwrap();
-
-      message.success(t("notes.createSuccess"));
-      navigate(`/notes/${result.id}`);
-    } catch (err) {
-      message.error(t("notes.createFailed"));
-      console.error("Create error:", err);
-    }
-  }, [createNote, navigate, t]);
+  const handleCreateNote = useCallback(() => {
+    navigate("/notes/new");
+  }, [navigate]);
 
   const handleNoteClick = useCallback(
     (noteId: string) => {

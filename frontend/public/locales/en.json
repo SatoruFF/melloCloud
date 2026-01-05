@@ -89,6 +89,7 @@
     }
   },
   "notes": {
+    "untitled": "Untitled note",
     "title": "Notes",
     "createNew": "Create new note",
     "createFirst": "Create first note",
@@ -150,7 +151,15 @@
       "read": "Read",
       "write": "Write",
       "admin": "Admin"
-    }
+    },
+    "createFirstNote": "Create your first note to get started",
+    "noNotesFound": "No notes found",
+    "tryDifferentSearch": "Try a different search term",
+    "note": "note",
+    "notes": "notes",
+    "errorLoading": "Error loading note",
+    "noteDeleted": "The note could not be loaded. It may have been deleted.",
+    "backToNotes": "Back to Notes"
   },
   "chats": {
     "favorite": "favorite",

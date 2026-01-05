@@ -1,17 +1,15 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Editor } from "../../../widgets/editor";
-import NotesSidebar from "../../../widgets/notesSidebar/ui/NotesSidebar";
+import { NotesLayout } from "../../../widgets/notesLayout";
+import { NoteEditor } from "../../../widgets/noteEditor";
 import { NotesList } from "../../../widgets/notesList";
 import {
   useGetNoteQuery,
   useCreateNoteMutation,
   useUpdateNoteMutation,
 } from "../../../entities/note/model/api/noteApi";
-import { message, Spin } from "antd";
+import { message } from "antd";
 import { useTranslation } from "react-i18next";
-import styles from "./notes.module.scss";
-import cn from "classnames";
 
 const Notes = () => {
   const { t } = useTranslation();
@@ -20,48 +18,41 @@ const Notes = () => {
   const [collapsed, setCollapsed] = useState(false);
   const [currentNoteTitle, setCurrentNoteTitle] = useState("");
 
-  // Queries and mutations
-  const {
-    data: note,
-    isLoading,
-    error,
-  } = useGetNoteQuery(noteId!, {
+  const { note, isLoading, error } = useGetNoteQuery(noteId!, {
     skip: !noteId || noteId === "new",
   });
 
   const [createNote, { isLoading: isCreating }] = useCreateNoteMutation();
   const [updateNote, { isLoading: isUpdating }] = useUpdateNoteMutation();
 
-  // Update title when note loads
   useEffect(() => {
     if (note) {
       setCurrentNoteTitle(note.title);
+    } else if (noteId === "new") {
+      setCurrentNoteTitle("");
     }
-  }, [note]);
+  }, [note, noteId]);
 
   const handleSave = useCallback(
     async (content: any) => {
       try {
         if (noteId && noteId !== "new") {
-          // Update existing note
           await updateNote({
             noteId,
             content,
             title: currentNoteTitle,
           }).unwrap();
           message.success(t("notes.saveSuccess"));
-        } else {
-          // Create new note
+        } else if (noteId === "new") {
           const result = await createNote({
             title: currentNoteTitle || t("notes.untitled"),
             content,
           }).unwrap();
           message.success(t("notes.createSuccess"));
-          navigate(`/notes/${result.id}`);
+          navigate(`/notes/${result.id}`, { replace: true });
         }
-      } catch (error: any) {
+      } catch (_) {
         message.error(t("notes.saveFailed"));
-        console.error("Save error:", error);
       }
     },
     [noteId, currentNoteTitle, updateNote, createNote, navigate, t]
@@ -71,7 +62,6 @@ const Notes = () => {
     async (newTitle: string) => {
       setCurrentNoteTitle(newTitle);
 
-      // Auto-save title if editing existing note
       if (noteId && noteId !== "new" && note) {
         try {
           await updateNote({
@@ -87,91 +77,54 @@ const Notes = () => {
     [noteId, note, updateNote]
   );
 
-  const handleCreateNewNote = useCallback(async () => {
-    try {
-      const result = await createNote({
-        title: t("notes.untitled"),
-        content: [
-          {
-            type: "paragraph",
-            content: "",
-          },
-        ],
-      }).unwrap();
-      navigate(`/notes/${result.id}`);
-    } catch (error) {
-      message.error(t("notes.createFailed"));
-      console.error("Create error:", error);
-    }
-  }, [createNote, navigate, t]);
+  const handleCreateNewNote = useCallback(() => {
+    navigate("/notes/new");
+  }, [navigate]);
 
-  // If no noteId in URL, show list
+  // Show list if no noteId
   if (!noteId) {
-    return (
-      <div className={cn(styles.notesWrapper)}>
-        <div className={styles.notesContent}>
-          <NotesList />
-        </div>
-      </div>
-    );
+    return <NotesList />;
   }
 
-  // Handle error state
+  // Error state
   if (error) {
     return (
-      <div className={cn(styles.notesWrapper)}>
-        <NotesSidebar
-          collapsed={collapsed}
-          toggleCollapsed={() => setCollapsed((v) => !v)}
-          currentNoteId={noteId}
-          onCreateNote={handleCreateNewNote}
-        />
-        <div className={styles.editor}>
-          <div className={cn(styles.errorState)}>
-            <h2>Error loading note</h2>
-            <p>The note could not be loaded. It may have been deleted.</p>
-            <button onClick={() => navigate("/notes")}>Back to Notes</button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // If noteId exists, show editor
-  return (
-    <div className={cn(styles.notesWrapper)}>
-      <NotesSidebar
+      <NotesLayout
         collapsed={collapsed}
         toggleCollapsed={() => setCollapsed((v) => !v)}
         currentNoteId={noteId}
         onCreateNote={handleCreateNewNote}
-      />
-      <div className={styles.editor}>
-        {isLoading ? (
-          <div className={cn(styles.loading)}>
-            <Spin size="large" />
-            <p>{t("notes.loading")}</p>
-          </div>
-        ) : (
-          <div className={cn(styles.editorContent)}>
-            {/* Title Editor */}
-            <div className={cn(styles.titleContainer)}>
-              <input
-                type="text"
-                className={cn(styles.titleInput)}
-                value={currentNoteTitle}
-                onChange={(e) => handleTitleChange(e.target.value)}
-                placeholder={t("notes.untitled")}
-                disabled={isUpdating}
-              />
-            </div>
+      >
+        <div style={{ padding: "40px", textAlign: "center" }}>
+          <h2>{t("notes.errorLoading")}</h2>
+          <p>{t("notes.noteDeleted")}</p>
+          <button onClick={() => navigate("/notes")}>{t("notes.backToNotes")}</button>
+        </div>
+      </NotesLayout>
+    );
+  }
 
-            {/* Content Editor */}
-            <Editor initialContent={note?.content} onSave={handleSave} autoSave={true} autoSaveDelay={2000} />
-          </div>
-        )}
-      </div>
-    </div>
+  // Render editor (for both new and existing notes)
+  return (
+    <NotesLayout
+      collapsed={collapsed}
+      toggleCollapsed={() => setCollapsed((v) => !v)}
+      currentNoteId={noteId}
+      onCreateNote={handleCreateNewNote}
+    >
+      <NoteEditor
+        noteId={noteId}
+        title={currentNoteTitle}
+        content={noteId === "new" ? [{ type: "paragraph", content: "" }] : note?.content}
+        isLoading={isLoading}
+        isUpdating={isUpdating}
+        isCreating={isCreating}
+        onTitleChange={handleTitleChange}
+        onSave={handleSave}
+        autoSave={noteId !== "new"}
+        autoSaveDelay={2000}
+      />
+    </NotesLayout>
   );
 };
 
