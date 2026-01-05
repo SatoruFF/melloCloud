@@ -32,17 +32,17 @@ export const Variables = {
   // ========================================
 
   // Стандартная авторизация
-  Auth_Register: `${_baseUrl}/auth/register`, // POST - регистрация
-  Auth_Login: `${_baseUrl}/auth/login`, // POST - логин
-  Auth_Activate: `${_baseUrl}/auth/activate`, // GET - активация
+  Auth_Register: `${_baseUrl}/user/register`, // POST - регистрация
+  Auth_Login: `${_baseUrl}/user/login`, // POST - логин
+  Auth_Activate: `${_baseUrl}/user/activate`, // GET - активация
 
   // OAuth провайдеры
-  Auth_Google: `${_baseUrl}/auth/google`, // GET - OAuth Google
-  Auth_Google_Callback: `${_baseUrl}/auth/google/callback`,
-  Auth_Telegram: `${_baseUrl}/auth/telegram`, // GET - OAuth Telegram
-  Auth_Telegram_Callback: `${_baseUrl}/auth/telegram/callback`,
-  Auth_Yandex: `${_baseUrl}/auth/yandex`, // GET - OAuth Yandex
-  Auth_Yandex_Callback: `${_baseUrl}/auth/yandex/callback`,
+  Auth_Google: `${_baseUrl}/user/google`, // GET - OAuth Google
+  Auth_Google_Callback: `${_baseUrl}/user/google/callback`,
+  Auth_Telegram: `${_baseUrl}/user/telegram`, // GET - OAuth Telegram
+  Auth_Telegram_Callback: `${_baseUrl}/user/telegram/callback`,
+  Auth_Yandex: `${_baseUrl}/user/yandex`, // GET - OAuth Yandex
+  Auth_Yandex_Callback: `${_baseUrl}/user/yandex/callback`,
 
   // ========================================
   // FILE ENDPOINTS

@@ -29,7 +29,7 @@ interface Session {
 const baseQuery = fetchBaseQuery({
   baseUrl: Variables.BASE_API_URL,
   // credentials: "include", // ВАЖНО: для работы с cookies
-  prepareHeaders: (headers, { getState }) => {
+  prepareHeaders: headers => {
     const token = localStorage.getItem('token');
     if (token) {
       headers.set('Authorization', `Bearer ${token}`);
@@ -90,7 +90,7 @@ export const userApi = createApi({
     // ========================================
     registration: builder.mutation<any, RegisterRequest>({
       query: body => ({
-        url: '/auth/register',
+        url: Variables.Auth_Register,
         method: 'POST',
         body,
       }),
@@ -98,7 +98,7 @@ export const userApi = createApi({
 
     login: builder.mutation<any, LoginRequest>({
       query: body => ({
-        url: '/auth/login',
+        url: Variables.Auth_Login,
         method: 'POST',
         body,
       }),
@@ -107,18 +107,18 @@ export const userApi = createApi({
 
     activateUser: builder.mutation<any, string>({
       query: token => ({
-        url: `/auth/activate?token=${token}`,
+        url: `${Variables.Auth_Activate}?token=${token}`,
         method: 'GET',
       }),
     }),
 
     auth: builder.query<any, void>({
-      query: () => '/user/auth',
+      query: () => Variables.User_Auth,
     }),
 
     logout: builder.mutation<any, void>({
       query: () => ({
-        url: '/user/logout',
+        url: Variables.User_Logout,
         method: 'POST',
       }),
       invalidatesTags: ['Sessions'],
@@ -131,7 +131,7 @@ export const userApi = createApi({
     // Выйти со всех устройств
     logoutAll: builder.mutation<any, void>({
       query: () => ({
-        url: '/user/logout-all',
+        url: Variables.User_LogoutAll,
         method: 'POST',
       }),
       invalidatesTags: ['Sessions'],
@@ -139,14 +139,14 @@ export const userApi = createApi({
 
     // Получить список активных сессий
     getSessions: builder.query<Session[], void>({
-      query: () => '/user/sessions',
+      query: () => Variables.User_Sessions,
       providesTags: ['Sessions'],
     }),
 
     // Удалить конкретную сессию
     deleteSession: builder.mutation<any, string>({
       query: sessionId => ({
-        url: `/user/sessions/${sessionId}`,
+        url: `${Variables.User_Sessions}/${sessionId}`,
         method: 'DELETE',
       }),
       invalidatesTags: ['Sessions'],
@@ -158,14 +158,14 @@ export const userApi = createApi({
 
     changeInfo: builder.mutation<any, any>({
       query: body => ({
-        url: '/user/changeinfo',
+        url: Variables.User_ChangeInfo,
         method: 'PATCH',
         body,
       }),
     }),
 
     searchUsers: builder.query<any[], string>({
-      query: query => `/user/search?query=${query}`,
+      query: query => `${Variables.User_Search}?query=${query}`,
     }),
   }),
 });

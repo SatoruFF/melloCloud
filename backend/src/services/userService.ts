@@ -72,6 +72,8 @@ class UserServiceClass {
 
       const { accessToken, refreshToken } = generateJwt(user.id);
 
+      console.log(2222, refreshToken)
+
       await trx.userConfig.create({ data: { userId: user.id } });
 
       const baseDir = {
@@ -233,9 +235,9 @@ class UserServiceClass {
         });
 
         // Помечаем инвайт как использованный
-        await trx.invite.update({
+        await trx.invite.delete({
           where: { id: invite.id },
-          data: { isUsed: true, userId },
+          // data: { isUsed: true, userId },
         });
       }
 
