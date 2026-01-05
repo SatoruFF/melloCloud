@@ -24,28 +24,56 @@ model User {
   role         String       @default("USER")
   files        File[]
   isActivated  Boolean      @default(false)
-  // activationToken String?
-  refreshToken String?
+  
+  // OAuth fields
+  oauthProvider String?      // 'google', 'telegram', 'yandex'
+  oauthId       String?      // ID from OAuth provider
+  
+  // Убираем refreshToken отсюда, теперь он в Session
+  // refreshToken String?     
+  
   userConfigs  UserConfig[]
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
   Invite       Invite[]
   
+  sessions     Session[]    // Множественные сессии пользователя
+  
   // Обратная связь для сообщений
-  sentMessages Message[]    // Все сообщения, отправленные пользователем
+  sentMessages Message[]
 
   // Обратная связь для чатов
-  chats        ChatUser[]   // Все чаты, в которых участвует пользователь
+  chats        ChatUser[]
 
   // Обратная связь для заметок
-  notes        Note[]       // Все заметки, принадлежащие пользователю
+  notes        Note[]
 
   // Обратная связь для задач
-  todos        Task[]       // Все задачи, созданные пользователем
-  assignedTasks Task[]      @relation("AssignedTasks") // Все задачи, назначенные пользователю
+  todos        Task[]
+  assignedTasks Task[]      @relation("AssignedTasks")
   
   // Обратная связь для колонок канбана
-  columns      TaskColumn[]     // Все колонки канбана пользователя
+  columns      TaskColumn[]
+  
+  @@index([email])
+  @@index([oauthProvider, oauthId])
+}
+
+// Session model
+model Session {
+  id            String    @id @default(uuid())
+  userId        Int
+  refreshToken  String    @unique
+  userAgent     String    @default("Unknown")
+  ip            String    @default("Unknown")
+  lastActivity  DateTime  @default(now())
+  createdAt     DateTime  @default(now())
+  
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
+  @@index([refreshToken])
+  @@index([lastActivity])
 }
 
 model UserConfig {
@@ -93,15 +121,14 @@ model File {
 // Define Chat data model
 model Chat {
   id         Int        @id @default(autoincrement())
-  title      String?    // Название чата (только для групповых), либо последнее сообщение
-  isGroup    Boolean    @default(false) // Флаг группового чата
-  users      ChatUser[] // Пользователи в чате
-  messages   Message[]  // Сообщения в чате
+  title      String?
+  isGroup    Boolean    @default(false)
+  users      ChatUser[]
+  messages   Message[]
   createdAt  DateTime   @default(now())
   updatedAt  DateTime   @updatedAt
 }
 
-// Промежуточная таблица для связи многие-ко-многим (User <-> Chat)
 model ChatUser {
   id        Int      @id @default(autoincrement())
   userId    Int
@@ -125,56 +152,53 @@ model Message {
 // Define Note data model
 model Note {
   id        Int      @id @default(autoincrement())
-  title     String   // Заголовок заметки
-  content   String   // Содержание заметки
-  userId    Int      // Ссылка на пользователя
-  user      User     @relation(fields: [userId], references: [id]) // Связь с пользователем
-  createdAt DateTime @default(now()) // Дата создания
-  updatedAt DateTime @updatedAt // Дата обновления
+  title     String
+  content   String
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 // Define Column data model for Kanban
 model TaskColumn {
   id        Int      @id @default(autoincrement())
-  title     String   // Название колонки
-  color     String   // Цвет колонки
-  order     Int      // Порядок колонки
-  userId    Int      // Ссылка на пользователя
-  user      User     @relation(fields: [userId], references: [id]) // Связь с пользователем
-  tasks     Task[]   // Задачи в этой колонке
-  createdAt DateTime @default(now()) // Дата создания
-  updatedAt DateTime @updatedAt // Дата обновления
+  title     String
+  color     String
+  order     Int
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  tasks     Task[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 // Define Task data model
 model Task {
   id          Int      @id @default(autoincrement())
-  title       String   // Название задачи
-  content     String   // Содержание задачи
-  description String?  // Более подробное описание задачи
-  category    String?  // Категория задачи (например, "Работа", "Личное", "Учеба")
-  tag         String?  // Тег для дополнительной категоризации
-  priority    String   @default("LOW") // Приоритет задачи (LOW, MEDIUM, HIGH)
-  status      String   @default("TODO") // Статус задачи (TODO, IN_PROGRESS, ON_HOLD, COMPLETED, CANCELLED)
-  isDone      Boolean  @default(false) // Статус выполнения задачи (оставляем для обратной совместимости)
-  dueDate     DateTime? // Срок выполнения задачи (необязательно)
+  title       String
+  content     String
+  description String?
+  category    String?
+  tag         String?
+  priority    String   @default("LOW")
+  status      String   @default("TODO")
+  isDone      Boolean  @default(false)
+  dueDate     DateTime?
   
-  // Связь с колонкой канбана
-  columnId    Int?     // ID колонки канбана (может быть null для обычных задач)
+  columnId    Int?
   column      TaskColumn?  @relation(fields: [columnId], references: [id], onDelete: SetNull)
   
-  // Связи с пользователями
-  userId      Int      // Создатель задачи
-  user        User     @relation(fields: [userId], references: [id]) // Связь с создателем
+  userId      Int
+  user        User     @relation(fields: [userId], references: [id])
   
-  assignedToId Int?    // Пользователь, которому назначена задача (может быть null)
-  assignedTo   User?   @relation("AssignedTasks", fields: [assignedToId], references: [id]) // Связь с исполнителем
+  assignedToId Int?
+  assignedTo   User?   @relation("AssignedTasks", fields: [assignedToId], references: [id])
   
-  // Иерархия задач (подзадачи)
-  parentTaskId Int?    // Родительская задача
+  parentTaskId Int?
   parentTask   Task?   @relation("SubTasks", fields: [parentTaskId], references: [id])
-  subTasks     Task[]  @relation("SubTasks") // Подзадачи
+  subTasks     Task[]  @relation("SubTasks")
   
-  createdAt   DateTime @default(now()) // Дата создания
-  updatedAt   DateTime @updatedAt // Дата обновления
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }

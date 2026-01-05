@@ -1,16 +1,12 @@
-import type { BaseQueryFn, FetchArgs, FetchBaseQueryError } from "@reduxjs/toolkit/query";
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { Mutex } from "async-mutex";
+import type { BaseQueryFn, FetchArgs, FetchBaseQueryError } from '@reduxjs/toolkit/query';
+import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { Mutex } from 'async-mutex';
+import { Variables } from '../../../../shared/consts/localVariables';
+import { logout, setUser, setUserLoading } from '../slice/userSlice';
 
-import { Variables } from "../../../../shared/consts/localVariables";
-import { logout, setUser, setUserLoading } from "../slice/userSlice";
-
-// create a new mutex
 const mutex = new Mutex();
 
 interface RegisterRequest {
-  // firstName: string;
-  // lastName: string;
   userName: string;
   email: string;
   password: string;
@@ -21,15 +17,22 @@ interface LoginRequest {
   password: string;
 }
 
+interface Session {
+  id: string;
+  userAgent: string;
+  ip: string;
+  createdAt: string;
+  lastActivity: string;
+}
+
 // Base query with parameters to auth with access token
 const baseQuery = fetchBaseQuery({
-  baseUrl: Variables.User_URL,
-  // credentials: 'include', // option that put cookies in query(?)
-  credentials: "same-origin",
+  baseUrl: Variables.BASE_API_URL,
+  // credentials: "include", // ВАЖНО: для работы с cookies
   prepareHeaders: (headers, { getState }) => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem('token');
     if (token) {
-      headers.set("Authorization", `Bearer ${token}`);
+      headers.set('Authorization', `Bearer ${token}`);
     }
     return headers;
   },
@@ -39,30 +42,26 @@ const baseQuery = fetchBaseQuery({
 const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryError> = async (
   args,
   api,
-  extraOptions
+  extraOptions,
 ) => {
-  // wait until the mutex is available without locking it
   await mutex.waitForUnlock();
   let result = await baseQuery(args, api, extraOptions);
 
   if (result.error && result.error.status === 401) {
-    // checking whether the mutex is locked
     if (!mutex.isLocked()) {
       const release = await mutex.acquire();
-
       try {
         const refreshResult = await baseQuery(
           {
-            url: "refresh",
-            method: "get",
+            url: '/user/refresh',
+            method: 'GET',
           },
           api,
-          extraOptions
+          extraOptions,
         );
 
         if (refreshResult.data) {
           api.dispatch(setUser(refreshResult.data as any));
-
           // retry the initial query
           result = await baseQuery(args, api, extraOptions);
         } else {
@@ -70,64 +69,116 @@ const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQue
         }
       } finally {
         api.dispatch(setUserLoading());
-        // release must be called once the mutex should be released again.
         release();
       }
     } else {
-      // wait until the mutex is available without locking it
       await mutex.waitForUnlock();
       result = await baseQuery(args, api, extraOptions);
     }
   }
+
   return result;
 };
 
 export const userApi = createApi({
-  reducerPath: "userApi",
-  tagTypes: ["User"],
+  reducerPath: 'userApi',
+  tagTypes: ['User', 'Sessions'],
   baseQuery: baseQueryWithReauth,
-  endpoints: (builder) => ({
+  endpoints: builder => ({
+    // ========================================
+    // СТАНДАРТНАЯ АВТОРИЗАЦИЯ
+    // ========================================
     registration: builder.mutation<any, RegisterRequest>({
-      query: (body) => ({
-        url: "register",
-        method: "POST",
+      query: body => ({
+        url: '/auth/register',
+        method: 'POST',
         body,
       }),
     }),
+
     login: builder.mutation<any, LoginRequest>({
-      query: (body) => ({
-        url: "login",
-        method: "POST",
+      query: body => ({
+        url: '/auth/login',
+        method: 'POST',
         body,
       }),
+      invalidatesTags: ['Sessions'],
     }),
+
     activateUser: builder.mutation<any, string>({
-      query: (token) => ({
-        url: `activate?token=${token}`,
-        method: "GET",
+      query: token => ({
+        url: `/auth/activate?token=${token}`,
+        method: 'GET',
       }),
     }),
+
     auth: builder.query<any, void>({
-      query: () => "auth",
+      query: () => '/user/auth',
     }),
-    logout: builder.mutation<any, any>({
-      query: (body) => ({
-        url: "logout",
-        method: "POST",
-        body,
+
+    logout: builder.mutation<any, void>({
+      query: () => ({
+        url: '/user/logout',
+        method: 'POST',
       }),
+      invalidatesTags: ['Sessions'],
     }),
+
+    // ========================================
+    // НОВОЕ: УПРАВЛЕНИЕ СЕССИЯМИ
+    // ========================================
+
+    // Выйти со всех устройств
+    logoutAll: builder.mutation<any, void>({
+      query: () => ({
+        url: '/user/logout-all',
+        method: 'POST',
+      }),
+      invalidatesTags: ['Sessions'],
+    }),
+
+    // Получить список активных сессий
+    getSessions: builder.query<Session[], void>({
+      query: () => '/user/sessions',
+      providesTags: ['Sessions'],
+    }),
+
+    // Удалить конкретную сессию
+    deleteSession: builder.mutation<any, string>({
+      query: sessionId => ({
+        url: `/user/sessions/${sessionId}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['Sessions'],
+    }),
+
+    // ========================================
+    // ДРУГИЕ МЕТОДЫ
+    // ========================================
+
     changeInfo: builder.mutation<any, any>({
-      query: (body) => ({
-        url: "userchange",
-        method: "PATCH",
+      query: body => ({
+        url: '/user/changeinfo',
+        method: 'PATCH',
         body,
       }),
     }),
+
     searchUsers: builder.query<any[], string>({
-      query: (query) => `search?query=${query}`,
+      query: query => `/user/search?query=${query}`,
     }),
   }),
 });
 
-export const { useAuthQuery, useChangeInfoMutation, useActivateUserMutation, useSearchUsersQuery } = userApi;
+export const {
+  useRegistrationMutation,
+  useLoginMutation,
+  useAuthQuery,
+  useChangeInfoMutation,
+  useActivateUserMutation,
+  useSearchUsersQuery,
+  useLogoutMutation,
+  useLogoutAllMutation,
+  useGetSessionsQuery,
+  useDeleteSessionMutation,
+} = userApi;
