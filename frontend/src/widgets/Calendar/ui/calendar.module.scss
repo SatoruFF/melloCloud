@@ -1,96 +1,554 @@
+@use "../../../shared/styles/tmp.scss" as *;
+
 .calendarWrapper {
   box-sizing: border-box;
-  padding: 10px;
+  padding: 16px;
+  height: 100%;
+  background: #0a0a0a;
+
   * {
     @extend %secondFont;
   }
+}
 
-  .fc-toolbar-title {
-    font-size: 20px;
-    font-weight: bold;
+.calendarContainer {
+  background: #18181b;
+  border: 1px solid #27272a;
+  border-radius: 12px;
+  padding: 20px;
+  height: calc(100vh - 100px);
+  overflow: auto;
+
+  &::-webkit-scrollbar {
+    width: 6px;
   }
 
-  .fc-button {
-    background-color: #1d4ed8;
-    border: none;
-    border-radius: 6px;
-    padding: 6px 12px;
-    color: white;
-    font-weight: 500;
-    transition: background 0.2s;
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #3f3f46;
+    border-radius: 3px;
 
     &:hover {
-      background-color: #2563eb;
+      background: #52525b;
+    }
+  }
+}
+
+// FullCalendar Customization (shadcn style)
+:global {
+  // Форсим все фоны на transparent
+  .fc * {
+    background-color: transparent !important;
+  }
+
+  // Исключения для элементов которым нужен цвет фона
+  .fc-button,
+  .fc-button-active,
+  .fc-day-today,
+  .fc-event,
+  .fc-multimonth-month,
+  .fc-list-event:hover {
+    background-color: revert !important;
+  }
+
+  // Toolbar
+  .fc-toolbar {
+    margin-bottom: 20px !important;
+    gap: 8px;
+  }
+
+  .fc-toolbar-title {
+    font-size: 22px !important;
+    font-weight: 600 !important;
+    color: #fafafa !important;
+    letter-spacing: -0.02em;
+  }
+
+  // Buttons (shadcn style)
+  .fc-button {
+    background: transparent !important;
+    border: 1px solid #3f3f46 !important;
+    border-radius: 6px !important;
+    padding: 6px 12px !important;
+    color: #fafafa !important;
+    font-weight: 500 !important;
+    font-size: 13px !important;
+    transition: all 0.15s ease !important;
+    box-shadow: none !important;
+    height: 32px;
+
+    &:hover {
+      background: #27272a !important;
+      border-color: #52525b !important;
+    }
+
+    &:focus {
+      box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2) !important;
+    }
+
+    &:disabled {
+      opacity: 0.5 !important;
+      cursor: not-allowed !important;
     }
   }
 
-  .fc-event {
-    background-color: #2563eb !important;
+  .fc-button-active {
+    background: #1890ff !important;
+    border-color: #1890ff !important;
     color: white !important;
-    border-radius: 8px;
-    padding: 4px 8px;
-    font-weight: 500;
-    box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
-    font-size: 14px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    cursor: pointer;
+
+    &:hover {
+      background: #40a9ff !important;
+      border-color: #40a9ff !important;
+    }
+  }
+
+  .fc-button-group {
+    box-shadow: none !important;
+  }
+
+  // Day headers
+  .fc-col-header-cell {
+    background: transparent !important;
+    border: none !important;
+    border-bottom: 1px solid #27272a !important;
+    padding: 10px 6px !important;
+    font-weight: 500 !important;
+    color: #a1a1aa !important;
+    text-transform: uppercase !important;
+    font-size: 11px !important;
+    letter-spacing: 0.05em !important;
+  }
+
+  .fc-col-header-cell-cushion {
+    color: #a1a1aa !important;
+  }
+
+  // Day cells
+  .fc-daygrid-day,
+  .fc-timegrid-slot {
+    background: transparent !important;
+    border-color: #27272a !important;
+    transition: background 0.15s !important;
+
+    &:hover {
+      background: rgba(24, 144, 255, 0.05) !important;
+    }
+  }
+
+  .fc-daygrid-day-frame,
+  .fc-daygrid-day-bg {
+    background: transparent !important;
+  }
+
+  .fc-day-today {
+    background: rgba(24, 144, 255, 0.08) !important;
+
+    .fc-daygrid-day-number {
+      background: #1890ff !important;
+      color: white !important;
+      width: 26px;
+      height: 26px;
+      border-radius: 6px;
+      display: inline-flex !important;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+    }
+  }
+
+  .fc-daygrid-day-number {
+    padding: 6px !important;
+    font-weight: 500 !important;
+    color: #e4e4e7 !important;
+    font-size: 13px !important;
+  }
+
+  .fc-day-other .fc-daygrid-day-number {
+    color: #52525b !important;
+  }
+
+  // Events (shadcn style)
+  .fc-event {
+    background: #1890ff !important;
+    border: none !important;
+    border-radius: 4px !important;
+    padding: 2px 6px !important;
+    margin: 1px 3px !important;
+    font-weight: 500 !important;
+    font-size: 12px !important;
+    cursor: pointer !important;
+    transition: all 0.15s ease !important;
+    border-left: 3px solid #40a9ff !important;
+
+    &:hover {
+      background: #40a9ff !important;
+      transform: translateX(2px);
+    }
+  }
+
+  .fc-event-main {
+    color: white !important;
+  }
+
+  // MultiMonth View - 3 в ряд
+  .fc-multimonth {
+    border: none !important;
+  }
+
+  .fc-multimonth-month {
+    background: #18181b !important;
+    border: 1px solid #27272a !important;
+    border-radius: 8px !important;
+    padding: 10px !important;
+    margin: 4px !important;
+    min-width: 360px !important;
+    flex: 1 1 calc(33.333% - 8px) !important;
+  }
+
+  .fc-multimonth-title {
+    color: #fafafa !important;
+    font-weight: 600 !important;
+    font-size: 13px !important;
+    padding: 4px 6px !important;
+    text-align: left !important;
+    border-bottom: 1px solid #27272a !important;
+    margin-bottom: 6px !important;
+  }
+
+  .fc-multimonth-daygrid {
+    border: none !important;
+  }
+
+  // Уменьшаем размеры ячеек для компактности
+  .fc-multimonth .fc-daygrid-day-number {
+    padding: 4px !important;
+    font-size: 12px !important;
+  }
+
+  .fc-multimonth .fc-col-header-cell {
+    padding: 6px 4px !important;
+    font-size: 10px !important;
+  }
+
+  // Контейнер для месяцев - флексбокс с переносом
+  .fc-multimonth-slicer {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    justify-content: flex-start !important;
+    gap: 0 !important;
+  }
+
+  // События в годовом виде - более компактные
+  .fc-multimonth .fc-event {
+    font-size: 10px !important;
+    padding: 1px 4px !important;
+    margin: 1px 2px !important;
+  }
+
+  // List view
+  .fc-list {
+    border-color: #27272a !important;
+  }
+
+  .fc-list-event {
+    cursor: pointer !important;
+    transition: background 0.15s !important;
+    border-color: #27272a !important;
+
+    &:hover {
+      background: rgba(24, 144, 255, 0.05) !important;
+    }
+  }
+
+  .fc-list-event-dot {
+    border-color: #1890ff !important;
+    border-width: 4px !important;
+  }
+
+  .fc-list-day-cushion {
+    background: transparent !important;
+  }
+
+  .fc-list-event-title {
+    color: #fafafa !important;
+  }
+
+  .fc-list-event-time {
+    color: #a1a1aa !important;
+  }
+
+  .fc-list-day-text,
+  .fc-list-day-side-text {
+    color: #fafafa !important;
+  }
+
+  .fc-list-table {
+    background: transparent !important;
+  }
+
+  // Time grid
+  .fc-timegrid-slot-label {
+    color: #a1a1aa !important;
+  }
+
+  .fc-timegrid-axis {
+    color: #a1a1aa !important;
+  }
+
+  // Scrollgrid
+  .fc-scrollgrid,
+  .fc-scrollgrid-section,
+  .fc-daygrid-body,
+  .fc-scrollgrid-sync-table {
+    background: transparent !important;
   }
 }
 
+.eventContent {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+}
+
+.eventTitle {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.eventTime {
+  font-size: 10px;
+  opacity: 0.8;
+  font-weight: 400;
+}
+
+// Modal Styles (shadcn style)
 .overlay {
-  background: rgba(0, 0, 0, 0.3);
+  background: rgba(0, 0, 0, 0.75);
   position: fixed;
   inset: 0;
-  z-index: 999;
+  z-index: 9999;
+  animation: fadeIn 0.15s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .modal {
-  background: white;
-  padding: 24px;
-  border-radius: 16px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-  width: 420px;
+  background: #18181b;
+  border: 1px solid #27272a;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+  width: 480px;
   max-width: 90vw;
+  max-height: 85vh;
+  overflow: auto;
   position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  z-index: 1000;
+  z-index: 10000;
+  animation: slideUp 0.2s ease;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #3f3f46;
+    border-radius: 3px;
+  }
 }
 
-.card {
-  h2 {
-    font-size: 20px;
-    font-weight: bold;
-    margin-bottom: 16px;
-    color: #1e293b;
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -48%) scale(0.96);
   }
-
-  p {
-    font-size: 15px;
-    margin: 8px 0;
-    color: #475569;
-
-    b {
-      color: #1e293b;
-    }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
   }
+}
+
+.modalContent {
+  display: flex;
+  flex-direction: column;
+}
+
+.modalHeader {
+  padding: 20px;
+  border-bottom: 1px solid #27272a;
+}
+
+.headerTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.modalTitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: #fafafa;
+  margin: 0;
+  flex: 1;
+  line-height: 1.4;
 }
 
 .closeButton {
-  position: absolute;
-  top: 10px;
-  right: 14px;
   background: transparent;
   border: none;
-  font-size: 20px;
-  color: #94a3b8;
+  color: #71717a;
   cursor: pointer;
-  transition: color 0.2s;
+  padding: 4px;
+  border-radius: 4px;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   &:hover {
-    color: #1e293b;
+    background: #27272a;
+    color: #fafafa;
+  }
+}
+
+.categoryBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  background: transparent;
+  border: 1px solid #3f3f46;
+  color: #d4d4d8;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.modalBody {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.detailRow {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.icon {
+  color: #71717a;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.detailContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.detailLabel {
+  font-size: 11px;
+  font-weight: 500;
+  color: #71717a;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.detailValue {
+  font-size: 14px;
+  color: #fafafa;
+  font-weight: 400;
+}
+
+.attendeesList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.attendeeBadge {
+  display: inline-flex;
+  padding: 4px 10px;
+  background: #27272a;
+  border: 1px solid #3f3f46;
+  color: #d4d4d8;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.descriptionBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 12px;
+  border-top: 1px solid #27272a;
+}
+
+.description {
+  font-size: 13px;
+  color: #a1a1aa;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.modalFooter {
+  padding: 16px 20px;
+  border-top: 1px solid #27272a;
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.primaryButton,
+.secondaryButton {
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.15s;
+  height: 32px;
+}
+
+.primaryButton {
+  background: #1890ff;
+  border: 1px solid #1890ff;
+  color: white;
+
+  &:hover {
+    background: #40a9ff;
+    border-color: #40a9ff;
+  }
+}
+
+.secondaryButton {
+  background: transparent;
+  border: 1px solid #3f3f46;
+  color: #fafafa;
+
+  &:hover {
+    background: #27272a;
+    border-color: #52525b;
   }
 }

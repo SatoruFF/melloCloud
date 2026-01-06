@@ -209,6 +209,7 @@
     "authSuccess": "✅ Auth success"
   },
   "planner": {
+    "planning": "Planning",
     "tabs": {
       "kanban": "Kanban",
       "calendar": "Calendar"

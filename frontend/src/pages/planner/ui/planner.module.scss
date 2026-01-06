@@ -1,10 +1,134 @@
-.planner {
+@use "../../../shared/styles/tmp.scss" as *;
+
+.plannerLayout {
   display: flex;
-  height: 100vh - $header-height;
+  height: calc(100vh - $header-height);
+  background: #0a0a0a;
+}
+
+.sidebar {
+  width: 240px;
+  background: #18181b;
+  border-right: 1px solid #27272a;
+  display: flex;
+  flex-direction: column;
+  transition: width 0.25s ease;
+
+  * {
+    @extend %secondFont;
+  }
+
+  &.collapsed {
+    width: 64px;
+
+    .nav {
+      .navLink {
+        justify-content: center;
+
+        span {
+          display: none;
+        }
+      }
+    }
+
+    .title {
+      display: none;
+    }
+
+    .header {
+      justify-content: center;
+    }
+  }
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  border-bottom: 1px solid #27272a;
+  gap: 12px;
+}
+
+.title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #fafafa;
+  margin: 0;
+  white-space: nowrap;
+}
+
+.toggleBtn {
+  background: #27272a;
+  border: 1px solid #3f3f46;
+  color: #a1a1aa;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 6px;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  &:hover {
+    background: #3f3f46;
+    border-color: #52525b;
+    color: #fafafa;
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
+.nav {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 16px 12px;
+}
+
+.navLink {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: 6px;
+  color: #a1a1aa;
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.15s;
+
+  &:hover {
+    background: #27272a;
+    color: #fafafa;
+  }
+
+  &.active {
+    background: #1890ff;
+    color: white;
+
+    svg {
+      color: white;
+    }
+  }
+
+  svg {
+    flex-shrink: 0;
+    color: currentColor;
+  }
+
+  span {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 }
 
 .content {
   flex: 1;
-  box-sizing: border-box;
-  overflow-y: auto;
+  overflow: hidden;
 }

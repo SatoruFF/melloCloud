@@ -209,6 +209,7 @@
     "authSuccess": "✅ Авторизация прошла успешно"
   },
   "planner": {
+    "planning": "Планирование",
     "tabs": {
       "kanban": "Канбан",
       "calendar": "Календарь"
