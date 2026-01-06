@@ -15,7 +15,7 @@ interface Props {
 }
 
 export const PlannerTabs: React.FC<Props> = ({ activeTab, setActiveTab, tabs }) => {
-  const [isHidden, setIsHidden] = useState(false);
+  const [isHidden, setIsHidden] = useState(true);
 
   return (
     <div className={cn(styles.wrapper, { [styles.hidden]: isHidden })}>

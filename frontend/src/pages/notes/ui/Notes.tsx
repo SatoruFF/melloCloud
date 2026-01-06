@@ -8,17 +8,25 @@ import {
   useCreateNoteMutation,
   useUpdateNoteMutation,
 } from "../../../entities/note/model/api/noteApi";
-import { message } from "antd";
+import { notification, Button } from "antd";
 import { useTranslation } from "react-i18next";
+import { NotesSidebar } from "../../../widgets/notesSidebar";
+
+import styles from "./notes.module.scss";
 
 const Notes = () => {
   const { t } = useTranslation();
   const { noteId } = useParams<{ noteId: string }>();
   const navigate = useNavigate();
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(true);
   const [currentNoteTitle, setCurrentNoteTitle] = useState("");
+  const [api, contextHolder] = notification.useNotification();
 
-  const { note, isLoading, error } = useGetNoteQuery(noteId!, {
+  const {
+    data: note,
+    isLoading,
+    error,
+  } = useGetNoteQuery(noteId!, {
     skip: !noteId || noteId === "new",
   });
 
@@ -42,40 +50,51 @@ const Notes = () => {
             content,
             title: currentNoteTitle,
           }).unwrap();
-          message.success(t("notes.saveSuccess"));
+          api.success({
+            message: t("notes.saveSuccess"),
+            placement: "topRight",
+            duration: 3,
+          });
         } else if (noteId === "new") {
           const result = await createNote({
             title: currentNoteTitle || t("notes.untitled"),
             content,
           }).unwrap();
-          message.success(t("notes.createSuccess"));
+          api.success({
+            message: t("notes.createSuccess"),
+            placement: "topRight",
+            duration: 3,
+          });
           navigate(`/notes/${result.id}`, { replace: true });
         }
       } catch (_) {
-        message.error(t("notes.saveFailed"));
+        api.error({
+          message: t("notes.saveFailed"),
+          placement: "topRight",
+          duration: 4,
+        });
       }
     },
-    [noteId, currentNoteTitle, updateNote, createNote, navigate, t]
+    [noteId, currentNoteTitle, updateNote, createNote, navigate, t, api]
   );
 
-  const handleTitleChange = useCallback(
-    async (newTitle: string) => {
-      setCurrentNoteTitle(newTitle);
+  const handleTitleChange = useCallback((newTitle: string) => {
+    setCurrentNoteTitle(newTitle);
+  }, []);
 
-      if (noteId && noteId !== "new" && note) {
-        try {
-          await updateNote({
-            noteId,
-            title: newTitle,
-            content: note.content,
-          }).unwrap();
-        } catch (error) {
-          console.error("Title update error:", error);
-        }
+  const handleTitleBlur = useCallback(async () => {
+    if (noteId && noteId !== "new" && note && currentNoteTitle !== note.title) {
+      try {
+        await updateNote({
+          noteId,
+          title: currentNoteTitle,
+          content: note.content,
+        }).unwrap();
+      } catch (error) {
+        console.error("Title update error:", error);
       }
-    },
-    [noteId, note, updateNote]
-  );
+    }
+  }, [noteId, note, currentNoteTitle, updateNote]);
 
   const handleCreateNewNote = useCallback(() => {
     navigate("/notes/new");
@@ -83,48 +102,68 @@ const Notes = () => {
 
   // Show list if no noteId
   if (!noteId) {
-    return <NotesList />;
+    return (
+      <>
+        {contextHolder}
+        <div className={styles.notesListLayout}>
+          <NotesSidebar collapsed={collapsed} toggleCollapsed={() => setCollapsed((v) => !v)} />
+          <div className={styles.notesListContent}>
+            <NotesList />
+          </div>
+        </div>
+      </>
+    );
   }
 
   // Error state
   if (error) {
     return (
+      <>
+        {contextHolder}
+        <NotesLayout
+          collapsed={collapsed}
+          toggleCollapsed={() => setCollapsed((v) => !v)}
+          currentNoteId={noteId}
+          onCreateNote={handleCreateNewNote}
+        >
+          <div className={styles.errorWrapper}>
+            <h2 className={styles.errorTitle}>{t("notes.errorLoading")}</h2>
+            <p className={styles.errorText}>{t("notes.noteDeleted")}</p>
+            <Button type="primary" onClick={() => navigate("/notes")}>
+              {t("notes.backToNotes")}
+            </Button>
+          </div>
+        </NotesLayout>
+      </>
+    );
+  }
+
+  // Render editor (for both new and existing notes)
+  return (
+    <>
+      {contextHolder}
       <NotesLayout
         collapsed={collapsed}
         toggleCollapsed={() => setCollapsed((v) => !v)}
         currentNoteId={noteId}
         onCreateNote={handleCreateNewNote}
       >
-        <div style={{ padding: "40px", textAlign: "center" }}>
-          <h2>{t("notes.errorLoading")}</h2>
-          <p>{t("notes.noteDeleted")}</p>
-          <button onClick={() => navigate("/notes")}>{t("notes.backToNotes")}</button>
-        </div>
+        <NoteEditor
+          key={noteId}
+          noteId={noteId}
+          title={currentNoteTitle}
+          content={noteId === "new" ? [{ type: "paragraph", content: "" }] : note?.content}
+          isLoading={isLoading}
+          isUpdating={isUpdating}
+          isCreating={isCreating}
+          onTitleBlur={handleTitleBlur}
+          onTitleChange={handleTitleChange}
+          onSave={handleSave}
+          autoSave={noteId !== "new"}
+          autoSaveDelay={2000}
+        />
       </NotesLayout>
-    );
-  }
-
-  // Render editor (for both new and existing notes)
-  return (
-    <NotesLayout
-      collapsed={collapsed}
-      toggleCollapsed={() => setCollapsed((v) => !v)}
-      currentNoteId={noteId}
-      onCreateNote={handleCreateNewNote}
-    >
-      <NoteEditor
-        noteId={noteId}
-        title={currentNoteTitle}
-        content={noteId === "new" ? [{ type: "paragraph", content: "" }] : note?.content}
-        isLoading={isLoading}
-        isUpdating={isUpdating}
-        isCreating={isCreating}
-        onTitleChange={handleTitleChange}
-        onSave={handleSave}
-        autoSave={noteId !== "new"}
-        autoSaveDelay={2000}
-      />
-    </NotesLayout>
+    </>
   );
 };
 

@@ -1,0 +1,298 @@
+.sidebar {
+  background: #18181b;
+  border-right: 1px solid #27272f;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.5);
+  box-sizing: border-box;
+  color: #e5e7eb;
+}
+
+/* Верх: кнопка назад + создать */
+.header {
+  padding: 16px;
+  border-bottom: 1px solid #27272f;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: #18181b;
+}
+
+.backToListBtn {
+  width: 100%;
+  padding: 10px 16px;
+  background: #18181b;
+  color: #9ca3af;
+  border: 1px solid #27272f;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+
+  svg {
+    color: inherit;
+  }
+
+  &:hover {
+    background: #27272f;
+    border-color: #3f3f46;
+    color: #e5e7eb;
+    transform: translateX(-2px);
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
+.createBtn {
+  width: 100%;
+  padding: 10px 16px;
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.6);
+
+  svg {
+    color: inherit;
+  }
+
+  &:hover {
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.8);
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0) scale(0.98);
+  }
+}
+
+/* Поиск */
+.searchWrapper {
+  padding: 16px;
+  background: #18181b;
+  border-bottom: 1px solid #27272f;
+}
+
+.searchInputWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 12px;
+  color: #6b7280;
+  pointer-events: none;
+  transition: color 0.2s;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 10px 12px 10px 38px;
+  border: 1px solid #27272f;
+  border-radius: 8px;
+  font-size: 14px;
+  background: #09090b;
+  color: #e5e7eb;
+  transition: all 0.2s ease;
+  outline: none;
+
+  &::placeholder {
+    color: #6b7280;
+  }
+
+  &:hover {
+    border-color: #3f3f46;
+    background: #0b0b0f;
+  }
+
+  &:focus {
+    border-color: #6366f1;
+    background: #0b0b0f;
+    box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.4);
+
+    ~ .searchIcon {
+      color: #a5b4fc;
+    }
+  }
+}
+
+/* Список заметок */
+.notesList {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px 8px;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #27272f;
+    border-radius: 3px;
+
+    &:hover {
+      background: #3f3f46;
+    }
+  }
+}
+
+.noteItem {
+  display: flex;
+  align-items: flex-start;
+  padding: 12px;
+  margin-bottom: 6px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  background: #18181b;
+  border: 1px solid transparent;
+
+  &::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 0;
+    background: linear-gradient(180deg, #6366f1, #8b5cf6);
+    border-radius: 0 2px 2px 0;
+    transition: height 0.2s ease;
+  }
+
+  &:hover {
+    background: #27272f;
+    border-color: #3f3f46;
+    transform: translateX(4px);
+
+    &::before {
+      height: 70%;
+    }
+  }
+
+  &.active {
+    background: radial-gradient(circle at top left, #4f46e5 0, #111827 55%);
+    border-color: #4f46e5;
+
+    &::before {
+      height: 100%;
+    }
+
+    .noteTitle {
+      color: #e5e7eb;
+      font-weight: 600;
+    }
+
+    .noteIcon {
+      color: #a5b4fc;
+    }
+  }
+}
+
+.noteIcon {
+  color: #6b7280;
+  margin-right: 12px;
+  margin-top: 2px;
+  flex-shrink: 0;
+  transition: color 0.2s;
+}
+
+.noteInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.noteTitle {
+  font-size: 14px;
+  font-weight: 500;
+  color: #e5e7eb;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 4px;
+  transition: color 0.2s;
+}
+
+.noteDate {
+  font-size: 11px;
+  color: #9ca3af;
+  font-weight: 500;
+}
+
+/* Состояния */
+.loading,
+.empty {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 60px 16px;
+  flex-direction: column;
+  gap: 12px;
+  color: #6b7280;
+}
+
+.emptyIcon {
+  opacity: 0.7;
+  stroke-width: 1.5;
+}
+
+/* Кнопки при collapsed */
+.collapsedActions {
+  padding: 16px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.iconBtn {
+  width: 44px;
+  height: 44px;
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  color: #ffffff;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.8);
+
+  svg {
+    color: inherit;
+  }
+
+  &:hover {
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 1);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+}

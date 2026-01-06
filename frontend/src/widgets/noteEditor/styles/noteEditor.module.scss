@@ -2,25 +2,28 @@
   height: 100%;
   display: flex;
   flex-direction: column;
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 40px 24px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .titleContainer {
-  margin-bottom: 24px;
+  width: 100%;
+  padding: 0 80px;
+  box-sizing: border-box;
+  width: 100%;
 }
 
 .titleInput {
   width: 100%;
-  font-size: 32px;
-  font-weight: 600;
+  font-size: 40px;
+  font-weight: 700;
   border: none;
   outline: none;
-  padding: 8px 0;
+  padding: 5px 0;
   background: transparent;
-  color: #1a1a1a;
+  color: white;
   font-family: inherit;
+  line-height: 1.2;
 
   &::placeholder {
     color: #c0c0c0;
@@ -35,6 +38,28 @@
 .editorContent {
   flex: 1;
   overflow-y: auto;
+  width: 100%;
+  padding: 0px 80px 40px 80px;
+  box-sizing: border-box;
+
+  scroll-behavior: smooth;
+
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #d1d5db;
+    border-radius: 4px;
+
+    &:hover {
+      background: #9ca3af;
+    }
+  }
 }
 
 .loading {
@@ -48,5 +73,35 @@
   p {
     color: #999;
     font-size: 14px;
+  }
+}
+
+// Adaptive
+@media (max-width: 1024px) {
+  .titleContainer {
+    padding: 0 40px;
+  }
+
+  .editorContent {
+    padding: 40px 40px 40px 40px;
+  }
+
+  .titleInput {
+    font-size: 32px;
+  }
+}
+
+// Adaptive
+@media (max-width: 768px) {
+  .titleContainer {
+    padding: 0 16px;
+  }
+
+  .editorContent {
+    padding: 24px 16px 24px 16px;
+  }
+
+  .titleInput {
+    font-size: 28px;
   }
 }

@@ -72,8 +72,6 @@ class UserServiceClass {
 
       const { accessToken, refreshToken } = generateJwt(user.id);
 
-      console.log(2222, refreshToken)
-
       await trx.userConfig.create({ data: { userId: user.id } });
 
       const baseDir = {

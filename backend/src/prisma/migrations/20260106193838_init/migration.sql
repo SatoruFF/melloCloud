@@ -113,6 +113,8 @@ CREATE TABLE "Note" (
     "title" TEXT NOT NULL,
     "content" TEXT NOT NULL,
     "userId" INTEGER NOT NULL,
+    "isStarred" BOOLEAN NOT NULL DEFAULT false,
+    "tags" TEXT[],
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -183,6 +185,12 @@ CREATE UNIQUE INDEX "Invite_email_key" ON "Invite"("email");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Invite_activationToken_key" ON "Invite"("activationToken");
+
+-- CreateIndex
+CREATE INDEX "Note_userId_idx" ON "Note"("userId");
+
+-- CreateIndex
+CREATE INDEX "Note_isStarred_idx" ON "Note"("isStarred");
 
 -- AddForeignKey
 ALTER TABLE "Session" ADD CONSTRAINT "Session_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;

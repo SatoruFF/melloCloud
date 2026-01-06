@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { ColumnController } from "../../controllers/taskColumn";
+import { ColumnController } from "../../controllers/taskColumn.js";
 
 const router: Router = Router();
 

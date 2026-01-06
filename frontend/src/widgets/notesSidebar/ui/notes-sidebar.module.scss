@@ -1,6 +1,69 @@
 .sidebar {
   width: 100%;
-  background: #f7f7f7;
+  background: #18181b;
+  color: #e5e7eb;
+}
+
+/* Переопределяем AntD меню под тёмный фон */
+.menu {
+  width: 100%;
+  background: transparent !important;
+  border-right: none;
+  color: #e5e7eb;
+  box-sizing: border-box;
+  padding-top: 15px;
+
+  .ant-menu-item {
+    padding-inline: 12px !important;
+  }
+}
+
+.menuItem {
+  width: 100%;
+  font-size: 14px;
+  border-radius: 8px;
+  transition:
+    background 0.2s,
+    color 0.2s;
+  color: #e5e7eb !important; // текст + иконки
+
+  &::after {
+    display: none !important;
+  }
+}
+
+/* Внутренний контейнер, чтобы не ломать layout при Tooltip */
+.menuItemInner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  svg {
+    color: inherit;
+  }
+}
+
+.menuLabel {
+  white-space: nowrap;
+}
+
+.menuItem:hover {
+  background-color: #27272f !important;
+  color: #ffffff !important;
+
+  svg {
+    color: inherit;
+  }
+}
+
+.ant-menu-item-selected {
+  background-color: #4b5563 !important;
+  font-weight: 500;
+  color: #ffffff !important;
+
+  svg {
+    color: inherit;
+  }
 }
 
 .header {
@@ -9,43 +72,15 @@
   gap: 10px;
   padding: 12px;
   box-sizing: border-box;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid #27272f;
 }
 
 .avatar {
-  background-color: #1890ff;
+  background-color: #3b82f6;
 }
 
 .username {
   cursor: pointer;
   font-size: 16px;
-}
-
-.menu {
-  width: 100%;
-  background: transparent;
-  border-right: none;
-}
-
-.menuItem {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  font-size: 14px;
-  border-radius: 6px;
-  transition: background 0.3s;
-
-  &::after {
-    display: none !important;
-  }
-}
-
-.menuItem:hover {
-  background-color: #e6f7ff !important;
-}
-
-.ant-menu-item-selected {
-  background-color: #e6f7ff !important;
-  font-weight: 500;
+  color: #f9fafb;
 }

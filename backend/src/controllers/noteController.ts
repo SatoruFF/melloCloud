@@ -48,7 +48,7 @@ class NotesControllerClass {
   async createNote(req: Request, res: Response) {
     try {
       const { userId } = req.context;
-      const { title, content } = req.body;
+      const { title, content, tags } = req.body;
 
       if (!userId) {
         throw createError(401, "User not found");
@@ -58,9 +58,15 @@ class NotesControllerClass {
         throw createError(400, "Title is required");
       }
 
+      // Валидация tags
+      if (tags !== undefined && !Array.isArray(tags)) {
+        throw createError(400, "Tags must be an array");
+      }
+
       const note = await NotesService.createNote(req.context, userId, {
         title,
         content,
+        tags,
       });
 
       return res.status(201).json(serializeBigInt(note));
@@ -76,7 +82,7 @@ class NotesControllerClass {
     try {
       const { userId } = req.context;
       const { noteId } = req.params;
-      const { title, content } = req.body;
+      const { title, content, isStarred, tags } = req.body;
 
       if (!userId) {
         throw createError(401, "User not found");
@@ -86,9 +92,21 @@ class NotesControllerClass {
         throw createError(400, "Note ID is required");
       }
 
+      // Валидация isStarred
+      if (isStarred !== undefined && typeof isStarred !== "boolean") {
+        throw createError(400, "isStarred must be a boolean");
+      }
+
+      // Валидация tags
+      if (tags !== undefined && !Array.isArray(tags)) {
+        throw createError(400, "Tags must be an array");
+      }
+
       const note = await NotesService.updateNote(req.context, noteId, userId, {
         title,
         content,
+        isStarred,
+        tags,
       });
 
       return res.json(serializeBigInt(note));

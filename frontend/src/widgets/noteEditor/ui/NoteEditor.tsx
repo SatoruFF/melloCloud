@@ -12,6 +12,7 @@ interface NoteEditorProps {
   isLoading?: boolean;
   isUpdating?: boolean;
   isCreating?: boolean;
+  onTitleBlur: () => void;
   onTitleChange: (title: string) => void;
   onSave: (content: any) => void;
   autoSave?: boolean;
@@ -19,13 +20,13 @@ interface NoteEditorProps {
 }
 
 const NoteEditor: FC<NoteEditorProps> = ({
-  noteId,
   title,
   content,
   isLoading,
   isUpdating,
   isCreating,
   onTitleChange,
+  onTitleBlur,
   onSave,
   autoSave = true,
   autoSaveDelay = 2000,
@@ -49,6 +50,7 @@ const NoteEditor: FC<NoteEditorProps> = ({
           type="text"
           className={cn(styles.titleInput)}
           value={title}
+          onBlur={onTitleBlur}
           onChange={(e) => onTitleChange(e.target.value)}
           placeholder={t("notes.untitled")}
           disabled={isUpdating || isCreating}

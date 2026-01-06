@@ -1,26 +1,22 @@
-// FIXME: set in inner component?
-.notesWrapper {
-  height: 100vh - $header-height;
-  overflow: hidden;
-}
+@use "../../../shared/styles/tmp.scss" as *;
 
-.sidebar {
-  width: $notes-sidebar-width;
-  height: 100%;
-  background: #f5f5f5;
+// Layout для страницы списка
+.notesListLayout {
   display: flex;
-  flex-direction: column;
-  border-right: 1px solid #ddd;
-  box-sizing: border-box;
+  height: calc(100vh - $header-height);
+  width: 100%;
+  overflow: hidden;
+  background: #fff; // ← фон белый
 }
 
-.editor {
-  flex-grow: 1;
-  height: 100%;
+// Контейнер для NotesList справа от сайдбара
+.notesListContent {
+  flex: 1; // ← занимает всё оставшееся место
   overflow-y: auto;
   background: #fff;
 }
 
+// Wrapper для самого компонента NotesList (если нужен)
 .notesListWrapper {
   padding: 24px;
   max-width: 1400px;
@@ -68,4 +64,49 @@
       }
     }
   }
+}
+
+// Старые стили (если используются в других местах)
+.notesWrapper {
+  height: calc(100vh - $header-height);
+  overflow: hidden;
+}
+
+.sidebar {
+  width: $notes-sidebar-width;
+  height: 100%;
+  background: #f5f5f5;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid #ddd;
+  box-sizing: border-box;
+}
+
+.editor {
+  flex-grow: 1;
+  height: 100%;
+  overflow-y: auto;
+  background: #fff;
+}
+
+.errorWrapper {
+  padding: 40px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: white;
+}
+
+.errorTitle {
+  margin-bottom: 12px;
+  font-size: 24px;
+  font-weight: 600;
+  color: white;
+}
+
+.errorText {
+  margin-bottom: 24px;
 }

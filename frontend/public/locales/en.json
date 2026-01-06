@@ -1,5 +1,9 @@
 {
   "application-name": "Mello.",
+  "common": {
+    "yes": "Yes",
+    "no": "No"
+  },
   "home": {
     "primary-name": "Mello",
     "about-product": "Your lightweight, cross-platform personal workspace for cloud, chat, files, and tasks — all in one app.",
@@ -95,6 +99,8 @@
     "createFirst": "Create first note",
     "empty": "Notes not found",
     "search": "Search",
+    "searchNotes": "Search notes",
+    "noNotes": "Notes list are empty",
     "searchTooltip": "Search through your notes",
     "recent": "Recent",
     "recentTooltip": "Recently viewed notes",
@@ -114,6 +120,23 @@
     "version": "Version",
     "notReady": "Not ready document",
     "saveFailed": "Save failed",
+    "backToList": "Back to notes list",
+    "createSuccess": "Success created",
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "daysAgo": "{{count}} days ago",
+    "noteCount": {
+      "singular": "note",
+      "plural": "notes"
+    },
+    "delete": "Delete",
+    "tryAgain": "Please try again later",
+    "loading": "Loading...",
+    "noResults": "No notes found",
+    "saveSuccess": "Saved successfully",
+    "deleteConfirm": "Confirm delete?",
+    "star": "Star",
+    "unstar": "Unstar",
     "editor": {
       "downloadFailed": "Download failed"
     },

@@ -1,15 +1,39 @@
 import createError from "http-errors";
-import { v4 as uuidv4 } from "uuid";
+import { parseJson, stringify } from "../helpers/parseJson.js";
+
+//
+// content <-> text(JSON)
+//
+const mapContent = <T extends { content: any }>(
+  data: T | T[],
+  to: "text" | "object" = "object"
+): any => {
+  const mappers = {
+    text: stringify,     // object -> string
+    object: parseJson,   // string -> object
+  } as const;
+
+  if (Array.isArray(data)) {
+    return data.map((note) => ({
+      ...note,
+      content: mappers[to](note.content),
+    }));
+  }
+
+  return {
+    ...data,
+    content: mappers[to](data.content),
+  };
+};
 
 class NotesServiceClass {
+  //
+  // GET MANY
+  //
   async getUserNotes(context, userId: number) {
     const notes = await context.prisma.note.findMany({
-      where: {
-        userId,
-      },
-      orderBy: {
-        updatedAt: "desc",
-      },
+      where: { userId },
+      orderBy: { updatedAt: "desc" },
       select: {
         id: true,
         title: true,
@@ -17,17 +41,29 @@ class NotesServiceClass {
         createdAt: true,
         updatedAt: true,
         userId: true,
+        isStarred: true, // +++
+        tags: true,      // +++
       },
     });
 
-    return notes;
+    return mapContent(notes, "object"); // string -> object
   }
 
+  //
+  // GET ONE
+  //
   async getNote(context, noteId: string, userId: number) {
     const note = await context.prisma.note.findFirst({
-      where: {
-        id: noteId,
-        userId, // Ensure user can only access their own notes
+      where: { id: +noteId, userId },
+      select: {
+        id: true,
+        title: true,
+        content: true,
+        createdAt: true,
+        updatedAt: true,
+        userId: true,
+        isStarred: true, // +++
+        tags: true,      // +++
       },
     });
 
@@ -35,55 +71,82 @@ class NotesServiceClass {
       throw createError(404, "Note not found");
     }
 
-    return note;
+    return mapContent(note, "object"); // string -> object
   }
 
-  async createNote(context, userId: number, data: { title: string; content: any }) {
+  //
+  // CREATE
+  //
+  async createNote(
+    context,
+    userId: number,
+    data: { title: string; content: any; tags?: string[] }
+  ) {
     const note = await context.prisma.note.create({
       data: {
-        id: uuidv4(),
         title: data.title,
-        content: data.content,
+        content: stringify(data.content), // object -> string
+        tags: data.tags || [], // +++
         userId,
       },
     });
 
-    return note;
+    return mapContent(note, "object"); // string -> object
   }
 
-  async updateNote(context, noteId: string, userId: number, data: { title?: string; content?: any }) {
-    // Check if note exists and belongs to user
+  //
+  // UPDATE
+  //
+  async updateNote(
+    context,
+    noteId: string,
+    userId: number,
+    data: { title?: string; content?: any; isStarred?: boolean; tags?: string[] }
+  ) {
     const existingNote = await context.prisma.note.findFirst({
-      where: {
-        id: noteId,
-        userId,
-      },
+      where: { id: +noteId, userId },
     });
 
     if (!existingNote) {
       throw createError(404, "Note not found");
     }
 
+    const updateData: any = {
+      updatedAt: new Date(),
+    };
+
+    // Обновляем только переданные поля
+    if (data.title !== undefined) {
+      updateData.title = data.title;
+    }
+
+    if (data.content !== undefined) {
+      updateData.content = stringify(data.content);
+    }
+
+    if (data.isStarred !== undefined) {
+      updateData.isStarred = data.isStarred;
+    }
+
+    if (data.tags !== undefined) {
+      updateData.tags = data.tags;
+ 
+    }
+
     const note = await context.prisma.note.update({
-      where: {
-        id: noteId,
-      },
-      data: {
-        ...data,
-        updatedAt: new Date(),
-      },
+      where: { id: +noteId },
+      data: updateData,
     });
 
-    return note;
+    return mapContent(note, "object"); // string -> object
   }
 
+  //
+  // DELETE
+  //
   async deleteNote(context, noteId: string, userId: number) {
-    // Check if note exists and belongs to user
     const existingNote = await context.prisma.note.findFirst({
-      where: {
-        id: noteId,
-        userId,
-      },
+      where: { id: +noteId, userId },
     });
 
     if (!existingNote) {
@@ -91,18 +154,19 @@ class NotesServiceClass {
     }
 
     await context.prisma.note.delete({
-      where: {
-        id: noteId,
-      },
+      where: { id: +noteId },
     });
 
     return { message: "Note deleted successfully" };
   }
 
+  //
+  // SEARCH
+  //
   async searchNotes(context, userId: number, query: string) {
     const notes = await context.prisma.note.findMany({
       where: {
-        userId,
+        userId: +userId,
         OR: [
           {
             title: {
@@ -116,14 +180,27 @@ class NotesServiceClass {
               string_contains: query,
             },
           },
+          {
+            tags: {
+              has: query, // поиск по тегам +++
+            },
+          },
         ],
       },
-      orderBy: {
-        updatedAt: "desc",
+      orderBy: { updatedAt: "desc" },
+      select: {
+        id: true,
+        title: true,
+        content: true,
+        createdAt: true,
+        updatedAt: true,
+        userId: true,
+        isStarred: true, // +++
+        tags: true,      // +++
       },
     });
 
-    return notes;
+    return mapContent(notes, "object"); // string -> object
   }
 }
 

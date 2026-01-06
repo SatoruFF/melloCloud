@@ -4,6 +4,8 @@ import type { FileListSchema } from "../../../entities/file";
 import { fileApi } from "../../../entities/file/model/api/fileApi";
 import type { MessageSchema } from "../../../entities/message";
 import { messageApi } from "../../../entities/message/model/api/messagesApi";
+import { notesApi } from "../../../entities/note/model/api/noteApi";
+import { Note } from "../../../entities/note/types/note";
 import { taskApi } from "../../../entities/task/model/api/taskApi";
 import { TaskState } from "../../../entities/task/types/taskState";
 import { taskColumnApi } from "../../../entities/taskColumn/model/api/taskColumnApi";
@@ -23,6 +25,8 @@ export interface StateSchema {
   tasks: TaskState; // Changed from tasks: Task[] to task: TaskState
   taskColumns: TaskColumnState; // Changed from taskColumn: TaskColumn to column: TaskColumnState
 
+  notes: Note[];
+
   // RTK Query API slices
   [userApi.reducerPath]: ReturnType<typeof userApi.reducer>;
   [fileApi.reducerPath]: ReturnType<typeof fileApi.reducer>;
@@ -30,6 +34,7 @@ export interface StateSchema {
   [chatApi.reducerPath]: ReturnType<typeof chatApi.reducer>;
   [taskApi.reducerPath]: ReturnType<typeof taskApi.reducer>;
   [taskColumnApi.reducerPath]: ReturnType<typeof taskColumnApi.reducer>;
+  [notesApi.reducerPath]: ReturnType<typeof taskColumnApi.reducer>;
 }
 
 // #[allow(dead_code)] ;)

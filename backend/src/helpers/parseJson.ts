@@ -1,6 +1,6 @@
 import _ from 'lodash';
 
-export default function parseJSON(data, onError?) {
+export function parseJson(data, onError?) {
   if (_.isString(data)) {
     try {
       return JSON.parse(data);
@@ -14,4 +14,8 @@ export default function parseJSON(data, onError?) {
   } else {
     return data;
   }
+}
+
+export const stringify = (t) => {
+  return JSON.stringify(t)
 }

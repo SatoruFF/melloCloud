@@ -5,11 +5,12 @@
   height: calc(100vh - $header-height);
   width: 100%;
   overflow: hidden;
-  background: #f8f9fa;
+  @include diskBackground;
 
   .content {
     flex: 1;
     overflow-y: auto;
     background: #fff;
+    @include diskBackground;
   }
 }

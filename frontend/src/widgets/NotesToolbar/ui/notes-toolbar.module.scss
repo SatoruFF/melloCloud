@@ -2,25 +2,30 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 8px 16px;
-  box-sizing: border-box;
-  background: #fafafa;
-  border-bottom: 1px solid #f0f0f0;
-  min-height: 48px;
+  padding: 12px 20px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid #e5e7eb;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  gap: 16px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
 
 .toolbarSection {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
 }
 
 .toolbarLeft {
   flex: 1;
+  justify-content: flex-start;
 }
 
 .toolbarCenter {
-  flex: 2;
+  flex: 0 0 auto;
   justify-content: center;
 }
 
@@ -32,52 +37,108 @@
 .buttonGroup {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
+  padding: 4px;
+  background: #f9fafb;
+  border-radius: 8px;
 }
 
 .formatGroup {
-  border: 1px solid #d9d9d9;
-  border-radius: 4px;
+  gap: 2px;
   padding: 2px;
-  box-sizing: border-box;
-  background: #fff;
+  background: #f3f4f6;
+}
+
+.toolbarButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  height: 32px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #4b5563;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  border: none;
+
+  &:hover {
+    background: #e5e7eb;
+    color: #1f2937;
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+
+  // Lucide icons styling
+  svg {
+    stroke-width: 2;
+  }
+}
+
+.iconButton {
+  padding: 6px;
+  width: 32px;
+
+  &.active {
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    color: white;
+    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+
+    &:hover {
+      background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+    }
+
+    svg {
+      stroke-width: 2.5;
+    }
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+
+    &:hover {
+      background: transparent;
+      transform: none;
+    }
+  }
 }
 
 .separator {
   width: 1px;
   height: 20px;
-  background: #d9d9d9;
-  margin: 0 8px;
+  background: #d1d5db;
+  margin: 0 4px;
 }
 
-.toolbarButton {
-  border: none;
-  box-shadow: none;
-
-  &:hover {
-    background: #f5f5f5;
+// Responsive
+@media (max-width: 768px) {
+  .toolbar {
+    padding: 8px 12px;
+    gap: 8px;
   }
 
-  &:focus {
-    box-shadow: none;
-  }
-}
-
-.iconButton {
-  width: 28px;
-  height: 28px;
-  padding: 0;
-  box-sizing: border-box;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  &.active {
-    background: #1890ff;
-    color: #fff;
-
-    &:hover {
-      background: #40a9ff;
+  .toolbarButton {
+    span {
+      display: none; // Hide text on mobile
     }
   }
+
+  .toolbarLeft,
+  .toolbarRight {
+    flex: 0 0 auto;
+  }
+
+  .buttonGroup {
+    padding: 2px;
+    gap: 4px;
+  }
+}
+
+.saveBtn {
+  color: white;
 }

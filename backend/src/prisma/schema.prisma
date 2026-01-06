@@ -156,9 +156,15 @@ model Note {
   content   String
   userId    Int
   user      User     @relation(fields: [userId], references: [id])
+  isStarred Boolean  @default(false) // любимые/избранные
+  tags      String[] // массив тегов (массив строк)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  
+  @@index([userId])
+  @@index([isStarred]) // индекс для быстрого поиска избранного
 }
+
 
 // Define Column data model for Kanban
 model TaskColumn {

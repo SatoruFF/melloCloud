@@ -3,7 +3,7 @@ import type http from "http";
 import { MessageService } from "../services/messagesService.js";
 import { getWebSocketConnection } from "../configs/webSocket.js";
 import { logger } from "../configs/logger.js";
-import parseJSON from "./parseJson.js";
+import { parseJson } from "./parseJson.js";
 import ApiContext from "../models/context.js";
 
 export function setupWebSocketServer(server: http.Server) {
@@ -37,7 +37,7 @@ export function setupWebSocketServer(server: http.Server) {
       try {
         logger.info("Received message:", message); // TODO: remove
         const messageString = message.toString ? message.toString() : message;
-        const messageData = parseJSON(messageString);
+        const messageData = parseJson(messageString);
 
         const savedMessage = await MessageService.saveMessage(context, messageData);
 

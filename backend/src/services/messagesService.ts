@@ -1,4 +1,4 @@
-import { serializeMessage, deserializeMessage } from "./../helpers/messageSerializer";
+import { serializeMessage, deserializeMessage } from "./../helpers/messageSerializer.js";
 import _ from "lodash";
 import { prisma } from "../configs/config.js";
 import { logger } from "../configs/logger.js";

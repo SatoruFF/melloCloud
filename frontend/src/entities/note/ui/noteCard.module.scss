@@ -1,0 +1,199 @@
+.noteCard {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 16px;
+    padding: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    min-height: 200px;
+    display: flex;
+    flex-direction: column;
+    backdrop-filter: blur(10px);
+    position: relative;
+  
+    &:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+  
+      .noteActions {
+        opacity: 1;
+        pointer-events: auto;
+      }
+  
+      .starBtn:not(.starred) {
+        opacity: 0.7;
+      }
+    }
+  }
+  
+  .starBtn {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    background: transparent;
+    border: none;
+    padding: 4px;
+    cursor: pointer;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    color: #d1d5db;
+    opacity: 0;
+    z-index: 5;
+  
+    &:hover {
+      color: #fbbf24;
+      transform: scale(1.15);
+      opacity: 1 !important;
+    }
+  
+    &.starred {
+      opacity: 1;
+      color: #fbbf24;
+    }
+  }
+  
+  .noteHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+    gap: 8px;
+  
+    h3 {
+      font-size: 18px;
+      font-weight: 700;
+      color: #1f2937;
+      margin: 0;
+      flex: 1;
+      padding-left: 32px; // Место для звезды
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+  
+  .noteActions {
+    display: flex;
+    gap: 6px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+    flex-shrink: 0;
+    z-index: 10;
+  }
+  
+  .actionBtn {
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    padding: 6px;
+    cursor: pointer;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    color: #9ca3af;
+    pointer-events: auto;
+  
+    svg {
+      pointer-events: none;
+      display: block;
+    }
+  
+    &:hover:not(:disabled) {
+      background: rgba(255, 255, 255, 1);
+      transform: scale(1.08);
+    }
+  
+    &:active:not(:disabled) {
+      transform: scale(0.95);
+    }
+  
+    &:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+  }
+  
+  .deleteBtn {
+    &:hover:not(:disabled) {
+      color: #ef4444;
+      background: rgba(239, 68, 68, 0.1);
+      border-color: rgba(239, 68, 68, 0.3);
+    }
+  }
+  
+  .noteContent {
+    font-size: 14px;
+    color: #6b7280;
+    line-height: 1.5;
+    margin: 0;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    word-break: break-word;
+    flex-grow: 1;
+  }
+  
+  .noteTags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 12px;
+    margin-bottom: 8px;
+  }
+  
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 8px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 10px;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: lowercase;
+    white-space: nowrap;
+    max-width: 80px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  .tagMore {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 8px;
+    background: rgba(0, 0, 0, 0.06);
+    color: #9ca3af;
+    border-radius: 10px;
+    font-size: 10px;
+    font-weight: 600;
+  }
+  
+  .noteFooter {
+    margin-top: auto;
+    padding-top: 10px;
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+  }
+  
+  .noteDate {
+    font-size: 11px;
+    color: #9ca3af;
+    font-weight: 500;
+  }
+  
+  @media (max-width: 768px) {
+    .noteActions {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    
+    .starBtn:not(.starred) {
+      opacity: 0.5;
+    }
+  }
+  

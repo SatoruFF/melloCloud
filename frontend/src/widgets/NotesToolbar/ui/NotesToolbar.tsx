@@ -2,18 +2,7 @@
 import { useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { Button, message } from "antd";
-import {
-  ShareAltOutlined,
-  SaveOutlined,
-  DownloadOutlined,
-  PrinterOutlined,
-  MoreOutlined,
-  UndoOutlined,
-  RedoOutlined,
-  BoldOutlined,
-  ItalicOutlined,
-  UnderlineOutlined,
-} from "@ant-design/icons";
+import { Share2, Save, Download, Printer, MoreHorizontal, Undo, Redo, Bold, Italic, Underline } from "lucide-react";
 import cn from "classnames";
 import styles from "./notes-toolbar.module.scss";
 import { ShareNotesDrawer } from "../../../features/shareNotesDrawer";
@@ -92,19 +81,14 @@ export const NotesToolbar = ({
         <div className={cn(styles.toolbarSection, styles.toolbarLeft)}>
           <div className={cn(styles.buttonGroup)}>
             <Button
-              icon={<SaveOutlined />}
+              icon={<Save size={16} />}
               onClick={handleSave}
-              className={cn(styles.toolbarButton)}
-              type="text"
+              type="primary"
+              className={cn(styles.toolbarButton, styles.saveBtn)}
             >
               {t("notes.toolbar.save")}
             </Button>
-            <Button
-              icon={<ShareAltOutlined />}
-              onClick={handleShare}
-              className={cn(styles.toolbarButton)}
-              type="text"
-            >
+            <Button icon={<Share2 size={16} />} onClick={handleShare} className={cn(styles.toolbarButton)} type="text">
               {t("notes.toolbar.share")}
             </Button>
           </div>
@@ -114,7 +98,7 @@ export const NotesToolbar = ({
         <div className={cn(styles.toolbarSection, styles.toolbarCenter)}>
           <div className={cn(styles.buttonGroup, styles.formatGroup)}>
             <Button
-              icon={<UndoOutlined />}
+              icon={<Undo size={16} />}
               onClick={onUndo}
               disabled={!canUndo}
               className={cn(styles.toolbarButton, styles.iconButton)}
@@ -122,7 +106,7 @@ export const NotesToolbar = ({
               size="small"
             />
             <Button
-              icon={<RedoOutlined />}
+              icon={<Redo size={16} />}
               onClick={onRedo}
               disabled={!canRedo}
               className={cn(styles.toolbarButton, styles.iconButton)}
@@ -135,35 +119,23 @@ export const NotesToolbar = ({
 
           <div className={cn(styles.buttonGroup, styles.formatGroup)}>
             <Button
-              icon={<BoldOutlined />}
+              icon={<Bold size={16} />}
               onClick={onBold}
-              className={cn(
-                styles.toolbarButton,
-                styles.iconButton,
-                isBold && styles.active,
-              )}
+              className={cn(styles.toolbarButton, styles.iconButton, isBold && styles.active)}
               type="text"
               size="small"
             />
             <Button
-              icon={<ItalicOutlined />}
+              icon={<Italic size={16} />}
               onClick={onItalic}
-              className={cn(
-                styles.toolbarButton,
-                styles.iconButton,
-                isItalic && styles.active,
-              )}
+              className={cn(styles.toolbarButton, styles.iconButton, isItalic && styles.active)}
               type="text"
               size="small"
             />
             <Button
-              icon={<UnderlineOutlined />}
+              icon={<Underline size={16} />}
               onClick={onUnderline}
-              className={cn(
-                styles.toolbarButton,
-                styles.iconButton,
-                isUnderline && styles.active,
-              )}
+              className={cn(styles.toolbarButton, styles.iconButton, isUnderline && styles.active)}
               type="text"
               size="small"
             />
@@ -174,21 +146,21 @@ export const NotesToolbar = ({
         <div className={cn(styles.toolbarSection, styles.toolbarRight)}>
           <div className={cn(styles.buttonGroup)}>
             <Button
-              icon={<DownloadOutlined />}
+              icon={<Download size={16} />}
               onClick={handleDownload}
               className={cn(styles.toolbarButton, styles.iconButton)}
               type="text"
               title={t("notes.toolbar.download")}
             />
             <Button
-              icon={<PrinterOutlined />}
+              icon={<Printer size={16} />}
               onClick={handlePrint}
               className={cn(styles.toolbarButton, styles.iconButton)}
               type="text"
               title={t("notes.toolbar.print")}
             />
             <Button
-              icon={<MoreOutlined />}
+              icon={<MoreHorizontal size={16} />}
               className={cn(styles.toolbarButton, styles.iconButton)}
               type="text"
               title={t("notes.toolbar.more")}
@@ -198,10 +170,7 @@ export const NotesToolbar = ({
       </div>
 
       {/* Share Drawer */}
-      <ShareNotesDrawer
-        open={shareDrawerOpen}
-        onClose={() => setShareDrawerOpen(false)}
-      />
+      <ShareNotesDrawer open={shareDrawerOpen} onClose={() => setShareDrawerOpen(false)} />
     </>
   );
 };

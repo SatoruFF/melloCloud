@@ -1,14 +1,14 @@
 @use "../../../shared/styles/tmp.scss" as *;
 
 .notesListWrapper {
-  min-height: 100vh - $header-height;
+  height: calc(100vh - $header-height);
   @include diskBackground;
-  padding: 32px 24px;
+  padding: 15px 15px;
+  box-sizing: border-box;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
 .notesContainer {
-  // max-width: 1400px;
   width: 100%;
   margin: 0 auto;
 }
@@ -61,6 +61,11 @@
 
   &:active {
     transform: translateY(0);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
   }
 }
 
@@ -121,14 +126,33 @@
 }
 
 .notesGridContainer {
-  background: rgba(255, 255, 255, 0.95);
+  @include diskBackground;
   border-radius: 24px;
   padding: 24px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-  height: calc(100vh - 280px);
+  max-height: calc(100vh - 280px);
+  overflow-y: auto;
+
+  /* Custom scrollbar */
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+
+    &:hover {
+      background: rgba(0, 0, 0, 0.3);
+    }
+  }
 }
 
-.virtuosoGrid {
+.notesGrid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   gap: 24px;
@@ -136,22 +160,25 @@
 }
 
 .noteCard {
-  background: white;
+  background: rgba(255, 255, 255, 0.95);
   border-radius: 16px;
   padding: 24px;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  height: 220px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  min-height: 220px;
   display: flex;
   flex-direction: column;
+  backdrop-filter: blur(10px);
+  position: relative;
 
   &:hover {
     transform: translateY(-4px);
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
 
     .noteActions {
       opacity: 1;
+      pointer-events: auto;
     }
   }
 }
@@ -161,16 +188,18 @@
   justify-content: space-between;
   align-items: flex-start;
   margin-bottom: 16px;
+  gap: 12px;
 
   h3 {
     font-size: 20px;
     font-weight: 700;
-    color: #333;
+    color: #1f2937;
     margin: 0;
     flex: 1;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    pointer-events: none; // Текст не блокирует клики
   }
 }
 
@@ -178,60 +207,88 @@
   display: flex;
   gap: 8px;
   opacity: 0;
-  transition: opacity 0.2s;
+  pointer-events: none; // Не блокируем клики когда невидимы
+  transition: opacity 0.2s ease;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 10;
 }
 
 .actionBtn {
-  background: transparent;
-  border: none;
-  padding: 6px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  padding: 8px;
   cursor: pointer;
   border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s;
-  color: #666;
+  transition: all 0.2s ease;
+  color: #6b7280;
+  position: relative;
+  z-index: 11;
+  pointer-events: auto; // Всегда кликабельны
 
-  &:hover {
-    background: rgba(0, 0, 0, 0.05);
+  svg {
+    pointer-events: none; // SVG не перехватывает события
+    display: block;
+  }
+
+  &:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 1);
+    transform: scale(1.1);
+    border-color: rgba(0, 0, 0, 0.2);
+  }
+
+  &:active:not(:disabled) {
+    transform: scale(0.95);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
   }
 }
 
 .deleteBtn {
-  &:hover {
-    color: #ff4d4f;
-    background: rgba(255, 77, 79, 0.1);
+  &:hover:not(:disabled) {
+    color: #ef4444;
+    background: rgba(239, 68, 68, 0.15);
+    border-color: #ef4444;
   }
 }
 
 .editBtn {
-  &:hover {
+  &:hover:not(:disabled) {
     color: #1890ff;
-    background: rgba(24, 144, 255, 0.1);
+    background: rgba(24, 144, 255, 0.15);
+    border-color: #1890ff;
   }
 }
 
 .noteContent {
   font-size: 14px;
-  color: #666;
+  color: #4b5563;
   line-height: 1.6;
   margin: 0 0 auto 0;
   overflow: hidden;
   display: -webkit-box;
   -webkit-line-clamp: 4;
   -webkit-box-orient: vertical;
+  pointer-events: none; // Контент не блокирует клики
 }
 
 .noteFooter {
   margin-top: 16px;
   padding-top: 12px;
-  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  pointer-events: none; // Футер не блокирует клики
 }
 
 .noteDate {
   font-size: 12px;
-  color: #999;
+  color: #6b7280;
   font-weight: 500;
 }
 
@@ -245,11 +302,16 @@
     font-size: 36px;
   }
 
-  .virtuosoGrid {
+  .notesGrid {
     grid-template-columns: 1fr;
   }
 
   .notesGridContainer {
-    height: calc(100vh - 320px);
+    max-height: calc(100vh - 320px);
+  }
+
+  .noteActions {
+    opacity: 1;
+    pointer-events: auto;
   }
 }

@@ -1,24 +1,21 @@
-import { rtkApi } from "../../../../shared/api/rtkApi";
-
-export interface Note {
-  id: string;
-  title: string;
-  content: any; // BlockNote content
-  createdAt: string;
-  updatedAt: string;
-  userId: number;
-}
+import { rtkApi } from '../../../../shared/api/rtkApi';
+import type { Note } from '../../types/note';
 
 export const notesApi = rtkApi.injectEndpoints({
-  endpoints: (builder) => ({
+  endpoints: builder => ({
     // Get all notes
     getNotes: builder.query<Note[], void>({
-      query: () => "notes",
+      query: () => 'notes',
+      providesTags: result =>
+        result
+          ? [...result.map(note => ({ type: 'Notes' as const, id: note.id })), { type: 'Notes' as const, id: 'LIST' }]
+          : [{ type: 'Notes' as const, id: 'LIST' }],
     }),
 
     // Get single note by ID
     getNote: builder.query<Note, string>({
-      query: (noteId) => `notes/${noteId}`,
+      query: noteId => `notes/${noteId}`,
+      providesTags: (result, error, id) => [{ type: 'Notes' as const, id }],
     }),
 
     // Create new note
@@ -29,11 +26,12 @@ export const notesApi = rtkApi.injectEndpoints({
         content: any;
       }
     >({
-      query: (body) => ({
-        url: "notes",
-        method: "POST",
+      query: body => ({
+        url: 'notes',
+        method: 'POST',
         body,
       }),
+      invalidatesTags: [{ type: 'Notes', id: 'LIST' }],
     }),
 
     // Update note
@@ -47,22 +45,31 @@ export const notesApi = rtkApi.injectEndpoints({
     >({
       query: ({ noteId, ...body }) => ({
         url: `notes/${noteId}`,
-        method: "PUT",
+        method: 'PUT',
         body,
       }),
+      invalidatesTags: (result, error, { noteId }) => [
+        { type: 'Notes', id: noteId },
+        { type: 'Notes', id: 'LIST' },
+      ],
     }),
 
     // Delete note
     deleteNote: builder.mutation<{ message: string }, string>({
-      query: (noteId) => ({
+      query: noteId => ({
         url: `notes/${noteId}`,
-        method: "DELETE",
+        method: 'DELETE',
       }),
+      invalidatesTags: (result, error, noteId) => [
+        { type: 'Notes', id: noteId },
+        { type: 'Notes', id: 'LIST' },
+      ],
     }),
 
     // Search notes
     searchNotes: builder.query<Note[], string>({
-      query: (query) => `notes/search?query=${encodeURIComponent(query)}`,
+      query: query => `notes/search?query=${encodeURIComponent(query)}`,
+      providesTags: result => (result ? result.map(note => ({ type: 'Notes' as const, id: note.id })) : []),
     }),
   }),
 });

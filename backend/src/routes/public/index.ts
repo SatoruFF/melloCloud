@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { publicMiddlewares } from "../../middleware/base.middleware";
+import { publicMiddlewares } from "../../middleware/base.middleware.js";
 import userRouter from "./user-public.routes.js";
 
 const publicRouter = Router();

@@ -1,5 +1,5 @@
 import React, { type FC, type ReactNode } from "react";
-import NotesSidebar from "../../notesSidebar/ui/NotesSidebar";
+import { NotesTreeSidebar } from "../../NotesTreeSidebar";
 import styles from "../styles/notesLayout.module.scss";
 import cn from "classnames";
 
@@ -20,7 +20,7 @@ export const NotesLayout: FC<NotesLayoutProps> = ({
 }) => {
   return (
     <div className={cn(styles.notesLayout)}>
-      <NotesSidebar
+      <NotesTreeSidebar
         collapsed={collapsed}
         toggleCollapsed={toggleCollapsed}
         currentNoteId={currentNoteId}
