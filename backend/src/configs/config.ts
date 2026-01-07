@@ -48,11 +48,21 @@ export const s3: any = new AWS.S3({
 
 const PRISMA_LOGS = process.env.PRISMA_LOGS === 'true';
 // prisma init
-export const prisma = new PrismaClient({
-  log: PRISMA_LOGS ? ['query', 'info', 'error'] : [],
-  errorFormat: 'pretty',
-  transactionOptions: {
-    maxWait: 10000, // default: 2000
-    timeout: 20000, // default: 5000
-  },
-});
+const globalForPrisma = globalThis as unknown as {
+  prisma: PrismaClient | undefined;
+};
+
+export const prisma =
+  globalForPrisma.prisma ??
+  new PrismaClient({
+    log: process.env.PRISMA_LOGS ? ['query', 'info', 'error'] : [],
+    errorFormat: 'pretty',
+    transactionOptions: {
+      maxWait: 10000,
+      timeout: 20000,
+    },
+  });
+
+if (process.env.NODE_ENV !== 'production') {
+  globalForPrisma.prisma = prisma;
+}

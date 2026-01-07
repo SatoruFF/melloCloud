@@ -47,6 +47,9 @@ model User {
   
   // Feature flags
   userFeatureFlags UserFeatureFlag[]
+
+  // Webhooks
+  webhooks    Webhook[]
   
   @@index([email])
   @@index([oauthProvider, oauthId])
@@ -287,14 +290,17 @@ model Permission {
   resourceType ResourceType // NOTE, TASK, EVENT, FILE, etc.
   
   // Уровень доступа (битовая маска)
-  // 0 = NONE
-  // 1 = READ
-  // 2 = WRITE
-  // 4 = DELETE
-  // 8 = SHARE
-  // 16 = ADMIN
-  // 47 = OWNER (все права)
-  level       Int      @default(1)
+  // 2 = AVAILABLE
+  // 8 = SEARCH
+  // 32 = READ
+  // 128 = EDIT
+  // 512 = CREATE
+  // 1024 = EXPORT
+  // 2048 = DELETE
+  // 8192 = ACCESS
+  // 32768 = ADMIN
+  // 131072 = DENY
+  level       Int      @default(32) // по умолчанию READ
   
   // Метаданные
   grantedBy   Int?     // кто выдал права
@@ -353,4 +359,154 @@ model UserFeatureFlag {
   @@unique([userId, featureFlagId])
   @@index([userId])
   @@index([featureFlagId])
+}
+
+// =============================================
+// WEBHOOKS SYSTEM
+// =============================================
+
+enum WebhookEvent {
+  // Calendar events
+  EVENT_CREATED
+  EVENT_UPDATED
+  EVENT_DELETED
+  EVENT_REMINDER_1H    // за 1 час до события
+  EVENT_REMINDER_1D    // за 1 день до события
+  EVENT_REMINDER_CUSTOM
+  
+  // Tasks events
+  TASK_CREATED
+  TASK_UPDATED
+  TASK_COMPLETED
+  TASK_OVERDUE
+  TASK_DUE_SOON
+  
+  // Notes events
+  NOTE_CREATED
+  NOTE_UPDATED
+  NOTE_SHARED
+  
+  // File events
+  FILE_UPLOADED
+  FILE_SHARED
+  
+  // Custom
+  CUSTOM
+}
+
+enum WebhookStatus {
+  ACTIVE
+  INACTIVE
+  FAILED
+  PAUSED
+}
+
+enum WebhookMethod {
+  GET
+  POST
+  PUT
+  PATCH
+  DELETE
+}
+
+// Webhook subscription
+model Webhook {
+  id          Int      @id @default(autoincrement())
+  
+  // Владелец webhook
+  userId      Int
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Конфигурация
+  name        String   // "Telegram Bot Reminder"
+  description String?
+  url         String   // куда отправлять (https://api.telegram.org/bot...)
+  method      WebhookMethod @default(POST)
+  
+  // На какие события подписан
+  events      WebhookEvent[] // массив событий
+  
+  // Фильтры (JSON)
+  filters     Json?    // { "eventCategory": "Meeting", "taskPriority": "HIGH" }
+  
+  // Headers для запроса
+  headers     Json?    // { "Authorization": "Bearer token", "X-Custom": "value" }
+  
+  // Retry policy
+  retryCount  Int      @default(3)
+  retryDelay  Int      @default(60) // секунды между попытками
+  
+  // Статус
+  status      WebhookStatus @default(ACTIVE)
+  
+  // Статистика
+  lastTriggeredAt DateTime?
+  successCount    Int @default(0)
+  failureCount    Int @default(0)
+  
+  // История выполнений
+  executions  WebhookExecution[]
+  scheduledWebhooks ScheduledWebhook[]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@index([userId])
+  @@index([status])
+  @@index([events])
+}
+
+// История выполнений webhook
+model WebhookExecution {
+  id          Int      @id @default(autoincrement())
+  
+  webhookId   Int
+  webhook     Webhook  @relation(fields: [webhookId], references: [id], onDelete: Cascade)
+  
+  // Детали события
+  event       WebhookEvent
+  payload     Json     // данные которые отправили
+  
+  // Результат
+  statusCode  Int?
+  response    Json?    // ответ от сервера
+  error       String?
+  duration    Int?     // миллисекунды
+  
+  // Попытки
+  attempt     Int      @default(1)
+  success     Boolean  @default(false)
+  
+  triggeredAt DateTime @default(now())
+  
+  @@index([webhookId])
+  @@index([triggeredAt])
+  @@index([success])
+}
+
+// Scheduled webhooks (для напоминаний)
+model ScheduledWebhook {
+  id          Int      @id @default(autoincrement())
+  
+  webhookId   Int
+  webhook     Webhook  @relation(fields: [webhookId], references: [id], onDelete: Cascade)
+  
+  // Связь с ресурсом
+  resourceType String  // "EVENT", "TASK", "NOTE"
+  resourceId   Int     // id события/задачи/заметки
+  
+  // Когда запустить
+  scheduledFor DateTime
+  executed     Boolean  @default(false)
+  executedAt   DateTime?
+  
+  // Данные для отправки
+  event        WebhookEvent
+  payload      Json
+  
+  createdAt    DateTime @default(now())
+  
+  @@index([scheduledFor, executed])
+  @@index([webhookId])
+  @@index([resourceType, resourceId])
 }

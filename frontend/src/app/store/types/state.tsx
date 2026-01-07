@@ -15,6 +15,8 @@ import { eventApi } from "../../../entities/event/model/api/eventApi";
 import type { UserSchema } from "../../../entities/user";
 import { userApi } from "../../../entities/user/model/api/user";
 import type { IRestoreScroll } from "../../../features/restoreScroll";
+import { WebhookListSchema } from "../../../entities/webhooks";
+import { webhookApi } from "../../../entities/webhooks/model/api/webhookApi";
 
 export interface StateSchema {
   user: UserSchema;
@@ -24,6 +26,7 @@ export interface StateSchema {
   ui: IRestoreScroll;
   notes: Note[];
   events: EventSchema;
+  webhooks: WebhookListSchema;
 
   // Use proper slice state types instead of raw data types
   tasks: TaskState; // Changed from tasks: Task[] to task: TaskState
@@ -38,6 +41,7 @@ export interface StateSchema {
   [taskColumnApi.reducerPath]: ReturnType<typeof taskColumnApi.reducer>;
   [notesApi.reducerPath]: ReturnType<typeof taskColumnApi.reducer>;
   [eventApi.reducerPath]: ReturnType<typeof eventApi.reducer>;
+  [webhookApi.reducerPath]: ReturnType<typeof webhookApi.reducer>;
 }
 
 // #[allow(dead_code)] ;)

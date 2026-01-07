@@ -18,6 +18,8 @@ import { noteReducer } from '../../entities/note/model/slice/noteSlice';
 import { notesApi } from '../../entities/note/model/api/noteApi';
 import { eventReducer } from '../../entities/event/model/slice/eventSlice';
 import { eventApi } from '../../entities/event/model/api/eventApi';
+import { webhookSlice } from '../../entities/webhooks/model/slice/webhookSlice';
+import { webhookApi } from '../../entities/webhooks/model/api/webhookApi';
 
 const rootReducers: ReducersMapObject<StateSchema> = {
   user: userReducer,
@@ -29,6 +31,7 @@ const rootReducers: ReducersMapObject<StateSchema> = {
   taskColumns: taskColumnReducer,
   notes: noteReducer,
   events: eventReducer,
+  webhooks: webhookSlice,
   [taskApi.reducerPath]: taskApi.reducer,
   [taskColumnApi.reducerPath]: taskColumnApi.reducer,
   [userApi.reducerPath]: userApi.reducer,
@@ -36,6 +39,7 @@ const rootReducers: ReducersMapObject<StateSchema> = {
   [messageApi.reducerPath]: messageApi.reducer,
   [notesApi.reducerPath]: notesApi.reducer,
   [eventApi.reducerPath]: eventApi.reducer,
+  [webhookApi.reducerPath]: webhookApi.reducer,
 };
 
 export const store = configureStore({

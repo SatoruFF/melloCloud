@@ -1,0 +1,147 @@
+.webhookCard {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 16px;
+  transition: all 0.2s ease;
+
+  &:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.webhookHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.webhookInfo {
+  flex: 1;
+}
+
+.webhookName {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 8px 0;
+  color: var(--text-primary);
+}
+
+.webhookUrl {
+  font-size: 13px;
+  color: var(--text-secondary);
+  word-break: break-all;
+  margin: 0 0 4px 0;
+  font-family: monospace;
+}
+
+.webhookDescription {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin: 8px 0 0 0;
+}
+
+.webhookStatus {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.statusText {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.webhookStats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+  padding: 12px 0;
+  border-top: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 16px;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.statLabel {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.statValue {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.webhookEvents {
+  margin-bottom: 16px;
+}
+
+.eventsLabel {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+  display: block;
+}
+
+.eventsList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.eventBadge {
+  display: inline-block;
+  padding: 4px 10px;
+  background: var(--primary-color-alpha-10);
+  color: var(--primary-color);
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  font-family: monospace;
+}
+
+.webhookActions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.actionButton {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: var(--bg-secondary);
+    border-color: var(--primary-color);
+  }
+
+  svg {
+    flex-shrink: 0;
+  }
+}
+
+.deleteButton {
+  color: #ff4d4f;
+  border-color: #ff4d4f;
+
+  &:hover {
+    background: rgba(255, 77, 79, 0.1);
+  }
+}

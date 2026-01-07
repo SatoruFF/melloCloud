@@ -1,4 +1,5 @@
 import createError from "http-errors";
+import { WebhookService } from "./webhookService";
 
 class EventsServiceClass {
   //
@@ -358,8 +359,42 @@ class EventsServiceClass {
       );
 
       // Перезапрашиваем событие с участниками
-      return await this.getEvent(context, event.id.toString(), userId);
+      const updatedEvent = await this.getEvent(context, event.id.toString(), userId);
+
+      // Триггерим webhook EVENT_CREATED
+      await WebhookService.triggerWebhooks(context, {
+        event: "EVENT_CREATED",
+        resourceType: "EVENT",
+        resourceId: updatedEvent.id,
+        data: updatedEvent,
+        userId,
+      });
+
+      // Создаём напоминания
+      await WebhookService.createEventReminders(context, {
+        userId,
+        eventId: updatedEvent.id,
+        eventData: updatedEvent,
+      });
+
+      return updatedEvent;
     }
+
+    // Триггерим webhook EVENT_CREATED
+    await WebhookService.triggerWebhooks(context, {
+      event: "EVENT_CREATED",
+      resourceType: "EVENT",
+      resourceId: event.id,
+      data: event,
+      userId,
+    });
+
+    // Создаём напоминания
+    await WebhookService.createEventReminders(context, {
+      userId,
+      eventId: event.id,
+      eventData: event,
+    });
 
     return event;
   }
@@ -406,6 +441,8 @@ class EventsServiceClass {
     if (data.category !== undefined) updateData.category = data.category;
     if (data.allDay !== undefined) updateData.allDay = data.allDay;
 
+    const timeChanged = data.startDate !== undefined || data.endDate !== undefined;
+
     if (data.startDate !== undefined) {
       updateData.startDate = new Date(data.startDate);
     }
@@ -449,6 +486,34 @@ class EventsServiceClass {
       },
     });
 
+    // Триггерим webhook EVENT_UPDATED
+    await WebhookService.triggerWebhooks(context, {
+      event: "EVENT_UPDATED",
+      resourceType: "EVENT",
+      resourceId: event.id,
+      data: event,
+      userId,
+    });
+
+    // Если изменилось время - пересоздаём напоминания
+    if (timeChanged) {
+      // Удаляем старые запланированные напоминания
+      await context.prisma.scheduledWebhook.deleteMany({
+        where: {
+          resourceType: "EVENT",
+          resourceId: event.id,
+          executed: false,
+        },
+      });
+
+      // Создаём новые напоминания
+      await WebhookService.createEventReminders(context, {
+        userId,
+        eventId: event.id,
+        eventData: event,
+      });
+    }
+
     return event;
   }
 
@@ -468,9 +533,26 @@ class EventsServiceClass {
       throw createError(404, "Event not found or access denied");
     }
 
+    // Удаляем все запланированные webhooks для этого события
+    await context.prisma.scheduledWebhook.deleteMany({
+      where: {
+        resourceType: "EVENT",
+        resourceId: +eventId,
+      },
+    });
+
     // Удаляем событие (attendees удалятся каскадно)
     await context.prisma.calendarEvent.delete({
       where: { id: +eventId },
+    });
+
+    // Триггерим webhook EVENT_DELETED
+    await WebhookService.triggerWebhooks(context, {
+      event: "EVENT_DELETED",
+      resourceType: "EVENT",
+      resourceId: +eventId,
+      data: { id: +eventId, title: existingEvent.title },
+      userId,
     });
 
     return { message: "Event deleted successfully" };
