@@ -552,3 +552,173 @@
     border-color: #52525b;
   }
 }
+
+// Header
+.calendarHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 0 4px;
+}
+
+.pageTitle {
+  font-size: 28px;
+  font-weight: 600;
+  color: #fafafa;
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+
+.createButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: #1890ff;
+  border: 1px solid #1890ff;
+  border-radius: 6px;
+  color: white;
+  font-weight: 500;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.15s;
+  height: 36px;
+
+  &:hover {
+    background: #40a9ff;
+    border-color: #40a9ff;
+  }
+
+  &:active {
+    transform: translateY(1px);
+  }
+}
+
+// Form styles
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.formLabel {
+  font-size: 12px;
+  font-weight: 500;
+  color: #a1a1aa;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.formInput,
+.formTextarea {
+  background: #27272a;
+  border: 1px solid #3f3f46;
+  border-radius: 6px;
+  padding: 8px 12px;
+  color: #fafafa;
+  font-size: 14px;
+  transition: all 0.15s;
+  font-family: inherit;
+
+  &:hover {
+    border-color: #52525b;
+  }
+
+  &:focus {
+    outline: none;
+    border-color: #1890ff;
+    box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+  }
+
+  &::placeholder {
+    color: #71717a;
+  }
+}
+
+.formTextarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.formRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.formColorInput {
+  width: 100%;
+  height: 40px;
+  background: #27272a;
+  border: 1px solid #3f3f46;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s;
+
+  &:hover {
+    border-color: #52525b;
+  }
+}
+
+.formCheckbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  color: #fafafa;
+  font-size: 14px;
+  user-select: none;
+
+  input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+  }
+}
+
+.dateTimeRow {
+  display: flex;
+  gap: 8px;
+}
+
+// Footer variants
+.footerRight {
+  display: flex;
+  gap: 8px;
+}
+
+.dangerButton {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.15s;
+  height: 32px;
+  background: transparent;
+  border: 1px solid #ef4444;
+  color: #ef4444;
+
+  &:hover {
+    background: rgba(239, 68, 68, 0.1);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.loadingState {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 400px;
+  color: #a1a1aa;
+  font-size: 14px;
+}

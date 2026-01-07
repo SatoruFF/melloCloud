@@ -25,35 +25,28 @@ model User {
   files        File[]
   isActivated  Boolean      @default(false)
   
-  // OAuth fields
-  oauthProvider String?      // 'google', 'telegram', 'yandex'
-  oauthId       String?      // ID from OAuth provider
-  
-  // Убираем refreshToken отсюда, теперь он в Session
-  // refreshToken String?     
+  oauthProvider String?
+  oauthId       String?
   
   userConfigs  UserConfig[]
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
   Invite       Invite[]
   
-  sessions     Session[]    // Множественные сессии пользователя
-  
-  // Обратная связь для сообщений
+  sessions     Session[]
   sentMessages Message[]
-
-  // Обратная связь для чатов
   chats        ChatUser[]
-
-  // Обратная связь для заметок
   notes        Note[]
-
-  // Обратная связь для задач
   todos        Task[]
   assignedTasks Task[]      @relation("AssignedTasks")
-  
-  // Обратная связь для колонок канбана
   columns      TaskColumn[]
+  
+  // Календарь
+  calendarEvents  CalendarEvent[]
+  eventAttendees  EventAttendee[]
+  
+  // Feature flags
+  userFeatureFlags UserFeatureFlag[]
   
   @@index([email])
   @@index([oauthProvider, oauthId])
@@ -156,15 +149,15 @@ model Note {
   content   String
   userId    Int
   user      User     @relation(fields: [userId], references: [id])
-  isStarred Boolean  @default(false) // любимые/избранные
-  tags      String[] // массив тегов (массив строк)
+  isStarred Boolean  @default(false)
+  isRemoved Boolean  @default(false)
+  tags      String[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   
   @@index([userId])
-  @@index([isStarred]) // индекс для быстрого поиска избранного
+  @@index([isStarred])
 }
-
 
 // Define Column data model for Kanban
 model TaskColumn {
@@ -205,6 +198,159 @@ model Task {
   parentTask   Task?   @relation("SubTasks", fields: [parentTaskId], references: [id])
   subTasks     Task[]  @relation("SubTasks")
   
+  // Связь с календарём
+  calendarEvent CalendarEvent?
+  
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+// =============================================
+// CALENDAR EVENTS
+// =============================================
+
+model CalendarEvent {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String?
+  location    String?
+  color       String   @default("#1890ff")
+  category    String?
+  
+  startDate   DateTime
+  endDate     DateTime
+  allDay      Boolean  @default(false)
+  
+  // Связь с задачами (опционально)
+  taskId      Int?     @unique
+  task        Task?    @relation(fields: [taskId], references: [id], onDelete: SetNull)
+  
+  // Recurring events
+  isRecurring Boolean  @default(false)
+  recurrenceRule String? // iCal RRULE format
+  
+  // Владелец события
+  userId      Int
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Участники события
+  attendees   EventAttendee[]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@index([userId])
+  @@index([startDate])
+  @@index([endDate])
+  @@index([taskId])
+}
+
+// Участники событий
+model EventAttendee {
+  id        Int      @id @default(autoincrement())
+  eventId   Int
+  event     CalendarEvent @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  status    String   @default("pending") // pending, accepted, declined
+  
+  createdAt DateTime @default(now())
+  
+  @@unique([eventId, userId])
+  @@index([userId])
+}
+
+// =============================================
+// UNIVERSAL PERMISSIONS SYSTEM (ACL)
+// =============================================
+
+enum ResourceType {
+  NOTE
+  TASK
+  EVENT
+  FILE
+  CHAT
+  COLUMN
+}
+
+model Permission {
+  id          Int      @id @default(autoincrement())
+  
+  // Субъект (кому выдаём права)
+  subjectId   Int      // userId
+  subjectType String   @default("USER") // USER, ROLE, GROUP (для будущего)
+  
+  // Объект (на что выдаём права)
+  resourceId  Int      // id заметки/задачи/события
+  resourceType ResourceType // NOTE, TASK, EVENT, FILE, etc.
+  
+  // Уровень доступа (битовая маска)
+  // 0 = NONE
+  // 1 = READ
+  // 2 = WRITE
+  // 4 = DELETE
+  // 8 = SHARE
+  // 16 = ADMIN
+  // 47 = OWNER (все права)
+  level       Int      @default(1)
+  
+  // Метаданные
+  grantedBy   Int?     // кто выдал права
+  expiresAt   DateTime? // срок действия (опционально)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@unique([subjectId, resourceId, resourceType])
+  @@index([subjectId])
+  @@index([resourceId, resourceType])
+  @@index([resourceType])
+}
+
+// =============================================
+// FEATURE FLAGS
+// =============================================
+
+model FeatureFlag {
+  id          Int      @id @default(autoincrement())
+  key         String   @unique // "calendar_sharing", "task_recurring", "ai_assistant"
+  name        String   // Человекочитаемое название
+  description String?
+  isEnabled   Boolean  @default(false)
+  
+  // Для A/B тестирования
+  rolloutPercentage Int @default(0) // 0-100
+  
+  // Для конкретных пользователей
+  enabledForUsers UserFeatureFlag[]
+  
+  // Для конкретных окружений
+  environment String   @default("production") // production, staging, development
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@index([key])
+  @@index([isEnabled])
+  @@index([environment])
+}
+
+model UserFeatureFlag {
+  id            Int      @id @default(autoincrement())
+  
+  userId        Int
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  featureFlagId Int
+  featureFlag   FeatureFlag @relation(fields: [featureFlagId], references: [id], onDelete: Cascade)
+  
+  isEnabled     Boolean  @default(true)
+  
+  createdAt     DateTime @default(now())
+  
+  @@unique([userId, featureFlagId])
+  @@index([userId])
+  @@index([featureFlagId])
 }

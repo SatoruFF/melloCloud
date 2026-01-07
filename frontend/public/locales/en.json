@@ -245,6 +245,63 @@
         "cancel": "Cancel",
         "create": "Create"
       }
+    },
+    "events": {
+      "title": "Calendar",
+      "loading": "Loading calendar...",
+      "actions": {
+        "create": "Create Event",
+        "edit": "Edit",
+        "delete": "Delete",
+        "deleting": "Deleting...",
+        "save": "Save",
+        "saving": "Saving...",
+        "cancel": "Cancel",
+        "close": "Close"
+      },
+      "views": {
+        "today": "Today",
+        "month": "Month",
+        "week": "Week",
+        "day": "Day",
+        "list": "List",
+        "year": "Year"
+      },
+      "fields": {
+        "date": "Date",
+        "time": "Time",
+        "location": "Location",
+        "attendees": "Attendees",
+        "attendee": "Attendee",
+        "description": "Description"
+      },
+      "form": {
+        "createTitle": "Create Event",
+        "editTitle": "Edit Event",
+        "title": "Title",
+        "titlePlaceholder": "Enter event title",
+        "description": "Description",
+        "descriptionPlaceholder": "Add description",
+        "category": "Category",
+        "categoryPlaceholder": "Meeting, Call...",
+        "color": "Color",
+        "location": "Location",
+        "locationPlaceholder": "Office, Zoom, address...",
+        "allDay": "All day",
+        "startDate": "Start",
+        "endDate": "End"
+      },
+      "messages": {
+        "created": "Event created",
+        "updated": "Event updated",
+        "deleted": "Event deleted"
+      },
+      "errors": {
+        "titleRequired": "Please enter event title",
+        "createFailed": "Failed to create event",
+        "updateFailed": "Failed to update event",
+        "deleteFailed": "Failed to delete event"
+      }
     }
   },
   "pomodoro": {

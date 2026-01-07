@@ -245,6 +245,63 @@
         "cancel": "Отмена",
         "create": "Создать"
       }
+    },
+    "events": {
+      "title": "Календарь",
+      "loading": "Загрузка календаря...",
+      "actions": {
+        "create": "Создать событие",
+        "edit": "Редактировать",
+        "delete": "Удалить",
+        "deleting": "Удаление...",
+        "save": "Сохранить",
+        "saving": "Сохранение...",
+        "cancel": "Отменить",
+        "close": "Закрыть"
+      },
+      "views": {
+        "today": "Сегодня",
+        "month": "Месяц",
+        "week": "Неделя",
+        "day": "День",
+        "list": "Список",
+        "year": "Год"
+      },
+      "fields": {
+        "date": "Дата",
+        "time": "Время",
+        "location": "Место",
+        "attendees": "Участники",
+        "attendee": "Участник",
+        "description": "Описание"
+      },
+      "form": {
+        "createTitle": "Создать событие",
+        "editTitle": "Редактировать событие",
+        "title": "Название",
+        "titlePlaceholder": "Введите название события",
+        "description": "Описание",
+        "descriptionPlaceholder": "Добавьте описание",
+        "category": "Категория",
+        "categoryPlaceholder": "Встреча, Звонок...",
+        "color": "Цвет",
+        "location": "Место",
+        "locationPlaceholder": "Офис, Zoom, адрес...",
+        "allDay": "Весь день",
+        "startDate": "Начало",
+        "endDate": "Конец"
+      },
+      "messages": {
+        "created": "Событие создано",
+        "updated": "Событие обновлено",
+        "deleted": "Событие удалено"
+      },
+      "errors": {
+        "titleRequired": "Введите название события",
+        "createFailed": "Ошибка при создании события",
+        "updateFailed": "Ошибка при обновлении события",
+        "deleteFailed": "Ошибка при удалении события"
+      }
     }
   },
   "pomodoro": {

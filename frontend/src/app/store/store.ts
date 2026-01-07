@@ -16,6 +16,8 @@ import { taskApi } from '../../entities/task/model/api/taskApi';
 import { taskColumnApi } from '../../entities/taskColumn/model/api/taskColumnApi';
 import { noteReducer } from '../../entities/note/model/slice/noteSlice';
 import { notesApi } from '../../entities/note/model/api/noteApi';
+import { eventReducer } from '../../entities/event/model/slice/eventSlice';
+import { eventApi } from '../../entities/event/model/api/eventApi';
 
 const rootReducers: ReducersMapObject<StateSchema> = {
   user: userReducer,
@@ -24,14 +26,16 @@ const rootReducers: ReducersMapObject<StateSchema> = {
   chat: chatReducer,
   ui: restoreScrollReducer,
   tasks: taskReducer,
-  notes: noteReducer,
   taskColumns: taskColumnReducer,
+  notes: noteReducer,
+  events: eventReducer,
   [taskApi.reducerPath]: taskApi.reducer,
   [taskColumnApi.reducerPath]: taskColumnApi.reducer,
   [userApi.reducerPath]: userApi.reducer,
   [fileApi.reducerPath]: fileApi.reducer,
   [messageApi.reducerPath]: messageApi.reducer,
   [notesApi.reducerPath]: notesApi.reducer,
+  [eventApi.reducerPath]: eventApi.reducer,
 };
 
 export const store = configureStore({

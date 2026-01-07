@@ -6,6 +6,7 @@ import messagesRouter from "./message.routes.js";
 import taskRouter from "./task.routes.js";
 import taskColumn from "./column.routes.js";
 import noteRouter from "./note.routes.js";
+import eventRouter from "./events.routes.js";
 import { privateMiddlewares } from "../../middleware/base.middleware.js";
 
 const privateRouter: Router = Router();
@@ -20,5 +21,6 @@ privateRouter.use("/messages", messagesRouter);
 privateRouter.use("/tasks", taskRouter);
 privateRouter.use("/columns", taskColumn);
 privateRouter.use("/notes", noteRouter);
+privateRouter.use("/events", eventRouter);
 
 export default privateRouter;

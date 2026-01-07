@@ -1,3 +1,6 @@
+-- CreateEnum
+CREATE TYPE "ResourceType" AS ENUM ('NOTE', 'TASK', 'EVENT', 'FILE', 'CHAT', 'COLUMN');
+
 -- CreateTable
 CREATE TABLE "User" (
     "id" SERIAL NOT NULL,
@@ -114,6 +117,7 @@ CREATE TABLE "Note" (
     "content" TEXT NOT NULL,
     "userId" INTEGER NOT NULL,
     "isStarred" BOOLEAN NOT NULL DEFAULT false,
+    "isRemoved" BOOLEAN NOT NULL DEFAULT false,
     "tags" TEXT[],
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -156,6 +160,80 @@ CREATE TABLE "Task" (
     CONSTRAINT "Task_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "CalendarEvent" (
+    "id" SERIAL NOT NULL,
+    "title" TEXT NOT NULL,
+    "description" TEXT,
+    "location" TEXT,
+    "color" TEXT NOT NULL DEFAULT '#1890ff',
+    "category" TEXT,
+    "startDate" TIMESTAMP(3) NOT NULL,
+    "endDate" TIMESTAMP(3) NOT NULL,
+    "allDay" BOOLEAN NOT NULL DEFAULT false,
+    "taskId" INTEGER,
+    "isRecurring" BOOLEAN NOT NULL DEFAULT false,
+    "recurrenceRule" TEXT,
+    "userId" INTEGER NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "CalendarEvent_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "EventAttendee" (
+    "id" SERIAL NOT NULL,
+    "eventId" INTEGER NOT NULL,
+    "userId" INTEGER NOT NULL,
+    "status" TEXT NOT NULL DEFAULT 'pending',
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "EventAttendee_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Permission" (
+    "id" SERIAL NOT NULL,
+    "subjectId" INTEGER NOT NULL,
+    "subjectType" TEXT NOT NULL DEFAULT 'USER',
+    "resourceId" INTEGER NOT NULL,
+    "resourceType" "ResourceType" NOT NULL,
+    "level" INTEGER NOT NULL DEFAULT 1,
+    "grantedBy" INTEGER,
+    "expiresAt" TIMESTAMP(3),
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "Permission_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "FeatureFlag" (
+    "id" SERIAL NOT NULL,
+    "key" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "description" TEXT,
+    "isEnabled" BOOLEAN NOT NULL DEFAULT false,
+    "rolloutPercentage" INTEGER NOT NULL DEFAULT 0,
+    "environment" TEXT NOT NULL DEFAULT 'production',
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "FeatureFlag_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "UserFeatureFlag" (
+    "id" SERIAL NOT NULL,
+    "userId" INTEGER NOT NULL,
+    "featureFlagId" INTEGER NOT NULL,
+    "isEnabled" BOOLEAN NOT NULL DEFAULT true,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "UserFeatureFlag_pkey" PRIMARY KEY ("id")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 
@@ -191,6 +269,60 @@ CREATE INDEX "Note_userId_idx" ON "Note"("userId");
 
 -- CreateIndex
 CREATE INDEX "Note_isStarred_idx" ON "Note"("isStarred");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "CalendarEvent_taskId_key" ON "CalendarEvent"("taskId");
+
+-- CreateIndex
+CREATE INDEX "CalendarEvent_userId_idx" ON "CalendarEvent"("userId");
+
+-- CreateIndex
+CREATE INDEX "CalendarEvent_startDate_idx" ON "CalendarEvent"("startDate");
+
+-- CreateIndex
+CREATE INDEX "CalendarEvent_endDate_idx" ON "CalendarEvent"("endDate");
+
+-- CreateIndex
+CREATE INDEX "CalendarEvent_taskId_idx" ON "CalendarEvent"("taskId");
+
+-- CreateIndex
+CREATE INDEX "EventAttendee_userId_idx" ON "EventAttendee"("userId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "EventAttendee_eventId_userId_key" ON "EventAttendee"("eventId", "userId");
+
+-- CreateIndex
+CREATE INDEX "Permission_subjectId_idx" ON "Permission"("subjectId");
+
+-- CreateIndex
+CREATE INDEX "Permission_resourceId_resourceType_idx" ON "Permission"("resourceId", "resourceType");
+
+-- CreateIndex
+CREATE INDEX "Permission_resourceType_idx" ON "Permission"("resourceType");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Permission_subjectId_resourceId_resourceType_key" ON "Permission"("subjectId", "resourceId", "resourceType");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "FeatureFlag_key_key" ON "FeatureFlag"("key");
+
+-- CreateIndex
+CREATE INDEX "FeatureFlag_key_idx" ON "FeatureFlag"("key");
+
+-- CreateIndex
+CREATE INDEX "FeatureFlag_isEnabled_idx" ON "FeatureFlag"("isEnabled");
+
+-- CreateIndex
+CREATE INDEX "FeatureFlag_environment_idx" ON "FeatureFlag"("environment");
+
+-- CreateIndex
+CREATE INDEX "UserFeatureFlag_userId_idx" ON "UserFeatureFlag"("userId");
+
+-- CreateIndex
+CREATE INDEX "UserFeatureFlag_featureFlagId_idx" ON "UserFeatureFlag"("featureFlagId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "UserFeatureFlag_userId_featureFlagId_key" ON "UserFeatureFlag"("userId", "featureFlagId");
 
 -- AddForeignKey
 ALTER TABLE "Session" ADD CONSTRAINT "Session_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -236,3 +368,21 @@ ALTER TABLE "Task" ADD CONSTRAINT "Task_assignedToId_fkey" FOREIGN KEY ("assigne
 
 -- AddForeignKey
 ALTER TABLE "Task" ADD CONSTRAINT "Task_parentTaskId_fkey" FOREIGN KEY ("parentTaskId") REFERENCES "Task"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "CalendarEvent" ADD CONSTRAINT "CalendarEvent_taskId_fkey" FOREIGN KEY ("taskId") REFERENCES "Task"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "CalendarEvent" ADD CONSTRAINT "CalendarEvent_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "EventAttendee" ADD CONSTRAINT "EventAttendee_eventId_fkey" FOREIGN KEY ("eventId") REFERENCES "CalendarEvent"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "EventAttendee" ADD CONSTRAINT "EventAttendee_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "UserFeatureFlag" ADD CONSTRAINT "UserFeatureFlag_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "UserFeatureFlag" ADD CONSTRAINT "UserFeatureFlag_featureFlagId_fkey" FOREIGN KEY ("featureFlagId") REFERENCES "FeatureFlag"("id") ON DELETE CASCADE ON UPDATE CASCADE;
