@@ -1,5 +1,3 @@
-// entities/webhook/model/slice/webhookSlice.ts
-
 import { type PayloadAction, createSlice } from '@reduxjs/toolkit';
 import type { IWebhook, WebhookExecution, WebhookListSchema } from '../../types/webhook';
 

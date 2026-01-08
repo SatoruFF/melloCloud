@@ -19,6 +19,12 @@
     "suppressImplicitAnyIndexErrors": false
     // "types": ["vitest/globals", "@testing-library/jest-dom"]
   },
-  "include": ["src", "./src/**/*.{ts|tsx}", "./jest-setup.ts"],
+  "include": [
+    "src",
+    "./src/**/*.{ts|tsx}",
+    "./jest-setup.ts",
+    "src/entities/task/model/selectors/getTasks.ts",
+    "drafts/kanbanSelectors.ts"
+  ],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

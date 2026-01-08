@@ -5,6 +5,7 @@ import { Star, Trash2 } from "lucide-react";
 import cn from "classnames";
 import { useTranslation } from "react-i18next";
 import styles from "./noteCard.module.scss";
+import { ApiPaths } from "../../../shared";
 
 interface NoteCardProps {
   note: {
@@ -67,7 +68,14 @@ export const NoteCard: React.FC<NoteCardProps> = memo(({ note, onDelete, onToggl
     ) {
       return;
     }
-    navigate(`/notes/${note.id}`);
+    navigate(`/${ApiPaths.notes}/${note.id}`);
+  };
+
+  const handleCardKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      navigate(`/${ApiPaths.notes}/${note.id}`);
+    }
   };
 
   const handleStarClick = (e: React.MouseEvent) => {
@@ -75,23 +83,43 @@ export const NoteCard: React.FC<NoteCardProps> = memo(({ note, onDelete, onToggl
     onToggleStar(note.id, !note.isStarred);
   };
 
-  console.log("Note tags:", note.tags); // Для отладки
+  const handleActionsClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+  };
+
+  const handleActionsKeyDown = (e: React.KeyboardEvent) => {
+    e.stopPropagation();
+  };
 
   return (
-    <div className={cn(styles.noteCard)} onClick={handleCardClick}>
-      {/* Star Button - теперь слева */}
+    <div
+      className={cn(styles.noteCard)}
+      onClick={handleCardClick}
+      onKeyDown={handleCardKeyDown}
+      role="button"
+      tabIndex={0}
+      aria-label={`${t("notes.note")}: ${note.title || t("notes.untitled")}`}
+    >
+      {/* Star Button */}
       <button
         className={cn(styles.starBtn, { [styles.starred]: note.isStarred })}
         onClick={handleStarClick}
         title={note.isStarred ? t("notes.unstar") : t("notes.star")}
         type="button"
+        aria-label={note.isStarred ? t("notes.unstar") : t("notes.star")}
       >
         <Star size={18} fill={note.isStarred ? "currentColor" : "none"} />
       </button>
 
       <div className={cn(styles.noteHeader)}>
         <h3>{note.title || t("notes.untitled")}</h3>
-        <div className={cn(styles.noteActions)} onClick={(e) => e.stopPropagation()}>
+        <div
+          className={cn(styles.noteActions)}
+          onClick={handleActionsClick}
+          onKeyDown={handleActionsKeyDown}
+          role="group"
+          aria-label={t("notes.actions")}
+        >
           <Popconfirm
             title={t("notes.deleteConfirm")}
             okText={t("common.yes")}
@@ -105,6 +133,7 @@ export const NoteCard: React.FC<NoteCardProps> = memo(({ note, onDelete, onToggl
               onClick={(e) => e.stopPropagation()}
               title={t("notes.delete")}
               disabled={isDeleting}
+              aria-label={t("notes.delete")}
             >
               <Trash2 size={16} />
             </button>
@@ -117,12 +146,12 @@ export const NoteCard: React.FC<NoteCardProps> = memo(({ note, onDelete, onToggl
         {textContent.length > 120 && "..."}
       </p>
 
-      {/* Tags - всегда рендерим, даже если пусто */}
+      {/* Tags */}
       <div className={cn(styles.noteTags)}>
         {note.tags && note.tags.length > 0 ? (
           <>
-            {note.tags.slice(0, 3).map((tag, index) => (
-              <span key={index} className={cn(styles.tag)}>
+            {note.tags.slice(0, 3).map((tag) => (
+              <span key={`${note.id}-${tag}`} className={cn(styles.tag)}>
                 {tag}
               </span>
             ))}

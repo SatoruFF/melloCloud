@@ -1,10 +1,16 @@
-// types/kanban.ts
+export interface TaskColumnState {
+  columns: TaskColumn[];
+  loading: boolean;
+  error: string | null;
+  showAddColumn: boolean;
+  editingColumn: string | null;
+}
 
-// 🔹 Enums для статусов и приоритетов
-export type TaskPriority = "LOW" | "MEDIUM" | "HIGH";
-export type TaskStatus = "TODO" | "IN_PROGRESS" | "ON_HOLD" | "COMPLETED" | "CANCELLED";
+// Task priority and status enums
+export type TaskPriority = 'LOW' | 'MEDIUM' | 'HIGH';
+export type TaskStatus = 'TODO' | 'IN_PROGRESS' | 'ON_HOLD' | 'COMPLETED' | 'CANCELLED';
 
-// 🔹 Пользователь
+// User entity
 export type User = {
   id: number;
   name: string;
@@ -13,7 +19,7 @@ export type User = {
   updatedAt: Date;
 };
 
-// 🔹 Колонка Kanban
+// Kanban column
 export type TaskColumn = {
   id: number | string;
   title: string;
@@ -22,10 +28,10 @@ export type TaskColumn = {
   userId: number;
   createdAt: Date;
   updatedAt: Date;
-  tasks?: Task[]; // задачи в этой колонке
+  tasks?: Task[]; // tasks in this column
 };
 
-// 🔹 Задача
+// Task entity
 export type Task = {
   id: number | string;
   title: string;
@@ -38,7 +44,7 @@ export type Task = {
   isDone: boolean;
   dueDate?: Date | null;
 
-  // Связи
+  // Relations
   columnId?: number | string | null;
   column?: TaskColumn | null;
 

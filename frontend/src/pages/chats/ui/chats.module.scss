@@ -5,10 +5,22 @@
   height: calc(100vh - $header-height);
   display: flex;
   flex-direction: row;
+  background: hsl(240 10% 3.9%);
+  // color: hsl(0 0% 98%);
+  @include diskBackground;
 }
 
 .windowsSplitter {
   width: 100%;
+
+  :global(.ant-splitter-bar) {
+    background: hsl(240 3.7% 15.9%);
+    border: 1px solid hsl(240 3.7% 15.9%);
+
+    &:hover {
+      background: hsl(240 5.9% 10%);
+    }
+  }
 }
 
 .mobileContainer {
@@ -16,15 +28,41 @@
 }
 
 .mobileHeader {
-  padding: 10px;
-  background: #fafafa;
-  border-bottom: 1px solid #d9d9d9;
+  padding: 12px;
+  background: hsl(240 10% 3.9%);
+  border-bottom: 1px solid hsl(240 3.7% 15.9%);
   display: flex;
   justify-content: flex-start;
+  gap: 8px;
+
+  button {
+    background: hsl(240 5.9% 10%);
+    color: hsl(0 0% 98%);
+    border: 1px solid hsl(240 3.7% 15.9%);
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+    &:hover {
+      background: hsl(240 3.7% 15.9%);
+      border-color: hsl(240 5% 26%);
+    }
+
+    &[type="primary"] {
+      background: hsl(263 70% 50%);
+      border-color: hsl(263 70% 50%);
+      color: white;
+
+      &:hover {
+        background: hsl(263 70% 60%);
+      }
+    }
+  }
 }
 
 .mobileContent {
   flex-grow: 1;
   overflow: auto;
-  height: calc(100vh - $header-height - 48px); // Учитываем высоту header с кнопками
+  height: calc(100vh - $header-height - 56px);
+  background: hsl(240 10% 3.9%);
 }

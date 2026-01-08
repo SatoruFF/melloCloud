@@ -36,7 +36,7 @@ const MyNavbar: React.FC = () => {
   const [burger, setBurger] = useState(false);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const avatar = user.avatar ? user.avatar : avatarIcon;
+  const avatar = user?.avatar ?? avatarIcon;
   const isTabletOrMobile = useMediaQuery({ query: "(max-width: 1224px)" });
 
   const logOut = useCallback(() => {

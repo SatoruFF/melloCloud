@@ -1,15 +1,15 @@
-import { rtkApi } from "../../../../shared/api/rtkApi";
-import { Task, TaskColumn } from "../../types/tasks";
+import { ApiPaths, rtkApi } from '../../../../shared';
+import { Task, TaskColumn } from '../../types/tasks';
 
 export const taskApi = rtkApi.injectEndpoints({
-  endpoints: (builder) => ({
+  endpoints: builder => ({
     // Task endpoints
     getTasks: builder.query<Task[], void>({
-      query: () => "tasks",
+      query: () => ApiPaths.tasks,
     }),
 
     getKanbanData: builder.query<TaskColumn[], void>({
-      query: () => "tasks/kanban",
+      query: () => `${ApiPaths.tasks}/kanban`,
     }),
 
     createTask: builder.mutation<
@@ -22,9 +22,9 @@ export const taskApi = rtkApi.injectEndpoints({
         dueDate?: string;
       }
     >({
-      query: (body) => ({
-        url: "tasks",
-        method: "POST",
+      query: body => ({
+        url: ApiPaths.tasks,
+        method: 'POST',
         body,
       }),
     }),
@@ -42,16 +42,16 @@ export const taskApi = rtkApi.injectEndpoints({
       }
     >({
       query: ({ taskId, ...body }) => ({
-        url: `tasks/${taskId}`,
-        method: "PUT",
+        url: `${ApiPaths.tasks}/${taskId}`,
+        method: 'PUT',
         body,
       }),
     }),
 
     deleteTask: builder.mutation<{ message: string }, string | number>({
-      query: (taskId) => ({
-        url: `tasks/${taskId}`,
-        method: "DELETE",
+      query: taskId => ({
+        url: `${ApiPaths.tasks}/${taskId}`,
+        method: 'DELETE',
       }),
     }),
 
@@ -63,33 +63,33 @@ export const taskApi = rtkApi.injectEndpoints({
       }
     >({
       query: ({ taskId, columnId }) => ({
-        url: `tasks/${taskId}/move`,
-        method: "PATCH",
+        url: `${ApiPaths.tasks}/${taskId}/move`,
+        method: 'PATCH',
         body: { columnId },
       }),
     }),
 
     toggleTaskComplete: builder.mutation<Task, string | number>({
-      query: (taskId) => ({
-        url: `tasks/${taskId}/toggle`,
-        method: "PATCH",
+      query: taskId => ({
+        url: `${ApiPaths.tasks}/${taskId}/toggle`,
+        method: 'PATCH',
       }),
     }),
 
     getTasksByColumn: builder.query<Task[], number>({
-      query: (columnId) => `tasks/column/${columnId}`,
+      query: columnId => `${ApiPaths.tasks}/column/${columnId}`,
     }),
 
     getTasksByPriority: builder.query<Task[], string>({
-      query: (priority) => `tasks/priority/${priority}`,
+      query: priority => `${ApiPaths.tasks}/priority/${priority}`,
     }),
 
-    getTasksByStatus: builder.query<Task[], "completed" | "pending">({
-      query: (status) => `tasks/status/${status}`,
+    getTasksByStatus: builder.query<Task[], 'completed' | 'pending'>({
+      query: status => `${ApiPaths.tasks}/status/${status}`,
     }),
 
     searchTasks: builder.query<Task[], string>({
-      query: (query) => `tasks/search?query=${encodeURIComponent(query)}`,
+      query: query => `${ApiPaths.tasks}/search?query=${encodeURIComponent(query)}`,
     }),
 
     getTaskStats: builder.query<
@@ -103,15 +103,15 @@ export const taskApi = rtkApi.injectEndpoints({
       },
       void
     >({
-      query: () => "tasks/stats",
+      query: () => `${ApiPaths.tasks}/stats`,
     }),
 
     getOverdueTasks: builder.query<Task[], void>({
-      query: () => "tasks/overdue",
+      query: () => `${ApiPaths.tasks}/overdue`,
     }),
 
     getUpcomingTasks: builder.query<Task[], number>({
-      query: (days = 7) => `tasks/upcoming?days=${days}`,
+      query: (days = 7) => `${ApiPaths.tasks}/upcoming?days=${days}`,
     }),
 
     batchUpdateTasks: builder.mutation<
@@ -122,9 +122,9 @@ export const taskApi = rtkApi.injectEndpoints({
         order?: number;
       }>
     >({
-      query: (updates) => ({
-        url: "tasks/batch-update",
-        method: "PATCH",
+      query: updates => ({
+        url: `${ApiPaths.tasks}/batch-update`,
+        method: 'PATCH',
         body: { updates },
       }),
     }),

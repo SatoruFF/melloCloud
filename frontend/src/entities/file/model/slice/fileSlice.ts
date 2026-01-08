@@ -2,14 +2,13 @@ import { type PayloadAction, createSlice } from '@reduxjs/toolkit';
 import type { FileListSchema, IFile } from '../../types/file';
 
 const initialState: FileListSchema = {
-  // ✅ Используй FileListSchema
   files: [],
   currentDir: null,
   dirStack: [],
   view: 'list',
   paths: [{ title: 'Root' }],
   limit: 50,
-  offset: 0, // ✅ Теперь это number, а не literal 0
+  offset: 0,
   hasMore: false,
   loading: false,
 };
@@ -32,7 +31,7 @@ export const fileSlice = createSlice({
     addNewFile: (state, action: PayloadAction<IFile>) => {
       state.files.push(action.payload);
     },
-    pushToStack: (state, action: PayloadAction<number>) => {
+    pushToStack: (state, action: PayloadAction<string>) => {
       state.dirStack.push(action.payload);
     },
     popToStack: state => {
@@ -81,5 +80,5 @@ export const {
   setHasMore,
 } = fileSlice.actions;
 
-export const fileReducer = fileSlice.reducer; // ✅ Экспортируй как named export
+export const fileReducer = fileSlice.reducer;
 export default fileSlice.reducer;

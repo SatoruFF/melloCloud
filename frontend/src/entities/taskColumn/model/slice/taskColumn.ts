@@ -1,15 +1,8 @@
-import { TaskColumn } from "../../types/tasksColumn";
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
+import type { TaskColumn } from '../../types/taskColumns';
+import type { TaskColumnState } from '../../types/taskColumns';
 
-export interface ColumnInterface {
-  columns: TaskColumn[];
-  loading: boolean;
-  error: string | null;
-  showAddColumn: boolean;
-  editingColumn: string | null;
-}
-
-const initialState: ColumnInterface = {
+const initialState: TaskColumnState = {
   columns: [],
   loading: false,
   error: null,
@@ -17,8 +10,8 @@ const initialState: ColumnInterface = {
   editingColumn: null,
 };
 
-export const columnSlice = createSlice({
-  name: "column",
+export const taskColumnSlice = createSlice({
+  name: 'taskColumns',
   initialState,
   reducers: {
     setColumns: (state, action: PayloadAction<TaskColumn[]>) => {
@@ -30,23 +23,22 @@ export const columnSlice = createSlice({
     },
     updateColumn: (state, action: PayloadAction<{ id: string | number; updates: Partial<TaskColumn> }>) => {
       const { id, updates } = action.payload;
-      const columnIndex = state.columns.findIndex((column) => column.id.toString() === id.toString());
+      const columnIndex = state.columns.findIndex(column => column.id.toString() === id.toString());
       if (columnIndex !== -1) {
         state.columns[columnIndex] = { ...state.columns[columnIndex], ...updates };
-        // Re-sort if order was updated
         if (updates.order !== undefined) {
           state.columns.sort((a, b) => a.order - b.order);
         }
       }
     },
     deleteColumn: (state, action: PayloadAction<string | number>) => {
-      state.columns = state.columns.filter((column) => column.id.toString() !== action.payload.toString());
+      state.columns = state.columns.filter(column => column.id.toString() !== action.payload.toString());
     },
     reorderColumns: (state, action: PayloadAction<Array<{ id: number; order: number }>>) => {
-      const orderMap = new Map(action.payload.map((item) => [item.id, item.order]));
+      const orderMap = new Map(action.payload.map(item => [item.id, item.order]));
 
       state.columns = state.columns
-        .map((column) => {
+        .map(column => {
           const newOrder = orderMap.get(Number(column.id));
           return newOrder !== undefined ? { ...column, order: newOrder } : column;
         })
@@ -64,7 +56,7 @@ export const columnSlice = createSlice({
     setEditingColumn: (state, action: PayloadAction<string | null>) => {
       state.editingColumn = action.payload;
     },
-    clearError: (state) => {
+    clearError: state => {
       state.error = null;
     },
   },
@@ -81,8 +73,7 @@ export const {
   setShowAddColumn,
   setEditingColumn,
   clearError,
-} = columnSlice.actions;
+} = taskColumnSlice.actions;
 
-export const { reducer: taskColumnReducer } = columnSlice;
-
-export default columnSlice.reducer;
+export const taskColumnReducer = taskColumnSlice.reducer;
+export default taskColumnSlice.reducer;

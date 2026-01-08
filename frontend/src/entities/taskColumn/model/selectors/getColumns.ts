@@ -1,19 +1,30 @@
-import { createSelector } from "@reduxjs/toolkit";
-import { RootState } from "../../../../app/store/store";
+import { createSelector } from '@reduxjs/toolkit';
+import type { RootState } from '../../../../app/store/store';
 
-// Basic column selectors
-export const selectColumns = (state: RootState) => state.column.columns;
-export const selectColumnsLoading = (state: RootState) => state.column.loading;
-export const selectColumnsError = (state: RootState) => state.column.error;
-export const selectShowAddColumn = (state: RootState) => state.column.showAddColumn;
-export const selectEditingColumn = (state: RootState) => state.column.editingColumn;
+// Base selector
+const getTaskColumnsState = (state: RootState) => state.taskColumns;
 
-// Computed column selectors
-export const selectSortedColumns = createSelector([selectColumns], (columns) =>
-  [...columns].sort((a, b) => (a.order || 0) - (b.order || 0))
+// Simple selectors
+export const selectColumns = createSelector([getTaskColumnsState], taskColumnsState => taskColumnsState.columns);
+
+export const selectColumnsLoading = createSelector([getTaskColumnsState], taskColumnsState => taskColumnsState.loading);
+
+export const selectColumnsError = createSelector([getTaskColumnsState], taskColumnsState => taskColumnsState.error);
+
+export const selectShowAddColumn = createSelector(
+  [getTaskColumnsState],
+  taskColumnsState => taskColumnsState.showAddColumn,
 );
 
-export const selectColumnById = createSelector(
-  [selectColumns, (_, columnId: string | number) => columnId],
-  (columns, columnId) => columns.find((column) => column.id.toString() === columnId.toString())
+export const selectEditingColumn = createSelector(
+  [getTaskColumnsState],
+  taskColumnsState => taskColumnsState.editingColumn,
 );
+
+// Derived selectors
+export const selectSortedColumns = createSelector([selectColumns], columns =>
+  [...columns].sort((a, b) => (a.order || 0) - (b.order || 0)),
+);
+
+export const selectColumnById = (columnId: string | number) =>
+  createSelector([selectColumns], columns => columns.find(column => column.id.toString() === columnId.toString()));

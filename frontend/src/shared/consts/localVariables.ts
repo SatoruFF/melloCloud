@@ -1,64 +1,124 @@
 const isLocalhost = window.location.hostname.includes('localhost') || window.location.hostname === '127.0.0.1';
 
-// Формируем базовый HTTP URL
+// Base HTTP URL
 const _baseUrl: string = isLocalhost ? 'http://localhost:10000/api/v1' : 'https://api.mellocloud.net/v1';
 
-// Формируем базовый WS URL
+// Base WebSocket URL
 const _baseSocketUrl: string = isLocalhost ? 'ws://localhost:10000' : 'wss://api.mellocloud.net';
 
+// ========================================
+// RELATIVE PATHS (for RTK Query)
+// ========================================
+export const ApiPaths = {
+  // User
+  user: 'user',
+  userAuth: 'user/auth',
+  userRefresh: 'user/refresh',
+  userLogout: 'user/logout',
+  userLogoutAll: 'user/logout-all',
+  userSessions: 'user/sessions',
+  userSearch: 'user/search',
+  userChangeInfo: 'user/changeinfo',
+
+  // Auth
+  register: 'user/register',
+  login: 'user/login',
+  activate: 'user/activate',
+
+  // OAuth
+  google: 'user/google',
+  googleCallback: 'user/google/callback',
+  telegram: 'user/telegram',
+  telegramCallback: 'user/telegram/callback',
+  yandex: 'user/yandex',
+  yandexCallback: 'user/yandex/callback',
+
+  // File
+  file: 'file',
+  fileUpload: 'file/upload',
+  fileDownload: 'file/download',
+  fileDelete: 'file/delete',
+  fileAvatar: 'file/avatar',
+
+  // Chat & Messages
+  chats: 'chats',
+  messages: 'messages',
+
+  // Tasks
+  tasks: 'tasks',
+  tasksKanban: 'tasks/kanban',
+  tasksStats: 'tasks/stats',
+  tasksOverdue: 'tasks/overdue',
+  tasksUpcoming: 'tasks/upcoming',
+  tasksSearch: 'tasks/search',
+  tasksPriority: 'tasks/priority',
+  tasksStatus: 'tasks/status',
+  tasksColumn: 'tasks/column',
+  tasksBatchUpdate: 'tasks/batch-update',
+
+  // Columns
+  columns: 'columns',
+  columnsReorder: 'columns/reorder',
+  columnsMoveTask: 'columns/move-task',
+  columnsStats: 'columns/stats',
+
+  // Notes
+  notes: 'notes',
+  notesSearch: 'notes/search',
+
+  // Events
+  events: 'events',
+  eventsRange: 'events/range',
+  eventsSearch: 'events/search',
+
+  // Webhooks
+  webhooks: 'webhooks',
+  webhooksEvents: 'webhooks/events',
+  webhooksScheduled: 'webhooks/scheduled',
+} as const;
+
+// ========================================
+// FULL URLs (for legacy code / userApi)
+// ========================================
 export const Variables = {
-  // ========================================
-  // БАЗОВЫЕ URL
-  // ========================================
+  // Base URLs
   BASE_API_URL: _baseUrl,
   BASE_SOCKET_URL: _baseSocketUrl,
 
-  // ========================================
-  // USER ENDPOINTS
-  // ========================================
+  // User endpoints (full URLs)
+  User_URL: `${_baseUrl}/user`,
+  User_Auth: `${_baseUrl}/user/auth`,
+  User_Refresh: `${_baseUrl}/user/refresh`,
+  User_Logout: `${_baseUrl}/user/logout`,
+  User_LogoutAll: `${_baseUrl}/user/logout-all`,
+  User_Sessions: `${_baseUrl}/user/sessions`,
+  User_Search: `${_baseUrl}/user/search`,
+  User_ChangeInfo: `${_baseUrl}/user/changeinfo`,
+  User_GetById: `${_baseUrl}/user`,
 
-  // Приватные user эндпоинты (требуют авторизации)
-  User_URL: `${_baseUrl}/user`, // базовый путь для user API
-  User_Auth: `${_baseUrl}/user/auth`, // GET - получить текущего юзера
-  User_Refresh: `${_baseUrl}/user/refresh`, // GET - обновить токен
-  User_Logout: `${_baseUrl}/user/logout`, // POST - выйти
-  User_LogoutAll: `${_baseUrl}/user/logout-all`, // POST - выйти со всех устройств
-  User_Sessions: `${_baseUrl}/user/sessions`, // GET - список сессий
-  User_Search: `${_baseUrl}/user/search`, // GET - поиск пользователей
-  User_ChangeInfo: `${_baseUrl}/user/changeinfo`, // PATCH - изменить инфо
+  // Auth endpoints
+  Auth_Register: `${_baseUrl}/user/register`,
+  Auth_Login: `${_baseUrl}/user/login`,
+  Auth_Activate: `${_baseUrl}/user/activate`,
 
-  // ========================================
-  // AUTH ENDPOINTS (публичные)
-  // ========================================
-
-  // Стандартная авторизация
-  Auth_Register: `${_baseUrl}/user/register`, // POST - регистрация
-  Auth_Login: `${_baseUrl}/user/login`, // POST - логин
-  Auth_Activate: `${_baseUrl}/user/activate`, // GET - активация
-
-  // OAuth провайдеры
-  Auth_Google: `${_baseUrl}/user/google`, // GET - OAuth Google
+  // OAuth
+  Auth_Google: `${_baseUrl}/user/google`,
   Auth_Google_Callback: `${_baseUrl}/user/google/callback`,
-  Auth_Telegram: `${_baseUrl}/user/telegram`, // GET - OAuth Telegram
+  Auth_Telegram: `${_baseUrl}/user/telegram`,
   Auth_Telegram_Callback: `${_baseUrl}/user/telegram/callback`,
-  Auth_Yandex: `${_baseUrl}/user/yandex`, // GET - OAuth Yandex
+  Auth_Yandex: `${_baseUrl}/user/yandex`,
   Auth_Yandex_Callback: `${_baseUrl}/user/yandex/callback`,
 
-  // ========================================
-  // FILE ENDPOINTS
-  // ========================================
+  // File
   File_URL: `${_baseUrl}/file`,
-  UpAvatar_URL: `${_baseUrl}/file/avatar`,
-  FileUpload_URL: `${_baseUrl}/file/upload`,
+  File_Upload: `${_baseUrl}/file/upload`,
+  File_Download: `${_baseUrl}/file/download`,
+  File_UploadAvatar: `${_baseUrl}/file/avatar`,
+  File_DeleteAvatar: `${_baseUrl}/file/avatar`,
 
-  // ========================================
-  // MESSAGE & SOCKET ENDPOINTS
-  // ========================================
-  Message_URL: `${_baseUrl}/messages`,
+  // WebSocket
   Socket_URL: `${_baseSocketUrl}`,
 
-  // ========================================
-  // ANOTHER ONE
-  // ========================================
+  // Misc
   TELEGRAM_BOT_NAME: import.meta.env.VITE_TELEGRAM_BOT_NAME || 'YourBotName',
 } as const;

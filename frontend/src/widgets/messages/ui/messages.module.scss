@@ -1,114 +1,18 @@
 @use "../../../shared/styles/tmp.scss" as *;
-@import url("https://fonts.googleapis.com/css2?family=Sono&display=swap");
 
 .messagesWrapper {
   display: flex;
   flex-direction: column;
   height: calc(100vh - $header-height);
   width: 100%;
-  border-radius: 8px;
+  border-radius: 0;
   overflow: hidden;
   position: relative;
-}
-
-.avatar {
-  background-color: #1890ff;
-  color: white;
-  margin-right: 8px;
-}
-
-.messagesInput {
-  width: 90%;
-  border-top: 1px solid #d9d9d9;
-  padding: 10px;
-  resize: none;
-  position: absolute;
-  box-sizing: border-box;
-  left: 5px;
-  bottom: 5px;
-}
-
-.inputWrapper {
-  display: flex;
-  align-items: flex-end;
-  padding: 10px;
-  gap: 10px; // Отступы между элементами
-  background: #fafafa;
-  border-top: 1px solid #d9d9d9;
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  box-sizing: border-box;
-  z-index: 1;
-}
-
-.textArea {
-  flex-grow: 1;
-  border-radius: 8px;
-  resize: none;
-  font-size: 14px;
-  padding: 8px 12px;
-  border: 1px solid #d9d9d9;
-  background: white;
-
-  &:focus {
-    border-color: #1890ff;
-    box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
-  }
-}
-
-/* Обёртка для кнопок рядом с инпутом */
-.buttonsWrapper {
-  display: flex;
-  gap: 8px; // расстояние между кнопками
-  align-items: center;
-}
-
-/* Общие стили для всех кнопок (иконок) */
-.voiceButton,
-.attachButton,
-.sendButton {
-  box-sizing: border-box;
-  padding: 6px;
-  height: 36px;
-  width: 36px;
-  border-radius: 50%;
-  border: none;
-  background-color: transparent;
-  cursor: pointer;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: #555;
-  transition:
-    background-color 0.2s ease,
-    color 0.2s ease;
-  font-size: 18px;
-
-  &:hover {
-    background-color: #e6f7ff;
-    color: #1890ff;
-  }
-
-  &:focus {
-    outline: none;
-    box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.5);
-  }
-}
-
-/* Можно добавить отдельный цвет для кнопки отправки */
-.sendButton {
-  color: #1890ff;
-
-  &:hover {
-    background-color: #bae7ff;
-    color: #096dd9;
-  }
+  background: hsl(240 10% 3.9%);
 }
 
 .emptyWrapper {
-  background-color: #fff;
+  background: hsl(240 10% 3.9%);
   height: calc(100vh - $header-height);
   display: flex;
   justify-content: center;
@@ -116,4 +20,115 @@
   width: 100%;
   padding: 20px;
   box-sizing: border-box;
+
+  :global(.ant-empty-description) {
+    color: hsl(240 5% 64.9%);
+    font-size: 16px;
+    font-weight: 500;
+  }
+
+  :global(.ant-empty-image) {
+    opacity: 0.6;
+  }
+}
+
+.inputWrapper {
+  display: flex;
+  align-items: flex-end;
+  padding: 16px;
+  gap: 12px;
+  background: hsl(240 10% 3.9%);
+  border-top: 1px solid hsl(240 3.7% 15.9%);
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  box-sizing: border-box;
+  z-index: 10;
+}
+
+.textArea {
+  flex-grow: 1;
+  border-radius: 12px;
+  resize: none;
+  font-size: 14px;
+  padding: 12px 16px;
+  border: 1px solid hsl(240 3.7% 15.9%);
+  background: hsl(240 5.9% 10%);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  line-height: 1.5;
+
+  &::placeholder {
+    color: hsl(240 5% 64.9%);
+  }
+
+  &:hover {
+    border-color: hsl(240 5% 26%);
+  }
+
+  &:focus {
+    border-color: hsl(263 70% 50%);
+    box-shadow: 0 0 0 3px hsla(263, 70%, 50%, 0.1);
+    outline: none;
+  }
+}
+
+.buttonsWrapper {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.voiceButton,
+.attachButton,
+.sendButton {
+  box-sizing: border-box;
+  padding: 0;
+  height: 40px;
+  width: 40px;
+  border-radius: 10px;
+  border: 1px solid hsl(240 3.7% 15.9%);
+  background: hsl(240 5.9% 10%);
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: hsl(0 0% 98%);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+  svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  &:hover {
+    background: hsl(240 3.7% 15.9%);
+    border-color: hsl(240 5% 26%);
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px hsla(263, 70%, 50%, 0.1);
+  }
+}
+
+.sendButton {
+  background: hsl(263 70% 50%);
+  border-color: hsl(263 70% 50%);
+
+  &:hover {
+    background: hsl(263 70% 60%);
+    border-color: hsl(263 70% 60%);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+  }
 }

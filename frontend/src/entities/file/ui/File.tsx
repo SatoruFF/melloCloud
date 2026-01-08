@@ -1,166 +1,156 @@
-import { QuestionCircleOutlined } from "@ant-design/icons";
-import { unwrapResult } from "@reduxjs/toolkit";
-import { Button, Popconfirm, Tooltip, message } from "antd";
+// react & core
+import React, { memo } from "react";
 import { motion } from "framer-motion";
-import _ from "lodash-es";
+import { useTranslation } from "react-i18next";
 
-import { useAppDispatch, useAppSelector } from "../../../app/store/store";
-import FileViewer from "../../../features/fileViewer/ui/FileViewer";
-import { sizeFormat } from "../../../shared/utils/sizeFormat";
-import {
-	useDeleteFileMutation,
-	useDownloadFileMutation,
-	useGetFilesQuery,
-} from "../model/api/fileApi";
-import {
-	pushToPath,
-	pushToStack,
-	setDir,
-	setFiles,
-} from "../model/slice/fileSlice";
+// redux
+import { unwrapResult } from "@reduxjs/toolkit";
+import { useAppDispatch, useAppSelector } from "../../../app/store";
 
+// antd
+import { Button, Popconfirm, Tooltip, message } from "antd";
+import { QuestionCircleOutlined } from "@ant-design/icons";
+
+// external libs
 import cn from "classnames";
+import { get } from "lodash-es";
+
+// features
+import { FileViewer } from "../../../features/fileViewer";
+
+// shared
+import { sizeFormat } from "../../../shared";
+
+// internal (entity)
+import { useDeleteFileMutation, useDownloadFileMutation } from "../model/api/fileApi";
+import { pushToPath, pushToStack, setDir, setFiles } from "../model/slice/fileSlice";
+import { getCurrentFileDirSelector, getCurrentFileViewSelector } from "../model/selectors/getFiles";
 import type { FileProps } from "../types/file";
+
+// styles
 import styles from "./file.module.scss";
 
 const File: React.FC<FileProps> = ({ file }) => {
-	//size format
-	const size = sizeFormat(file.size);
+  const { t } = useTranslation();
+  const [messageApi, contextHolder] = message.useMessage();
 
-	//redux
-	const dispatch = useAppDispatch();
-	const currentDir = useAppSelector((state) => state.files.currentDir);
-	const fileView = useAppSelector((state) => state.files.view);
+  // Format file size
+  const size = sizeFormat(file.size);
 
-	//rtk-query
-	const [downloadFile] = useDownloadFileMutation();
-	const [deleteFile, { isLoading: rmLoading }] = useDeleteFileMutation();
+  // Redux
+  const dispatch = useAppDispatch();
+  const currentDir = useAppSelector(getCurrentFileDirSelector);
+  const fileView = useAppSelector(getCurrentFileViewSelector);
 
-	//Check is image url
-	const fileType = _.get(file, "type", "");
+  // RTK Query
+  const [downloadFile] = useDownloadFileMutation();
+  const [deleteFile, { isLoading: rmLoading }] = useDeleteFileMutation();
 
-	const openDirHandler = () => {
-		if (file.type == "dir") {
-			dispatch(setDir(file.id));
-			dispatch(pushToStack(currentDir));
-			dispatch(pushToPath({ title: file.name }));
-		}
-	};
+  // Get file type
+  const fileType = get(file, "type", "");
 
-	const downloadHandler = async () => {
-		try {
-			const response: any = await downloadFile({
-				file,
-			});
-			unwrapResult(response);
-		} catch (error: any) {
-			console.log(error);
-			message.error(`Request failed with error: ${error.message}`);
-		}
-	};
+  const openDirHandler = () => {
+    if (file.type === "dir") {
+      dispatch(setDir(file.id));
+      currentDir && dispatch(pushToStack(currentDir));
+      dispatch(pushToPath({ title: file.name }));
+    }
+  };
 
-	const deleteHandler = async () => {
-		try {
-			const response: any = await deleteFile({
-				file,
-			});
-			unwrapResult(response);
-			dispatch(setFiles(response.data));
-			message.info("File was destroyed");
-		} catch (error: any) {
-			message.error(`Request failed: ${error.data.message}`);
-		}
-	};
+  const downloadHandler = async () => {
+    try {
+      const response: any = await downloadFile({ file });
+      unwrapResult(response);
+      messageApi.success(t("files.download-success"));
+    } catch (error: any) {
+      const errorMsg = error?.data?.message || error?.message || t("files.download-failed");
+      messageApi.error(errorMsg);
+    }
+  };
 
-	if (rmLoading) {
-		message.info("loading...");
-	}
+  const deleteHandler = async () => {
+    try {
+      const response: any = await deleteFile({ file });
+      unwrapResult(response);
+      dispatch(setFiles(response.data));
+      messageApi.success(t("files.deleted"));
+    } catch (error: any) {
+      const errorMsg = error?.data?.message || error?.message || t("files.delete-failed");
+      messageApi.error(errorMsg);
+    }
+  };
 
-	if (fileView == "plate") {
-		return (
-			<motion.div
-				key={Math.random()}
-				className={cn(styles.filePlateFileWrapper)}
-				onDoubleClick={() => openDirHandler()}
-			>
-				<FileViewer type={fileType} url={file.url} />
+  if (rmLoading) {
+    messageApi.loading(t("notes.loading"));
+  }
 
-				<Tooltip title={file.name}>
-					<div className={cn(styles.fileName)}>{file.name}</div>
-				</Tooltip>
-				<div className={cn(styles.fileBtns)}>
-					{file.type !== "dir" && (
-						<Button
-							className={cn(styles.fileBtn, styles.fileDownload)}
-							onClick={() => downloadHandler()}
-							type="link"
-						>
-							Download
-						</Button>
-					)}
-					<Popconfirm
-						title="Delete"
-						description="Exactly?"
-						onConfirm={deleteHandler}
-						okText="Yes"
-						cancelText="No"
-						icon={<QuestionCircleOutlined style={{ color: "red" }} />}
-					>
-						<Button
-							className={cn(styles.fileBtn, styles.fileDelete)}
-							type="link"
-							danger
-						>
-							Delete
-						</Button>
-					</Popconfirm>
-				</div>
-			</motion.div>
-		);
-	}
+  if (fileView === "plate") {
+    return (
+      <>
+        {contextHolder}
+        <motion.div key={file.id} className={cn(styles.filePlateFileWrapper)} onDoubleClick={openDirHandler}>
+          <FileViewer type={fileType} url={file.url} />
 
-	return (
-		<motion.div
-			key={Math.random()}
-			className={cn(styles.fileWrapper)}
-			onDoubleClick={() => openDirHandler()}
-		>
-			<FileViewer type={fileType} url={file.url} />
+          <Tooltip title={file.name}>
+            <div className={cn(styles.fileName)}>{file.name}</div>
+          </Tooltip>
+          <div className={cn(styles.fileBtns)}>
+            {file.type !== "dir" && (
+              <Button className={cn(styles.fileBtn, styles.fileDownload)} onClick={downloadHandler} type="link">
+                {t("files.download")}
+              </Button>
+            )}
+            <Popconfirm
+              title={t("files.delete")}
+              description={t("files.confirm")}
+              onConfirm={deleteHandler}
+              okText={t("common.yes")}
+              cancelText={t("common.no")}
+              icon={<QuestionCircleOutlined style={{ color: "red" }} />}
+            >
+              <Button className={cn(styles.fileBtn, styles.fileDelete)} type="link" danger>
+                {t("files.delete")}
+              </Button>
+            </Popconfirm>
+          </div>
+        </motion.div>
+      </>
+    );
+  }
 
-			<Tooltip title={file.name}>
-				<div className={cn(styles.fileName)}>{file.name}</div>
-			</Tooltip>
-			<div className={cn(styles.fileDate)}>
-				{file.updatedAt ? file.updatedAt.slice(0, 10) : "unknown"}
-			</div>
-			<div className={cn(styles.fileSize)}>{size}</div>
-			{file.type !== "dir" && (
-				<Button
-					className={cn(styles.fileBtn, styles.fileDownload)}
-					onClick={() => downloadHandler()}
-					ghost
-				>
-					Download
-				</Button>
-			)}
-			<Popconfirm
-				title="Delete"
-				description="Exactly?"
-				onConfirm={deleteHandler}
-				okText="Yes"
-				cancelText="No"
-				icon={<QuestionCircleOutlined style={{ color: "red" }} />}
-			>
-				<Button
-					className={cn(styles.fileBtn, styles.fileDelete)}
-					type="link"
-					danger
-				>
-					Delete
-				</Button>
-			</Popconfirm>
-		</motion.div>
-	);
+  return (
+    <>
+      {contextHolder}
+      <motion.div key={file.id} className={cn(styles.fileWrapper)} onDoubleClick={openDirHandler}>
+        <FileViewer type={fileType} url={file.url} />
+
+        <Tooltip title={file.name}>
+          <div className={cn(styles.fileName)}>{file.name}</div>
+        </Tooltip>
+        <div className={cn(styles.fileDate)}>
+          {file.updatedAt ? file.updatedAt.slice(0, 10) : t("files.unknown-date")}
+        </div>
+        <div className={cn(styles.fileSize)}>{size}</div>
+        {file.type !== "dir" && (
+          <Button className={cn(styles.fileBtn, styles.fileDownload)} onClick={downloadHandler} ghost>
+            {t("files.download")}
+          </Button>
+        )}
+        <Popconfirm
+          title={t("files.delete")}
+          description={t("files.confirm")}
+          onConfirm={deleteHandler}
+          okText={t("common.yes")}
+          cancelText={t("common.no")}
+          icon={<QuestionCircleOutlined style={{ color: "red" }} />}
+        >
+          <Button className={cn(styles.fileBtn, styles.fileDelete)} type="link" danger>
+            {t("files.delete")}
+          </Button>
+        </Popconfirm>
+      </motion.div>
+    </>
+  );
 };
 
-export default File;
+export default memo(File);

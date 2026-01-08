@@ -1,5 +1,3 @@
-// entities/file/types/file.ts
-
 export interface IFile {
   id: string;
   name: string;
@@ -12,7 +10,7 @@ export interface IFile {
 export interface FileListSchema {
   files: IFile[];
   currentDir: string | null;
-  dirStack: number[];
+  dirStack: string[];
   view: string;
   paths: { title: string }[];
   limit: number;

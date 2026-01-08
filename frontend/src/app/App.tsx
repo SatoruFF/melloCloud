@@ -3,15 +3,14 @@ import { BrowserRouter } from "react-router-dom";
 import cn from "classnames";
 import { AppRouter } from "./providers/router";
 
-import "./styles/global.scss";
-
-import { useAuthQuery } from "../entities/user/model/api/user";
-import { setUser } from "../entities/user/model/slice/userSlice";
+import { useAuthQuery } from "../entities/user";
+import { setUser } from "../entities/user";
 import { Spinner } from "../shared";
-import MyNavbar from "../widgets/Navbar/ui/Navbar";
+import { Navbar as MyNavbar } from "../widgets/Navbar";
 import { ErrorBoundary } from "./providers/ErrorBoundary";
 import { useAppDispatch } from "./store/store";
 
+import "./styles/global.scss";
 import styles from "./styles/application.module.scss";
 
 function App() {

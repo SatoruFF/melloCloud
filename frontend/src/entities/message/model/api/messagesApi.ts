@@ -1,32 +1,44 @@
-import { rtkApi } from "../../../../shared/api/rtkApi";
-import { Variables } from "../../../../shared/consts/localVariables";
+import { ApiPaths, rtkApi } from '../../../../shared';
+import type { Message } from '../../types/message';
 
-// const url = Variables.Message_URL;
+interface SendMessageRequest {
+  chatId: string | number;
+  text: string;
+  receiverId: string | number;
+}
 
-/// TODO: add types for the returned types like build.query<Notification[], null>
+interface DeleteMessageResponse {
+  messageId: string;
+}
+
+interface EditMessageRequest {
+  messageId: string;
+  newText: string;
+}
+
 export const messageApi = rtkApi.injectEndpoints({
-  endpoints: (builder) => ({
-    sendMessage: builder.mutation<any, any>({
-      query: (body) => ({
-        url: "messages",
-        method: "POST",
+  endpoints: builder => ({
+    sendMessage: builder.mutation<Message, SendMessageRequest>({
+      query: body => ({
+        url: ApiPaths.messages,
+        method: 'POST',
         body,
       }),
     }),
-    deleteMessage: builder.mutation<{ messageId: string }, any>({
+    deleteMessage: builder.mutation<DeleteMessageResponse, { messageId: string }>({
       query: ({ messageId }) => ({
-        url: `messages/delete?id=${messageId}`,
-        method: "DELETE",
+        url: `${ApiPaths.messages}/delete?id=${messageId}`,
+        method: 'DELETE',
         body: { messageId },
       }),
     }),
-    getMessages: builder.query<any, any>({
-      query: (chatId: string) => `messages?chatId=${chatId}`,
+    getMessages: builder.query<Message[], string>({
+      query: (chatId: string) => `${ApiPaths.messages}?chatId=${chatId}`,
     }),
-    editMessage: builder.mutation<any, any>({
+    editMessage: builder.mutation<Message, EditMessageRequest>({
       query: ({ messageId, newText }) => ({
-        url: `messages/edit`,
-        method: "PUT",
+        url: `${ApiPaths.messages}/edit`,
+        method: 'PUT',
         body: { messageId, newText },
       }),
     }),

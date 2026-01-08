@@ -4,7 +4,7 @@ import type { FileListSchema } from "../../../entities/file";
 import type { MessageSchema } from "../../../entities/message";
 import { NotesState } from "../../../entities/note/types/note";
 import { TaskState } from "../../../entities/task/types/taskState";
-import { TaskColumnState } from "../../../entities/taskColumn/types/taskColumnState";
+import { TaskColumnState } from "../../../entities/taskColumn/types/taskColumns";
 import type { UserSchema } from "../../../entities/user";
 import { userApi } from "../../../entities/user";
 import type { IRestoreScroll } from "../../../features/restoreScroll";

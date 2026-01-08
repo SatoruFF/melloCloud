@@ -1,10 +1,9 @@
-import _ from "lodash-es";
-import { rtkApi } from "../../../../shared/api/rtkApi";
+import { ApiPaths, rtkApi } from '../../../../shared';
 
 export const chatApi = rtkApi.injectEndpoints({
-  endpoints: (builder) => ({
+  endpoints: builder => ({
     getChats: builder.query<any, any>({
-      query: () => "chats",
+      query: () => ApiPaths.chats,
     }),
   }),
   overrideExisting: false, // ?

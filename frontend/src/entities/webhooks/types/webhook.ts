@@ -93,3 +93,15 @@ export interface WebhookProps {
   onDelete?: (webhookId: number) => void;
   onTest?: (webhookId: number) => void;
 }
+
+export interface CreateWebhookRequest {
+  name: string;
+  description?: string;
+  url: string;
+  method: string;
+  events: string[];
+  filters?: any;
+  headers?: any;
+  retryCount?: number;
+  retryDelay?: number;
+}

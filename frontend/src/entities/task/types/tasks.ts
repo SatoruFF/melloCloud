@@ -1,8 +1,6 @@
-// types/kanban.ts
-
 // 🔹 Enums для статусов и приоритетов
-export type TaskPriority = "LOW" | "MEDIUM" | "HIGH";
-export type TaskStatus = "TODO" | "IN_PROGRESS" | "ON_HOLD" | "COMPLETED" | "CANCELLED";
+export type TaskPriority = 'LOW' | 'MEDIUM' | 'HIGH';
+export type TaskStatus = 'TODO' | 'IN_PROGRESS' | 'ON_HOLD' | 'COMPLETED' | 'CANCELLED';
 
 // 🔹 Пользователь (already have exists on another file)
 export type User = {

@@ -1,11 +1,12 @@
-import { rtkApi } from "../../../../shared/api/rtkApi";
-import { TaskColumn } from "../../types/tasksColumn";
+import { ApiPaths } from '../../../../shared';
+import { rtkApi } from '../../../../shared';
+import { TaskColumn } from '../../types/taskColumns';
 
 export const taskColumnApi = rtkApi.injectEndpoints({
-  endpoints: (builder) => ({
+  endpoints: builder => ({
     // Column endpoints
     getColumns: builder.query<TaskColumn[], void>({
-      query: () => "columns",
+      query: () => ApiPaths.columns,
     }),
 
     createColumn: builder.mutation<
@@ -15,9 +16,9 @@ export const taskColumnApi = rtkApi.injectEndpoints({
         color: string;
       }
     >({
-      query: (body) => ({
-        url: "columns",
-        method: "POST",
+      query: body => ({
+        url: ApiPaths.columns,
+        method: 'POST',
         body,
       }),
     }),
@@ -32,16 +33,16 @@ export const taskColumnApi = rtkApi.injectEndpoints({
       }
     >({
       query: ({ columnId, ...body }) => ({
-        url: `columns/${columnId}`,
-        method: "PUT",
+        url: `${ApiPaths.columns}/${columnId}`,
+        method: 'PUT',
         body,
       }),
     }),
 
     deleteColumn: builder.mutation<{ message: string }, string | number>({
-      query: (columnId) => ({
-        url: `columns/${columnId}`,
-        method: "DELETE",
+      query: columnId => ({
+        url: `${ApiPaths.columns}/${columnId}`,
+        method: 'DELETE',
       }),
     }),
 
@@ -52,9 +53,9 @@ export const taskColumnApi = rtkApi.injectEndpoints({
         order: number;
       }>
     >({
-      query: (columnOrders) => ({
-        url: "columns/reorder",
-        method: "PATCH",
+      query: columnOrders => ({
+        url: `${ApiPaths.columns}/reorder`,
+        method: 'PATCH',
         body: { columnOrders },
       }),
     }),
@@ -76,7 +77,7 @@ export const taskColumnApi = rtkApi.injectEndpoints({
       }>,
       void
     >({
-      query: () => "columns/stats",
+      query: () => `${ApiPaths.columns}/stats`,
     }),
   }),
 });

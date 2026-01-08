@@ -26,18 +26,15 @@ const rootReducers: ReducersMapObject<StateSchema> = {
   events: eventReducer,
   webhooks: webhookReducer,
 
-  // ✅ One reducerPath for all API
   [rtkApi.reducerPath]: rtkApi.reducer,
   [userApi.reducerPath]: userApi.reducer,
 };
 
 export const store = configureStore({
   reducer: rootReducers,
-  // ✅ One middleware for all API with path "api"
   middleware: getDefaultMiddleware => getDefaultMiddleware().concat(rtkApi.middleware, userApi.middleware),
 });
 
-// Types
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
 export const useAppDispatch = () => useDispatch<AppDispatch>();

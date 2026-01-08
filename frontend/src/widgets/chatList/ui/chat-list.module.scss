@@ -2,26 +2,63 @@
 
 .usersListWrapper {
   height: calc(100vh - $header-height);
-  border-right: 1px solid #e0e0e0;
+  border-right: 1px solid hsl(240 3.7% 15.9%);
   box-sizing: border-box;
-  padding: 10px;
+  padding: 16px;
   display: flex;
   flex-direction: column;
   overflow: hidden;
   position: relative;
-  background: white;
-  box-shadow: 2px 0 5px -2px rgba(0, 0, 0, 0.1);
+  @include diskBackground;
 }
 
 .searchChats {
   width: 100%;
-  flex: 1;
-  margin-bottom: 10px;
+  margin-bottom: 16px;
+
+  input {
+    background: hsl(240 5.9% 10%);
+    border: 1px solid hsl(240 3.7% 15.9%);
+    border-radius: 10px;
+    font-size: 14px;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+    &::placeholder {
+      color: hsl(240 5% 64.9%);
+    }
+
+    &:hover {
+      border-color: hsl(240 5% 26%);
+    }
+
+    &:focus {
+      border-color: hsl(263 70% 50%);
+      box-shadow: 0 0 0 3px hsla(263, 70%, 50%, 0.1);
+      outline: none;
+    }
+  }
 }
 
-.ant-list {
+:global(.ant-list) {
   flex: 1;
   overflow-y: auto;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: hsl(240 3.7% 15.9%);
+    border-radius: 10px;
+
+    &:hover {
+      background: hsl(240 5% 26%);
+    }
+  }
 }
 
 .searchWrapper {
@@ -30,31 +67,43 @@
 }
 
 .favoriteIcon {
-  width: 24px;
-  height: 24px;
-  margin-top: 10px;
-  margin-left: 8px;
-  line-height: 1;
+  width: 20px;
+  height: 20px;
+  color: hsl(38 92% 50%);
+  transition: transform 0.2s;
+
+  &:hover {
+    transform: scale(1.15);
+  }
 }
 
 .userAvatar {
-  width: 24px;
-  height: 24px;
-  margin-top: 10px;
-  margin-left: 8px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: hsl(263 70% 50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+  font-size: 14px;
+  border: 2px solid hsl(240 5.9% 10%);
 }
 
 .chatItem {
   cursor: pointer;
-  transition:
-    background 0.2s ease,
-    transform 0.1s ease;
-  border-radius: 8px;
-  padding: 8px 12px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 12px;
+  padding: 12px;
+  margin-bottom: 4px;
+  border: 1px solid transparent;
+  background: transparent;
 
   &:hover {
-    background: rgba(24, 144, 255, 0.08);
-    transform: translateY(-1px);
+    background: hsl(240 5.9% 10%);
+    border-color: hsl(240 3.7% 15.9%);
+    transform: translateX(2px);
   }
 
   &:active {
@@ -62,11 +111,26 @@
   }
 
   &.active {
-    background: rgba(24, 144, 255, 0.3);
-    font-weight: 600;
-    color: #096dd9;
-    box-shadow: 0 0 8px rgba(24, 144, 255, 0.5);
-    transform: none;
+    background: hsl(240 5.9% 10%);
+    border-color: hsl(263 70% 50%);
+    box-shadow: 0 0 0 3px hsla(263, 70%, 50%, 0.1);
+
+    :global(.ant-list-item-meta-title) {
+      color: hsl(263 70% 70%);
+      font-weight: 600;
+    }
+  }
+
+  :global(.ant-list-item-meta-title) {
+    color: hsl(0 0% 98%);
+    font-weight: 500;
+    font-size: 14px;
+    margin-bottom: 4px;
+  }
+
+  :global(.ant-list-item-meta-description) {
+    color: hsl(240 5% 64.9%);
+    font-size: 13px;
   }
 }
 
@@ -75,21 +139,32 @@
   top: 100%;
   left: 0;
   right: 0;
-  background: white;
-  border: 1px solid #d9d9d9;
-  border-radius: 4px;
+  background: hsl(240 5.9% 10%);
+  border: 1px solid hsl(240 3.7% 15.9%);
+  border-radius: 10px;
   max-height: 200px;
   overflow-y: auto;
-  z-index: 10;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  z-index: 100;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+  margin-top: 4px;
 }
 
 .mentionItem {
-  padding: 8px 12px;
+  padding: 10px 14px;
   cursor: pointer;
   transition: background-color 0.2s;
+  color: hsl(0 0% 98%);
+  font-size: 14px;
 
   &:hover {
-    background-color: #e6f7ff;
+    background: hsl(240 3.7% 15.9%);
+  }
+
+  &:first-child {
+    border-radius: 10px 10px 0 0;
+  }
+
+  &:last-child {
+    border-radius: 0 0 10px 10px;
   }
 }

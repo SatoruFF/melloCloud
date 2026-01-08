@@ -1,15 +1,16 @@
 .wrapper {
   position: relative;
-  height: calc(100% - 80px);
+  height: calc(100% - 96px);
   width: 100%;
   overflow: hidden;
   z-index: 1;
+  background: hsl(240 10% 3.9%);
 }
 
 .messageList {
   box-sizing: border-box;
   height: 100%;
-  padding: 20px 16px 60px;
+  padding: 24px 20px 20px;
   position: relative;
   z-index: 1;
 
@@ -28,7 +29,7 @@
         &:last-child::after {
           content: "";
           display: block;
-          height: 24px;
+          height: 32px;
         }
       }
     }
@@ -41,8 +42,8 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  color: rgba(255, 255, 255, 0.9);
-  font-size: 18px;
+  color: hsl(240 5% 64.9%);
+  font-size: 16px;
   font-weight: 500;
   position: relative;
   z-index: 1;
@@ -51,7 +52,7 @@
   &::before {
     content: "💬";
     font-size: 64px;
-    opacity: 0.7;
+    opacity: 0.3;
     animation: float 3s ease-in-out infinite;
   }
 }
@@ -69,66 +70,49 @@
 .messageItem {
   display: flex;
   align-items: flex-end;
-  gap: 10px;
-  animation: slideInUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  gap: 12px;
+  animation: slideInUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-sizing: border-box;
 
   &.self {
     justify-content: flex-end;
 
     .messageContent {
-      background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-      color: #fff;
+      background: hsl(263 70% 50%);
+      color: white;
       align-self: flex-end;
-      box-shadow:
-        0 4px 12px rgba(99, 102, 241, 0.3),
-        0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+      border: 1px solid hsl(263 70% 60%);
 
       .messageTime {
-        color: rgba(255, 255, 255, 0.8);
+        color: hsla(0, 0%, 100%, 0.7);
       }
 
-      &::before {
-        background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), transparent);
+      &:hover {
+        background: hsl(263 70% 55%);
+        border-color: hsl(263 70% 65%);
       }
     }
   }
 }
 
 .messageContent {
-  max-width: 70%;
+  max-width: 65%;
   padding: 12px 16px;
-  border-radius: 20px;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(20px) saturate(180%);
-  font-size: 15px;
-  line-height: 1.5;
-  color: #1f2937;
-  box-shadow:
-    0 4px 16px rgba(0, 0, 0, 0.12),
-    0 0 0 1px rgba(0, 0, 0, 0.05);
+  border-radius: 16px;
+  background: hsl(240 5.9% 10%);
+  border: 1px solid hsl(240 3.7% 15.9%);
+  font-size: 14px;
+  line-height: 1.6;
+  color: hsl(0 0% 98%);
   word-break: break-word;
   position: relative;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-
-  // Glossy effect
-  &::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 50%;
-    border-radius: 20px 20px 0 0;
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.3), transparent);
-    pointer-events: none;
-  }
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 
   &:hover {
-    transform: translateY(-2px) scale(1.01);
-    box-shadow:
-      0 8px 24px rgba(0, 0, 0, 0.15),
-      0 0 0 1px rgba(0, 0, 0, 0.05);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    border-color: hsl(240 5% 26%);
   }
 
   &:active {
@@ -145,7 +129,7 @@
 .messageTime {
   font-size: 11px;
   font-weight: 500;
-  color: rgba(0, 0, 0, 0.4);
+  color: hsl(240 5% 64.9%);
   text-align: right;
   margin-top: 4px;
   letter-spacing: 0.02em;
@@ -162,28 +146,28 @@
   }
 }
 
-// Адаптивность
+// Responsive
 @media (max-width: 768px) {
   .messageContent {
-    max-width: 80%;
+    max-width: 75%;
     padding: 10px 14px;
-    font-size: 14px;
+    font-size: 13px;
   }
 
   .messageList {
-    padding: 16px 12px 50px;
+    padding: 20px 16px 16px;
   }
 
   .messageItem {
-    gap: 8px;
+    gap: 10px;
   }
 }
 
 @media (max-width: 480px) {
   .messageContent {
-    max-width: 85%;
+    max-width: 80%;
     padding: 8px 12px;
-    font-size: 13.5px;
+    font-size: 13px;
   }
 
   .messageText {

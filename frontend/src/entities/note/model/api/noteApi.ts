@@ -1,11 +1,11 @@
-import { rtkApi } from '../../../../shared/api/rtkApi';
+import { ApiPaths, rtkApi } from '../../../../shared';
 import type { Note } from '../../types/note';
 
 export const notesApi = rtkApi.injectEndpoints({
   endpoints: builder => ({
     // Get all notes
     getNotes: builder.query<Note[], void>({
-      query: () => 'notes',
+      query: () => ApiPaths.notes,
       providesTags: result =>
         result
           ? [...result.map(note => ({ type: 'Notes' as const, id: note.id })), { type: 'Notes' as const, id: 'LIST' }]
@@ -14,8 +14,8 @@ export const notesApi = rtkApi.injectEndpoints({
 
     // Get single note by ID
     getNote: builder.query<Note, string>({
-      query: noteId => `notes/${noteId}`,
-      providesTags: (result, error, id) => [{ type: 'Notes' as const, id }],
+      query: noteId => `${ApiPaths.notes}/${noteId}`,
+      providesTags: (_result, _error, id) => [{ type: 'Notes' as const, id }],
     }),
 
     // Create new note
@@ -27,7 +27,7 @@ export const notesApi = rtkApi.injectEndpoints({
       }
     >({
       query: body => ({
-        url: 'notes',
+        url: ApiPaths.notes,
         method: 'POST',
         body,
       }),
@@ -44,11 +44,11 @@ export const notesApi = rtkApi.injectEndpoints({
       }
     >({
       query: ({ noteId, ...body }) => ({
-        url: `notes/${noteId}`,
+        url: `${ApiPaths.notes}/${noteId}`,
         method: 'PUT',
         body,
       }),
-      invalidatesTags: (result, error, { noteId }) => [
+      invalidatesTags: (_result, _error, { noteId }) => [
         { type: 'Notes', id: noteId },
         { type: 'Notes', id: 'LIST' },
       ],
@@ -57,10 +57,10 @@ export const notesApi = rtkApi.injectEndpoints({
     // Delete note
     deleteNote: builder.mutation<{ message: string }, string>({
       query: noteId => ({
-        url: `notes/${noteId}`,
+        url: `${ApiPaths.notes}/${noteId}`,
         method: 'DELETE',
       }),
-      invalidatesTags: (result, error, noteId) => [
+      invalidatesTags: (_result, _error, noteId) => [
         { type: 'Notes', id: noteId },
         { type: 'Notes', id: 'LIST' },
       ],
@@ -68,7 +68,7 @@ export const notesApi = rtkApi.injectEndpoints({
 
     // Search notes
     searchNotes: builder.query<Note[], string>({
-      query: query => `notes/search?query=${encodeURIComponent(query)}`,
+      query: query => `${ApiPaths.notes}/search?query=${encodeURIComponent(query)}`,
       providesTags: result => (result ? result.map(note => ({ type: 'Notes' as const, id: note.id })) : []),
     }),
   }),

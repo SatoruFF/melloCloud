@@ -1,7 +1,7 @@
 import type { BaseQueryFn, FetchArgs, FetchBaseQueryError } from '@reduxjs/toolkit/query';
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { Mutex } from 'async-mutex';
-import { Variables } from '../../../../shared/consts/localVariables';
+import { Variables } from '../../../../shared';
 import { logout, setUser, setUserLoading } from '../slice/userSlice';
 
 const mutex = new Mutex();
@@ -28,7 +28,7 @@ interface Session {
 // Base query with parameters to auth with access token
 const baseQuery = fetchBaseQuery({
   baseUrl: Variables.BASE_API_URL,
-  // credentials: "include", // ВАЖНО: для работы с cookies
+  // credentials: "include", // Important: for working with cookies?
   prepareHeaders: headers => {
     const token = localStorage.getItem('token');
     if (token) {
@@ -38,7 +38,7 @@ const baseQuery = fetchBaseQuery({
   },
 });
 
-// if we get 401 status => rewrite access token
+// If we get 401 status => refresh access token
 const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryError> = async (
   args,
   api,
@@ -62,7 +62,7 @@ const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQue
 
         if (refreshResult.data) {
           api.dispatch(setUser(refreshResult.data as any));
-          // retry the initial query
+          // Retry the initial query
           result = await baseQuery(args, api, extraOptions);
         } else {
           api.dispatch(logout());
@@ -85,9 +85,7 @@ export const userApi = createApi({
   tagTypes: ['User', 'Sessions'],
   baseQuery: baseQueryWithReauth,
   endpoints: builder => ({
-    // ========================================
-    // СТАНДАРТНАЯ АВТОРИЗАЦИЯ
-    // ========================================
+    // Authentication endpoints
     registration: builder.mutation<any, RegisterRequest>({
       query: body => ({
         url: Variables.Auth_Register,
@@ -124,11 +122,9 @@ export const userApi = createApi({
       invalidatesTags: ['Sessions'],
     }),
 
-    // ========================================
-    // НОВОЕ: УПРАВЛЕНИЕ СЕССИЯМИ
-    // ========================================
+    // Session management endpoints
 
-    // Выйти со всех устройств
+    // Logout from all devices
     logoutAll: builder.mutation<any, void>({
       query: () => ({
         url: Variables.User_LogoutAll,
@@ -137,13 +133,13 @@ export const userApi = createApi({
       invalidatesTags: ['Sessions'],
     }),
 
-    // Получить список активных сессий
+    // Get list of active sessions
     getSessions: builder.query<Session[], void>({
       query: () => Variables.User_Sessions,
       providesTags: ['Sessions'],
     }),
 
-    // Удалить конкретную сессию
+    // Delete specific session
     deleteSession: builder.mutation<any, string>({
       query: sessionId => ({
         url: `${Variables.User_Sessions}/${sessionId}`,
@@ -152,10 +148,7 @@ export const userApi = createApi({
       invalidatesTags: ['Sessions'],
     }),
 
-    // ========================================
-    // ДРУГИЕ МЕТОДЫ
-    // ========================================
-
+    // User profile endpoints
     changeInfo: builder.mutation<any, any>({
       query: body => ({
         url: Variables.User_ChangeInfo,

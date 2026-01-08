@@ -1,56 +1,56 @@
-import _ from 'lodash-es';
-import { rtkApi } from '../../../../shared/api/rtkApi';
-import { addQueryParams } from '../../../../shared/lib/url/addQueryParams/addQueryParams';
-import { generateParams } from '../../../../shared/lib/url/generateParams/generateParams';
-import { queryParamsSync } from '../../../../shared/consts/queryParamsSync';
+import { omitBy, pick } from 'lodash-es';
+import { ApiPaths, rtkApi } from '../../../../shared';
+import { addQueryParams, generateParams, queryParamsSync } from '../../../../shared';
 
 export const fileApi = rtkApi.injectEndpoints({
   endpoints: builder => ({
     createDir: builder.mutation<any, any>({
       query: body => ({
-        url: 'file',
+        url: ApiPaths.file,
         method: 'POST',
         body,
       }),
     }),
     downloadFile: builder.mutation<any, any>({
       query: ({ file }) => ({
-        url: `file/download?id=${file.id}`,
+        url: `${ApiPaths.fileDownload}?id=${file.id}`,
         method: 'POST',
         responseHandler: async response => {
-          const blob = await response.blob(); // получаем бинарные данные ответа
-          const url = window.URL.createObjectURL(blob); // создаем URL-адрес для скачивания файла
-          const link = document.createElement('a'); // создаем ссылку для скачивания файла
+          const blob = await response.blob(); // get binary response data
+          const url = window.URL.createObjectURL(blob); // create URL for file download
+          const link = document.createElement('a'); // create download link element
           link.href = url;
-          link.download = file.name; // задаем имя файла для скачивания
-          link.click(); // автоматически кликаем по ссылке, чтобы скачать файл
-          window.URL.revokeObjectURL(url); // освобождаем занятые ресурсы
+          link.download = file.name; // set filename for download
+          link.click(); // automatically trigger download
+          window.URL.revokeObjectURL(url); // free up resources
         },
         cache: 'no-cache',
       }),
     }),
     deleteFile: builder.mutation<any, any>({
       query: ({ file }) => ({
-        url: `file/delete?id=${file.id}`,
+        url: `${ApiPaths.fileDelete}?id=${file.id}`,
         method: 'DELETE',
       }),
     }),
     deleteAvatar: builder.mutation<any, void>({
       query: () => ({
-        url: `file/avatar`,
+        url: ApiPaths.fileAvatar,
         method: 'DELETE',
       }),
     }),
     getFiles: builder.query<any, any>({
       query: (params: Record<string, string>) => {
         // sanitize params
-        params = {
-          ..._.omitBy(params, value => value === '' || value === undefined),
+        const sanitizedParams = {
+          ...omitBy(params, value => value === '' || value === undefined),
           limit: '50',
         };
-        addQueryParams(_.pick(params, queryParamsSync));
-        const queryParams = generateParams(params);
-        return `file${queryParams ? queryParams : ''}`;
+
+        addQueryParams(pick(sanitizedParams, queryParamsSync));
+        const queryParams = generateParams(sanitizedParams);
+
+        return ApiPaths.file + (queryParams || '');
       },
     }),
   }),
