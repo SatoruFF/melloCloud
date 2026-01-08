@@ -1,22 +1,15 @@
 import type { ChatSchema } from "../../../entities/chat";
-import { chatApi } from "../../../entities/chat/model/api/chatApi";
 import { EventSchema } from "../../../entities/event";
 import type { FileListSchema } from "../../../entities/file";
-import { fileApi } from "../../../entities/file/model/api/fileApi";
 import type { MessageSchema } from "../../../entities/message";
-import { messageApi } from "../../../entities/message/model/api/messagesApi";
-import { notesApi } from "../../../entities/note/model/api/noteApi";
-import { Note } from "../../../entities/note/types/note";
-import { taskApi } from "../../../entities/task/model/api/taskApi";
+import { NotesState } from "../../../entities/note/types/note";
 import { TaskState } from "../../../entities/task/types/taskState";
-import { taskColumnApi } from "../../../entities/taskColumn/model/api/taskColumnApi";
 import { TaskColumnState } from "../../../entities/taskColumn/types/taskColumnState";
-import { eventApi } from "../../../entities/event/model/api/eventApi";
 import type { UserSchema } from "../../../entities/user";
-import { userApi } from "../../../entities/user/model/api/user";
+import { userApi } from "../../../entities/user";
 import type { IRestoreScroll } from "../../../features/restoreScroll";
 import { WebhookListSchema } from "../../../entities/webhooks";
-import { webhookApi } from "../../../entities/webhooks/model/api/webhookApi";
+import { rtkApi } from "../../../shared/api/rtkApi";
 
 export interface StateSchema {
   user: UserSchema;
@@ -24,7 +17,7 @@ export interface StateSchema {
   messages: MessageSchema;
   chat: ChatSchema;
   ui: IRestoreScroll;
-  notes: Note[];
+  notes: NotesState;
   events: EventSchema;
   webhooks: WebhookListSchema;
 
@@ -32,16 +25,9 @@ export interface StateSchema {
   tasks: TaskState; // Changed from tasks: Task[] to task: TaskState
   taskColumns: TaskColumnState; // Changed from taskColumn: TaskColumn to column: TaskColumnState
 
-  // RTK Query API slices
+  // RTK Query API slices (have only one reducer path)
+  [rtkApi.reducerPath]: ReturnType<typeof rtkApi.reducer>;
   [userApi.reducerPath]: ReturnType<typeof userApi.reducer>;
-  [fileApi.reducerPath]: ReturnType<typeof fileApi.reducer>;
-  [messageApi.reducerPath]: ReturnType<typeof messageApi.reducer>;
-  [chatApi.reducerPath]: ReturnType<typeof chatApi.reducer>;
-  [taskApi.reducerPath]: ReturnType<typeof taskApi.reducer>;
-  [taskColumnApi.reducerPath]: ReturnType<typeof taskColumnApi.reducer>;
-  [notesApi.reducerPath]: ReturnType<typeof taskColumnApi.reducer>;
-  [eventApi.reducerPath]: ReturnType<typeof eventApi.reducer>;
-  [webhookApi.reducerPath]: ReturnType<typeof webhookApi.reducer>;
 }
 
 // #[allow(dead_code)] ;)

@@ -185,6 +185,8 @@
     "backToNotes": "Back to Notes"
   },
   "chats": {
+    "chats": "Chats",
+    "messages": "Messages",
     "favorite": "favorite",
     "new-chat": "New chat",
     "start-new-chat": "Start new chat",

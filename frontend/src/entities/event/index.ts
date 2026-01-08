@@ -21,6 +21,7 @@ import {
   setLoading,
   clearFilters,
   resetEventState,
+  eventReducer,
 } from './model/slice/eventSlice';
 
 import type { CalendarEvent, EventFilters, EventSchema } from './types/event';
@@ -39,6 +40,7 @@ import {
 } from './model/api/eventApi';
 
 export {
+  eventReducer,
   // Types
   type CalendarEvent,
   type EventFilters,

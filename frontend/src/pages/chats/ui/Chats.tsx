@@ -6,11 +6,13 @@ import { useMediaQuery } from "react-responsive";
 import { Messages } from "../../../widgets/messages";
 import { ChatList } from "../../../widgets/chatList/index";
 import styles from "./chats.module.scss";
+import { useTranslation } from "react-i18next";
 
 // TODO: вынести в глобал конфиги
 const MOBILE_BREAKPOINT = 1224; // px
 
 const Chats: React.FC = () => {
+  const { t } = useTranslation();
   const isMobile = useMediaQuery({ maxWidth: MOBILE_BREAKPOINT });
   const [mobileView, setMobileView] = useState<"chats" | "messages">("chats");
 
@@ -39,14 +41,14 @@ const Chats: React.FC = () => {
           onClick={() => setMobileView("chats")}
           style={{ marginRight: 8 }}
         >
-          Чаты
+          {t("chats.chats")}
         </Button>
         <Button
           type={mobileView === "messages" ? "primary" : "default"}
           onClick={() => setMobileView("messages")}
           disabled={mobileView === "messages" /* Можно сюда добавить логику блокировки если нет currentChat */}
         >
-          Сообщения
+          {t("chats.messages")}
         </Button>
       </div>
       <div className={styles.mobileContent}>

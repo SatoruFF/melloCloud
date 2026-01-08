@@ -6,3 +6,10 @@ export interface Note {
   updatedAt: string;
   userId: number;
 }
+
+export interface NotesState {
+  notes: Note[];
+  loading: boolean;
+  error: string | null;
+  selectedNoteId: string | number | null;
+}

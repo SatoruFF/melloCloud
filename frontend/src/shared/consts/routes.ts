@@ -1,4 +1,3 @@
-// consts/routes.ts
 export const WELCOME_ROUTE: string = '/';
 export const NOT_FOUND: string = '/not-found';
 export const LOGIN_ROUTE: string = '/login';
@@ -17,5 +16,4 @@ export const PLANNER_KANBAN_ROUTE: string = '/planner/kanban';
 export const PLANNER_CALENDAR_ROUTE: string = '/planner/calendar';
 
 export const POMODORO_ROUTE: string = '/pomodoro';
-
 // export const ADMIN_PANEL: string = "/admin";

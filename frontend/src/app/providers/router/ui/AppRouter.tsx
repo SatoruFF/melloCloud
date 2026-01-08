@@ -5,8 +5,8 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import { useAppSelector } from "../../../store/store";
 
 import { Spinner } from "../../../../shared";
-import { type IRoute, routes } from "../../../../shared/config/routeConfig/routes";
-import { NOT_FOUND } from "../../../../shared/consts/routes";
+import { type IRoute, routes } from "../../../../shared";
+import { NOT_FOUND } from "../../../../shared";
 import { RequireAuth } from "./RequireAuth";
 
 const AppRouter = () => {
@@ -19,23 +19,23 @@ const AppRouter = () => {
       </Suspense>
     );
 
-    const wrappedElement = route.private ? <RequireAuth roles={route?.roles}>{element}</RequireAuth> : element;
+    const wrappedElement = route.private ? <RequireAuth roles={route?.roles ?? []}>{element}</RequireAuth> : element;
 
-    // Если есть дочерние роуты
+    // If there are child routes
     if (route.children && route.children.length > 0) {
-      // Берём первый дочерний роут для редиректа
+      // We take the first child router for the redirect
       const firstChildPath = route.children[0]?.path || "";
 
       return (
         <Route key={route.path} path={route.path} element={wrappedElement}>
-          {/* Редирект на первый дочерний роут */}
+          {/* Redirect to the first child router */}
           <Route index element={<Navigate to={firstChildPath} replace />} />
-          {/* Рендерим дочерние роуты */}
+          {/* Rendering child routes */}
           {route.children.map((child) => {
             const childElement = <Suspense fallback={<Spinner fullscreen />}>{child.element}</Suspense>;
 
             const wrappedChildElement = child.private ? (
-              <RequireAuth roles={child?.roles}>{childElement}</RequireAuth>
+              <RequireAuth roles={child?.roles ?? []}>{childElement}</RequireAuth>
             ) : (
               childElement
             );
@@ -46,13 +46,13 @@ const AppRouter = () => {
       );
     }
 
-    // Обычный роут без детей
+    // A regular router without children
     return <Route key={route.path} path={route.path} element={wrappedElement} />;
   }, []);
 
   if (isUserLoading) return <Spinner fullscreen />; // FIXME: perhabs not needed anymore
 
-  // TODO: здесь желательно вместо спина добавить виджет PageLoader со скелетоном
+  // TODO: here it is advisable to add a PageLoader widget with a skeleton instead of a spin.
   return (
     <Routes>
       {routes.map(renderWithWrapper)}

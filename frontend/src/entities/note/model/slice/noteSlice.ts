@@ -1,12 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import type { Note } from '../../types/note';
-
-export interface NotesState {
-  notes: Note[];
-  loading: boolean;
-  error: string | null;
-  selectedNoteId: string | number | null;
-}
+import type { Note, NotesState } from '../../types/note';
 
 const initialState: NotesState = {
   notes: [],

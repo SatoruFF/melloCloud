@@ -1,68 +1,65 @@
 import { type PayloadAction, createSlice } from '@reduxjs/toolkit';
+import type { FileListSchema, IFile } from '../../types/file';
 
-export interface fileInterface {
-  files: any[]; // FIXME
-  currentDir: any;
-  dirStack: number[] | [];
-  view: string;
-  paths: any[];
-  limit: number;
-  offset: 0;
-}
-
-const initialState: fileInterface = {
+const initialState: FileListSchema = {
+  // ✅ Используй FileListSchema
   files: [],
   currentDir: null,
   dirStack: [],
   view: 'list',
   paths: [{ title: 'Root' }],
   limit: 50,
-  offset: 0,
+  offset: 0, // ✅ Теперь это number, а не literal 0
+  hasMore: false,
+  loading: false,
 };
 
 export const fileSlice = createSlice({
   name: 'file',
   initialState,
   reducers: {
-    setFiles: (state, action) => {
+    setFiles: (state, action: PayloadAction<IFile[]>) => {
       state.files = action.payload;
     },
-    addFiles: (state, action: PayloadAction<any[]>) => {
+    addFiles: (state, action: PayloadAction<IFile[]>) => {
       if (action?.payload) {
         state.files.push(...action.payload);
       }
     },
-    setDir: (state, action) => {
+    setDir: (state, action: PayloadAction<any>) => {
       state.currentDir = action.payload;
     },
-    addNewFile: (state: any, action) => {
+    addNewFile: (state, action: PayloadAction<IFile>) => {
       state.files.push(action.payload);
     },
-    pushToStack: (state: any, action) => {
+    pushToStack: (state, action: PayloadAction<number>) => {
       state.dirStack.push(action.payload);
     },
-    popToStack: (state: any) => {
-      state.currentDir = state.dirStack.pop();
+    popToStack: state => {
+      const dir = state.dirStack.pop();
+      if (dir !== undefined) {
+        state.currentDir = String(dir); // FIXME
+      }
     },
-    pushToPath: (state: any, action) => {
+    pushToPath: (state, action: PayloadAction<any>) => {
       state.paths.push(action.payload);
     },
-    popToPath: (state: any) => {
+    popToPath: state => {
       state.paths.pop();
     },
-    setView: (state: any, action) => {
+    setView: (state, action: PayloadAction<string>) => {
       state.view = action.payload;
     },
-    setLimit: (state: any, action: PayloadAction<number>) => {
+    setLimit: (state, action: PayloadAction<number>) => {
       state.limit = action.payload;
     },
-    setOffset: (state: any, action: PayloadAction<number>) => {
+    setOffset: (state, action: PayloadAction<number>) => {
       state.offset = action.payload;
     },
-    setHasMore: (state: any, action: PayloadAction<boolean>) => {
+    setHasMore: (state, action: PayloadAction<boolean>) => {
       state.hasMore = action.payload;
     },
-    setLoading: (state: any, action: PayloadAction<boolean>) => {
+    setLoading: (state, action: PayloadAction<boolean>) => {
       state.loading = action.payload;
     },
   },
@@ -83,4 +80,6 @@ export const {
   setLoading,
   setHasMore,
 } = fileSlice.actions;
+
+export const fileReducer = fileSlice.reducer; // ✅ Экспортируй как named export
 export default fileSlice.reducer;

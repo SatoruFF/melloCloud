@@ -1,25 +1,18 @@
 import { type ReducersMapObject, configureStore } from '@reduxjs/toolkit';
 import { type TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 
-import { fileApi } from '../../entities/file/model/api/fileApi';
-import fileReducer from '../../entities/file/model/slice/fileSlice';
-import { messageApi } from '../../entities/message/model/api/messagesApi';
-import messagesReducer from '../../entities/message/model/slice/messagesSlice';
-import { userApi } from '../../entities/user/model/api/user';
-import userReducer from '../../entities/user/model/slice/userSlice';
+import { rtkApi } from '../../shared';
+import { fileReducer } from '../../entities/file';
+import { messagesReducer } from '../../entities/message';
+import { userApi, userReducer } from '../../entities/user';
 import { restoreScrollReducer } from '../../features/restoreScroll';
 import type { StateSchema } from './types/state';
 import { chatReducer } from '../../entities/chat';
-import { taskReducer } from '../../entities/task/model/slice/taskSlice';
-import { taskColumnReducer } from '../../entities/taskColumn/model/slice/taskColumn';
-import { taskApi } from '../../entities/task/model/api/taskApi';
-import { taskColumnApi } from '../../entities/taskColumn/model/api/taskColumnApi';
-import { noteReducer } from '../../entities/note/model/slice/noteSlice';
-import { notesApi } from '../../entities/note/model/api/noteApi';
-import { eventReducer } from '../../entities/event/model/slice/eventSlice';
-import { eventApi } from '../../entities/event/model/api/eventApi';
-import { webhookSlice } from '../../entities/webhooks/model/slice/webhookSlice';
-import { webhookApi } from '../../entities/webhooks/model/api/webhookApi';
+import { taskReducer } from '../../entities/task';
+import { taskColumnReducer } from '../../entities/taskColumn';
+import { noteReducer } from '../../entities/note';
+import { eventReducer } from '../../entities/event';
+import { webhookReducer } from '../../entities/webhooks';
 
 const rootReducers: ReducersMapObject<StateSchema> = {
   user: userReducer,
@@ -31,21 +24,19 @@ const rootReducers: ReducersMapObject<StateSchema> = {
   taskColumns: taskColumnReducer,
   notes: noteReducer,
   events: eventReducer,
-  webhooks: webhookSlice,
-  [taskApi.reducerPath]: taskApi.reducer,
-  [taskColumnApi.reducerPath]: taskColumnApi.reducer,
+  webhooks: webhookReducer,
+
+  // ✅ One reducerPath for all API
+  [rtkApi.reducerPath]: rtkApi.reducer,
   [userApi.reducerPath]: userApi.reducer,
-  [fileApi.reducerPath]: fileApi.reducer,
-  [messageApi.reducerPath]: messageApi.reducer,
-  [notesApi.reducerPath]: notesApi.reducer,
-  [eventApi.reducerPath]: eventApi.reducer,
-  [webhookApi.reducerPath]: webhookApi.reducer,
 };
 
 export const store = configureStore({
   reducer: rootReducers,
-  middleware: getDefaultMiddleware => getDefaultMiddleware().concat(userApi.middleware, fileApi.middleware),
+  // ✅ One middleware for all API with path "api"
+  middleware: getDefaultMiddleware => getDefaultMiddleware().concat(rtkApi.middleware, userApi.middleware),
 });
+
 // Types
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;

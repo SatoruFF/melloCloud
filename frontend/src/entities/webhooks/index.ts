@@ -1,5 +1,3 @@
-// entities/webhook/index.ts
-
 export {
   useGetWebhooksQuery,
   useGetWebhookQuery,
@@ -13,6 +11,7 @@ export {
 } from './model/api/webhookApi';
 
 export {
+  webhookReducer,
   setWebhooks,
   addWebhooks,
   addWebhook,

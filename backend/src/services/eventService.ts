@@ -1,5 +1,5 @@
 import createError from "http-errors";
-import { WebhookService } from "./webhookService";
+import { WebhookService } from "./webhookService.js";
 
 class EventsServiceClass {
   //

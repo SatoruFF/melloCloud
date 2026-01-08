@@ -1,23 +1,24 @@
-export interface FileListSchema {
-  // why this here???
-  files: IFile[];
-  currentDir: null | string;
-  dirStack: number[] | [];
-  view: string;
-  paths: string[];
-  limit: number;
-  offset: number;
-  hasMore: boolean;
-  loading: boolean;
-}
+// entities/file/types/file.ts
 
 export interface IFile {
   id: string;
   name: string;
-  type: "dir" | "file";
+  type: 'dir' | 'file';
   size: number;
   url?: string;
   updatedAt?: string;
+}
+
+export interface FileListSchema {
+  files: IFile[];
+  currentDir: string | null;
+  dirStack: number[];
+  view: string;
+  paths: { title: string }[];
+  limit: number;
+  offset: number;
+  hasMore: boolean;
+  loading: boolean;
 }
 
 export interface FileProps {
