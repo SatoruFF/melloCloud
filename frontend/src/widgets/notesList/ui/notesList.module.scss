@@ -105,7 +105,6 @@
 }
 
 .emptyState {
-  background: white;
   border-radius: 24px;
   padding: 80px 40px;
   text-align: center;
@@ -113,14 +112,14 @@
 
   h2 {
     font-size: 28px;
-    color: #333;
+    color: white;
     margin: 0 0 12px 0;
     font-weight: 700;
   }
 
   p {
     font-size: 16px;
-    color: #666;
+    color: white;
     margin: 0 0 32px 0;
   }
 }
