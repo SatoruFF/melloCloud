@@ -9,6 +9,7 @@ import ObservablePage from './ui/ObservablePage/ObservablePage';
 import ParticleEffect from './ui/particleEffect/ParticleEffect';
 import Search from './ui/Search/Search';
 import Spinner from './ui/Spinner/Spinner';
+import PrimaryButton from './ui/PrimaryButton/PrimaryButton';
 
 // config & routing
 import { Variables } from './consts/localVariables';
@@ -34,6 +35,7 @@ export {
   ParticleEffect,
   Search,
   Spinner,
+  PrimaryButton,
   // config & routing
   Variables,
   type IRoute,

@@ -310,6 +310,33 @@ class SharingControllerClass {
       });
     }
   }
+
+  // Download public file
+  async downloadPublicFile(req: any, res: Response) {
+    try {
+      const { token } = req.params;
+
+      if (!token) {
+        throw createError(400, "Token is required");
+      }
+
+      const { file, s3object } = await SharingService.downloadPublicFile(token);
+
+      // TODO: USE WITH FILE SERVICE NOT ANOTHER FN
+      // ✅ Set headers
+      res.setHeader("Content-Disposition", `attachment; filename="${file.name}"`);
+      res.setHeader("Content-Type", file.type || "application/octet-stream");
+      res.setHeader("Content-Length", s3object.ContentLength);
+
+      // ✅ Send S3 buffer
+      res.send(s3object.Body);
+    } catch (error: any) {
+      logger.error(error.message, error);
+      return res.status(error.statusCode || 500).send({
+        message: error.message,
+      });
+    }
+  }
 }
 
 export const SharingController = new SharingControllerClass();

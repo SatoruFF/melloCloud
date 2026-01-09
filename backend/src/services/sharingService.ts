@@ -1,4 +1,4 @@
-import { prisma } from "../configs/config.js";
+import { prisma, s3 } from "../configs/config.js";
 import createError from "http-errors";
 import { ResourceType, PermissionLevel, ShareActivityType } from "@prisma/client";
 import crypto from "crypto";
@@ -508,21 +508,86 @@ class SharingServiceClass {
   }
 
   private async fetchSingleResource(resourceType: ResourceType, resourceId: number) {
+    let resource: any = null;
+    
     switch (resourceType) {
       case ResourceType.NOTE:
-        return await prisma.note.findUnique({ where: { id: resourceId } });
+        resource = await prisma.note.findUnique({ where: { id: resourceId } });
+        break;
       case ResourceType.TASK:
-        return await prisma.task.findUnique({ where: { id: resourceId }, include: { column: true } });
+        resource = await prisma.task.findUnique({ where: { id: resourceId }, include: { column: true } });
+        break;
       case ResourceType.EVENT:
-        return await prisma.calendarEvent.findUnique({ where: { id: resourceId } });
+        resource = await prisma.calendarEvent.findUnique({ where: { id: resourceId } });
+        break;
       case ResourceType.FILE:
       case ResourceType.FOLDER:
-        return await prisma.file.findUnique({ where: { id: resourceId } });
+        resource = await prisma.file.findUnique({ where: { id: resourceId } });
+        break;
       case ResourceType.COLUMN:
-        return await prisma.taskColumn.findUnique({ where: { id: resourceId }, include: { tasks: true } });
+        resource = await prisma.taskColumn.findUnique({ where: { id: resourceId }, include: { tasks: true } });
+        break;
       default:
         return null;
     }
+  
+    if (resource) {
+      return {
+        ...resource,
+        resourceType,
+      };
+    }
+  
+    return null;
+  }
+
+  // Download public file
+  async downloadPublicFile(token: string) {
+    const permission = await prisma.permission.findUnique({
+      where: { publicToken: token },
+    });
+
+    if (!permission || !permission.isPublic) {
+      throw createError(404, "Public link not found");
+    }
+
+    // Check expiration
+    if (permission.expiresAt && permission.expiresAt < new Date()) {
+      throw createError(403, "Public link has expired");
+    }
+
+    // Only files can be downloaded
+    if (permission.resourceType !== ResourceType.FILE) {
+      throw createError(400, "Only files can be downloaded");
+    }
+
+    // Get file info
+    const file: any = await prisma.file.findUnique({
+      where: { id: permission.resourceId },
+      include: {
+        user: {
+          select: {
+            storageGuid: true,
+          },
+        },
+      },
+    });
+
+    if (!file) {
+      throw createError(404, "File not found");
+    }
+
+    let filePath = `${String(file.user.storageGuid)}/${file.path}/${file.name}`;
+    filePath = filePath.replace(/\/{2,}/g, "/");
+
+    const s3object = await s3
+      .getObject({
+        Bucket: process.env.S3_BUCKET_NAME,
+        Key: filePath,
+      })
+      .promise();
+
+    return { file, s3object };
   }
 }
 

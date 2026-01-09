@@ -6,6 +6,8 @@ const router: Router = Router();
 // Share resource
 router.post("/share", SharingController.shareResource);
 
+router.post("/", SharingController.shareResource);
+
 // Get permissions for resource
 router.get("/permissions/:resourceType/:resourceId", SharingController.getResourcePermissions);
 

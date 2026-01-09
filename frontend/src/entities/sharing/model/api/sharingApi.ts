@@ -123,6 +123,14 @@ export const sharingApi = rtkApi.injectEndpoints({
     >({
       query: ({ resourceType, resourceId }) => `${ApiPaths.sharingActivity}/${resourceType}/${resourceId}`,
     }),
+
+    downloadPublicFile: builder.mutation<Blob, string>({
+      query: token => ({
+        url: `${ApiPaths.sharingPublic}/${token}/download`,
+        method: 'GET',
+        responseHandler: response => response.blob(),
+      }),
+    }),
   }),
 });
 
@@ -144,4 +152,5 @@ export const {
   useLazyAccessPublicResourceQuery,
   useGetSharingActivityQuery,
   useLazyGetSharingActivityQuery,
+  useDownloadPublicFileMutation,
 } = sharingApi;

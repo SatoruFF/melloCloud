@@ -364,6 +364,7 @@
       "content": "Content",
       "readOnly": "Read-Only Access",
       "readOnlyDescription": "You are viewing this content in read-only mode. Sign in to get full access.",
+      "download": "Download",
       "error": {
         "title": "Link not found or expired",
         "description": "This public link may have been deleted or expired. Please contact the person who shared it with you."

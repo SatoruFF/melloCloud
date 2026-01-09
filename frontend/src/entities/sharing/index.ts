@@ -19,6 +19,7 @@ export {
   useLazyAccessPublicResourceQuery,
   useGetSharingActivityQuery,
   useLazyGetSharingActivityQuery,
+  useDownloadPublicFileMutation,
 } from './model/api/sharingApi';
 
 export type {
