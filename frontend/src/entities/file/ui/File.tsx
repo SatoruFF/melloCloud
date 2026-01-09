@@ -52,7 +52,7 @@ const File: React.FC<FileProps> = ({ file }) => {
   const openDirHandler = () => {
     if (file.type === "dir") {
       dispatch(setDir(file.id));
-      currentDir && dispatch(pushToStack(currentDir));
+      dispatch(pushToStack(currentDir));
       dispatch(pushToPath({ title: file.name }));
     }
   };

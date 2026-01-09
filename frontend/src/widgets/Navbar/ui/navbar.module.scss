@@ -4,7 +4,6 @@
 .navbar {
   width: 100%;
   height: $header-height;
-  //background-color: #434343;
   background-color: #27272a;
   display: flex;
   flex-direction: row;
@@ -17,11 +16,7 @@
   .applicationName {
     font-size: 1.75rem;
     font-weight: 700;
-    // background: linear-gradient(135deg, #4f46e5, #3b82f6, #0ea5e9, #6366f1);
-    // -webkit-background-clip: text;
-    // -webkit-text-fill-color: transparent;
-    color: #ffffff; /* fallback */
-    // text-shadow: 0 2px 20px rgba(0, 0, 30, 0.6);
+    color: #ffffff;
     letter-spacing: 0.05em;
     transition: transform 0.3s ease;
     margin-left: 50px;
@@ -50,6 +45,7 @@
       cursor: pointer;
     }
   }
+
   .userInfo {
     @extend %centerTemplate;
     gap: 15px;
@@ -58,44 +54,64 @@
     border-radius: 10px;
     padding: 10px;
     cursor: pointer;
+    transition: all 0.3s ease;
+
     p {
       color: black;
       @extend %mainFont;
       font-size: 14px;
     }
   }
+
   .userInfo:hover {
     background-color: #1677ff;
     color: white;
+
     p {
       color: white;
     }
   }
+
   .navUser {
     display: flex;
     align-items: center;
     gap: 30px;
+
     .avatar {
-      img {
-        width: 40px;
-        border-radius: 10px;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      &:hover {
+        transform: scale(1.1);
+      }
+
+      :global(.ant-avatar) {
+        border: 2px solid rgba(255, 255, 255, 0.2);
+        transition: border-color 0.3s ease;
+
         &:hover {
-          cursor: pointer;
+          border-color: rgba(255, 255, 255, 0.5);
         }
       }
     }
   }
+
   .baseItems {
     display: flex;
     flex-direction: row;
     color: white;
     align-items: center;
   }
+
   .mainLogo img {
     width: 105px;
     height: 90px;
     margin-left: 20px;
   }
+
   a {
     text-decoration: none;
     color: white;
@@ -103,16 +119,20 @@
     font-size: 14px;
     text-transform: lowercase;
   }
+
   .navItems {
     .nav-logout {
       @extend %mainFont;
     }
+
     width: 60%;
     @extend %centerTemplate;
     justify-content: space-around;
+
     .navBurger {
       display: none;
       padding-right: 40px;
+
       .burgerIcon {
         color: white;
         font-size: 22px;
@@ -125,6 +145,7 @@
   width: 80%;
   padding: 10px;
   margin-top: 10px;
+
   a {
     font-size: 16px;
     @extend %mainFont;
@@ -134,23 +155,29 @@
 @media screen and (max-width: 992px) {
   .navbar {
     justify-content: space-between;
+
     .mainLogo img {
       padding-left: 6px;
     }
+
     .navItems {
       width: 100%;
       justify-content: end;
       padding-right: 20px;
+
       .navbarItem {
         display: none;
       }
+
       .naBurger {
         display: block;
       }
     }
+
     .navFiles {
       margin-right: 30px;
     }
+
     .navLogout {
       display: none;
     }

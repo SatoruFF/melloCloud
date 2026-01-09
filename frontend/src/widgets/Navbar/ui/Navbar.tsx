@@ -1,5 +1,5 @@
-import { ApiOutlined, MenuFoldOutlined, MenuUnfoldOutlined, SettingOutlined } from "@ant-design/icons";
-import { Button, Divider, Drawer, Tooltip, notification } from "antd";
+import { ApiOutlined, MenuFoldOutlined, MenuUnfoldOutlined, SettingOutlined, UserOutlined } from "@ant-design/icons";
+import { Avatar, Button, Divider, Drawer, Tooltip, notification } from "antd";
 import cn from "classnames";
 import { motion } from "framer-motion";
 import React, { useCallback, useState } from "react";
@@ -10,7 +10,7 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../../app/store/store";
 import { logout } from "../../../entities/user/model/slice/userSlice";
 import WorkspacesDropdown from "../../../features/workspaceDropdown/ui/WorkspacesDropdown";
-import avatarIcon from "../../../shared/assets/avatar-icon.png";
+// import avatarIcon from "../../../shared/assets/avatar-icon.png";
 import {
   FILE_ROUTE,
   LOGIN_ROUTE,
@@ -21,62 +21,86 @@ import {
 import AccountSettings from "../../accountSettings/ui/AccountSettings.";
 
 import { Notifications } from "../../../features/notifications";
-// import mainLogo from "../../../shared/assets/octop-navbar-white.png";
-import mainLogo from "../../../shared/assets/octopus-kid.jpg";
 import LanguageSwitcher from "../../languageSwitcher/ui/LanguageSwitcher";
 import styles from "./navbar.module.scss";
-import { getUserSelector } from "../../../entities/user";
+import { getUserAuthSelector, getUserSelector } from "../../../entities/user";
 
-// TODO: add storybook
 const MyNavbar: React.FC = () => {
   const { t } = useTranslation();
-  const isAuth = useAppSelector((state) => state.user.isAuth);
+  const isAuth = useAppSelector(getUserAuthSelector);
   const user = useAppSelector(getUserSelector);
   const [profile, setProfile] = useState(false);
   const [burger, setBurger] = useState(false);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const avatar = user?.avatar ?? avatarIcon;
   const isTabletOrMobile = useMediaQuery({ query: "(max-width: 1224px)" });
 
   const logOut = useCallback(() => {
     dispatch(logout());
     navigate(WELCOME_ROUTE);
     notification.open({
-      message: "You succesfully log out",
-      description: "You have successfully logged out of your account",
+      message: t("auth.logout-success"),
+      description: t("auth.logout-description"),
       placement: "topLeft",
       icon: <ApiOutlined style={{ color: "#ff7875" }} />,
     });
-  }, []);
+  }, [dispatch, navigate, t]);
+
+  const handleLogoClick = () => {
+    navigate(WELCOME_ROUTE);
+  };
+
+  const handleLogoKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      navigate(WELCOME_ROUTE);
+    }
+  };
+
+  const handleAvatarClick = () => {
+    navigate(PROFILE_ROUTE);
+  };
+
+  const handleAvatarKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      navigate(PROFILE_ROUTE);
+    }
+  };
 
   return (
     <header className={cn(styles.navbar)} data-testid="navbar">
       <div className={cn(styles.baseItems)}>
         <LanguageSwitcher />
-        <div onClick={() => navigate(WELCOME_ROUTE)} className={cn(styles.mainLogo)}>
+        <div
+          onClick={handleLogoClick}
+          onKeyDown={handleLogoKeyDown}
+          className={cn(styles.mainLogo)}
+          role="button"
+          tabIndex={0}
+          aria-label={t("home-anchor.title")}
+        >
           <p className={cn(styles.applicationName)}>{t("application-name")}</p>
-          {/* <img src={mainLogo} alt="" onClick={() => navigate(WELCOME_ROUTE)} /> */}
         </div>
       </div>
 
       {isAuth ? (
         <div className={cn(styles.navItems)}>
           {!isTabletOrMobile && (
-            <React.Fragment>
+            <>
               <div className={cn(styles.navFiles)}>
                 <Button ghost>
                   <NavLink to={FILE_ROUTE}>{t("files.my-files")}</NavLink>
                 </Button>
               </div>
-            </React.Fragment>
+            </>
           )}
 
-          <WorkspacesDropdown setProfile={setProfile} logOut={logOut} viewAll={isTabletOrMobile ? true : false} />
+          <WorkspacesDropdown setProfile={setProfile} logOut={logOut} viewAll={isTabletOrMobile} />
 
           <div className={cn(styles.navUser)}>
             {!isTabletOrMobile && (
-              <Tooltip title="Account Settings">
+              <Tooltip title={t("user.settings")}>
                 <div className={cn(styles.userInfo)} onClick={() => setProfile(true)}>
                   <p>{user?.userName}</p>
                   <SettingOutlined />
@@ -84,10 +108,21 @@ const MyNavbar: React.FC = () => {
               </Tooltip>
             )}
             <Notifications />
-            <div className={cn(styles.avatar)}>
-              <img src={avatar} onClick={() => navigate(PROFILE_ROUTE)} />
+            <div
+              className={cn(styles.avatar)}
+              onClick={handleAvatarClick}
+              onKeyDown={handleAvatarKeyDown}
+              role="button"
+              tabIndex={0}
+              aria-label={t("user.profile-info")}
+            >
+              {user?.avatar ? (
+                <Avatar size={40} src={user.avatar} alt={user?.userName || t("user.avatar")} />
+              ) : (
+                <Avatar size={40} icon={<UserOutlined />} style={{ backgroundColor: "#1890ff" }} />
+              )}
             </div>
-            <Button className={cn(styles.mainLogout)} type="primary" onClick={() => logOut()}>
+            <Button className={cn(styles.mainLogout)} type="primary" onClick={logOut}>
               {t("auth.logout")}
             </Button>
           </div>
@@ -119,7 +154,7 @@ const MyNavbar: React.FC = () => {
             ) : (
               <MenuUnfoldOutlined className="burger-icon" />
             )}
-            <Drawer title="Pages" placement="left" onClose={() => setBurger(false)} open={burger}>
+            <Drawer title={t("navbar.pages")} placement="left" onClose={() => setBurger(false)} open={burger}>
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -127,7 +162,7 @@ const MyNavbar: React.FC = () => {
                 className={cn(styles.burgerItem)}
               >
                 <Divider>
-                  <NavLink to={WELCOME_ROUTE}>Home page</NavLink>
+                  <NavLink to={WELCOME_ROUTE}>{t("navbar.home")}</NavLink>
                 </Divider>
               </motion.div>
               <motion.div
@@ -137,7 +172,7 @@ const MyNavbar: React.FC = () => {
                 className={cn(styles.burgerItem)}
               >
                 <Divider>
-                  <NavLink to={LOGIN_ROUTE}>Log in</NavLink>
+                  <NavLink to={LOGIN_ROUTE}>{t("auth.authorization")}</NavLink>
                 </Divider>
               </motion.div>
               <motion.div
@@ -147,7 +182,7 @@ const MyNavbar: React.FC = () => {
                 className={cn(styles.burgerItem)}
               >
                 <Divider>
-                  <NavLink to={REGISTRATION_ROUTE}>Registration</NavLink>
+                  <NavLink to={REGISTRATION_ROUTE}>{t("auth.registration")}</NavLink>
                 </Divider>
               </motion.div>
             </Drawer>

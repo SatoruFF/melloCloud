@@ -1,0 +1,216 @@
+@use "../../../shared/styles/tmp.scss" as *;
+
+.allFileViewer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+
+  .playerIcon,
+  .pdfIcon,
+  .documentIcon,
+  .codeIcon,
+  .markdownIcon,
+  .spreadsheetIcon,
+  .archiveIcon,
+  .folder,
+  .file {
+    font-size: 250%;
+    color: white;
+    padding: 8px;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+
+    &:hover {
+      transform: scale(1.1);
+      opacity: 0.8;
+    }
+  }
+
+  .pdfIcon {
+    color: #ff4d4f;
+  }
+
+  .codeIcon {
+    color: #52c41a;
+  }
+
+  .markdownIcon {
+    color: #1890ff;
+  }
+
+  .documentIcon {
+    color: #faad14;
+  }
+
+  .spreadsheetIcon {
+    color: #13c2c2;
+  }
+
+  .archiveIcon {
+    color: #722ed1;
+  }
+
+  .folder {
+    color: #ffa940;
+  }
+}
+
+.imageFile {
+  max-width: 60px;
+  max-height: 60px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.playerModalFileViewer,
+.pdfModalFileViewer,
+.codeModalFileViewer,
+.markdownModalFileViewer,
+.documentModalFileViewer,
+.spreadsheetModalFileViewer {
+  :global(.ant-modal-body) {
+    padding: 16px;
+    max-height: 70vh;
+    overflow-y: auto;
+  }
+}
+
+.mainPlayer {
+  background: #000;
+  border-radius: 8px;
+}
+
+.pdfContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #f0f0f0;
+  padding: 20px;
+  border-radius: 8px;
+
+  canvas {
+    max-width: 100%;
+    height: auto;
+  }
+}
+
+.codeModalFileViewer {
+  pre {
+    margin: 0;
+    border-radius: 8px;
+  }
+}
+
+.markdownContent {
+  padding: 20px;
+  background: #fff;
+  border-radius: 8px;
+  line-height: 1.6;
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    margin-top: 1.5em;
+    margin-bottom: 0.5em;
+  }
+
+  p {
+    margin-bottom: 1em;
+  }
+
+  code {
+    background: #f5f5f5;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-family: "Courier New", monospace;
+  }
+
+  pre {
+    background: #f5f5f5;
+    padding: 16px;
+    border-radius: 8px;
+    overflow-x: auto;
+  }
+
+  blockquote {
+    border-left: 4px solid #1890ff;
+    padding-left: 16px;
+    margin: 16px 0;
+    color: #666;
+  }
+
+  ul,
+  ol {
+    padding-left: 24px;
+  }
+
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 16px 0;
+
+    th,
+    td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #f5f5f5;
+      font-weight: bold;
+    }
+  }
+}
+
+.documentContent {
+  padding: 20px;
+  background: #fff;
+  border-radius: 8px;
+  line-height: 1.6;
+
+  pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    font-family: "Courier New", monospace;
+  }
+}
+
+.spreadsheetContent {
+  overflow-x: auto;
+  padding: 16px;
+  background: #fff;
+  border-radius: 8px;
+}
+
+.spreadsheetTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+
+  td {
+    border: 1px solid #e0e0e0;
+    padding: 8px 12px;
+    white-space: nowrap;
+    min-width: 100px;
+
+    &:first-child {
+      background: #f5f5f5;
+      font-weight: bold;
+    }
+  }
+
+  tr:first-child td {
+    background: #1890ff;
+    color: white;
+    font-weight: bold;
+  }
+
+  tr:hover td {
+    background: #f0f8ff;
+  }
+}

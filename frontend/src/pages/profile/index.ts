@@ -1,3 +1,3 @@
-import Profile from "./ui/Profile";
+import Profile from './ui/Profile';
 
-exort { Profile }
+export { Profile };

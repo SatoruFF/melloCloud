@@ -10,7 +10,7 @@ export interface IFile {
 export interface FileListSchema {
   files: IFile[];
   currentDir: string | null;
-  dirStack: string[];
+  dirStack: (string | null)[]; // IF CURRENT DIR === root = null
   view: string;
   paths: { title: string }[];
   limit: number;

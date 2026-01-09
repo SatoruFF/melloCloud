@@ -31,7 +31,7 @@ export const fileSlice = createSlice({
     addNewFile: (state, action: PayloadAction<IFile>) => {
       state.files.push(action.payload);
     },
-    pushToStack: (state, action: PayloadAction<string>) => {
+    pushToStack: (state, action: PayloadAction<string | null>) => {
       state.dirStack.push(action.payload);
     },
     popToStack: state => {

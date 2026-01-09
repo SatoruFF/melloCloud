@@ -1,6 +1,6 @@
 import { useSelector } from "react-redux";
 import styles from "./chat-header.module.scss";
-import { getCurrentChat } from "../../../entities/chat/model/selector/getChats";
+import { getCurrentChat } from "../../../entities/chat";
 import { UserIcon } from "lucide-react";
 
 const ChatHeader = () => {

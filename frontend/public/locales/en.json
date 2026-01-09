@@ -60,6 +60,7 @@
     "logout-success": "Logout success",
     "change-password": "Change password",
     "delete-account": "Delete account",
+    "logout-description": "You successfully logout from account",
     "activate": {
       "invalidToken": "Invalid token",
       "errorWithAccount": "Error with activate account: {{message}}",
@@ -75,6 +76,10 @@
       "emailSentMessage": "We have sent an activation email {{email}} to your registered email address. Please check your inbox to activate your account.",
       "checkSpam": "If you didn’t receive the email, please try registering again or check your spam folder."
     }
+  },
+  "navbar": {
+    "pages": "Pages",
+    "home": "Main page"
   },
   "files": {
     "my-files": "My files",
