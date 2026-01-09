@@ -75,6 +75,16 @@ export const ApiPaths = {
   webhooks: 'webhooks',
   webhooksEvents: 'webhooks/events',
   webhooksScheduled: 'webhooks/scheduled',
+
+  // Sharing
+  sharing: 'sharing',
+  sharingPermissions: 'sharing/permissions',
+  sharingPublicLink: 'sha/public-link',
+  sharingSharedWithMe: 'sharing/shared-with-me',
+  sharingSharedByMe: 'sharing/shared-by-me',
+  sharingCheckPermission: 'sharing/check-permission',
+  sharingActivity: 'sharing/activity',
+  sharingPublic: '/shared',
 } as const;
 
 // ========================================

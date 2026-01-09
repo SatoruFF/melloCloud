@@ -51,6 +51,10 @@ model User {
   // Webhooks
   webhooks    Webhook[]
   
+  // Permissions
+  permissions Permission[] @relation("UserPermissions")
+  grantedPermissions Permission[] @relation("GrantedPermissions")
+  
   @@index([email])
   @@index([oauthProvider, oauthId])
 }
@@ -274,37 +278,49 @@ enum ResourceType {
   TASK
   EVENT
   FILE
+  FOLDER
   CHAT
   COLUMN
+  KANBAN_BOARD
+}
+
+enum PermissionLevel {
+  VIEWER
+  COMMENTER
+  EDITOR
+  ADMIN
+  OWNER
 }
 
 model Permission {
   id          Int      @id @default(autoincrement())
   
+  // Приглашение по email (для незарегистрированных)
+  email       String?
+  
   // Субъект (кому выдаём права)
-  subjectId   Int      // userId
-  subjectType String   @default("USER") // USER, ROLE, GROUP (для будущего)
+  subjectId   Int?
+  subjectType String   @default("USER") // USER, ROLE, GROUP
   
   // Объект (на что выдаём права)
-  resourceId  Int      // id заметки/задачи/события
-  resourceType ResourceType // NOTE, TASK, EVENT, FILE, etc.
+  resourceId  Int
+  resourceType ResourceType
   
-  // Уровень доступа (битовая маска)
-  // 2 = AVAILABLE
-  // 8 = SEARCH
-  // 32 = READ
-  // 128 = EDIT
-  // 512 = CREATE
-  // 1024 = EXPORT
-  // 2048 = DELETE
-  // 8192 = ACCESS
-  // 32768 = ADMIN
-  // 131072 = DENY
-  level       Int      @default(32) // по умолчанию READ
+  // Уровень доступа
+  permissionLevel PermissionLevel @default(VIEWER)
+  
+  // Публичные ссылки
+  isPublic    Boolean  @default(false)
+  publicToken String?  @unique
   
   // Метаданные
-  grantedBy   Int?     // кто выдал права
-  expiresAt   DateTime? // срок действия (опционально)
+  grantedBy   Int?
+  grantedByUser User?  @relation("GrantedPermissions", fields: [grantedBy], references: [id], onDelete: SetNull)
+  
+  expiresAt   DateTime?
+  
+  // Связь с пользователем
+  user        User?    @relation("UserPermissions", fields: [subjectId], references: [id], onDelete: Cascade)
   
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -313,6 +329,83 @@ model Permission {
   @@index([subjectId])
   @@index([resourceId, resourceType])
   @@index([resourceType])
+  @@index([email])
+  @@index([publicToken])
+  @@index([isPublic])
+}
+
+// =============================================
+// SHARING ACTIVITY LOG
+// =============================================
+
+enum ShareActivityType {
+  SHARED
+  PERMISSION_CHANGED
+  PERMISSION_REVOKED
+  ACCESSED
+  DOWNLOADED
+  EDITED
+}
+
+model ShareActivity {
+  id          Int      @id @default(autoincrement())
+  
+  // Кто совершил действие
+  actorId     Int
+  actorEmail  String?
+  
+  // С кем/чем совершено действие
+  targetId    Int?
+  targetEmail String?
+  
+  // Что расшарили
+  resourceType ResourceType
+  resourceId   Int
+  resourceName String?
+  
+  // Тип действия
+  activityType ShareActivityType
+  
+  // Детали
+  oldPermission PermissionLevel?
+  newPermission PermissionLevel?
+  
+  ipAddress   String?
+  userAgent   String?
+  
+  createdAt   DateTime @default(now())
+  
+  @@index([actorId])
+  @@index([resourceType, resourceId])
+  @@index([createdAt])
+  @@index([activityType])
+}
+
+// =============================================
+// REAL-TIME COLLABORATION
+// =============================================
+
+model ActiveCollaborator {
+  id          Int      @id @default(autoincrement())
+  
+  userId      Int
+  userName    String
+  userAvatar  String?
+  
+  resourceType ResourceType
+  resourceId   Int
+  
+  // Где в документе находится курсор
+  cursorPosition Json?
+  
+  // Какой раздел редактирует
+  editingSection String?
+  
+  lastActivity   DateTime @default(now())
+  
+  @@unique([userId, resourceType, resourceId])
+  @@index([resourceType, resourceId])
+  @@index([lastActivity])
 }
 
 // =============================================
@@ -321,19 +414,16 @@ model Permission {
 
 model FeatureFlag {
   id          Int      @id @default(autoincrement())
-  key         String   @unique // "calendar_sharing", "task_recurring", "ai_assistant"
-  name        String   // Человекочитаемое название
+  key         String   @unique
+  name        String
   description String?
   isEnabled   Boolean  @default(false)
   
-  // Для A/B тестирования
-  rolloutPercentage Int @default(0) // 0-100
+  rolloutPercentage Int @default(0)
   
-  // Для конкретных пользователей
   enabledForUsers UserFeatureFlag[]
   
-  // Для конкретных окружений
-  environment String   @default("production") // production, staging, development
+  environment String   @default("production")
   
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -370,8 +460,8 @@ enum WebhookEvent {
   EVENT_CREATED
   EVENT_UPDATED
   EVENT_DELETED
-  EVENT_REMINDER_1H    // за 1 час до события
-  EVENT_REMINDER_1D    // за 1 день до события
+  EVENT_REMINDER_1H
+  EVENT_REMINDER_1D
   EVENT_REMINDER_CUSTOM
   
   // Tasks events
@@ -409,42 +499,31 @@ enum WebhookMethod {
   DELETE
 }
 
-// Webhook subscription
 model Webhook {
   id          Int      @id @default(autoincrement())
   
-  // Владелец webhook
   userId      Int
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   
-  // Конфигурация
-  name        String   // "Telegram Bot Reminder"
+  name        String
   description String?
-  url         String   // куда отправлять (https://api.telegram.org/bot...)
+  url         String
   method      WebhookMethod @default(POST)
   
-  // На какие события подписан
-  events      WebhookEvent[] // массив событий
+  events      WebhookEvent[]
   
-  // Фильтры (JSON)
-  filters     Json?    // { "eventCategory": "Meeting", "taskPriority": "HIGH" }
+  filters     Json?
+  headers     Json?
   
-  // Headers для запроса
-  headers     Json?    // { "Authorization": "Bearer token", "X-Custom": "value" }
-  
-  // Retry policy
   retryCount  Int      @default(3)
-  retryDelay  Int      @default(60) // секунды между попытками
+  retryDelay  Int      @default(60)
   
-  // Статус
   status      WebhookStatus @default(ACTIVE)
   
-  // Статистика
   lastTriggeredAt DateTime?
   successCount    Int @default(0)
   failureCount    Int @default(0)
   
-  // История выполнений
   executions  WebhookExecution[]
   scheduledWebhooks ScheduledWebhook[]
   
@@ -456,24 +535,20 @@ model Webhook {
   @@index([events])
 }
 
-// История выполнений webhook
 model WebhookExecution {
   id          Int      @id @default(autoincrement())
   
   webhookId   Int
   webhook     Webhook  @relation(fields: [webhookId], references: [id], onDelete: Cascade)
   
-  // Детали события
   event       WebhookEvent
-  payload     Json     // данные которые отправили
+  payload     Json
   
-  // Результат
   statusCode  Int?
-  response    Json?    // ответ от сервера
+  response    Json?
   error       String?
-  duration    Int?     // миллисекунды
+  duration    Int?
   
-  // Попытки
   attempt     Int      @default(1)
   success     Boolean  @default(false)
   
@@ -484,23 +559,19 @@ model WebhookExecution {
   @@index([success])
 }
 
-// Scheduled webhooks (для напоминаний)
 model ScheduledWebhook {
   id          Int      @id @default(autoincrement())
   
   webhookId   Int
   webhook     Webhook  @relation(fields: [webhookId], references: [id], onDelete: Cascade)
   
-  // Связь с ресурсом
-  resourceType String  // "EVENT", "TASK", "NOTE"
-  resourceId   Int     // id события/задачи/заметки
+  resourceType String
+  resourceId   Int
   
-  // Когда запустить
   scheduledFor DateTime
   executed     Boolean  @default(false)
   executedAt   DateTime?
   
-  // Данные для отправки
   event        WebhookEvent
   payload      Json
   

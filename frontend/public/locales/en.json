@@ -2,7 +2,8 @@
   "application-name": "Mello.",
   "common": {
     "yes": "Yes",
-    "no": "No"
+    "no": "No",
+    "created": "created"
   },
   "home": {
     "primary-name": "Mello",
@@ -83,6 +84,8 @@
   },
   "files": {
     "my-files": "My files",
+    "share": "Share",
+    "size": "size",
     "create-new-folder": "Create new folder",
     "enter-folder-name": "Enter a folder name...",
     "upload-file": "Click to upload",
@@ -352,5 +355,68 @@
     "delete-avatar": "Delete avatar",
     "reload-page": "reload page",
     "copy-error": "Copy error"
+  },
+  "sharing": {
+    "publicLink": {
+      "loading": "Loading shared content...",
+      "sharedContent": "Shared Content",
+      "untitled": "Untitled",
+      "content": "Content",
+      "readOnly": "Read-Only Access",
+      "readOnlyDescription": "You are viewing this content in read-only mode. Sign in to get full access.",
+      "error": {
+        "title": "Link not found or expired",
+        "description": "This public link may have been deleted or expired. Please contact the person who shared it with you."
+      }
+    },
+    "modal": {
+      "title": "Share \"{{resourceName}}\"",
+      "invitePeople": "Invite people",
+      "emailPlaceholder": "Enter email address",
+      "share": "Share",
+      "hint": "Tip: User will receive notification email if they have an account, or an invitation to join.",
+      "publicLinkSharing": "Public link sharing",
+      "createPublicLink": "Create public link",
+      "publicLinkHint": "Anyone with the link will be able to view this resource without signing in",
+      "publicLinkActive": "Anyone with the link can view this {{resourceType}}",
+      "peopleWithAccess": "People with access ({{count}})",
+      "noCollaborators": "No collaborators yet. Share to invite people!",
+      "copyLink": "Copy link",
+      "deleteLink": "Delete public link",
+      "removeAccess": "Remove access",
+      "pending": "Pending",
+      "temporary": "Temporary",
+      "expires": "Expires: {{date}}",
+      "unknownUser": "Unknown User"
+    },
+    "permissions": {
+      "owner": "Owner",
+      "admin": "Admin",
+      "editor": "Can Edit",
+      "commenter": "Can Comment",
+      "viewer": "Can View",
+      "descriptions": {
+        "owner": "Full control, can delete and manage permissions",
+        "admin": "Can edit and share with others",
+        "editor": "Can view and edit content",
+        "commenter": "Can view and add comments",
+        "viewer": "Can only view content"
+      }
+    },
+    "messages": {
+      "emailRequired": "Please enter an email address",
+      "invalidEmail": "Please enter a valid email address",
+      "shareSuccess": "Successfully shared with {{email}}",
+      "shareFailed": "Failed to share resource",
+      "publicLinkCreated": "Public link created and copied to clipboard!",
+      "publicLinkCreateFailed": "Failed to create public link",
+      "publicLinkDeleted": "Public link deleted",
+      "publicLinkDeleteFailed": "Failed to delete public link",
+      "linkCopied": "Link copied to clipboard!",
+      "accessRevoked": "Access revoked{{userName}}",
+      "accessRevokeFailed": "Failed to revoke permission",
+      "permissionUpdated": "Permission level updated",
+      "permissionUpdateFailed": "Failed to update permission"
+    }
   }
 }

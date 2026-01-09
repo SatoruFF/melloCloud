@@ -7,11 +7,11 @@ import taskRouter from "./task.routes.js";
 import taskColumn from "./column.routes.js";
 import noteRouter from "./note.routes.js";
 import eventRouter from "./events.routes.js";
+import sharingRouter from "./sharing.routes.js";
 import { privateMiddlewares } from "../../middleware/base.middleware.js";
 
 const privateRouter: Router = Router();
 
-// basic private middlewares
 privateMiddlewares.forEach((m) => privateRouter.use(m));
 
 privateRouter.use("/user", userRouter);
@@ -22,5 +22,6 @@ privateRouter.use("/tasks", taskRouter);
 privateRouter.use("/columns", taskColumn);
 privateRouter.use("/notes", noteRouter);
 privateRouter.use("/events", eventRouter);
+privateRouter.use("/sharing", sharingRouter);
 
 export default privateRouter;

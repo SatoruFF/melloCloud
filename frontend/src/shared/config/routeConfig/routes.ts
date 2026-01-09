@@ -17,11 +17,13 @@ import {
   PLANNER_CALENDAR_ROUTE,
   WELCOME_ROUTE,
   NOTES_DETAIL_ROUTE,
+  SHARED_PUBLIC_ROUTE,
 } from '../../consts/routes';
 
 import type { UserRolesType } from '../../../entities/user/model/types/user';
 import { NotFoundPage } from '../../../pages/notFoundPage';
 import { UserRoles } from '../../consts/roles';
+import { PublicShared } from '../../../pages/publicShared';
 
 const Welcome = lazy(() => import('../../../pages/home/ui/Welcome'));
 const Authorization = lazy(() => import('../../../pages/authorization/ui/Authorization'));
@@ -75,6 +77,7 @@ const publicRoutes: IRoute[] = createRoutes([
   { path: LOGIN_ROUTE, element: Authorization },
   { path: REGISTRATION_ROUTE, element: Authorization },
   { path: ACTIVATION_ROUTE, element: Activate },
+  { path: SHARED_PUBLIC_ROUTE, element: PublicShared },
   { path: NOT_FOUND, element: NotFoundPage },
 ]);
 

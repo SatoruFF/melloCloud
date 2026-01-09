@@ -13,6 +13,7 @@ import { taskColumnReducer } from '../../entities/taskColumn';
 import { noteReducer } from '../../entities/note';
 import { eventReducer } from '../../entities/event';
 import { webhookReducer } from '../../entities/webhooks';
+import { sharingReducer } from '../../entities/sharing';
 
 const rootReducers: ReducersMapObject<StateSchema> = {
   user: userReducer,
@@ -25,6 +26,7 @@ const rootReducers: ReducersMapObject<StateSchema> = {
   notes: noteReducer,
   events: eventReducer,
   webhooks: webhookReducer,
+  sharing: sharingReducer,
 
   [rtkApi.reducerPath]: rtkApi.reducer,
   [userApi.reducerPath]: userApi.reducer,

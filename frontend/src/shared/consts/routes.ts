@@ -9,6 +9,7 @@ export const PROFILE_MULTIPLE_ROUTE: string = '/profile/:id';
 export const CHATS_ROUTE: string = '/chats';
 export const NOTES_ROUTE: string = '/notes';
 export const NOTES_DETAIL_ROUTE: string = '/notes/:noteId';
+export const SHARED_PUBLIC_ROUTE = '/shared/:token';
 
 // Planner routes
 export const PLANNER_ROUTE: string = '/planner';

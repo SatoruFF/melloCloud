@@ -10,6 +10,7 @@ import { userApi } from "../../../entities/user";
 import type { IRestoreScroll } from "../../../features/restoreScroll";
 import { WebhookListSchema } from "../../../entities/webhooks";
 import { rtkApi } from "../../../shared/api/rtkApi";
+import type { SharingState } from "../../../entities/sharing";
 
 export interface StateSchema {
   user: UserSchema;
@@ -20,6 +21,7 @@ export interface StateSchema {
   notes: NotesState;
   events: EventSchema;
   webhooks: WebhookListSchema;
+  sharing: SharingState;
 
   // Use proper slice state types instead of raw data types
   tasks: TaskState; // Changed from tasks: Task[] to task: TaskState

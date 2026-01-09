@@ -1,5 +1,5 @@
 // react & core
-import React, { memo } from "react";
+import React, { memo, useState } from "react";
 import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 
@@ -9,7 +9,7 @@ import { useAppDispatch, useAppSelector } from "../../../app/store";
 
 // antd
 import { Button, Popconfirm, Tooltip, message } from "antd";
-import { QuestionCircleOutlined } from "@ant-design/icons";
+import { QuestionCircleOutlined, ShareAltOutlined } from "@ant-design/icons";
 
 // external libs
 import cn from "classnames";
@@ -17,9 +17,13 @@ import { get } from "lodash-es";
 
 // features
 import { FileViewer } from "../../../features/fileViewer";
+import { ShareModal } from "../../../features/sharing";
 
 // shared
 import { sizeFormat } from "../../../shared";
+
+// entities
+import { ResourceType } from "../../../entities/sharing";
 
 // internal (entity)
 import { useDeleteFileMutation, useDownloadFileMutation } from "../model/api/fileApi";
@@ -33,6 +37,7 @@ import styles from "./file.module.scss";
 const File: React.FC<FileProps> = ({ file }) => {
   const { t } = useTranslation();
   const [messageApi, contextHolder] = message.useMessage();
+  const [shareModalOpen, setShareModalOpen] = useState(false);
 
   // Format file size
   const size = sizeFormat(file.size);
@@ -48,9 +53,13 @@ const File: React.FC<FileProps> = ({ file }) => {
 
   // Get file type
   const fileType = get(file, "type", "");
+  const isFolder = fileType === "dir";
+
+  // Определяем тип ресурса для sharing
+  const resourceType = isFolder ? ResourceType.FOLDER : ResourceType.FILE;
 
   const openDirHandler = () => {
-    if (file.type === "dir") {
+    if (isFolder) {
       dispatch(setDir(file.id));
       dispatch(pushToStack(currentDir));
       dispatch(pushToPath({ title: file.name }));
@@ -80,10 +89,15 @@ const File: React.FC<FileProps> = ({ file }) => {
     }
   };
 
+  const shareHandler = () => {
+    setShareModalOpen(true);
+  };
+
   if (rmLoading) {
     messageApi.loading(t("notes.loading"));
   }
 
+  // Plate View (Grid)
   if (fileView === "plate") {
     return (
       <>
@@ -94,12 +108,23 @@ const File: React.FC<FileProps> = ({ file }) => {
           <Tooltip title={file.name}>
             <div className={cn(styles.fileName)}>{file.name}</div>
           </Tooltip>
+
           <div className={cn(styles.fileBtns)}>
-            {file.type !== "dir" && (
+            <Button
+              className={cn(styles.fileBtn, styles.fileShare)}
+              onClick={shareHandler}
+              type="link"
+              icon={<ShareAltOutlined />}
+            >
+              {t("files.share")}
+            </Button>
+
+            {!isFolder && (
               <Button className={cn(styles.fileBtn, styles.fileDownload)} onClick={downloadHandler} type="link">
                 {t("files.download")}
               </Button>
             )}
+
             <Popconfirm
               title={t("files.delete")}
               description={t("files.confirm")}
@@ -114,10 +139,19 @@ const File: React.FC<FileProps> = ({ file }) => {
             </Popconfirm>
           </div>
         </motion.div>
+
+        <ShareModal
+          open={shareModalOpen}
+          onClose={() => setShareModalOpen(false)}
+          resourceType={resourceType}
+          resourceId={file.id}
+          resourceName={file.name}
+        />
       </>
     );
   }
 
+  // List View
   return (
     <>
       {contextHolder}
@@ -127,15 +161,28 @@ const File: React.FC<FileProps> = ({ file }) => {
         <Tooltip title={file.name}>
           <div className={cn(styles.fileName)}>{file.name}</div>
         </Tooltip>
+
         <div className={cn(styles.fileDate)}>
           {file.updatedAt ? file.updatedAt.slice(0, 10) : t("files.unknown-date")}
         </div>
+
         <div className={cn(styles.fileSize)}>{size}</div>
-        {file.type !== "dir" && (
+
+        <Button
+          className={cn(styles.fileBtn, styles.fileShare)}
+          onClick={shareHandler}
+          icon={<ShareAltOutlined />}
+          ghost
+        >
+          {t("files.share")}
+        </Button>
+
+        {!isFolder && (
           <Button className={cn(styles.fileBtn, styles.fileDownload)} onClick={downloadHandler} ghost>
             {t("files.download")}
           </Button>
         )}
+
         <Popconfirm
           title={t("files.delete")}
           description={t("files.confirm")}
@@ -149,6 +196,14 @@ const File: React.FC<FileProps> = ({ file }) => {
           </Button>
         </Popconfirm>
       </motion.div>
+
+      <ShareModal
+        open={shareModalOpen}
+        onClose={() => setShareModalOpen(false)}
+        resourceType={resourceType}
+        resourceId={file.id}
+        resourceName={file.name}
+      />
     </>
   );
 };
