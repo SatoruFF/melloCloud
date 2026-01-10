@@ -125,7 +125,6 @@ class FileControllerClass {
       };
 
       const files = await FileService.getFiles(searchParams);
-
       return res.json(files);
     } catch (error: any) {
       logger.error(error.message, error);

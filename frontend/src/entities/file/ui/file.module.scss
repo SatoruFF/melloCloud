@@ -7,6 +7,68 @@
   }
 }
 
+.fileIconWrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sharedBadge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #52c41a, #73d13d);
+  border: 2px solid white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(82, 196, 26, 0.4);
+  z-index: 10;
+  animation: pulse 2s ease-in-out infinite;
+
+  svg {
+    color: white;
+    stroke-width: 2.5;
+  }
+}
+
+// ✅ Badge для list view (маленький, справа от иконки)
+.sharedBadgeList {
+  position: absolute;
+  top: 50%;
+  right: -8px; // ✅ Смещаем правее, чтобы не перекрывало
+  transform: translateY(-50%); // ✅ Центрируем по вертикали
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #52c41a, #73d13d);
+  border: 1.5px solid white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(82, 196, 26, 0.4);
+  z-index: 10;
+
+  svg {
+    color: white;
+    stroke-width: 2.5;
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    box-shadow: 0 2px 8px rgba(82, 196, 26, 0.4);
+  }
+  50% {
+    box-shadow: 0 2px 16px rgba(82, 196, 26, 0.8);
+  }
+}
+
 .fileWrapper {
   box-sizing: border-box;
   margin-top: 8px;
@@ -20,6 +82,11 @@
 
   .fileBtn {
     display: none;
+  }
+
+  .fileIconWrapper {
+    grid-column-start: 1;
+    padding: 8px;
   }
 
   .fileName {
@@ -110,6 +177,13 @@
   transition-duration: 0.5s;
   @extend %file-image;
 
+  .fileIconWrapper {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
   .folder,
   .file {
     font-size: 60px;
@@ -173,7 +247,7 @@
       }
 
       .fileDelete {
-        display: none; // Скрываем delete на мобилке при hover
+        display: none;
       }
     }
   }
@@ -189,7 +263,28 @@
     }
 
     .fileBtn {
-      display: none !important; // На маленьких экранах кнопки всегда скрыты
+      display: none !important;
+    }
+  }
+
+  .sharedBadge {
+    width: 20px;
+    height: 20px;
+
+    svg {
+      width: 12px;
+      height: 12px;
+    }
+  }
+
+  .sharedBadgeList {
+    width: 14px;
+    height: 14px;
+    right: -6px;
+
+    svg {
+      width: 10px;
+      height: 10px;
     }
   }
 }

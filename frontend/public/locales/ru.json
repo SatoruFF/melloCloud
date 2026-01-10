@@ -85,6 +85,7 @@
   "files": {
     "my-files": "Мои файлы",
     "share": "Поделиться",
+    "manage-share": "Управление",
     "size": "Размер",
     "create-new-folder": "Создать новую папку",
     "enter-folder-name": "Введите имя папки...",

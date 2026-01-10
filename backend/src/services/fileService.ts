@@ -119,30 +119,31 @@ class FileServiceClass {
       limit: filesLimit,
       offset: filesOffset = 0,
     } = searchParams;
-
+  
     const limit = Number(filesLimit) || Number(FETCH_LIMIT);
     const offset = Number(filesOffset) || 0;
-
+  
     // find by file name
     if (search) {
-      return await prisma.file.findMany({
+      const files = await prisma.file.findMany({
         where: {
           userId,
           parentId,
-          name: { contains: search, mode: "insensitive" }, // ILIKE analog in Prisma
+          name: { contains: search, mode: "insensitive" },
         },
       });
+      
+      return await this.enrichFilesWithSharingInfo(files);
     }
-
-    // FIXME: typo
+  
     const queryOptions: Prisma.FileFindManyArgs = {
       where: {
         AND: [{ userId }, { parentId }],
       },
-      take: limit, // analog LIMIT https://www.prisma.io/docs/orm/prisma-client/queries/pagination
-      skip: offset, // analog OFFSET
+      take: limit,
+      skip: offset,
     };
-
+  
     // find with sort query
     switch (sort) {
       case "name":
@@ -155,76 +156,43 @@ class FileServiceClass {
         queryOptions.orderBy = { createdAt: "asc" };
         break;
     }
-
-    return await prisma.file.findMany(queryOptions);
+  
+    const files = await prisma.file.findMany(queryOptions);
+    
+    return await this.enrichFilesWithSharingInfo(files);
   }
-
-  // upload file
-  async uploadFile(file: any, userId, parentId?: string): Promise<any> {
-    return prisma.$transaction(async (trx) => {
-      let parent;
-
-      if (parentId !== "null" && !_.isNil(parentId)) {
-        parent = await trx.file.findFirst({
-          where: { userId, id: Number(parentId) },
-        });
-      }
-
-      const user: any = await trx.user.findFirst({
-        where: { id: userId },
-      });
-
-      // check size on disc after upload
-      if (user.usedSpace + BigInt(file.size) > user.diskSpace) {
-        throw createError(400, "Not enough space on the disk");
-      }
-
-      user.usedSpace += BigInt(file.size);
-
-      let filePath;
-
-      // find parent with his path
-      if (parent) {
-        filePath = `${String(user.storageGuid)}/${parent.path}/${file.name}`;
-      } else {
-        filePath = `${String(user.storageGuid)}/${file.name}`;
-      }
-
-      const params = {
-        Bucket: process.env.S3_BUCKET_NAME,
-        Key: filePath,
-        Body: file.data,
-      };
-
-      const newFile = await s3.upload(params).promise();
-
-      // get url for download new file
-      const fileUrl = _.get(newFile, "Location", "");
-
-      const dbFile = await trx.file.create({
-        data: {
-          name: file.name,
-          type: file.name.split(".").pop(),
-          size: file.size,
-          path: parent?.path,
-          parentId: parent ? parent.id : null,
-          userId: user.id,
-          url: fileUrl,
-        },
-      });
-
-      // after we must fill used space
-      await trx.user.update({
-        where: {
-          id: user.id,
-        },
-        data: {
-          usedSpace: user.usedSpace,
-        },
-      });
-
-      return dbFile;
+  
+  private async enrichFilesWithSharingInfo(files: any[]) {
+    if (files.length === 0) return files;
+  
+    // Получаем все ID файлов
+    const fileIds = files.map(f => f.id);
+  
+    // Получаем все публичные ссылки для этих файлов за один запрос
+    const publicLinks = await prisma.permission.findMany({
+      where: {
+        resourceId: { in: fileIds },
+        resourceType: { in: ['FILE', 'FOLDER'] },
+        isPublic: true,
+      },
+      select: {
+        resourceId: true,
+        publicToken: true,
+      },
     });
+  
+    // Создаем Map для быстрого доступа
+    const publicLinksMap = new Map(
+      publicLinks.map(link => [link.resourceId, link.publicToken])
+    );
+    console.log("⚠ :: FileServiceClass :: enrichFilesWithSharingInfo :: publicLinksMap:", publicLinksMap)
+  
+    // Добавляем информацию о sharing к каждому файлу
+    return files.map(file => ({
+      ...file,
+      isShared: publicLinksMap.has(file.id),
+      publicToken: publicLinksMap.get(file.id),
+    }));
   }
 
   async downloadFile(queryId, userId, storageGuid) {

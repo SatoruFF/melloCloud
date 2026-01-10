@@ -9,11 +9,11 @@ import { useAppDispatch, useAppSelector } from "../../../app/store";
 
 // antd
 import { Button, Popconfirm, Tooltip, message } from "antd";
-import { QuestionCircleOutlined, ShareAltOutlined } from "@ant-design/icons";
 
 // external libs
 import cn from "classnames";
 import { get } from "lodash-es";
+import { Link as LinkIcon, Share2, Download, Trash2, AlertCircle } from "lucide-react"; // ✅ Все иконки из Lucide
 
 // features
 import { FileViewer } from "../../../features/fileViewer";
@@ -57,6 +57,9 @@ const File: React.FC<FileProps> = ({ file }) => {
 
   // Определяем тип ресурса для sharing
   const resourceType = isFolder ? ResourceType.FOLDER : ResourceType.FILE;
+
+  // Получаем isShared из файла
+  const isShared = file.isShared || false;
 
   const openDirHandler = () => {
     if (isFolder) {
@@ -103,7 +106,14 @@ const File: React.FC<FileProps> = ({ file }) => {
       <>
         {contextHolder}
         <motion.div key={file.id} className={cn(styles.filePlateFileWrapper)} onDoubleClick={openDirHandler}>
-          <FileViewer type={fileType} url={file.url} />
+          <div className={styles.fileIconWrapper}>
+            <FileViewer type={fileType} url={file.url} />
+            {isShared && (
+              <div className={styles.sharedBadge}>
+                <LinkIcon size={14} />
+              </div>
+            )}
+          </div>
 
           <Tooltip title={file.name}>
             <div className={cn(styles.fileName)}>{file.name}</div>
@@ -114,13 +124,18 @@ const File: React.FC<FileProps> = ({ file }) => {
               className={cn(styles.fileBtn, styles.fileShare)}
               onClick={shareHandler}
               type="link"
-              icon={<ShareAltOutlined />}
+              icon={<Share2 size={16} />}
             >
-              {t("files.share")}
+              {isShared ? t("files.manage-share") : t("files.share")}
             </Button>
 
             {!isFolder && (
-              <Button className={cn(styles.fileBtn, styles.fileDownload)} onClick={downloadHandler} type="link">
+              <Button
+                className={cn(styles.fileBtn, styles.fileDownload)}
+                onClick={downloadHandler}
+                type="link"
+                icon={<Download size={16} />}
+              >
                 {t("files.download")}
               </Button>
             )}
@@ -131,9 +146,9 @@ const File: React.FC<FileProps> = ({ file }) => {
               onConfirm={deleteHandler}
               okText={t("common.yes")}
               cancelText={t("common.no")}
-              icon={<QuestionCircleOutlined style={{ color: "red" }} />}
+              icon={<AlertCircle size={18} style={{ color: "red" }} />}
             >
-              <Button className={cn(styles.fileBtn, styles.fileDelete)} type="link" danger>
+              <Button className={cn(styles.fileBtn, styles.fileDelete)} type="link" danger icon={<Trash2 size={16} />}>
                 {t("files.delete")}
               </Button>
             </Popconfirm>
@@ -144,7 +159,7 @@ const File: React.FC<FileProps> = ({ file }) => {
           open={shareModalOpen}
           onClose={() => setShareModalOpen(false)}
           resourceType={resourceType}
-          resourceId={file.id}
+          resourceId={Number(file.id)}
           resourceName={file.name}
         />
       </>
@@ -156,7 +171,14 @@ const File: React.FC<FileProps> = ({ file }) => {
     <>
       {contextHolder}
       <motion.div key={file.id} className={cn(styles.fileWrapper)} onDoubleClick={openDirHandler}>
-        <FileViewer type={fileType} url={file.url} />
+        <div className={styles.fileIconWrapper}>
+          <FileViewer type={fileType} url={file.url} />
+          {isShared && (
+            <div className={styles.sharedBadgeList}>
+              <LinkIcon size={12} />
+            </div>
+          )}
+        </div>
 
         <Tooltip title={file.name}>
           <div className={cn(styles.fileName)}>{file.name}</div>
@@ -171,14 +193,19 @@ const File: React.FC<FileProps> = ({ file }) => {
         <Button
           className={cn(styles.fileBtn, styles.fileShare)}
           onClick={shareHandler}
-          icon={<ShareAltOutlined />}
+          icon={<Share2 size={16} />}
           ghost
         >
-          {t("files.share")}
+          {isShared ? t("files.manage-share") : t("files.share")}
         </Button>
 
         {!isFolder && (
-          <Button className={cn(styles.fileBtn, styles.fileDownload)} onClick={downloadHandler} ghost>
+          <Button
+            className={cn(styles.fileBtn, styles.fileDownload)}
+            onClick={downloadHandler}
+            ghost
+            icon={<Download size={16} />}
+          >
             {t("files.download")}
           </Button>
         )}
@@ -189,9 +216,9 @@ const File: React.FC<FileProps> = ({ file }) => {
           onConfirm={deleteHandler}
           okText={t("common.yes")}
           cancelText={t("common.no")}
-          icon={<QuestionCircleOutlined style={{ color: "red" }} />}
+          icon={<AlertCircle size={18} style={{ color: "red" }} />}
         >
-          <Button className={cn(styles.fileBtn, styles.fileDelete)} type="link" danger>
+          <Button className={cn(styles.fileBtn, styles.fileDelete)} type="link" danger icon={<Trash2 size={16} />}>
             {t("files.delete")}
           </Button>
         </Popconfirm>
@@ -201,7 +228,7 @@ const File: React.FC<FileProps> = ({ file }) => {
         open={shareModalOpen}
         onClose={() => setShareModalOpen(false)}
         resourceType={resourceType}
-        resourceId={file.id}
+        resourceId={Number(file.id)}
         resourceName={file.name}
       />
     </>

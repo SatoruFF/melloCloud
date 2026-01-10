@@ -85,6 +85,7 @@
   "files": {
     "my-files": "My files",
     "share": "Share",
+    "manage-share": "Manage",
     "size": "size",
     "create-new-folder": "Create new folder",
     "enter-folder-name": "Enter a folder name...",
