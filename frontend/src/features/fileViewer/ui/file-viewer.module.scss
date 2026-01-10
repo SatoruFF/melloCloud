@@ -57,10 +57,19 @@
 }
 
 .imageFile {
-  max-width: 60px;
-  max-height: 60px;
-  object-fit: cover;
-  border-radius: 4px;
+  border-radius: 8px;
+  object-fit: contain;
+
+  :global(.ant-image) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  :global(.ant-image-img) {
+    object-fit: contain;
+    border-radius: 8px;
+  }
 }
 
 .playerModalFileViewer,

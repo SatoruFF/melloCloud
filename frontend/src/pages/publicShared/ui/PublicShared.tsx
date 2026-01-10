@@ -106,7 +106,13 @@ const PublicShared: React.FC = () => {
           {isFile && (
             <div className={styles.previewSection}>
               <div className={styles.previewContainer}>
-                <FileViewer type={fileType} url={resource.url} fileName={resource.name} />
+                <FileViewer
+                  type={fileType}
+                  url={resource.url}
+                  fileName={resource.name}
+                  iconSize={300}
+                  className={styles.customFileViewer}
+                />
               </div>
               <div className={styles.previewFooter}>
                 <h3 className={styles.previewFileName}>
@@ -122,7 +128,13 @@ const PublicShared: React.FC = () => {
             {/* Resource Icon & Info */}
             <div className={styles.resourceHeader}>
               <div className={styles.iconWrapper}>
-                <FileViewer type={fileType} url={resource.url} fileName={resource.name} />
+                <FileViewer
+                  type={fileType}
+                  url={resource.url}
+                  fileName={resource.name}
+                  iconSize={300}
+                  className={styles.customFileViewer}
+                />
               </div>
               <h2 className={styles.resourceTitle}>
                 {resource.title || resource.name || t("sharing.publicLink.untitled")}

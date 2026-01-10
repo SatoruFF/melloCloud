@@ -2,7 +2,7 @@ import { FileFilled, PlayCircleOutlined, FileTextOutlined } from "@ant-design/ic
 import { Button, Image, Modal, Spin } from "antd";
 import cn from "classnames";
 import { Folder, FileText, FileCode, FileArchive, FileSpreadsheet } from "lucide-react";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import ReactPlayer from "react-player";
 import { Document, Page, pdfjs } from "react-pdf";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
@@ -19,6 +19,9 @@ interface FileViewerProps {
   type: string;
   url?: string;
   fileName?: string;
+  className?: string;
+  style?: React.CSSProperties;
+  iconSize?: number;
 }
 
 // TODO: get away from here
@@ -53,7 +56,7 @@ const MARKDOWN_TYPES = ["md", "markdown"];
 const ARCHIVE_TYPES = ["zip", "rar", "7z", "tar", "gz"];
 const SPREADSHEET_TYPES = ["xlsx", "xls", "csv"];
 
-const FileViewer: React.FC<FileViewerProps> = ({ type, url, fileName }) => {
+const FileViewer: React.FC<FileViewerProps> = ({ type, url, fileName, className, style, iconSize = 50 }) => {
   const [isOpenPlayer, setIsOpenPlayer] = useState(false);
   const [isOpenPDF, setIsOpenPDF] = useState(false);
   const [isOpenCode, setIsOpenCode] = useState(false);
@@ -168,11 +171,21 @@ const FileViewer: React.FC<FileViewerProps> = ({ type, url, fileName }) => {
 
   const determineViewer = (fileType: string, url?: string) => {
     if (fileType === "dir") {
-      return <Folder size={50} className={cn(styles.folder)} />;
+      return <Folder size={iconSize} className={cn(styles.folder)} />;
     }
 
     if (isImage && url) {
-      return <Image src={url} className={cn(styles.imageFile)} alt={fileName || fileType} />;
+      return (
+        <Image
+          src={url}
+          className={cn(styles.imageFile)}
+          alt={fileName || fileType}
+          width={iconSize}
+          height={iconSize}
+          style={{ objectFit: "contain" }}
+          preview={true}
+        />
+      );
     }
 
     if (isPlayer) {
@@ -180,7 +193,7 @@ const FileViewer: React.FC<FileViewerProps> = ({ type, url, fileName }) => {
     }
 
     if (isPDF) {
-      return <FileText size={50} className={cn(styles.pdfIcon)} onClick={() => setIsOpenPDF(true)} />;
+      return <FileText size={iconSize} className={cn(styles.pdfIcon)} onClick={() => setIsOpenPDF(true)} />;
     }
 
     if (isDocument) {
@@ -188,26 +201,26 @@ const FileViewer: React.FC<FileViewerProps> = ({ type, url, fileName }) => {
     }
 
     if (isCode) {
-      return <FileCode size={50} className={cn(styles.codeIcon)} onClick={handleCodeOpen} />;
+      return <FileCode size={iconSize} className={cn(styles.codeIcon)} onClick={handleCodeOpen} />;
     }
 
     if (isMarkdown) {
-      return <FileText size={50} className={cn(styles.markdownIcon)} onClick={handleMarkdownOpen} />;
+      return <FileText size={iconSize} className={cn(styles.markdownIcon)} onClick={handleMarkdownOpen} />;
     }
 
     if (isSpreadsheet) {
-      return <FileSpreadsheet size={50} className={cn(styles.spreadsheetIcon)} onClick={handleSpreadsheetOpen} />;
+      return <FileSpreadsheet size={iconSize} className={cn(styles.spreadsheetIcon)} onClick={handleSpreadsheetOpen} />;
     }
 
     if (isArchive) {
-      return <FileArchive size={50} className={cn(styles.archiveIcon)} />;
+      return <FileArchive size={iconSize} className={cn(styles.archiveIcon)} />; // ✅
     }
 
     return <FileFilled className={cn(styles.file)} />;
   };
 
   return (
-    <div className={cn(styles.allFileViewer)}>
+    <div className={cn(styles.allFileViewer, className)} style={style}>
       {determineViewer(fileType, url)}
 
       {/* Video/Audio Player Modal */}
