@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Modal, Input, Select, Button, List, Avatar, Tag, message, Tooltip, Space, Divider } from "antd";
-import { UserOutlined, LinkOutlined, DeleteOutlined, CopyOutlined, ClockCircleOutlined } from "@ant-design/icons";
+import { User, Link, Trash2, Copy, Clock } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import cn from "classnames";
 import {
@@ -136,14 +136,14 @@ export const ShareModal: React.FC<ShareModalProps> = ({ open, onClose, resourceT
       {/* Invite Section */}
       <div className={cn(styles.section)}>
         <h3>
-          <UserOutlined /> {t("sharing.modal.invitePeople")}
+          <User size={16} style={{ marginRight: 8 }} /> {t("sharing.modal.invitePeople")}
         </h3>
         <Space.Compact style={{ width: "100%", marginBottom: 8 }}>
           <Input
             placeholder={t("sharing.modal.emailPlaceholder")}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            prefix={<UserOutlined />}
+            prefix={<User size={16} />}
             onPressEnter={handleShare}
             disabled={isSharing}
           />
@@ -175,7 +175,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({ open, onClose, resourceT
       {/* Public Link Section */}
       <div className={cn(styles.section)}>
         <h3>
-          <LinkOutlined /> {t("sharing.modal.publicLinkSharing")}
+          <Link size={16} style={{ marginRight: 8 }} /> {t("sharing.modal.publicLinkSharing")}
         </h3>
         {publicPermission ? (
           <Space direction="vertical" style={{ width: "100%" }}>
@@ -185,21 +185,25 @@ export const ShareModal: React.FC<ShareModalProps> = ({ open, onClose, resourceT
               addonAfter={
                 <Space>
                   <Tooltip title={t("sharing.modal.copyLink")}>
-                    <CopyOutlined onClick={handleCopyLink} style={{ cursor: "pointer" }} />
+                    <Copy size={16} onClick={handleCopyLink} style={{ cursor: "pointer" }} />
                   </Tooltip>
                   <Tooltip title={t("sharing.modal.deleteLink")}>
-                    <DeleteOutlined onClick={handleDeletePublicLink} style={{ cursor: "pointer", color: "#ff4d4f" }} />
+                    <Trash2
+                      size={16}
+                      onClick={handleDeletePublicLink}
+                      style={{ cursor: "pointer", color: "#ff4d4f" }}
+                    />
                   </Tooltip>
                 </Space>
               }
             />
-            <Tag color="green" icon={<LinkOutlined />}>
+            <Tag color="green" icon={<Link size={14} />}>
               {t("sharing.modal.publicLinkActive", { resourceType: resourceType.toLowerCase() })}
             </Tag>
           </Space>
         ) : (
           <>
-            <Button icon={<LinkOutlined />} onClick={handleCreatePublicLink} loading={isCreatingLink} block>
+            <Button icon={<Link size={16} />} onClick={handleCreatePublicLink} loading={isCreatingLink} block>
               {t("sharing.modal.createPublicLink")}
             </Button>
             <p className={cn(styles.hint)}>📎 {t("sharing.modal.publicLinkHint")}</p>
@@ -254,7 +258,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({ open, onClose, resourceT
                       danger
                       size="small"
                       type="text"
-                      icon={<DeleteOutlined />}
+                      icon={<Trash2 size={16} />}
                       onClick={() => handleRevokePermission(permission.id, permission.user?.userName)}
                     />
                   </Tooltip>
@@ -266,7 +270,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({ open, onClose, resourceT
                   permission.user?.avatar ? (
                     <Avatar src={permission.user.avatar} />
                   ) : (
-                    <Avatar icon={<UserOutlined />} style={{ backgroundColor: "#1890ff" }} />
+                    <Avatar icon={<User size={16} />} style={{ backgroundColor: "#1890ff" }} />
                   )
                 }
                 title={
@@ -281,7 +285,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({ open, onClose, resourceT
                           date: new Date(permission.expiresAt).toLocaleDateString(),
                         })}
                       >
-                        <Tag icon={<ClockCircleOutlined />} color="warning">
+                        <Tag icon={<Clock size={14} />} color="warning">
                           {t("sharing.modal.temporary")}
                         </Tag>
                       </Tooltip>

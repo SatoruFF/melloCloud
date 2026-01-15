@@ -1,4 +1,4 @@
-import { ApiOutlined, MenuFoldOutlined, MenuUnfoldOutlined, SettingOutlined, UserOutlined } from "@ant-design/icons";
+import { Plug, Menu, X, Settings, User } from "lucide-react";
 import { Avatar, Button, Divider, Drawer, Tooltip, notification } from "antd";
 import cn from "classnames";
 import { motion } from "framer-motion";
@@ -42,7 +42,7 @@ const MyNavbar: React.FC = () => {
       message: t("auth.logout-success"),
       description: t("auth.logout-description"),
       placement: "topLeft",
-      icon: <ApiOutlined style={{ color: "#ff7875" }} />,
+      icon: <Plug size={20} style={{ color: "#ff7875" }} />,
     });
   }, [dispatch, navigate, t]);
 
@@ -103,7 +103,7 @@ const MyNavbar: React.FC = () => {
               <Tooltip title={t("user.settings")}>
                 <div className={cn(styles.userInfo)} onClick={() => setProfile(true)}>
                   <p>{user?.userName}</p>
-                  <SettingOutlined />
+                  <Settings size={16} />
                 </div>
               </Tooltip>
             )}
@@ -119,7 +119,7 @@ const MyNavbar: React.FC = () => {
               {user?.avatar ? (
                 <Avatar size={40} src={user.avatar} alt={user?.userName || t("user.avatar")} />
               ) : (
-                <Avatar size={40} icon={<UserOutlined />} style={{ backgroundColor: "#1890ff" }} />
+                <Avatar size={40} icon={<User size={20} />} style={{ backgroundColor: "#1890ff" }} />
               )}
             </div>
             <Button className={cn(styles.mainLogout)} type="primary" onClick={logOut}>
@@ -150,9 +150,9 @@ const MyNavbar: React.FC = () => {
           </div>
           <div className={cn(styles.navBurger)}>
             {!burger ? (
-              <MenuFoldOutlined className="burger-icon" onClick={() => setBurger(true)} />
+              <Menu size={24} className="burger-icon" onClick={() => setBurger(true)} />
             ) : (
-              <MenuUnfoldOutlined className="burger-icon" />
+              <X size={24} className="burger-icon" />
             )}
             <Drawer title={t("navbar.pages")} placement="left" onClose={() => setBurger(false)} open={burger}>
               <motion.div

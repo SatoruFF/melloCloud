@@ -1,7 +1,6 @@
-import { FileFilled, PlayCircleOutlined, FileTextOutlined } from "@ant-design/icons";
 import { Button, Image, Modal, Spin } from "antd";
 import cn from "classnames";
-import { Folder, FileText, FileCode, FileArchive, FileSpreadsheet } from "lucide-react";
+import { Folder, FileText, FileCode, FileArchive, FileSpreadsheet, PlayCircle, File } from "lucide-react";
 import React, { useState } from "react";
 import ReactPlayer from "react-player";
 import { Document, Page, pdfjs } from "react-pdf";
@@ -189,7 +188,7 @@ const FileViewer: React.FC<FileViewerProps> = ({ type, url, fileName, className,
     }
 
     if (isPlayer) {
-      return <PlayCircleOutlined className={cn(styles.playerIcon)} onClick={() => setIsOpenPlayer(true)} />;
+      return <PlayCircle size={iconSize} className={cn(styles.playerIcon)} onClick={() => setIsOpenPlayer(true)} />;
     }
 
     if (isPDF) {
@@ -197,7 +196,7 @@ const FileViewer: React.FC<FileViewerProps> = ({ type, url, fileName, className,
     }
 
     if (isDocument) {
-      return <FileTextOutlined className={cn(styles.documentIcon)} onClick={handleDocumentOpen} />;
+      return <FileText size={iconSize} className={cn(styles.documentIcon)} onClick={handleDocumentOpen} />;
     }
 
     if (isCode) {
@@ -213,10 +212,10 @@ const FileViewer: React.FC<FileViewerProps> = ({ type, url, fileName, className,
     }
 
     if (isArchive) {
-      return <FileArchive size={iconSize} className={cn(styles.archiveIcon)} />; // ✅
+      return <FileArchive size={iconSize} className={cn(styles.archiveIcon)} />;
     }
 
-    return <FileFilled className={cn(styles.file)} />;
+    return <File size={iconSize} className={cn(styles.file)} />;
   };
 
   return (

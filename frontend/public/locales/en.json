@@ -227,6 +227,27 @@
     "fileUploaded": "📁 File uploaded",
     "authSuccess": "✅ Auth success"
   },
+  "modules": {
+    "title": "Modules & tools",
+    "subtitle": "Additional tools to boost your productivity",
+
+    "pomodoro": {
+      "name": "Pomodoro timer",
+      "description": "Focus timer based on the Pomodoro technique with work and break intervals."
+    },
+    "calculator": {
+      "name": "Calculator",
+      "description": "Simple calculator for quick calculations inside your workspace."
+    },
+    "habit-tracker": {
+      "name": "Habit tracker",
+      "description": "Track your daily habits and progress toward personal goals."
+    },
+    "quick-notes": {
+      "name": "Quick notes",
+      "description": "Lightweight notes you can create in a couple of seconds without leaving the app."
+    }
+  },
   "planner": {
     "planning": "Planning",
     "tabs": {
@@ -344,7 +365,7 @@
     "chats": "Chats",
     "notes": "Notes",
     "planner": "Planner",
-    "pomodoro": "Pomodoro",
+    "modules": "Modules",
     "admin-panel": "Admin panel"
   },
   "buttons": {

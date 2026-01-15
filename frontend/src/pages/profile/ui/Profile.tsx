@@ -1,4 +1,4 @@
-import { PieChartOutlined } from "@ant-design/icons";
+import { PieChart } from "lucide-react";
 import { unwrapResult } from "@reduxjs/toolkit";
 import { Button, Card, Col, Row, Spin, Statistic, Typography, Upload, message, Tooltip } from "antd";
 import type { UploadProps } from "antd";
@@ -120,7 +120,7 @@ const Profile = () => {
                       title={t("user.used-space")}
                       value={usedSize}
                       precision={2}
-                      prefix={<PieChartOutlined />}
+                      prefix={<PieChart size={16} />}
                     />
                   </Card>
                 </Col>

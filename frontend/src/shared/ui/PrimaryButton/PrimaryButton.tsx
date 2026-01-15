@@ -1,4 +1,4 @@
-import { LoadingOutlined } from "@ant-design/icons";
+import { Loader2 } from "lucide-react";
 import cn from "classnames";
 import { useTranslation } from "react-i18next";
 import styles from "./primary-button.module.scss";
@@ -69,7 +69,12 @@ const PrimaryButton: React.FC<PrimaryButtonProps> = ({
       )}
     >
       {loading && (
-        <LoadingOutlined className={styles.loadingIcon} aria-hidden="true" aria-label={t("common.loading")} />
+        <Loader2
+          className={cn(styles.loadingIcon, styles.spin)}
+          size={16}
+          aria-hidden="true"
+          aria-label={t("common.loading")}
+        />
       )}
       {!loading && icon && (
         <span className={styles.icon} aria-hidden="true">

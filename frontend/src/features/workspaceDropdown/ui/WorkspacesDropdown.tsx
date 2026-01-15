@@ -1,26 +1,17 @@
 import {
-  ApiOutlined,
-  CarryOutOutlined,
-  DownOutlined,
-  FieldTimeOutlined,
-  FolderOpenOutlined,
-  SendOutlined,
-  SettingOutlined,
-  SnippetsOutlined,
-  UserOutlined,
-} from "@ant-design/icons";
+  MessageSquare,
+  FileText,
+  CalendarCheck,
+  Blocks,
+  FolderOpen,
+  Settings,
+  LogOut,
+  ChevronDown,
+} from "lucide-react";
 import { Dropdown, type MenuProps, Space } from "antd";
 import { useTranslation } from "react-i18next";
 import { NavLink } from "react-router-dom";
-// import { useMediaQuery } from "react-responsive";
-import {
-  //   ADMIN_PANEL,
-  CHATS_ROUTE,
-  FILE_ROUTE,
-  NOTES_ROUTE,
-  POMODORO_ROUTE,
-  PLANNER_ROUTE,
-} from "../../../shared/consts/routes";
+import { CHATS_ROUTE, FILE_ROUTE, NOTES_ROUTE, MODULES_ROUTE, PLANNER_ROUTE } from "../../../shared/consts/routes";
 
 const WorkspacesDropdown = ({ viewAll, logOut, setProfile }: { viewAll: boolean; logOut: any; setProfile: any }) => {
   const { t } = useTranslation();
@@ -29,30 +20,24 @@ const WorkspacesDropdown = ({ viewAll, logOut, setProfile }: { viewAll: boolean;
     {
       key: "1",
       label: <NavLink to={CHATS_ROUTE}>{t("tabs.chats")}</NavLink>,
-      icon: <SendOutlined />,
+      icon: <MessageSquare size={16} />,
     },
     {
       key: "2",
       label: <NavLink to={NOTES_ROUTE}>{t("tabs.notes")}</NavLink>,
-      icon: <SnippetsOutlined />,
+      icon: <FileText size={16} />,
     },
     {
       key: "3",
       label: <NavLink to={PLANNER_ROUTE}>{t("tabs.planner")}</NavLink>,
-      icon: <CarryOutOutlined />,
+      icon: <CalendarCheck size={16} />,
     },
     {
       key: "4",
-      label: <NavLink to={POMODORO_ROUTE}>{t("tabs.pomodoro")}</NavLink>,
+      label: <NavLink to={MODULES_ROUTE}>{t("tabs.modules")}</NavLink>,
       danger: true,
-      icon: <FieldTimeOutlined />,
+      icon: <Blocks size={16} />,
     },
-    // {
-    //   key: "5",
-    //   label: <NavLink to={ADMIN_PANEL}>{t("tabs.admin-panel")}</NavLink>,
-    //   danger: false,
-    //   icon: <UserOutlined />,
-    // },
   ];
 
   if (viewAll) {
@@ -60,29 +45,27 @@ const WorkspacesDropdown = ({ viewAll, logOut, setProfile }: { viewAll: boolean;
       {
         key: "6",
         label: <NavLink to={FILE_ROUTE}>{t("tabs.files")}</NavLink>,
-        icon: <FolderOpenOutlined />,
+        icon: <FolderOpen size={16} />,
       },
       {
         key: "7",
         label: <div onClick={() => setProfile(true)}>{t("tabs.settings")}</div>,
-        icon: <SettingOutlined />,
+        icon: <Settings size={16} />,
       },
       {
         key: "8",
         label: <div onClick={() => logOut()}>{t("auth.logout")}</div>,
-        icon: <ApiOutlined />,
+        icon: <LogOut size={16} />,
       }
     );
   }
 
   return (
     <Dropdown menu={{ items }}>
-      <a onClick={(e) => e.preventDefault()}>
-        <Space style={{ cursor: "default", paddingRight: "30px" }}>
-          {t("workspace")}
-          <DownOutlined />
-        </Space>
-      </a>
+      <Space style={{ cursor: "pointer", paddingRight: "30px", color: "#fff" }}>
+        {t("workspace")}
+        <ChevronDown size={16} />
+      </Space>
     </Dropdown>
   );
 };

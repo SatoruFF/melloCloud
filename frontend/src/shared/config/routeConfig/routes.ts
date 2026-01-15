@@ -1,4 +1,3 @@
-// app/router/routes.tsx
 import { type FC, type ReactElement, lazy } from 'react';
 import React from 'react';
 
@@ -9,7 +8,8 @@ import {
   LOGIN_ROUTE,
   NOTES_ROUTE,
   NOT_FOUND,
-  POMODORO_ROUTE,
+  MODULES_ROUTE,
+  MODULES_POMODORO,
   PROFILE_ROUTE,
   REGISTRATION_ROUTE,
   PLANNER_ROUTE,
@@ -32,6 +32,7 @@ const Profile = lazy(() => import('../../../pages/profile/ui/Profile'));
 const Pomodoro = lazy(() => import('../../../pages/pomodoro/ui/PomodoroTimer'));
 const Chats = lazy(() => import('../../../pages/chats/ui/Chats'));
 const Notes = lazy(() => import('../../../pages/notes/ui/Notes'));
+const Modules = lazy(() => import('../../../pages/modules/ui/ModulesPage'));
 
 // Planner
 const PlannerLayout = lazy(() => import('../../../pages/planner/ui/Planner'));
@@ -100,7 +101,12 @@ const privateRoutes: IRoute[] = createRoutes([
     ],
   },
 
-  { path: POMODORO_ROUTE, element: Pomodoro, private: true },
+  {
+    path: MODULES_ROUTE,
+    element: Modules,
+    private: true,
+    children: [{ path: 'pomodoro', element: Pomodoro, private: true }],
+  },
 ]); // {
 // 	path: ADMIN_PANEL,
 // 	element: AdminPanel,

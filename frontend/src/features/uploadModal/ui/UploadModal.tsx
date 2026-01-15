@@ -1,4 +1,4 @@
-import { InboxOutlined } from "@ant-design/icons";
+import { Upload as UploadIcon } from "lucide-react";
 import { Button, Modal, Upload, message } from "antd";
 import type { UploadProps } from "antd";
 import { useTranslation } from "react-i18next";
@@ -64,7 +64,7 @@ const UploadModal = ({ status, def }) => {
     >
       <Dragger {...props} multiple={true} maxCount={5}>
         <p className="ant-upload-drag-icon">
-          <InboxOutlined />
+          <UploadIcon size={48} />
         </p>
         <p className="ant-upload-text">{t("files.upload-files-text")}</p>
         <p className="ant-upload-hint"> {t("files.upload-files-hint")}</p>

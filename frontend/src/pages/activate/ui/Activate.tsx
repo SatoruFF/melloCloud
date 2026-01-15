@@ -1,4 +1,4 @@
-import { CheckSquareTwoTone, CloseCircleTwoTone } from "@ant-design/icons";
+import { CheckSquare, XCircle } from "lucide-react";
 import { message } from "antd";
 import cn from "classnames";
 import _ from "lodash-es";
@@ -58,7 +58,7 @@ const Activate = () => {
       <div className={cn(styles.activateContainer)}>
         <div className={cn(styles.activateMessage)}>
           <div className={cn(styles.activateIcon)}>
-            <CheckSquareTwoTone />
+            <CheckSquare size={64} color="#52c41a" />
           </div>
           <h1>{t("auth.activate.successTitle")}</h1>
           <p>
@@ -76,7 +76,7 @@ const Activate = () => {
       <div className={cn(styles.activateContainer)}>
         <div className={cn(styles.activateMessage)}>
           <div className={cn(styles.activateIcon)}>
-            <CloseCircleTwoTone twoToneColor="red" />
+            <XCircle size={64} color="#ff4d4f" />
           </div>
           <h1>{t("auth.activate.failedTitle")}</h1>
           <p>{t("auth.activate.failedMessage")}</p>
@@ -90,7 +90,7 @@ const Activate = () => {
     <div className={cn(styles.activateContainer)}>
       <div className={cn(styles.activateMessage)}>
         <div className={cn(styles.activateIcon)}>
-          <CheckSquareTwoTone />
+          <CheckSquare size={64} color="#52c41a" />
         </div>
         <h1>{t("auth.activate.emailSentTitle")}</h1>
         <p className={cn(styles.activateInfo)}>

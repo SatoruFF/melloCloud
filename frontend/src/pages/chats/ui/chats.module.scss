@@ -6,7 +6,7 @@
   display: flex;
   flex-direction: row;
   background: hsl(240 10% 3.9%);
-  // color: hsl(0 0% 98%);
+  color: hsl(0 0% 98%);
   @include diskBackground;
 }
 
@@ -37,24 +37,26 @@
 
   button {
     background: hsl(240 5.9% 10%);
-    color: hsl(0 0% 98%);
+    color: hsl(0 0% 98%) !important;
     border: 1px solid hsl(240 3.7% 15.9%);
     border-radius: 8px;
     font-weight: 500;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 
     &:hover {
-      background: hsl(240 3.7% 15.9%);
-      border-color: hsl(240 5% 26%);
+      background: hsl(240 3.7% 15.9%) !important;
+      border-color: hsl(240 5% 26%) !important;
+      color: hsl(0 0% 98%) !important;
     }
 
     &[type="primary"] {
-      background: hsl(263 70% 50%);
-      border-color: hsl(263 70% 50%);
-      color: white;
+      background: hsl(263 70% 50%) !important;
+      border-color: hsl(263 70% 50%) !important;
+      color: white !important;
 
       &:hover {
-        background: hsl(263 70% 60%);
+        background: hsl(263 70% 60%) !important;
+        border-color: hsl(263 70% 60%) !important;
       }
     }
   }
