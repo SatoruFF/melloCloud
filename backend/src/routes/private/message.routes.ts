@@ -1,8 +1,8 @@
-import { Router } from "express";
+import { Hono } from "hono";
 import { MessageController } from "../../controllers/messageController.js";
 
-const router: Router = Router();
+const router = new Hono();
 
-router.get("", MessageController.getMessages);
+router.get("/", (c) => MessageController.getMessages(c));
 
 export default router;

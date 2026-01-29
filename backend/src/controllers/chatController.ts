@@ -1,17 +1,18 @@
-import _ from "lodash";
 import "dotenv/config.js";
-import type { Request, Response } from "express";
+import type { Context } from "hono";
 import createError from "http-errors";
 
 import { logger } from "../configs/logger.js";
 
 import { ChatService } from "../services/chatService.js";
 import { serializeBigInt } from "../helpers/serializeBigInt.js";
+import ApiContext from "../models/context.js";
 
 class ChatControllerClass {
-  async getUserChats(req: Request, res: Response) {
+  async getUserChats(c: Context) {
     try {
-      const { userId } = req.context;
+      const apiContext = (c.get("context") as ApiContext | undefined) ?? null;
+      const userId = (c.get("user") as { id?: number } | undefined)?.id ?? c.get("userId");
 
       if (!userId) {
         throw createError(401, "User not found");
@@ -19,14 +20,17 @@ class ChatControllerClass {
 
       // Fetch user chats
       // user cannot have more than 1000 chats USUALLY, so no pagination needed
-      const chats = await ChatService.getUserChats(req.context, userId);
+      const chats = await ChatService.getUserChats(apiContext, userId);
 
-      return res.json(serializeBigInt(chats));
+      return c.json(serializeBigInt(chats));
     } catch (error: any) {
       logger.error(error.message, error);
-      return res.status(error.statusCode || 500).send({
-        message: error.message,
-      });
+      return c.json(
+        {
+          message: error.message,
+        },
+        error.statusCode || 500,
+      );
     }
   }
 }

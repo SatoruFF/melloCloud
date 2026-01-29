@@ -1,6 +1,5 @@
-import _ from "lodash";
 import "dotenv/config.js";
-import type { NextFunction, Request, Response } from "express";
+import type { Context } from "hono";
 import createError from "http-errors";
 
 import { logger } from "../configs/logger.js";
@@ -9,10 +8,11 @@ import { ColumnService } from "../services/columnService.js";
 
 class ColumnControllerClass {
   // Create column controller
-  async create(req: any, res: Response, next: NextFunction) {
+  async create(c: Context) {
     try {
-      const { title, color } = req.body;
-      const userId = req.user?.id;
+      const body = await c.req.json<{ title: string; color?: string }>();
+      const { title, color } = body;
+      const userId = (c.get("user") as { id?: number } | undefined)?.id ?? c.get("userId");
 
       if (!userId) {
         throw createError(401, "User not found");
@@ -24,19 +24,17 @@ class ColumnControllerClass {
         userId,
       });
 
-      return res.json(column);
+      return c.json(column);
     } catch (error: any) {
       logger.error(error.message, error);
-      return res.status(error.statusCode || 500).send({
-        message: error.message,
-      });
+      return c.json({ message: error.message }, error.statusCode || 500);
     }
   }
 
   // Get all columns for user
-  async getAll(req: any, res: Response) {
+  async getAll(c: Context) {
     try {
-      const userId = req.user?.id;
+      const userId = (c.get("user") as { id?: number } | undefined)?.id ?? c.get("userId");
 
       if (!userId) {
         throw createError(401, "User not found");
@@ -44,20 +42,18 @@ class ColumnControllerClass {
 
       const columns = await ColumnService.getAll(userId);
 
-      return res.json(columns);
+      return c.json(columns);
     } catch (error: any) {
       logger.error(error.message, error);
-      return res.status(error.statusCode || 500).send({
-        message: error.message,
-      });
+      return c.json({ message: error.message }, error.statusCode || 500);
     }
   }
 
   // Get column by ID
-  async getById(req: any, res: Response) {
+  async getById(c: Context) {
     try {
-      const { id } = req.params;
-      const userId = req.user?.id;
+      const { id } = c.req.param();
+      const userId = (c.get("user") as { id?: number } | undefined)?.id ?? c.get("userId");
 
       if (!userId) {
         throw createError(401, "User not found");
@@ -69,21 +65,20 @@ class ColumnControllerClass {
 
       if (!column) throw createError(404, "Column not found");
 
-      return res.json(column);
+      return c.json(column);
     } catch (error: any) {
       logger.error(error.message, error);
-      return res.status(error.statusCode || 500).send({
-        message: error.message,
-      });
+      return c.json({ message: error.message }, error.statusCode || 500);
     }
   }
 
   // Update column
-  async update(req: any, res: Response) {
+  async update(c: Context) {
     try {
-      const { id } = req.params;
-      const { title, color, order } = req.body;
-      const userId = req.user?.id;
+      const { id } = c.req.param();
+      const body = await c.req.json<{ title?: string; color?: string; order?: number }>();
+      const { title, color, order } = body;
+      const userId = (c.get("user") as { id?: number } | undefined)?.id ?? c.get("userId");
 
       if (!userId) {
         throw createError(401, "User not found");
@@ -97,20 +92,18 @@ class ColumnControllerClass {
         order,
       });
 
-      return res.json(column);
+      return c.json(column);
     } catch (error: any) {
       logger.error(error.message, error);
-      return res.status(error.statusCode || 500).send({
-        message: error.message,
-      });
+      return c.json({ message: error.message }, error.statusCode || 500);
     }
   }
 
   // Delete column
-  async delete(req: any, res: Response) {
+  async delete(c: Context) {
     try {
-      const { id } = req.params;
-      const userId = req.user?.id;
+      const { id } = c.req.param();
+      const userId = (c.get("user") as { id?: number } | undefined)?.id ?? c.get("userId");
 
       if (!userId) {
         throw createError(401, "User not found");
@@ -120,20 +113,19 @@ class ColumnControllerClass {
 
       await ColumnService.delete(Number(id), userId);
 
-      return res.status(200).json({ message: "Column successfully deleted" });
+      return c.json({ message: "Column successfully deleted" }, 200);
     } catch (error: any) {
       logger.error(error.message, error);
-      return res.status(error.statusCode || 500).send({
-        message: error.message,
-      });
+      return c.json({ message: error.message }, error.statusCode || 500);
     }
   }
 
   // Reorder columns
-  async reorder(req: any, res: Response) {
+  async reorder(c: Context) {
     try {
-      const { columnOrders } = req.body; // Array of { id, order }
-      const userId = req.user?.id;
+      const body = await c.req.json<{ columnOrders: Array<{ id: number; order: number }> }>();
+      const { columnOrders } = body; // Array of { id, order }
+      const userId = (c.get("user") as { id?: number } | undefined)?.id ?? c.get("userId");
 
       if (!userId) {
         throw createError(401, "User not found");
@@ -145,20 +137,19 @@ class ColumnControllerClass {
 
       const columns = await ColumnService.reorderColumns(userId, columnOrders);
 
-      return res.json(columns);
+      return c.json(columns);
     } catch (error: any) {
       logger.error(error.message, error);
-      return res.status(error.statusCode || 500).send({
-        message: error.message,
-      });
+      return c.json({ message: error.message }, error.statusCode || 500);
     }
   }
 
   // Move task between columns
-  async moveTask(req: any, res: Response) {
+  async moveTask(c: Context) {
     try {
-      const { taskId, columnId } = req.body;
-      const userId = req.user?.id;
+      const body = await c.req.json<{ taskId: number; columnId: number }>();
+      const { taskId, columnId } = body;
+      const userId = (c.get("user") as { id?: number } | undefined)?.id ?? c.get("userId");
 
       if (!userId) {
         throw createError(401, "User not found");
@@ -170,19 +161,17 @@ class ColumnControllerClass {
 
       const task = await ColumnService.moveTask(Number(taskId), Number(columnId), userId);
 
-      return res.json(task);
+      return c.json(task);
     } catch (error: any) {
       logger.error(error.message, error);
-      return res.status(error.statusCode || 500).send({
-        message: error.message,
-      });
+      return c.json({ message: error.message }, error.statusCode || 500);
     }
   }
 
   // Get column statistics
-  async getStats(req: any, res: Response) {
+  async getStats(c: Context) {
     try {
-      const userId = req.user?.id;
+      const userId = (c.get("user") as { id?: number } | undefined)?.id ?? c.get("userId");
 
       if (!userId) {
         throw createError(401, "User not found");
@@ -190,12 +179,10 @@ class ColumnControllerClass {
 
       const stats = await ColumnService.getColumnStats(userId);
 
-      return res.json(stats);
+      return c.json(stats);
     } catch (error: any) {
       logger.error(error.message, error);
-      return res.status(error.statusCode || 500).send({
-        message: error.message,
-      });
+      return c.json({ message: error.message }, error.statusCode || 500);
     }
   }
 }

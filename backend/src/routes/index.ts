@@ -1,15 +1,10 @@
-import publicRouter from "./public/index.js";
-import privateRouter from "./private/index.js";
-import { Router } from "express";
+import { Hono } from 'hono';
+import publicRouter from './public/index';
+import privateRouter from './private/index';
 
-export const ApiRoutes = {
-  public: publicRouter,
-  private: privateRouter,
-};
+const v1Router = new Hono();
 
-const router = Router();
+v1Router.route('/', publicRouter);
+v1Router.route('/', privateRouter);
 
-router.use(ApiRoutes.public);
-router.use(ApiRoutes.private);
-
-export default router;
+export default v1Router;

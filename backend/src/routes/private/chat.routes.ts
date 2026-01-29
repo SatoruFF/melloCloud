@@ -1,8 +1,8 @@
-import { Router } from "express";
+import { Hono } from "hono";
 import { ChatController } from "../../controllers/chatController.js";
 
-const router: Router = Router();
+const router = new Hono();
 
-router.get("", ChatController.getUserChats);
+router.get("/", (c) => ChatController.getUserChats(c));
 
 export default router;

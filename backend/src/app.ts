@@ -1,99 +1,74 @@
-// bases
-import express, { type Express, type Response } from "express";
-import http from "http";
-import v1Router from "./routes/index.js";
-import { setupWebSocketServer } from "./helpers/setupWebSocket.js";
+import { Hono } from "hono";
+import { cors } from "hono/cors";
+import { logger } from "hono/logger";
+import { secureHeaders } from "hono/secure-headers";
+import { compress } from "hono/compress";
+import { rateLimiter } from "./configs/rateLimiter";
+import v1Router from "./routes/index";
+import { logger as customLogger } from "./configs/logger";
+import "dotenv/config";
 
-// middleware
-import cookieParser from "cookie-parser";
-import cors from "cors";
-import fileUpload from "express-fileupload";
+const app = new Hono();
 
-// utils
-import qs from "qs";
-import { logger } from "./configs/logger.js";
-import "dotenv/config.js";
-
-// admin
-// import runAdmin from "./admin/index.js";
-
-// performing
-import cluster from "cluster";
-import { cpus } from "os";
-import { limiter } from "./configs/rateLimiter.js";
-import { PORT } from "./configs/config.js";
-const numCPU = cpus().length;
-
-// base consts
-const app: Express = express();
-
-// middleware
+// ========================================
+// SECURITY MIDDLEWARE (аналог Helmet)
+// ========================================
 app.use(
-  cors({
-    origin: "*",
-    methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
-    preflightContinue: false,
-    optionsSuccessStatus: 204,
-  })
+  "*",
+  secureHeaders({
+    contentSecurityPolicy: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      imgSrc: ["'self'", "data:", "https:"],
+    },
+    xFrameOptions: "DENY",
+    strictTransportSecurity: "max-age=31536000; includeSubDomains",
+    xContentTypeOptions: "nosniff",
+    referrerPolicy: "strict-origin-when-cross-origin",
+  }),
 );
-app.use(express.json());
-app.use(cookieParser());
-app.use(fileUpload({}));
-app.use(limiter);
-// app.use(express.static('static'))
 
-app.set("query parser", (str) => {
-  const depth = 15;
-  return qs.parse(str, { depth });
+// ========================================
+// MIDDLEWARE
+// ========================================
+app.use(
+  "*",
+  cors({
+    origin: "*", // В проде укажи конкретные домены!
+    allowMethods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE", "OPTIONS"],
+    credentials: true,
+  }),
+);
+
+app.use("*", logger()); // Hono встроенный logger
+app.use("*", compress()); // Сжатие ответов (gzip/brotli)
+
+// Rate limiter (кастомный, см. ниже)
+app.use("*", rateLimiter);
+
+// ========================================
+// ROUTES
+// ========================================
+app.route("/api/v1", v1Router);
+app.route("/v1", v1Router);
+
+// Health check
+app.get("/", (c) => {
+  return c.text("i am alive ;)");
 });
 
-// TODO: application may be like: api.some.com/, but in current time is a caddy do
-// need to enhance logic
-// app.use(routesMiddleWare);
-// routes
-app.use("/api/v1", v1Router); // https://mellocloud.net/api/v1
-app.use("/v1", v1Router); // https://api.mellocloud.net/v1
-
-// check health
-app.all("/", (_, res: Response) => {
-  res.send("i am alive ;)");
+// ========================================
+// ERROR HANDLER
+// ========================================
+app.onError((err, c) => {
+  customLogger.error(err.message);
+  return c.json({ error: err.message }, 500);
 });
 
-if (cluster.isPrimary) {
-  const workerCounts = Number(process.env.WORKERS_COUNT) || numCPU;
+// 404 Handler
+app.notFound((c) => {
+  return c.json({ error: "Not Found" }, 404);
+});
 
-  // Create a worker for each CPU
-  for (let i = 0; i < workerCounts; i++) {
-    cluster.fork();
-  }
-
-  cluster.on("online", (worker) => {
-    logger.info("Worker " + worker.process.pid + " is alive.");
-  });
-
-  cluster.on("exit", (worker, code, signal) => {
-    logger.error("worker " + worker.process.pid + " died.");
-  });
-} else {
-  // main def
-  const start = async () => {
-    try {
-      const server = http.createServer(app);
-
-      // 👇 Подключаем AdminJS
-      // await runAdmin(app);
-      // logger.info("AdminJS is mounted");
-
-      // WebSocket server
-      setupWebSocketServer(server);
-
-      server.listen(PORT, () => {
-        logger.info(`⚡️[server]: 🚀 Server is running at: ${PORT}`);
-      });
-    } catch (e) {
-      logger.error(e.message);
-    }
-  };
-
-  start();
-}
+export default app;

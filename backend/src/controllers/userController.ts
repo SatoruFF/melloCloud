@@ -1,191 +1,237 @@
 import _ from "lodash";
 import "dotenv/config.js";
-import type { NextFunction, Request, Response } from "express";
+import type { Context } from "hono";
+import { getCookie, setCookie, deleteCookie } from "hono/cookie";
 import createError from "http-errors";
 import { logger } from "../configs/logger.js";
 import { UserService } from "../services/userService.js";
+import ApiContext from "../models/context.js";
 
 class UserControllerClass {
-  async registration(req: Request, res: Response, next: NextFunction) {
+  // Регистрация пользователя
+  async registration(c: Context) {
     try {
-      const { userName, email, password } = req.body;
+      const body = await c.req.json<{ userName: string; email: string; password: string }>();
+      const { userName, email, password } = body;
+
       const invite = await UserService.createInvite({ userName, email, password });
-      return res.json(invite);
+      return c.json(invite);
     } catch (error: any) {
       logger.error(error.message, error);
-      return res.status(error.statusCode || 500).send({ message: error.message });
+      return c.json({ message: error.message }, error.statusCode || 500);
     }
   }
 
-  async login(req: Request, res: Response) {
+  // Логин пользователя
+  async login(c: Context) {
     try {
-      const { email, password } = req.body;
-      const userAgent = req.headers["user-agent"];
-      const ip = req.ip || req.connection.remoteAddress;
+      const body = await c.req.json<{ email: string; password: string }>();
+      const { email, password } = body;
+
+      const userAgent = c.req.header("user-agent") || "Unknown";
+      const ip = c.req.header("x-forwarded-for") || c.req.header("x-real-ip") || "Unknown";
 
       const userData = await UserService.login(email, password, { userAgent, ip });
 
-      res.cookie("refreshToken", userData.refreshToken, {
-        maxAge: 30 * 24 * 60 * 60 * 1000,
+      // maxAge в секундах
+      setCookie(c, "refreshToken", userData.refreshToken, {
+        maxAge: 30 * 24 * 60 * 60,
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
+        sameSite: "Strict",
       });
 
-      return res.json(userData);
+      return c.json(userData);
     } catch (error: any) {
       logger.error(error.message, error);
-      return res.status(error.statusCode || 500).send({ message: error.message });
+      return c.json({ message: error.message }, error.statusCode || 500);
     }
   }
 
-  async auth(req: any, res: Response) {
+  // Проверка авторизации по access токену
+  async auth(c: Context) {
     try {
-      const id = req.user?.id;
+      const user = c.get("user") as { id?: number } | undefined;
+      const id = user?.id;
+
       if (!id) {
         throw createError(401, "User not found");
       }
 
       const userData = await UserService.auth(id);
-      return res.json(userData);
+      return c.json(userData);
     } catch (error: any) {
       logger.error(error.message, error);
-      return res.status(error.statusCode || 500).send({ message: error.message });
+      return c.json({ message: error.message }, error.statusCode || 500);
     }
   }
 
-  async activate(req: any, res: Response) {
+  // Активация по ссылке
+  async activate(c: Context) {
     try {
-      const { token: activationToken } = req.query || req.params;
-      if (!activationToken) throw createError(404, "Cannot get activate token");
+      const queries = c.req.query();
+      const params = c.req.param();
+      const activationToken = (queries.token as string | undefined) ?? (params.token as string | undefined);
 
-      const userAgent = req.headers["user-agent"];
-      const ip = req.ip || req.connection.remoteAddress;
+      if (!activationToken) {
+        throw createError(404, "Cannot get activate token");
+      }
+
+      const userAgent = c.req.header("user-agent") || "Unknown";
+      const ip = c.req.header("x-forwarded-for") || c.req.header("x-real-ip") || "Unknown";
 
       const userData = await UserService.activate(activationToken, { userAgent, ip });
 
-      res.cookie("refreshToken", userData.refreshToken, {
-        maxAge: 30 * 24 * 60 * 60 * 1000,
+      setCookie(c, "refreshToken", userData.refreshToken, {
+        maxAge: 30 * 24 * 60 * 60,
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
+        sameSite: "Strict",
       });
 
-      return res.json(userData);
+      return c.json(userData);
     } catch (error: any) {
       logger.error(error.message, error);
-      return res.status(error.statusCode || 500).send({ message: error.message });
+      return c.json({ message: error.message }, error.statusCode || 500);
     }
   }
 
-  async refresh(req: any, res: Response) {
+  // Обновление access токена по refresh
+  async refresh(c: Context) {
     try {
-      const { refreshToken } = req.cookies;
+      const refreshToken = getCookie(c, "refreshToken");
+
       const userData = await UserService.refresh(refreshToken);
 
-      res.cookie("refreshToken", userData.refreshToken, {
-        maxAge: 30 * 24 * 60 * 60 * 1000,
+      setCookie(c, "refreshToken", userData.refreshToken, {
+        maxAge: 30 * 24 * 60 * 60,
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
+        sameSite: "Strict",
       });
 
-      return res.json(userData);
+      return c.json(userData);
     } catch (error: any) {
       logger.error(error.message, error);
-      return res.status(error.statusCode || 500).send({ message: error.message });
+      return c.json({ message: error.message }, error.statusCode || 500);
     }
   }
 
-  async logout(req: any, res: Response) {
+  // Выход из текущей сессии
+  async logout(c: Context) {
     try {
-      const { refreshToken } = req.cookies;
-      const id = req.user?.id;
+      const refreshToken = getCookie(c, "refreshToken");
+      const user = c.get("user") as { id?: number } | undefined;
+      const id = user?.id;
 
-      const user = await UserService.logout(id, refreshToken);
-      res.clearCookie("refreshToken");
+      const loggedOutUser = await UserService.logout(id, refreshToken);
 
-      return res.status(200).json({
-        message: `User ${user?.email} was successfully logged out`,
-      });
+      deleteCookie(c, "refreshToken");
+
+      return c.json(
+        {
+          message: `User ${loggedOutUser?.email} was successfully logged out`,
+        },
+        200,
+      );
     } catch (error: any) {
       logger.error(error.message, error);
-      res.status(error.statusCode || 500).send({ message: error.message });
+      return c.json({ message: error.message }, error.statusCode || 500);
     }
   }
 
   // Выйти из всех сессий
-  async logoutAll(req: any, res: Response) {
+  async logoutAll(c: Context) {
     try {
-      const id = req.user?.id;
-      const user = await UserService.logoutAll(id);
-      res.clearCookie("refreshToken");
+      const user = c.get("user") as { id?: number } | undefined;
+      const id = user?.id;
 
-      return res.status(200).json({
-        message: `All sessions for user ${user?.email} were terminated`,
-      });
+      const loggedOutUser = await UserService.logoutAll(id);
+
+      deleteCookie(c, "refreshToken");
+
+      return c.json(
+        {
+          message: `All sessions for user ${loggedOutUser?.email} were terminated`,
+        },
+        200,
+      );
     } catch (error: any) {
       logger.error(error.message, error);
-      res.status(error.statusCode || 500).send({ message: error.message });
+      return c.json({ message: error.message }, error.statusCode || 500);
     }
   }
 
   // Получить все активные сессии пользователя
-  async getSessions(req: any, res: Response) {
+  async getSessions(c: Context) {
     try {
-      const id = req.user?.id;
+      const user = c.get("user") as { id?: number } | undefined;
+      const id = user?.id;
+
       const sessions = await UserService.getSessions(id);
-      return res.json(sessions);
+      return c.json(sessions);
     } catch (error: any) {
       logger.error(error.message, error);
-      res.status(error.statusCode || 500).send({ message: error.message });
+      return c.json({ message: error.message }, error.statusCode || 500);
     }
   }
 
   // Удалить конкретную сессию
-  async deleteSession(req: any, res: Response) {
+  async deleteSession(c: Context) {
     try {
-      const id = req.user?.id;
-      const { sessionId } = req.params;
+      const user = c.get("user") as { id?: number } | undefined;
+      const id = user?.id;
+      const { sessionId } = c.req.param();
 
       await UserService.deleteSession(id, sessionId);
-      return res.json({ message: "Session deleted successfully" });
+      return c.json({ message: "Session deleted successfully" });
     } catch (error: any) {
       logger.error(error.message, error);
-      res.status(error.statusCode || 500).send({ message: error.message });
+      return c.json({ message: error.message }, error.statusCode || 500);
     }
   }
 
-  async search(req: any, res: Response) {
+  // Поиск пользователей
+  async search(c: Context) {
     try {
-      const query = req.query.query?.toString().toLowerCase();
-      if (!query) throw createError(400, "Empty query");
+      const query = c.req.query("query")?.toString().toLowerCase();
+      if (!query) {
+        throw createError(400, "Empty query");
+      }
 
-      const users = await UserService.search(req.context, query);
-      return res.json(users);
+      const apiContext = (c.get("context") as ApiContext | undefined) ?? null;
+      const users = await UserService.search(apiContext, query);
+      return c.json(users);
     } catch (error: any) {
       logger.error(error.message, error);
-      res.status(error.statusCode || 500).send({ message: error.message });
+      return c.json({ message: error.message }, error.statusCode || 500);
     }
   }
 
-  async getById(req: any, res: Response) {
+  // Получить пользователя по id
+  async getById(c: Context) {
     try {
-      const { id } = req.params;
-      if (!id) throw createError(400, "Empty Params");
+      const { id } = c.req.param();
+      if (!id) {
+        throw createError(400, "Empty Params");
+      }
 
-      const user = await UserService.getById(req.context, Number(id));
-      if (!user) throw createError(404, "User not found");
+      const apiContext = (c.get("context") as ApiContext | undefined) ?? null;
+      const user = await UserService.getById(apiContext, Number(id));
+      if (!user) {
+        throw createError(404, "User not found");
+      }
 
-      return res.json(user);
+      return c.json(user);
     } catch (error: any) {
       logger.error(error.message, error);
-      res.status(error.statusCode || 500).send({ message: error.message });
+      return c.json({ message: error.message }, error.statusCode || 500);
     }
   }
 
-  async changeInfo(req: Request, res: Response) {
-    // Implementation here
+  // Обновление информации о пользователе (заглушка, если будешь реализовывать)
+  async changeInfo(c: Context) {
+    return c.json({ message: "Not implemented" }, 501);
   }
 }
 

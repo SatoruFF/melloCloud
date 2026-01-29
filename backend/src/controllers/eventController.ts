@@ -1,31 +1,32 @@
-import type { Request, Response } from "express";
+import type { Context } from "hono";
 import createError from "http-errors";
 import { logger } from "../configs/logger.js";
 import { EventsService } from "../services/eventService.js";
 import { serializeBigInt } from "../helpers/serializeBigInt.js";
+import ApiContext from "../models/context.js";
 
 class EventsControllerClass {
-  async getUserEvents(req: Request, res: Response) {
+  async getUserEvents(c: Context) {
     try {
-      const { userId } = req.context;
+      const apiContext = (c.get("context") as ApiContext | undefined) ?? null;
+      const userId = (c.get("user") as { id?: number } | undefined)?.id ?? c.get("userId");
       if (!userId) {
         throw createError(401, "User not found");
       }
 
-      const events = await EventsService.getUserEvents(req.context, userId);
-      return res.json(serializeBigInt(events));
+      const events = await EventsService.getUserEvents(apiContext, userId);
+      return c.json(serializeBigInt(events));
     } catch (error: any) {
       logger.error(error.message, error);
-      return res.status(error.statusCode || 500).send({
-        message: error.message,
-      });
+      return c.json({ message: error.message }, error.statusCode || 500);
     }
   }
 
-  async getEventsByDateRange(req: Request, res: Response) {
+  async getEventsByDateRange(c: Context) {
     try {
-      const { userId } = req.context;
-      const { startDate, endDate } = req.query;
+      const apiContext = (c.get("context") as ApiContext | undefined) ?? null;
+      const userId = (c.get("user") as { id?: number } | undefined)?.id ?? c.get("userId");
+      const { startDate, endDate } = c.req.query();
 
       if (!userId) {
         throw createError(401, "User not found");
@@ -36,25 +37,24 @@ class EventsControllerClass {
       }
 
       const events = await EventsService.getEventsByDateRange(
-        req.context,
+        apiContext,
         userId,
         new Date(startDate as string),
-        new Date(endDate as string)
+        new Date(endDate as string),
       );
 
-      return res.json(serializeBigInt(events));
+      return c.json(serializeBigInt(events));
     } catch (error: any) {
       logger.error(error.message, error);
-      return res.status(error.statusCode || 500).send({
-        message: error.message,
-      });
+      return c.json({ message: error.message }, error.statusCode || 500);
     }
   }
 
-  async searchEvents(req: Request, res: Response) {
+  async searchEvents(c: Context) {
     try {
-      const { userId } = req.context;
-      const { query } = req.query;
+      const apiContext = (c.get("context") as ApiContext | undefined) ?? null;
+      const userId = (c.get("user") as { id?: number } | undefined)?.id ?? c.get("userId");
+      const { query } = c.req.query();
 
       if (!userId) {
         throw createError(401, "User not found");
@@ -64,20 +64,19 @@ class EventsControllerClass {
         throw createError(400, "Search query is required");
       }
 
-      const events = await EventsService.searchEvents(req.context, userId, query);
-      return res.json(serializeBigInt(events));
+      const events = await EventsService.searchEvents(apiContext, userId, query);
+      return c.json(serializeBigInt(events));
     } catch (error: any) {
       logger.error(error.message, error);
-      return res.status(error.statusCode || 500).send({
-        message: error.message,
-      });
+      return c.json({ message: error.message }, error.statusCode || 500);
     }
   }
 
-  async getEvent(req: Request, res: Response) {
+  async getEvent(c: Context) {
     try {
-      const { userId } = req.context;
-      const { eventId } = req.params;
+      const apiContext = (c.get("context") as ApiContext | undefined) ?? null;
+      const userId = (c.get("user") as { id?: number } | undefined)?.id ?? c.get("userId");
+      const { eventId } = c.req.param();
 
       if (!userId) {
         throw createError(401, "User not found");
@@ -87,31 +86,31 @@ class EventsControllerClass {
         throw createError(400, "Event ID is required");
       }
 
-      const event = await EventsService.getEvent(req.context, eventId, userId);
-      return res.json(serializeBigInt(event));
+      const event = await EventsService.getEvent(apiContext, eventId, userId);
+      return c.json(serializeBigInt(event));
     } catch (error: any) {
       logger.error(error.message, error);
-      return res.status(error.statusCode || 500).send({
-        message: error.message,
-      });
+      return c.json({ message: error.message }, error.statusCode || 500);
     }
   }
 
-  async createEvent(req: Request, res: Response) {
+  async createEvent(c: Context) {
     try {
-      const { userId } = req.context;
-      const {
-        title,
-        description,
-        location,
-        color,
-        category,
-        startDate,
-        endDate,
-        allDay,
-        taskId,
-        attendees,
-      } = req.body;
+      const apiContext = (c.get("context") as ApiContext | undefined) ?? null;
+      const userId = (c.get("user") as { id?: number } | undefined)?.id ?? c.get("userId");
+      const { title, description, location, color, category, startDate, endDate, allDay, taskId, attendees } =
+        await c.req.json<{
+          title: string;
+          description?: string;
+          location?: string;
+          color?: string;
+          category?: string;
+          startDate: string;
+          endDate: string;
+          allDay?: boolean;
+          taskId?: number;
+          attendees?: unknown;
+        }>();
 
       if (!userId) {
         throw createError(401, "User not found");
@@ -142,7 +141,7 @@ class EventsControllerClass {
         throw createError(400, "Attendees must be an array");
       }
 
-      const event = await EventsService.createEvent(req.context, userId, {
+      const event = await EventsService.createEvent(apiContext, userId, {
         title,
         description,
         location,
@@ -155,29 +154,28 @@ class EventsControllerClass {
         attendees,
       });
 
-      return res.status(201).json(serializeBigInt(event));
+      return c.json(serializeBigInt(event), 201);
     } catch (error: any) {
       logger.error(error.message, error);
-      return res.status(error.statusCode || 500).send({
-        message: error.message,
-      });
+      return c.json({ message: error.message }, error.statusCode || 500);
     }
   }
 
-  async updateEvent(req: Request, res: Response) {
+  async updateEvent(c: Context) {
     try {
-      const { userId } = req.context;
-      const { eventId } = req.params;
-      const {
-        title,
-        description,
-        location,
-        color,
-        category,
-        startDate,
-        endDate,
-        allDay,
-      } = req.body;
+      const apiContext = (c.get("context") as ApiContext | undefined) ?? null;
+      const userId = (c.get("user") as { id?: number } | undefined)?.id ?? c.get("userId");
+      const { eventId } = c.req.param();
+      const { title, description, location, color, category, startDate, endDate, allDay } = await c.req.json<{
+        title?: string;
+        description?: string;
+        location?: string;
+        color?: string;
+        category?: string;
+        startDate?: string;
+        endDate?: string;
+        allDay?: boolean;
+      }>();
 
       if (!userId) {
         throw createError(401, "User not found");
@@ -201,7 +199,7 @@ class EventsControllerClass {
         }
       }
 
-      const event = await EventsService.updateEvent(req.context, eventId, userId, {
+      const event = await EventsService.updateEvent(apiContext, eventId, userId, {
         title,
         description,
         location,
@@ -212,19 +210,18 @@ class EventsControllerClass {
         allDay,
       });
 
-      return res.json(serializeBigInt(event));
+      return c.json(serializeBigInt(event));
     } catch (error: any) {
       logger.error(error.message, error);
-      return res.status(error.statusCode || 500).send({
-        message: error.message,
-      });
+      return c.json({ message: error.message }, error.statusCode || 500);
     }
   }
 
-  async deleteEvent(req: Request, res: Response) {
+  async deleteEvent(c: Context) {
     try {
-      const { userId } = req.context;
-      const { eventId } = req.params;
+      const apiContext = (c.get("context") as ApiContext | undefined) ?? null;
+      const userId = (c.get("user") as { id?: number } | undefined)?.id ?? c.get("userId");
+      const { eventId } = c.req.param();
 
       if (!userId) {
         throw createError(401, "User not found");
@@ -234,23 +231,22 @@ class EventsControllerClass {
         throw createError(400, "Event ID is required");
       }
 
-      const result = await EventsService.deleteEvent(req.context, eventId, userId);
-      return res.json(result);
+      const result = await EventsService.deleteEvent(apiContext, eventId, userId);
+      return c.json(result);
     } catch (error: any) {
       logger.error(error.message, error);
-      return res.status(error.statusCode || 500).send({
-        message: error.message,
-      });
+      return c.json({ message: error.message }, error.statusCode || 500);
     }
   }
 
   // ===== ATTENDEES =====
 
-  async addAttendee(req: Request, res: Response) {
+  async addAttendee(c: Context) {
     try {
-      const { userId } = req.context;
-      const { eventId } = req.params;
-      const { attendeeId } = req.body;
+      const apiContext = (c.get("context") as ApiContext | undefined) ?? null;
+      const userId = (c.get("user") as { id?: number } | undefined)?.id ?? c.get("userId");
+      const { eventId } = c.req.param();
+      const { attendeeId } = await c.req.json<{ attendeeId: number }>();
 
       if (!userId) {
         throw createError(401, "User not found");
@@ -264,26 +260,20 @@ class EventsControllerClass {
         throw createError(400, "Attendee ID is required");
       }
 
-      const result = await EventsService.addAttendee(
-        req.context,
-        eventId,
-        userId,
-        attendeeId
-      );
+      const result = await EventsService.addAttendee(apiContext, eventId, userId, attendeeId);
 
-      return res.status(201).json(serializeBigInt(result));
+      return c.json(serializeBigInt(result), 201);
     } catch (error: any) {
       logger.error(error.message, error);
-      return res.status(error.statusCode || 500).send({
-        message: error.message,
-      });
+      return c.json({ message: error.message }, error.statusCode || 500);
     }
   }
 
-  async removeAttendee(req: Request, res: Response) {
+  async removeAttendee(c: Context) {
     try {
-      const { userId } = req.context;
-      const { eventId, attendeeUserId } = req.params;
+      const apiContext = (c.get("context") as ApiContext | undefined) ?? null;
+      const userId = (c.get("user") as { id?: number } | undefined)?.id ?? c.get("userId");
+      const { eventId, attendeeUserId } = c.req.param();
 
       if (!userId) {
         throw createError(401, "User not found");
@@ -297,27 +287,21 @@ class EventsControllerClass {
         throw createError(400, "Attendee user ID is required");
       }
 
-      const result = await EventsService.removeAttendee(
-        req.context,
-        eventId,
-        userId,
-        attendeeUserId
-      );
+      const result = await EventsService.removeAttendee(apiContext, eventId, userId, attendeeUserId);
 
-      return res.json(result);
+      return c.json(result);
     } catch (error: any) {
       logger.error(error.message, error);
-      return res.status(error.statusCode || 500).send({
-        message: error.message,
-      });
+      return c.json({ message: error.message }, error.statusCode || 500);
     }
   }
 
-  async updateAttendeeStatus(req: Request, res: Response) {
+  async updateAttendeeStatus(c: Context) {
     try {
-      const { userId } = req.context;
-      const { eventId } = req.params;
-      const { status } = req.body;
+      const apiContext = (c.get("context") as ApiContext | undefined) ?? null;
+      const userId = (c.get("user") as { id?: number } | undefined)?.id ?? c.get("userId");
+      const { eventId } = c.req.param();
+      const { status } = await c.req.json<{ status: string }>();
 
       if (!userId) {
         throw createError(401, "User not found");
@@ -337,19 +321,12 @@ class EventsControllerClass {
         throw createError(400, `Status must be one of: ${validStatuses.join(", ")}`);
       }
 
-      const result = await EventsService.updateAttendeeStatus(
-        req.context,
-        eventId,
-        userId,
-        status
-      );
+      const result = await EventsService.updateAttendeeStatus(apiContext, eventId, userId, status);
 
-      return res.json(serializeBigInt(result));
+      return c.json(serializeBigInt(result));
     } catch (error: any) {
       logger.error(error.message, error);
-      return res.status(error.statusCode || 500).send({
-        message: error.message,
-      });
+      return c.json({ message: error.message }, error.statusCode || 500);
     }
   }
 }
