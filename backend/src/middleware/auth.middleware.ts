@@ -25,7 +25,7 @@ export const authMiddleware = async (c: Context, next: Next) => {
     // Сохраняем в контекст Hono (аналог req.user)
     c.set('user', { id, ...decoded });
     
-    // Создаём ApiContext (как у тебя было req.context)
+    // Создаём ApiContext
     c.set('context', new ApiContext(id));
     c.set('userId', id); // Для быстрого доступа
 
@@ -34,3 +34,5 @@ export const authMiddleware = async (c: Context, next: Next) => {
     return c.json({ message: 'Auth error', error: e.message }, 401);
   }
 };
+
+export default authMiddleware;

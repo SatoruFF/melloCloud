@@ -1,5 +1,6 @@
 import "dotenv/config";
 import http from "http";
+import type { IncomingHttpHeaders } from "http";
 import app from "./app";
 import { PORT } from "./configs/config";
 import { logger as customLogger } from "./configs/logger";
@@ -7,15 +8,36 @@ import { setupWebSocketServer } from "./helpers/setupWebSocket";
 
 const port = Number(PORT) || 3000;
 
-const server = http.createServer((req, res) => {
-  const RequestCtor = (globalThis as any).Request;
-  const WritableStreamCtor = (globalThis as any).WritableStream;
+function headersToRecord(headers: IncomingHttpHeaders): Record<string, string> {
+  const out: Record<string, string> = {};
+  for (const [key, value] of Object.entries(headers)) {
+    if (value !== undefined) {
+      out[key] = Array.isArray(value) ? value[0] : value;
+    }
+  }
+  return out;
+}
 
+interface FetchGlobals {
+  Request: new (
+    input: string | URL,
+    init?: { method?: string; headers?: Record<string, string> },
+  ) => object;
+  WritableStream: new (underlyingSink?: {
+    write?(chunk: unknown): void;
+    close?(): void;
+  }) => object;
+}
+
+const { Request: RequestCtor, WritableStream: WritableStreamCtor } =
+  globalThis as unknown as FetchGlobals;
+
+const server = http.createServer((req, res) => {
   app
     .fetch(
       new RequestCtor(`http://localhost${req.url}`, {
         method: req.method,
-        headers: req.headers as any,
+        headers: headersToRecord(req.headers),
       }),
     )
     .then((response) => {
@@ -33,7 +55,7 @@ const server = http.createServer((req, res) => {
     });
 });
 
-// WebSocket setup (тот же ws-сервер, что и раньше)
+// WebSocket setup 
 setupWebSocketServer(server);
 
 server.listen(port, () => {
