@@ -44,6 +44,9 @@ export const ApiPaths = {
   chats: 'chats',
   messages: 'messages',
 
+  // Boards (Kanban)
+  boards: 'boards',
+
   // Tasks
   tasks: 'tasks',
   tasksKanban: 'tasks/kanban',

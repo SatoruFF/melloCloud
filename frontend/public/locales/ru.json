@@ -254,6 +254,20 @@
       "kanban": "Канбан",
       "calendar": "Календарь"
     },
+    "boards": {
+      "title": "Мои доски",
+      "empty": "У вас пока нет досок",
+      "createFirst": "Создать первую доску",
+      "newBoard": "Новая доска",
+      "create": "Создать доску",
+      "created": "Доска создана",
+      "createFailed": "Не удалось создать доску",
+      "defaultTitle": "Моя доска",
+      "titlePlaceholder": "Название доски",
+      "backToList": "К списку досок",
+      "share": "Поделиться",
+      "shared": "Доступ"
+    },
     "kanban": {
       "welcome": {
         "title": "Добро пожаловать в вашу Канбан доску",
@@ -279,6 +293,18 @@
           "medium": "СРЕДНИЙ",
           "high": "ВЫСОКИЙ"
         }
+      },
+      "card": {
+        "titlePlaceholder": "Название задачи",
+        "created": "Создано",
+        "description": "Описание",
+        "descriptionPlaceholder": "Добавьте описание задачи...",
+        "content": "Краткое содержание",
+        "contentPlaceholder": "Текст задачи...",
+        "priority": "Приоритет",
+        "dueDate": "Срок",
+        "column": "Колонка",
+        "save": "Сохранить"
       },
       "actions": {
         "add": "Добавить",

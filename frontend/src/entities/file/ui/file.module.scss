@@ -132,25 +132,37 @@
       grid-column-start: 4;
     }
 
+    .fileShare,
+    .fileDownload,
+    .fileDelete {
+      display: flex;
+      align-self: center;
+      min-width: 0;
+      max-width: 100%;
+    }
+
     .fileShare {
       grid-column-start: 5;
-      display: block;
-      width: 70%;
-      align-self: center;
     }
 
     .fileDownload {
       grid-column-start: 6;
-      display: block;
-      width: 70%;
-      align-self: center;
     }
 
     .fileDelete {
       grid-column-start: 7;
-      display: block;
-      width: 70%;
-      align-self: center;
+    }
+
+    .fileBtn {
+      min-width: 0;
+      overflow: hidden;
+
+      :global(.ant-btn) {
+        min-width: 0;
+        padding: 4px 8px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
     }
   }
 

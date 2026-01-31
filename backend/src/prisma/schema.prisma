@@ -40,6 +40,7 @@ model User {
   todos        Task[]
   assignedTasks Task[]      @relation("AssignedTasks")
   columns      TaskColumn[]
+  boards       KanbanBoard[]
   
   // Календарь
   calendarEvents  CalendarEvent[]
@@ -232,17 +233,34 @@ model NoteHistory {
 }
 
 
+// Доска канбан (как в Trello) — владелец + шаринг через Permission
+model KanbanBoard {
+  id        Int          @id @default(autoincrement())
+  title     String
+  userId    Int
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  columns   TaskColumn[]
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+
+  @@index([userId])
+}
+
 // Define Column data model for Kanban
 model TaskColumn {
-  id        Int      @id @default(autoincrement())
+  id        Int          @id @default(autoincrement())
   title     String
   color     String
   order     Int
+  boardId   Int
+  board     KanbanBoard  @relation(fields: [boardId], references: [id], onDelete: Cascade)
   userId    Int
-  user      User     @relation(fields: [userId], references: [id])
+  user      User         @relation(fields: [userId], references: [id])
   tasks     Task[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+
+  @@index([boardId])
 }
 
 // Define Task data model

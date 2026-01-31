@@ -107,7 +107,7 @@ const File: React.FC<FileProps> = ({ file }) => {
         {contextHolder}
         <motion.div key={file.id} className={cn(styles.filePlateFileWrapper)} onDoubleClick={openDirHandler}>
           <div className={styles.fileIconWrapper}>
-            <FileViewer type={fileType} url={file.url} />
+            <FileViewer type={fileType} url={file.url} fileName={file.name} />
             {isShared && (
               <div className={styles.sharedBadge}>
                 <LinkIcon size={14} />
@@ -172,7 +172,7 @@ const File: React.FC<FileProps> = ({ file }) => {
       {contextHolder}
       <motion.div key={file.id} className={cn(styles.fileWrapper)} onDoubleClick={openDirHandler}>
         <div className={styles.fileIconWrapper}>
-          <FileViewer type={fileType} url={file.url} />
+          <FileViewer type={fileType} url={file.url} fileName={file.name} />
           {isShared && (
             <div className={styles.sharedBadgeList}>
               <LinkIcon size={12} />

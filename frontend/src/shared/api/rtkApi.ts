@@ -15,6 +15,6 @@ export const rtkApi = createApi({
       return headers;
     },
   }),
-  tagTypes: ['Notes', 'Permissions'],
+  tagTypes: ['Notes', 'Permissions', 'Kanban', 'Board'],
   endpoints: () => ({}),
 });

@@ -161,7 +161,76 @@ class FileServiceClass {
     
     return await this.enrichFilesWithSharingInfo(files);
   }
-  
+
+  /**
+   * Upload a file to S3 and create a File record in the database.
+   * @param file - Web API File from multipart (name, type, size, arrayBuffer())
+   * @param userId - User ID
+   * @param parentId - Optional parent folder ID (string from form)
+   */
+  async uploadFile(
+    file: { name: string; type: string; size: number; arrayBuffer: () => Promise<ArrayBuffer> },
+    userId: number,
+    parentId?: string
+  ) {
+    const user: any = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { storageGuid: true, usedSpace: true, diskSpace: true },
+    });
+    if (!user) {
+      throw createError(404, "User not found");
+    }
+
+    const fileSize = Number(file.size) || 0;
+    if (user.usedSpace + BigInt(fileSize) > user.diskSpace) {
+      throw createError(400, "Not enough disk space");
+    }
+
+    let folderPath = "";
+    const parentIdNum = parentId ? Number(parentId) : undefined;
+    if (parentIdNum && !_.isNaN(parentIdNum)) {
+      const parent = await prisma.file.findFirst({
+        where: { id: parentIdNum, userId },
+      });
+      if (parent) {
+        const base = parent.path ? `${parent.path}/` : "";
+        folderPath = `${base}${parent.name}`;
+      }
+    }
+
+    const keyPath = folderPath ? `${folderPath}/` : "";
+    const s3Key = `${user.storageGuid}/${keyPath}${file.name}`.replace(/\/{2,}/g, "/");
+
+    const buffer = Buffer.from(await file.arrayBuffer());
+    const params: IS3 = {
+      Bucket: process.env.S3_BUCKET_NAME,
+      Key: s3Key,
+      Body: buffer,
+    };
+    await s3.putObject(params as any).promise();
+
+    const dbPath = folderPath || "";
+    const created = await prisma.file.create({
+      data: {
+        name: file.name,
+        type: file.type || null,
+        size: fileSize,
+        path: dbPath,
+        userId,
+        parentId: parentIdNum ?? null,
+      },
+    });
+
+    await prisma.user.update({
+      where: { id: userId },
+      data: {
+        usedSpace: user.usedSpace + BigInt(fileSize),
+      },
+    });
+
+    return created;
+  }
+
   private async enrichFilesWithSharingInfo(files: any[]) {
     if (files.length === 0) return files;
   
@@ -185,7 +254,6 @@ class FileServiceClass {
     const publicLinksMap = new Map(
       publicLinks.map(link => [link.resourceId, link.publicToken])
     );
-    console.log("⚠ :: FileServiceClass :: enrichFilesWithSharingInfo :: publicLinksMap:", publicLinksMap)
   
     // Добавляем информацию о sharing к каждому файлу
     return files.map(file => ({

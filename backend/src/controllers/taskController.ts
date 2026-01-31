@@ -61,18 +61,14 @@ class TaskControllerClass {
     }
   }
 
-  // Get kanban board data (columns with tasks)
   async getKanban(c: Context) {
     try {
       const user = c.get("user") as { id?: number } | undefined;
       const userId = user?.id;
-
-      if (!userId) {
-        throw createError(401, "User not found");
-      }
-
-      const kanbanData = await TaskService.getKanbanData(userId);
-
+      if (!userId) throw createError(401, "User not found");
+      const boardId = c.req.query("boardId");
+      if (!boardId) throw createError(400, "boardId query is required");
+      const kanbanData = await TaskService.getKanbanData(Number(boardId), userId);
       return c.json(kanbanData);
     } catch (error: any) {
       logger.error(error.message, error);
@@ -133,12 +129,13 @@ class TaskControllerClass {
       const body = await c.req.json<{
         title?: string;
         content?: string;
+        description?: string | null;
         priority?: string;
         isDone?: boolean;
         dueDate?: string;
         columnId?: number;
       }>();
-      const { title, content, priority, isDone, dueDate, columnId } = body;
+      const { title, content, description, priority, isDone, dueDate, columnId } = body;
       const user = c.get("user") as { id?: number } | undefined;
       const userId = user?.id;
 
@@ -151,6 +148,7 @@ class TaskControllerClass {
       const task = await TaskService.update(Number(id), userId, {
         title,
         content,
+        description,
         priority,
         isDone,
         dueDate,

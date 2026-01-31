@@ -10,7 +10,7 @@
 .messageList {
   box-sizing: border-box;
   height: 100%;
-  padding: 24px 20px 20px;
+  padding: 24px 20px 35px; /* снизу отступ под инпут, чтобы последнее сообщение не перекрывалось */
   position: relative;
   z-index: 1;
 
@@ -73,6 +73,8 @@
   gap: 12px;
   animation: slideInUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-sizing: border-box;
+  margin-bottom: 8px;
+  
 
   &.self {
     justify-content: flex-end;
@@ -155,7 +157,7 @@
   }
 
   .messageList {
-    padding: 20px 16px 16px;
+    padding: 20px 16px 35px;
   }
 
   .messageItem {

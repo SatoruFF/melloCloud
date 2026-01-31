@@ -256,6 +256,20 @@
       "kanban": "Kanban",
       "calendar": "Calendar"
     },
+    "boards": {
+      "title": "My boards",
+      "empty": "You have no boards yet",
+      "createFirst": "Create your first board",
+      "newBoard": "New board",
+      "create": "Create board",
+      "created": "Board created",
+      "createFailed": "Failed to create board",
+      "defaultTitle": "My board",
+      "titlePlaceholder": "Board title",
+      "backToList": "Back to boards",
+      "share": "Share",
+      "shared": "Shared"
+    },
     "kanban": {
       "welcome": {
         "title": "Welcome to Your Kanban Board",
@@ -281,6 +295,18 @@
           "medium": "MEDIUM",
           "high": "HIGH"
         }
+      },
+      "card": {
+        "titlePlaceholder": "Task title",
+        "created": "Created",
+        "description": "Description",
+        "descriptionPlaceholder": "Add a more detailed description...",
+        "content": "Content",
+        "contentPlaceholder": "Task content...",
+        "priority": "Priority",
+        "dueDate": "Due date",
+        "column": "Column",
+        "save": "Save"
       },
       "actions": {
         "add": "Add",

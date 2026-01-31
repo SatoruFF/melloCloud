@@ -1,16 +1,21 @@
 import { Button, Input, Select, Card, Tag, Dropdown, Space, Typography, Badge, Empty, Spin } from "antd";
 import { Plus, Trash2, Edit, MoreVertical, GripVertical, FileText, Loader2 } from "lucide-react";
 import cn from "classnames";
+import { useState } from "react";
 import styles from "./kanban.module.scss";
-import { TaskColumn } from "../../../entities/task/types/tasks";
+import { TaskColumn, Task } from "../../../entities/task/types/tasks";
 import { useTasks } from "../hooks";
 import { useTranslation } from "react-i18next";
+import { TaskCardModal } from "./TaskCardModal";
 
 const { Text, Title } = Typography;
 const { Option } = Select;
 
-// TODO: destructure
-const Kanban = () => {
+interface KanbanProps {
+  boardId: number;
+}
+
+const Kanban = ({ boardId }: KanbanProps) => {
   const {
     tasks,
     columns,
@@ -31,6 +36,7 @@ const Kanban = () => {
     setShowAddColumn,
     setEditingColumn,
     addTask,
+    updateTask,
     deleteTask,
     deleteColumn,
     addColumn,
@@ -42,9 +48,10 @@ const Kanban = () => {
     editColumn,
     getPriorityColor,
     refetchKanban,
-  } = useTasks();
+  } = useTasks({ boardId });
 
   const { t } = useTranslation();
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
 
   const getColumnMenu = (column: TaskColumn) => ({
     items: [
@@ -147,7 +154,7 @@ const Kanban = () => {
                     }}
                     size="large"
                   >
-                    {t("kanban.actions.cancel")}
+                    {t("planner.kanban.actions.cancel")}
                   </Button>
                 </Space>
               </Card>
@@ -285,13 +292,14 @@ const Kanban = () => {
                       draggable
                       onDragStart={(e) => onDragStart(e, task.id)}
                       onDragEnd={onDragEnd}
+                      onClick={() => setSelectedTask(task)}
                     >
                       <div className={cn(styles.taskContent)}>
                         <div className={cn(styles.taskHeader)}>
                           <Text strong className={cn(styles.taskText)}>
                             {task.title || task.content}
                           </Text>
-                          <div className={cn(styles.taskActions)}>
+                          <div className={cn(styles.taskActions)} onClick={(e) => e.stopPropagation()}>
                             <GripVertical size={16} className={cn(styles.dragHandle)} />
                             <Button
                               type="text"
@@ -371,6 +379,17 @@ const Kanban = () => {
           )}
         </div>
       </div>
+
+      <TaskCardModal
+        open={!!selectedTask}
+        task={selectedTask}
+        columns={columns}
+        loading={loading}
+        onClose={() => setSelectedTask(null)}
+        onSave={updateTask}
+        onDelete={deleteTask}
+        getPriorityColor={getPriorityColor}
+      />
     </div>
   );
 };

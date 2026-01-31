@@ -98,7 +98,8 @@ class MessagesServiceClass<T extends IMessage> {
         });
 
         logger.info("Encrypted message saved to database:", { id: savedMessage.id });
-        return savedMessage;
+        // Возвращаем клиенту сообщение с расшифрованным текстом для отображения
+        return { ...savedMessage, text: validatedMessage.text };
       });
     } catch (error) {
       logger.error("Error saving message:", error);

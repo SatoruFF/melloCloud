@@ -55,6 +55,31 @@ const MARKDOWN_TYPES = ["md", "markdown"];
 const ARCHIVE_TYPES = ["zip", "rar", "7z", "tar", "gz"];
 const SPREADSHEET_TYPES = ["xlsx", "xls", "csv"];
 
+/** MIME → расширение для просмотра (бэкенд может отдавать type как "text/plain") */
+const MIME_TO_EXT: Record<string, string> = {
+  "text/plain": "txt",
+  "text/html": "html",
+  "text/csv": "csv",
+  "text/css": "css",
+  "application/pdf": "pdf",
+  "application/json": "json",
+  "application/javascript": "js",
+  "text/javascript": "js",
+};
+
+function getViewerType(type: string, fileName?: string): string {
+  const t = (type || "").trim().toLowerCase();
+  if (!t) {
+    const ext = fileName?.split(".").pop()?.toLowerCase();
+    return ext || "";
+  }
+  const mimeBase = t.split(";")[0]?.trim() || t;
+  if (MIME_TO_EXT[mimeBase]) return MIME_TO_EXT[mimeBase];
+  if (!mimeBase.includes("/")) return mimeBase;
+  const ext = fileName?.split(".").pop()?.toLowerCase();
+  return ext || t;
+}
+
 const FileViewer: React.FC<FileViewerProps> = ({ type, url, fileName, className, style, iconSize = 50 }) => {
   const [isOpenPlayer, setIsOpenPlayer] = useState(false);
   const [isOpenPDF, setIsOpenPDF] = useState(false);
@@ -71,7 +96,7 @@ const FileViewer: React.FC<FileViewerProps> = ({ type, url, fileName, className,
   const [spreadsheetData, setSpreadsheetData] = useState<any[][]>([]);
   const [loading, setLoading] = useState(false);
 
-  const fileType = type.toLowerCase();
+  const fileType = getViewerType(type, fileName);
 
   const isImage = IMAGE_TYPES.includes(fileType);
   const isPlayer = PLAYER_TYPES.includes(fileType);

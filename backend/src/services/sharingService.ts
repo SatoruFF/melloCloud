@@ -456,6 +456,12 @@ class SharingServiceClass {
         });
         return !!column;
 
+      case ResourceType.KANBAN_BOARD:
+        const board = await prismaClient.kanbanBoard.findFirst({
+          where: { id: resourceId, userId },
+        });
+        return !!board;
+
       default:
         return false;
     }
@@ -502,6 +508,8 @@ class SharingServiceClass {
         return await prisma.file.findMany({ where: { id: { in: ids } } });
       case ResourceType.COLUMN:
         return await prisma.taskColumn.findMany({ where: { id: { in: ids } }, include: { tasks: true } });
+      case ResourceType.KANBAN_BOARD:
+        return await prisma.kanbanBoard.findMany({ where: { id: { in: ids } } });
       default:
         return [];
     }
@@ -526,6 +534,9 @@ class SharingServiceClass {
         break;
       case ResourceType.COLUMN:
         resource = await prisma.taskColumn.findUnique({ where: { id: resourceId }, include: { tasks: true } });
+        break;
+      case ResourceType.KANBAN_BOARD:
+        resource = await prisma.kanbanBoard.findUnique({ where: { id: resourceId } });
         break;
       default:
         return null;

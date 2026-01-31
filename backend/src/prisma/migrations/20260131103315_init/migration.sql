@@ -172,11 +172,23 @@ CREATE TABLE "NoteHistory" (
 );
 
 -- CreateTable
+CREATE TABLE "KanbanBoard" (
+    "id" SERIAL NOT NULL,
+    "title" TEXT NOT NULL,
+    "userId" INTEGER NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "KanbanBoard_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "TaskColumn" (
     "id" SERIAL NOT NULL,
     "title" TEXT NOT NULL,
     "color" TEXT NOT NULL,
     "order" INTEGER NOT NULL,
+    "boardId" INTEGER NOT NULL,
     "userId" INTEGER NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -435,6 +447,12 @@ CREATE INDEX "NoteHistory_noteId_version_idx" ON "NoteHistory"("noteId", "versio
 CREATE INDEX "NoteHistory_createdAt_idx" ON "NoteHistory"("createdAt");
 
 -- CreateIndex
+CREATE INDEX "KanbanBoard_userId_idx" ON "KanbanBoard"("userId");
+
+-- CreateIndex
+CREATE INDEX "TaskColumn_boardId_idx" ON "TaskColumn"("boardId");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "CalendarEvent_taskId_key" ON "CalendarEvent"("taskId");
 
 -- CreateIndex
@@ -589,6 +607,12 @@ ALTER TABLE "NoteHistory" ADD CONSTRAINT "NoteHistory_noteId_fkey" FOREIGN KEY (
 
 -- AddForeignKey
 ALTER TABLE "NoteHistory" ADD CONSTRAINT "NoteHistory_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "KanbanBoard" ADD CONSTRAINT "KanbanBoard_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "TaskColumn" ADD CONSTRAINT "TaskColumn_boardId_fkey" FOREIGN KEY ("boardId") REFERENCES "KanbanBoard"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "TaskColumn" ADD CONSTRAINT "TaskColumn_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
