@@ -7,10 +7,15 @@ import interactionPlugin from "@fullcalendar/interaction";
 import listPlugin from "@fullcalendar/list";
 import multiMonthPlugin from "@fullcalendar/multimonth";
 import * as Dialog from "@radix-ui/react-dialog";
-import { Calendar as CalendarIcon, Clock, MapPin, Users, Tag, X, Edit2, Trash2, Plus } from "lucide-react";
+import { Calendar as CalendarIcon, Clock, MapPin, Users, Tag, X, Trash2, Plus, Share2 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
-import { message } from "antd";
+import { message, Drawer, DatePicker } from "antd";
+import luxonGenerateConfig from "@rc-component/picker/generate/luxon";
+import type { DateTime } from "luxon";
+import { DateTime as LuxonDateTime } from "luxon";
 import { useTranslation } from "react-i18next";
+
+const LuxonDatePicker = DatePicker.generatePicker<DateTime>(luxonGenerateConfig);
 import styles from "./calendar.module.scss";
 import {
   useGetEventsQuery,
@@ -25,6 +30,9 @@ import {
   updateEvent as updateEventInStore,
   removeEvent as removeEventFromStore,
 } from "../../../entities/event";
+import { getUserSelector } from "../../../entities/user";
+import { ShareModal } from "../../../features/sharing/ui/ShareModal/ShareModal";
+import { ResourceType } from "../../../entities/sharing";
 
 interface EventData {
   id: string;
@@ -82,6 +90,11 @@ export default function Calendar() {
 
   // Redux state
   const events = useSelector(getEventsSelector);
+  const currentUser = useSelector(getUserSelector);
+  const currentUserId = currentUser?.id;
+
+  const [shareModalOpen, setShareModalOpen] = useState(false);
+  const [shareTarget, setShareTarget] = useState<{ id: number; title: string } | null>(null);
 
   // Sync events to Redux
   useEffect(() => {
@@ -200,10 +213,40 @@ export default function Calendar() {
 
       dispatch(updateEventInStore(result));
       message.success(t("planner.events.messages.updated"));
-      setIsFormOpen(false);
-      setSelectedEvent(null);
-      resetForm();
       refetch();
+      if (isFormOpen) {
+        setIsFormOpen(false);
+        setSelectedEvent(null);
+        resetForm();
+      } else {
+        // Редактирование в drawer — оставляем drawer открытым с обновлёнными данными
+        const start = new Date(result.startDate);
+        const end = new Date(result.endDate);
+        setSelectedEvent({
+          id: result.id.toString(),
+          title: result.title,
+          start,
+          end,
+          description: result.description,
+          location: result.location,
+          category: result.category,
+          color: result.color,
+          attendees: result.attendees,
+          allDay: result.allDay,
+        });
+        setFormData({
+          title: result.title,
+          description: result.description || "",
+          location: result.location || "",
+          color: result.color || "#1890ff",
+          category: result.category || "",
+          startDate: start.toISOString().split("T")[0],
+          startTime: start.toTimeString().slice(0, 5),
+          endDate: end.toISOString().split("T")[0],
+          endTime: end.toTimeString().slice(0, 5),
+          allDay: result.allDay ?? false,
+        });
+      }
     } catch (error: any) {
       message.error(error?.data?.message || t("planner.events.errors.updateFailed"));
     }
@@ -226,11 +269,13 @@ export default function Calendar() {
   const handleEventClick = (clickInfo: EventClickArg) => {
     const event = events.find((e) => e.id.toString() === clickInfo.event.id);
     if (event) {
+      const start = new Date(event.startDate);
+      const end = new Date(event.endDate);
       setSelectedEvent({
         id: event.id.toString(),
         title: event.title,
-        start: new Date(event.startDate),
-        end: new Date(event.endDate),
+        start,
+        end,
         description: event.description,
         location: event.location,
         category: event.category,
@@ -238,8 +283,24 @@ export default function Calendar() {
         attendees: event.attendees,
         allDay: event.allDay,
       });
+      // Синхронизируем форму для редактирования прямо в drawer
+      setFormData({
+        title: event.title,
+        description: event.description || "",
+        location: event.location || "",
+        color: event.color || "#1890ff",
+        category: event.category || "",
+        startDate: start.toISOString().split("T")[0],
+        startTime: start.toTimeString().slice(0, 5),
+        endDate: end.toISOString().split("T")[0],
+        endTime: end.toTimeString().slice(0, 5),
+        allDay: event.allDay ?? false,
+      });
     }
   };
+
+  const selectedFullEvent = selectedEvent ? events.find((e) => e.id.toString() === selectedEvent.id) : null;
+  const isEventOwner = selectedFullEvent && currentUserId !== undefined && selectedFullEvent.userId === currentUserId;
 
   const handleDateSelect = (selectInfo: DateSelectArg) => {
     const start = selectInfo.start;
@@ -256,30 +317,44 @@ export default function Calendar() {
     setIsFormOpen(true);
   };
 
-  const handleEditClick = () => {
-    if (!selectedEvent) return;
-
-    setFormData({
-      title: selectedEvent.title,
-      description: selectedEvent.description || "",
-      location: selectedEvent.location || "",
-      color: selectedEvent.color || "#1890ff",
-      category: selectedEvent.category || "",
-      startDate: new Date(selectedEvent.start).toISOString().split("T")[0],
-      startTime: new Date(selectedEvent.start).toTimeString().slice(0, 5),
-      endDate: new Date(selectedEvent.end).toISOString().split("T")[0],
-      endTime: new Date(selectedEvent.end).toTimeString().slice(0, 5),
-      allDay: selectedEvent.allDay || false,
-    });
-    setIsEditing(true);
-    setIsFormOpen(true);
-    setSelectedEvent(null);
-  };
-
   const handleFormChange = (field: keyof EventFormData, value: any) => {
     setFormData((prev) => ({
       ...prev,
       [field]: value,
+    }));
+  };
+
+  const startPickerValue =
+    formData.allDay && formData.startDate
+      ? LuxonDateTime.fromFormat(formData.startDate, "yyyy-MM-dd")
+      : formData.startDate && formData.startTime
+        ? LuxonDateTime.fromISO(`${formData.startDate}T${formData.startTime}`)
+        : formData.startDate
+          ? LuxonDateTime.fromFormat(formData.startDate, "yyyy-MM-dd")
+          : null;
+  const endPickerValue =
+    formData.allDay && formData.endDate
+      ? LuxonDateTime.fromFormat(formData.endDate, "yyyy-MM-dd")
+      : formData.endDate && formData.endTime
+        ? LuxonDateTime.fromISO(`${formData.endDate}T${formData.endTime}`)
+        : formData.endDate
+          ? LuxonDateTime.fromFormat(formData.endDate, "yyyy-MM-dd")
+          : null;
+
+  const handleStartChange = (date: DateTime | null) => {
+    if (!date || date.invalid) return;
+    setFormData((prev) => ({
+      ...prev,
+      startDate: date.toFormat("yyyy-MM-dd"),
+      ...(prev.allDay ? {} : { startTime: date.toFormat("HH:mm") }),
+    }));
+  };
+  const handleEndChange = (date: DateTime | null) => {
+    if (!date || date.invalid) return;
+    setFormData((prev) => ({
+      ...prev,
+      endDate: date.toFormat("yyyy-MM-dd"),
+      ...(prev.allDay ? {} : { endTime: date.toFormat("HH:mm") }),
     }));
   };
 
@@ -351,31 +426,125 @@ export default function Calendar() {
         />
       </div>
 
-      {/* Event Details Modal */}
-      <Dialog.Root open={!!selectedEvent && !isFormOpen} onOpenChange={() => setSelectedEvent(null)}>
-        <Dialog.Portal>
-          <Dialog.Overlay className={styles.overlay} />
-          <Dialog.Content className={styles.modal}>
-            {selectedEvent && (
-              <div className={styles.modalContent}>
-                <div className={styles.modalHeader}>
-                  <div className={styles.headerTop}>
-                    <h2 className={styles.modalTitle}>{selectedEvent.title}</h2>
-                    <Dialog.Close asChild>
-                      <button className={styles.closeButton}>
-                        <X size={18} />
-                      </button>
-                    </Dialog.Close>
+      {/* Event Details — Drawer: просмотр и редактирование в одном месте */}
+      <Drawer
+        title={isEventOwner ? formData.title : selectedEvent?.title}
+        placement="right"
+        width={420}
+        open={!!selectedEvent && !isFormOpen}
+        onClose={() => setSelectedEvent(null)}
+        rootClassName={styles.eventDrawer}
+        className={styles.eventDrawer}
+        closeIcon={<X size={18} style={{ color: "#fff" }} />}
+        styles={{
+          header: { background: "#0a0a0a", borderBottomColor: "#27272a", color: "#fff" },
+          body: { background: "#0a0a0a", color: "#f1f5f9" },
+          wrapper: { background: "#0a0a0a" },
+          content: { background: "#0a0a0a" },
+        }}
+      >
+        {selectedEvent && (
+          <div className={styles.drawerInner}>
+            <div className={styles.drawerBody}>
+              {isEventOwner ? (
+                <>
+                  <div className={styles.formGroup}>
+                    <label className={styles.detailLabel}>{t("planner.events.form.title")}*</label>
+                    <input
+                      type="text"
+                      className={styles.formInput}
+                      value={formData.title}
+                      onChange={(e) => handleFormChange("title", e.target.value)}
+                      placeholder={t("planner.events.form.titlePlaceholder")}
+                    />
                   </div>
+                  <div className={styles.formGroup}>
+                    <label className={styles.detailLabel}>{t("planner.events.form.description")}</label>
+                    <textarea
+                      className={styles.formTextarea}
+                      value={formData.description}
+                      onChange={(e) => handleFormChange("description", e.target.value)}
+                      placeholder={t("planner.events.form.descriptionPlaceholder")}
+                      rows={3}
+                    />
+                  </div>
+                  <div className={styles.formRow}>
+                    <div className={styles.formGroup}>
+                      <label className={styles.detailLabel}>{t("planner.events.form.category")}</label>
+                      <input
+                        type="text"
+                        className={styles.formInput}
+                        value={formData.category}
+                        onChange={(e) => handleFormChange("category", e.target.value)}
+                        placeholder={t("planner.events.form.categoryPlaceholder")}
+                      />
+                    </div>
+                    <div className={styles.formGroup}>
+                      <label className={styles.detailLabel}>{t("planner.events.form.color")}</label>
+                      <input
+                        type="color"
+                        className={styles.formColorInput}
+                        value={formData.color}
+                        onChange={(e) => handleFormChange("color", e.target.value)}
+                      />
+                    </div>
+                  </div>
+                  <div className={styles.formGroup}>
+                    <label className={styles.detailLabel}>{t("planner.events.form.location")}</label>
+                    <input
+                      type="text"
+                      className={styles.formInput}
+                      value={formData.location}
+                      onChange={(e) => handleFormChange("location", e.target.value)}
+                      placeholder={t("planner.events.form.locationPlaceholder")}
+                    />
+                  </div>
+                  <div className={styles.formGroup}>
+                    <label className={styles.formCheckbox}>
+                      <input
+                        type="checkbox"
+                        checked={formData.allDay}
+                        onChange={(e) => handleFormChange("allDay", e.target.checked)}
+                      />
+                      <span>{t("planner.events.form.allDay")}</span>
+                    </label>
+                  </div>
+                  <div className={styles.formRow}>
+                    <div className={styles.formGroup}>
+                      <label className={styles.detailLabel}>{t("planner.events.form.startDate")}</label>
+                      <LuxonDatePicker
+                        value={startPickerValue?.invalid ? null : startPickerValue}
+                        onChange={handleStartChange}
+                        className={styles.datePicker}
+                        allowClear={false}
+                        format={formData.allDay ? "dd.MM.yyyy" : "dd.MM.yyyy HH:mm"}
+                        showTime={!formData.allDay}
+                      />
+                    </div>
+                    <div className={styles.formGroup}>
+                      <label className={styles.detailLabel}>{t("planner.events.form.endDate")}</label>
+                      <LuxonDatePicker
+                        value={endPickerValue?.invalid ? null : endPickerValue}
+                        onChange={handleEndChange}
+                        className={styles.datePicker}
+                        allowClear={false}
+                        format={formData.allDay ? "dd.MM.yyyy" : "dd.MM.yyyy HH:mm"}
+                        showTime={!formData.allDay}
+                      />
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <>
                   {selectedEvent.category && (
-                    <span className={styles.categoryBadge} style={{ borderColor: selectedEvent.color }}>
+                    <span
+                      className={styles.categoryBadge}
+                      style={{ borderColor: selectedEvent.color ?? "#3f3f46" }}
+                    >
                       <Tag size={12} />
                       {selectedEvent.category}
                     </span>
                   )}
-                </div>
-
-                <div className={styles.modalBody}>
                   <div className={styles.detailRow}>
                     <CalendarIcon size={16} className={styles.icon} />
                     <div className={styles.detailContent}>
@@ -383,7 +552,6 @@ export default function Calendar() {
                       <span className={styles.detailValue}>{formatDate(selectedEvent.start)}</span>
                     </div>
                   </div>
-
                   <div className={styles.detailRow}>
                     <Clock size={16} className={styles.icon} />
                     <div className={styles.detailContent}>
@@ -393,7 +561,6 @@ export default function Calendar() {
                       </span>
                     </div>
                   </div>
-
                   {selectedEvent.location && (
                     <div className={styles.detailRow}>
                       <MapPin size={16} className={styles.icon} />
@@ -403,7 +570,6 @@ export default function Calendar() {
                       </div>
                     </div>
                   )}
-
                   {selectedEvent.attendees && selectedEvent.attendees.length > 0 && (
                     <div className={styles.detailRow}>
                       <Users size={16} className={styles.icon} />
@@ -412,42 +578,81 @@ export default function Calendar() {
                         <div className={styles.attendeesList}>
                           {selectedEvent.attendees.map((attendee: any, idx: number) => (
                             <span key={idx} className={styles.attendeeBadge}>
-                              {attendee.user?.userName || attendee.user?.email || t("planner.events.fields.attendee")}
+                              {attendee.user?.userName ||
+                                attendee.user?.email ||
+                                t("planner.events.fields.attendee")}
                             </span>
                           ))}
                         </div>
                       </div>
                     </div>
                   )}
-
                   {selectedEvent.description && (
                     <div className={styles.descriptionBlock}>
                       <span className={styles.detailLabel}>{t("planner.events.fields.description")}</span>
                       <p className={styles.description}>{selectedEvent.description}</p>
                     </div>
                   )}
-                </div>
+                </>
+              )}
+            </div>
 
-                <div className={styles.modalFooter}>
-                  <button className={styles.dangerButton} onClick={handleDeleteEvent} disabled={isDeleting}>
-                    <Trash2 size={14} />
-                    {isDeleting ? t("planner.events.actions.deleting") : t("planner.events.actions.delete")}
+            <div className={styles.drawerFooter}>
+              {isEventOwner && (
+                <button
+                  className={styles.dangerButton}
+                  onClick={handleDeleteEvent}
+                  disabled={isDeleting}
+                >
+                  <Trash2 size={14} />
+                  {isDeleting ? t("planner.events.actions.deleting") : t("planner.events.actions.delete")}
+                </button>
+              )}
+              <div className={styles.footerRight}>
+                {isEventOwner && (
+                  <button
+                    className={styles.secondaryButton}
+                    onClick={() => {
+                      setShareTarget({ id: Number(selectedEvent.id), title: selectedEvent.title });
+                      setShareModalOpen(true);
+                    }}
+                  >
+                    <Share2 size={14} />
+                    {t("sharing.modal.share")}
                   </button>
-                  <div className={styles.footerRight}>
-                    <button className={styles.secondaryButton} onClick={() => setSelectedEvent(null)}>
-                      {t("planner.events.actions.close")}
-                    </button>
-                    <button className={styles.primaryButton} onClick={handleEditClick}>
-                      <Edit2 size={14} />
-                      {t("planner.events.actions.edit")}
-                    </button>
-                  </div>
-                </div>
+                )}
+                <button className={styles.secondaryButton} onClick={() => setSelectedEvent(null)}>
+                  {t("planner.events.actions.close")}
+                </button>
+                {isEventOwner && (
+                  <button
+                    className={styles.primaryButton}
+                    onClick={handleUpdateEvent}
+                    disabled={isUpdating}
+                  >
+                    {isUpdating ? t("planner.events.actions.saving") : t("planner.events.actions.save")}
+                  </button>
+                )}
               </div>
-            )}
-          </Dialog.Content>
-        </Dialog.Portal>
-      </Dialog.Root>
+            </div>
+          </div>
+        )}
+      </Drawer>
+
+      {/* Шейринг — в модалке (поверх drawer) */}
+      {shareTarget && (
+        <ShareModal
+          open={shareModalOpen}
+          onClose={() => {
+            setShareModalOpen(false);
+            setShareTarget(null);
+          }}
+          resourceType={ResourceType.EVENT}
+          resourceId={shareTarget.id}
+          resourceName={shareTarget.title}
+          zIndex={1050}
+        />
+      )}
 
       {/* Create/Edit Form Modal */}
       <Dialog.Root open={isFormOpen} onOpenChange={setIsFormOpen}>
@@ -539,42 +744,25 @@ export default function Calendar() {
                 <div className={styles.formRow}>
                   <div className={styles.formGroup}>
                     <label className={styles.formLabel}>{t("planner.events.form.startDate")}</label>
-                    <div className={styles.dateTimeRow}>
-                      <input
-                        type="date"
-                        className={styles.formInput}
-                        value={formData.startDate}
-                        onChange={(e) => handleFormChange("startDate", e.target.value)}
-                      />
-                      {!formData.allDay && (
-                        <input
-                          type="time"
-                          className={styles.formInput}
-                          value={formData.startTime}
-                          onChange={(e) => handleFormChange("startTime", e.target.value)}
-                        />
-                      )}
-                    </div>
+                    <LuxonDatePicker
+                      value={startPickerValue?.invalid ? null : startPickerValue}
+                      onChange={handleStartChange}
+                      className={styles.datePicker}
+                      allowClear={false}
+                      format={formData.allDay ? "dd.MM.yyyy" : "dd.MM.yyyy HH:mm"}
+                      showTime={!formData.allDay}
+                    />
                   </div>
-
                   <div className={styles.formGroup}>
                     <label className={styles.formLabel}>{t("planner.events.form.endDate")}</label>
-                    <div className={styles.dateTimeRow}>
-                      <input
-                        type="date"
-                        className={styles.formInput}
-                        value={formData.endDate}
-                        onChange={(e) => handleFormChange("endDate", e.target.value)}
-                      />
-                      {!formData.allDay && (
-                        <input
-                          type="time"
-                          className={styles.formInput}
-                          value={formData.endTime}
-                          onChange={(e) => handleFormChange("endTime", e.target.value)}
-                        />
-                      )}
-                    </div>
+                    <LuxonDatePicker
+                      value={endPickerValue?.invalid ? null : endPickerValue}
+                      onChange={handleEndChange}
+                      className={styles.datePicker}
+                      allowClear={false}
+                      format={formData.allDay ? "dd.MM.yyyy" : "dd.MM.yyyy HH:mm"}
+                      showTime={!formData.allDay}
+                    />
                   </div>
                 </div>
               </div>

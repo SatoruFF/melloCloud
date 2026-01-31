@@ -22,9 +22,18 @@ interface ShareModalProps {
   resourceType: ResourceType;
   resourceId: number;
   resourceName: string;
+  /** Use a higher z-index when opening from another modal (e.g. calendar event) */
+  zIndex?: number;
 }
 
-export const ShareModal: React.FC<ShareModalProps> = ({ open, onClose, resourceType, resourceId, resourceName }) => {
+export const ShareModal: React.FC<ShareModalProps> = ({
+  open,
+  onClose,
+  resourceType,
+  resourceId,
+  resourceName,
+  zIndex,
+}) => {
   const { t } = useTranslation();
   const [email, setEmail] = useState("");
   const [permissionLevel, setPermissionLevel] = useState<PermissionLevel>(PermissionLevel.VIEWER);
@@ -132,6 +141,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({ open, onClose, resourceT
       footer={null}
       width={600}
       className={cn(styles.shareModal)}
+      zIndex={zIndex}
     >
       {/* Invite Section */}
       <div className={cn(styles.section)}>
