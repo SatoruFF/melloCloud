@@ -136,8 +136,39 @@ CREATE TABLE "Note" (
     "tags" TEXT[],
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
+    "version" INTEGER NOT NULL DEFAULT 1,
 
     CONSTRAINT "Note_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "NoteCollaborator" (
+    "id" SERIAL NOT NULL,
+    "noteId" INTEGER NOT NULL,
+    "userId" INTEGER NOT NULL,
+    "cursorPosition" JSONB,
+    "selection" JSONB,
+    "color" TEXT NOT NULL DEFAULT '#1890ff',
+    "isActive" BOOLEAN NOT NULL DEFAULT true,
+    "lastActivity" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "NoteCollaborator_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "NoteHistory" (
+    "id" SERIAL NOT NULL,
+    "noteId" INTEGER NOT NULL,
+    "userId" INTEGER NOT NULL,
+    "operation" TEXT NOT NULL,
+    "data" JSONB NOT NULL,
+    "version" INTEGER NOT NULL,
+    "previousVersion" INTEGER,
+    "snapshot" JSONB,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "NoteHistory_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -380,6 +411,30 @@ CREATE INDEX "Note_userId_idx" ON "Note"("userId");
 CREATE INDEX "Note_isStarred_idx" ON "Note"("isStarred");
 
 -- CreateIndex
+CREATE INDEX "NoteCollaborator_noteId_idx" ON "NoteCollaborator"("noteId");
+
+-- CreateIndex
+CREATE INDEX "NoteCollaborator_userId_idx" ON "NoteCollaborator"("userId");
+
+-- CreateIndex
+CREATE INDEX "NoteCollaborator_lastActivity_idx" ON "NoteCollaborator"("lastActivity");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "NoteCollaborator_noteId_userId_key" ON "NoteCollaborator"("noteId", "userId");
+
+-- CreateIndex
+CREATE INDEX "NoteHistory_noteId_idx" ON "NoteHistory"("noteId");
+
+-- CreateIndex
+CREATE INDEX "NoteHistory_userId_idx" ON "NoteHistory"("userId");
+
+-- CreateIndex
+CREATE INDEX "NoteHistory_noteId_version_idx" ON "NoteHistory"("noteId", "version");
+
+-- CreateIndex
+CREATE INDEX "NoteHistory_createdAt_idx" ON "NoteHistory"("createdAt");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "CalendarEvent_taskId_key" ON "CalendarEvent"("taskId");
 
 -- CreateIndex
@@ -522,6 +577,18 @@ ALTER TABLE "Message" ADD CONSTRAINT "Message_chatId_fkey" FOREIGN KEY ("chatId"
 
 -- AddForeignKey
 ALTER TABLE "Note" ADD CONSTRAINT "Note_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "NoteCollaborator" ADD CONSTRAINT "NoteCollaborator_noteId_fkey" FOREIGN KEY ("noteId") REFERENCES "Note"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "NoteCollaborator" ADD CONSTRAINT "NoteCollaborator_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "NoteHistory" ADD CONSTRAINT "NoteHistory_noteId_fkey" FOREIGN KEY ("noteId") REFERENCES "Note"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "NoteHistory" ADD CONSTRAINT "NoteHistory_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "TaskColumn" ADD CONSTRAINT "TaskColumn_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

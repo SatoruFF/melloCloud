@@ -225,7 +225,9 @@
     "openDrawer": "Open notifications",
     "newMessage": "🔔 New message",
     "fileUploaded": "📁 File uploaded",
-    "authSuccess": "✅ Auth success"
+    "authSuccess": "✅ Auth success",
+    "clearAll": "Clear all",
+    "empty": "Empty"
   },
   "modules": {
     "title": "Modules & tools",

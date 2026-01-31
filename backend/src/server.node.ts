@@ -4,7 +4,9 @@ import { cpus } from "os";
 import { serve } from "@hono/node-server";
 
 import app from "./app";
+import { getWebSocketConnection } from "./configs/webSocket";
 import { setupWebSocketServer } from "./helpers/setupWebSocket";
+import { setupNoteWebSocket } from "./helpers/noteWebSocket";
 import { PORT } from "./configs/config";
 import { logger as customLogger } from "./configs/logger";
 
@@ -36,8 +38,10 @@ if (cluster.isPrimary) {
         port,
       });
 
-      // WebSocket setup (использует созданный http.Server)
-      setupWebSocketServer(server as any);
+      // WebSocket: chat на /ws/chat, коллаборация заметок на /ws/notes
+      setupWebSocketServer(server as import("http").Server);
+      const wssNotes = getWebSocketConnection(server as import("http").Server, "/ws/notes");
+      setupNoteWebSocket(wssNotes);
 
       customLogger.info(`⚡️[server]: 🚀 Node server is running at: ${port}`);
     } catch (e: any) {

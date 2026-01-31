@@ -6,6 +6,35 @@
   box-sizing: border-box;
 }
 
+.collaboratorsBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 80px;
+  min-height: 40px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  flex-shrink: 0;
+}
+
+.collaboratorsLeft {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.collaboratorsIcon {
+  flex-shrink: 0;
+  opacity: 0.8;
+}
+
+.collaboratorsList {
+  display: flex;
+  align-items: center;
+}
+
 .titleContainer {
   width: 100%;
   padding: 0 80px;
@@ -78,6 +107,10 @@
 
 // Adaptive
 @media (max-width: 1024px) {
+  .collaboratorsBar {
+    padding: 8px 40px;
+  }
+
   .titleContainer {
     padding: 0 40px;
   }
@@ -93,6 +126,10 @@
 
 // Adaptive
 @media (max-width: 768px) {
+  .collaboratorsBar {
+    padding: 8px 16px;
+  }
+
   .titleContainer {
     padding: 0 16px;
   }

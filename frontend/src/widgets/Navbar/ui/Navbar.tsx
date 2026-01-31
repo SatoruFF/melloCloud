@@ -90,7 +90,9 @@ const MyNavbar: React.FC = () => {
             <>
               <div className={cn(styles.navFiles)}>
                 <Button ghost>
-                  <NavLink to={FILE_ROUTE}>{t("files.my-files")}</NavLink>
+                  <NavLink to={FILE_ROUTE} className={cn(styles.links)}>
+                    {t("files.my-files")}
+                  </NavLink>
                 </Button>
               </div>
             </>
@@ -140,12 +142,16 @@ const MyNavbar: React.FC = () => {
         <div className={cn(styles.navItems)}>
           <div className={cn(styles.navItem)}>
             <Button ghost>
-              <NavLink to={LOGIN_ROUTE}>{t("auth.authorization")}</NavLink>
+              <NavLink to={LOGIN_ROUTE} className={cn(styles.links)}>
+                {t("auth.authorization")}
+              </NavLink>
             </Button>
           </div>
           <div className={cn(styles.navItem)}>
             <Button ghost>
-              <NavLink to={REGISTRATION_ROUTE}>{t("auth.registration")}</NavLink>
+              <NavLink to={REGISTRATION_ROUTE} className={cn(styles.links)}>
+                {t("auth.registration")}
+              </NavLink>
             </Button>
           </div>
           <div className={cn(styles.navBurger)}>
@@ -162,7 +168,9 @@ const MyNavbar: React.FC = () => {
                 className={cn(styles.burgerItem)}
               >
                 <Divider>
-                  <NavLink to={WELCOME_ROUTE}>{t("navbar.home")}</NavLink>
+                  <NavLink to={WELCOME_ROUTE} className={cn(styles.links)}>
+                    {t("navbar.home")}
+                  </NavLink>
                 </Divider>
               </motion.div>
               <motion.div
@@ -172,7 +180,9 @@ const MyNavbar: React.FC = () => {
                 className={cn(styles.burgerItem)}
               >
                 <Divider>
-                  <NavLink to={LOGIN_ROUTE}>{t("auth.authorization")}</NavLink>
+                  <NavLink to={LOGIN_ROUTE} className={cn(styles.links)}>
+                    {t("auth.authorization")}
+                  </NavLink>
                 </Divider>
               </motion.div>
               <motion.div
@@ -182,7 +192,9 @@ const MyNavbar: React.FC = () => {
                 className={cn(styles.burgerItem)}
               >
                 <Divider>
-                  <NavLink to={REGISTRATION_ROUTE}>{t("auth.registration")}</NavLink>
+                  <NavLink to={REGISTRATION_ROUTE} className={cn(styles.links)}>
+                    {t("auth.registration")}
+                  </NavLink>
                 </Divider>
               </motion.div>
             </Drawer>

@@ -54,6 +54,9 @@ model User {
   // Permissions
   permissions Permission[] @relation("UserPermissions")
   grantedPermissions Permission[] @relation("GrantedPermissions")
+
+  noteCollaborations NoteCollaborator[]
+  noteHistories      NoteHistory[]
   
   @@index([email])
   @@index([oauthProvider, oauthId])
@@ -161,10 +164,73 @@ model Note {
   tags      String[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+    // Версионирование
+  version       Int      @default(1)
+  
+  // Collaborative
+  collaborators NoteCollaborator[]
+  history       NoteHistory[]
   
   @@index([userId])
   @@index([isStarred])
 }
+
+// Активные коллаборации для заметок (уже есть универсальная, но сделаем специфичную)
+model NoteCollaborator {
+  id          Int      @id @default(autoincrement())
+  
+  noteId      Int
+  note        Note     @relation(fields: [noteId], references: [id], onDelete: Cascade)
+  
+  userId      Int
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Курсор и активность
+  cursorPosition Json?  // { line: number, column: number }
+  selection      Json?  // { from: {line, col}, to: {line, col} }
+  color          String @default("#1890ff")
+  
+  isActive       Boolean  @default(true)
+  lastActivity   DateTime @default(now())
+  
+  createdAt      DateTime @default(now())
+  
+  @@unique([noteId, userId])
+  @@index([noteId])
+  @@index([userId])
+  @@index([lastActivity])
+}
+
+// История изменений заметки (для undo/redo и конфликтов)
+model NoteHistory {
+  id          Int      @id @default(autoincrement())
+  
+  noteId      Int
+  note        Note     @relation(fields: [noteId], references: [id], onDelete: Cascade)
+  
+  userId      Int
+  user        User     @relation(fields: [userId], references: [id])
+  
+  // Операция изменения
+  operation   String   // INSERT, DELETE, UPDATE, REPLACE
+  data        Json     // { position, content, length, etc }
+  
+  // Версионирование
+  version     Int      // Incremental version number
+  previousVersion Int?
+  
+  // Snapshot (для быстрого восстановления)
+  snapshot    Json?    // Полное состояние документа
+  
+  createdAt   DateTime @default(now())
+  
+  @@index([noteId])
+  @@index([userId])
+  @@index([noteId, version])
+  @@index([createdAt])
+}
+
 
 // Define Column data model for Kanban
 model TaskColumn {

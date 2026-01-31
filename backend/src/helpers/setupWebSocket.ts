@@ -6,8 +6,10 @@ import { logger } from "../configs/logger.js";
 import { parseJson } from "./parseJson.js";
 import ApiContext from "../models/context.js";
 
+const CHAT_WS_PATH = "/ws/chat";
+
 export function setupWebSocketServer(server: http.Server) {
-  const wss = getWebSocketConnection(server);
+  const wss = getWebSocketConnection(server, CHAT_WS_PATH);
 
   wss.on("connection", (ws, request) => {
     let context: undefined | ApiContext;

@@ -126,8 +126,9 @@ export const Variables = {
   File_UploadAvatar: `${_baseUrl}/file/avatar`,
   File_DeleteAvatar: `${_baseUrl}/file/avatar`,
 
-  // WebSocket
-  Socket_URL: `${_baseSocketUrl}`,
+  // WebSocket: chat на /ws/chat, коллаборация заметок на /ws/notes
+  Socket_URL: `${_baseSocketUrl}/ws/chat`,
+  Socket_Notes_URL: `${_baseSocketUrl}/ws/notes`,
 
   // Misc
   TELEGRAM_BOT_NAME: import.meta.env.VITE_TELEGRAM_BOT_NAME || 'YourBotName',

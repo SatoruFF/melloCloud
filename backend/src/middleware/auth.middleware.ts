@@ -17,13 +17,22 @@ export const authMiddleware = async (c: Context, next: Next) => {
       return c.json({ message: 'Auth error with token' }, 401);
     }
 
-    const decoded = jwt.verify(token, process.env.ACCESS_SECRET_KEY as string) as any;
-    
-    // Extract user ID (поддержка старого формата)
-    const id = Number(decoded.payload) === decoded.payload ? decoded.payload : decoded.id || decoded;
+    const decoded = jwt.verify(token, process.env.ACCESS_SECRET_KEY as string) as
+      | { payload?: number | string; id?: number }
+      | number;
+
+    // Extract user ID (только число; токен приглашения имеет payload = email — не подходит для auth)
+    const rawId =
+      typeof decoded === "object" && decoded !== null
+        ? (decoded.payload ?? decoded.id)
+        : decoded;
+    const id = typeof rawId === "number" && Number.isFinite(rawId) ? rawId : Number(rawId);
+    if (!Number.isFinite(id) || id < 1) {
+      return c.json({ message: "Invalid token" }, 401);
+    }
 
     // Сохраняем в контекст Hono (аналог req.user)
-    c.set('user', { id, ...decoded });
+    c.set("user", { id, ...(typeof decoded === "object" && decoded !== null ? decoded : {}) });
     
     // Создаём ApiContext
     c.set('context', new ApiContext(id));

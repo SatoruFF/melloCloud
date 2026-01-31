@@ -1,6 +1,6 @@
 import type React from "react";
 import { memo, useCallback, useMemo, useState } from "react";
-import { Avatar, List, Alert } from "antd";
+import { Avatar, List, Alert, Empty } from "antd";
 import cn from "classnames";
 import { Star } from "lucide-react";
 
@@ -48,7 +48,7 @@ const ChatList: React.FC = () => {
 
   const filteredChats = useMemo(
     () => chats.filter((chat) => (chat.title || "").toLowerCase().includes(search.toLowerCase())),
-    [chats, search]
+    [chats, search],
   );
 
   const insertMention = useCallback(
@@ -66,10 +66,10 @@ const ChatList: React.FC = () => {
             id: userId,
             userName,
           },
-        })
+        }),
       );
     },
-    [search, chats, dispatch]
+    [search, chats, dispatch],
   );
 
   if (isLoading) {
@@ -126,6 +126,9 @@ const ChatList: React.FC = () => {
       </div>
 
       <List
+        locale={{
+          emptyText: <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="" />,
+        }}
         dataSource={filteredChats}
         renderItem={(chat) => {
           const isSelfChat = chat.receiver?.id === currentUser?.id;
@@ -146,7 +149,7 @@ const ChatList: React.FC = () => {
                       id: chat.receiver?.id || null,
                       userName: chat.receiver?.userName || null,
                     },
-                  })
+                  }),
                 );
               }}
             >

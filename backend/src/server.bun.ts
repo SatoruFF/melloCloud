@@ -4,7 +4,9 @@ import type { IncomingHttpHeaders } from "http";
 import app from "./app";
 import { PORT } from "./configs/config";
 import { logger as customLogger } from "./configs/logger";
+import { getWebSocketConnection } from "./configs/webSocket";
 import { setupWebSocketServer } from "./helpers/setupWebSocket";
+import { setupNoteWebSocket } from "./helpers/noteWebSocket";
 
 const port = Number(PORT) || 3000;
 
@@ -84,8 +86,10 @@ const server = http.createServer(async (req, res) => {
   }
 });
 
-// WebSocket setup 
+// WebSocket: chat на /ws/chat, коллаборация заметок на /ws/notes
 setupWebSocketServer(server);
+const wssNotes = getWebSocketConnection(server, "/ws/notes");
+setupNoteWebSocket(wssNotes);
 
 server.listen(port, () => {
   customLogger.info(`⚡️[server]: 🚀 Bun server (HTTP + WS) is running at: ${port}`);

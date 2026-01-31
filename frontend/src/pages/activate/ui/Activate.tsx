@@ -24,12 +24,18 @@ const Activate = () => {
 
   const handleActivate = async () => {
     if (!token) throw new Error(t("auth.activate.invalidToken"));
-    const user = await activateUser(token).unwrap();
+    const response = await activateUser(token).unwrap();
     if (error) {
       return message.error(`error: ${error.error}`);
     }
-    const userData = user.data ? user.data : user;
-    dispatch(setUser(userData as any));
+    const userData = response?.data ?? response;
+    const authUser = userData?.user ?? userData;
+    const accessToken = userData?.token;
+    if (!authUser || !accessToken) {
+      message.error(t("auth.activate.defaultError"));
+      return;
+    }
+    dispatch(setUser({ user: authUser, token: accessToken }));
     navigate(FILE_ROUTE);
   };
 

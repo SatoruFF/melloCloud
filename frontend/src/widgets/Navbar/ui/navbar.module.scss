@@ -13,6 +13,10 @@
   position: relative;
   z-index: 2;
 
+  .links:hover {
+    color: black;
+  }
+
   .applicationName {
     font-size: 1.75rem;
     font-weight: 700;

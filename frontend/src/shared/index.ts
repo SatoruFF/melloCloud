@@ -1,6 +1,7 @@
 // hooks
 import { useDebounce } from './lib/hooks/useDebounce';
 import { useInfiniteScroll } from './lib/hooks/useInfiniteScroll';
+import { useNoteCollaboration } from './lib/hooks/useNoteCollaboration';
 
 // ui
 import AppSkeleton from './ui/Skeleton/AppSkeleton';
@@ -28,6 +29,7 @@ export {
   // hooks
   useDebounce,
   useInfiniteScroll,
+  useNoteCollaboration,
   // ui
   AppSkeleton,
   NavLink,

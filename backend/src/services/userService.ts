@@ -174,10 +174,14 @@ class UserServiceClass {
   }
 
   async auth(id: number | undefined) {
+    if (id == null || typeof id !== "number" || !Number.isFinite(id) || id < 1) {
+      throw createError(401, "Invalid token");
+    }
+
     const user: any = await prisma.user.findUnique({ where: { id } });
 
     if (!user) {
-      throw createError(404, "User not found");
+      throw createError(401, "Invalid token");
     }
 
     const { accessToken, refreshToken } = generateJwt(user.id);
