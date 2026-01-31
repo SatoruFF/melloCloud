@@ -1,14 +1,14 @@
-import { Router } from "express";
+import { Hono } from "hono";
 import { FileController } from "../../controllers/fileController.js";
 
-const router: Router = Router();
+const router = new Hono();
 
-router.post("", FileController.createDir);
-router.get("", FileController.getFiles);
-router.post("/upload", FileController.uploadFile);
-router.post("/download", FileController.downloadFile);
-router.delete("/delete", FileController.deleteFile);
-router.post("/avatar", FileController.uploadAvatar);
-router.delete("/avatar", FileController.deleteAvatar);
+router.post("/", (c) => FileController.createDir(c));
+router.get("/", (c) => FileController.getFiles(c));
+router.post("/upload", (c) => FileController.uploadFile(c));
+router.post("/download", (c) => FileController.downloadFile(c));
+router.delete("/delete", (c) => FileController.deleteFile(c));
+router.post("/avatar", (c) => FileController.uploadAvatar(c));
+router.delete("/avatar", (c) => FileController.deleteAvatar(c));
 
 export default router;

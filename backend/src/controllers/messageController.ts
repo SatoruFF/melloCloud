@@ -1,41 +1,47 @@
-import _ from "lodash";
 import "dotenv/config.js";
-import type { Request, Response } from "express";
+import type { Context } from "hono";
 import createError from "http-errors";
 
 import { logger } from "../configs/logger.js";
 
-import { ChatService } from "../services/chatService.js";
 import { serializeBigInt } from "../helpers/serializeBigInt.js";
 import { MessageService } from "../services/messagesService.js";
+import ApiContext from "../models/context.js";
 
 class MessageControllerClass {
-  async getMessages(req: Request, res: Response) {
+  async getMessages(c: Context) {
     try {
-      const { userId } = req.context;
-      const { chatId, limit = 50, offset = 0 } = req.query;
+      const apiContext = (c.get("context") as ApiContext | undefined) ?? null;
+      const userId = (c.get("user") as { id?: number } | undefined)?.id ?? c.get("userId");
+      const query = c.req.query();
+      const chatId = query.chatId as string | undefined;
+      const limit = Number(query.limit ?? 50);
+      const offset = Number(query.offset ?? 0);
 
       if (!userId) {
         throw createError(401, "User not found");
       }
 
-      if (!chatId || typeof chatId !== "string") {
+      if (!chatId) {
         throw createError(400, "chatId is required");
       }
 
       const messages = await MessageService.getPaginatedMessagesByChatId({
         chatId: Number(chatId),
-        limit: Number(limit),
-        offset: Number(offset),
+        limit,
+        offset,
         userId,
       });
 
-      return res.status(200).send(serializeBigInt(messages));
+      return c.json(serializeBigInt(messages), 200);
     } catch (error: any) {
       logger.error(error.message, error);
-      return res.status(error.statusCode || 500).send({
-        message: error.message,
-      });
+      return c.json(
+        {
+          message: error.message,
+        },
+        error.statusCode || 500,
+      );
     }
   }
 }

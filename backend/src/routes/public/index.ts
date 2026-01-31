@@ -1,11 +1,12 @@
-import { Router } from "express";
-import { publicMiddlewares } from "../../middleware/base.middleware.js";
-import userRouter from "./user-public.routes.js";
+import { Hono } from 'hono';
+import { publicMiddlewares } from '../../middleware/base.middleware';
+import userRouter from './user-public.routes';
 
-const publicRouter = Router();
+const publicRouter = new Hono();
 
-publicMiddlewares.forEach((m) => publicRouter.use(m));
+// middleware
+publicMiddlewares.forEach((m) => publicRouter.use('*', m));
 
-publicRouter.use("/user", userRouter);
+publicRouter.route('/user', userRouter);
 
 export default publicRouter;

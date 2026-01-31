@@ -1,19 +1,21 @@
-import type { Request, Response } from "express";
+import type { Context } from "hono";
 import createError from "http-errors";
 import { logger } from "../configs/logger.js";
 import { WebhookService } from "../services/webhookService.js";
 import { serializeBigInt } from "../helpers/serializeBigInt.js";
+import ApiContext from "../models/context.js";
 
 class WebhookControllerClass {
   // Получить все webhooks пользователя
-  async getUserWebhooks(req: Request, res: Response) {
+  async getUserWebhooks(c: Context) {
     try {
-      const { userId } = req.context;
-      if (!userId) {
+      const apiContext = (c.get("context") as ApiContext | undefined) ?? null;
+      const userId = (c.get("user") as { id?: number } | undefined)?.id ?? c.get("userId");
+      if (!userId || !apiContext) {
         throw createError(401, "User not found");
       }
 
-      const webhooks = await req.context.prisma.webhook.findMany({
+      const webhooks = await apiContext.prisma.webhook.findMany({
         where: { userId },
         include: {
           _count: {
@@ -25,26 +27,25 @@ class WebhookControllerClass {
         orderBy: { createdAt: "desc" },
       });
 
-      return res.json(serializeBigInt(webhooks));
+      return c.json(serializeBigInt(webhooks));
     } catch (error: any) {
       logger.error(error.message, error);
-      return res.status(error.statusCode || 500).send({
-        message: error.message,
-      });
+      return c.json({ message: error.message }, error.statusCode || 500);
     }
   }
 
   // Получить один webhook
-  async getWebhook(req: Request, res: Response) {
+  async getWebhook(c: Context) {
     try {
-      const { userId } = req.context;
-      const { webhookId } = req.params;
+      const apiContext = (c.get("context") as ApiContext | undefined) ?? null;
+      const userId = (c.get("user") as { id?: number } | undefined)?.id ?? c.get("userId");
+      const { webhookId } = c.req.param();
 
-      if (!userId) {
+      if (!userId || !apiContext) {
         throw createError(401, "User not found");
       }
 
-      const webhook = await req.context.prisma.webhook.findFirst({
+      const webhook = await apiContext.prisma.webhook.findFirst({
         where: {
           id: +webhookId,
           userId,
@@ -66,23 +67,31 @@ class WebhookControllerClass {
         throw createError(404, "Webhook not found");
       }
 
-      return res.json(serializeBigInt(webhook));
+      return c.json(serializeBigInt(webhook));
     } catch (error: any) {
       logger.error(error.message, error);
-      return res.status(error.statusCode || 500).send({
-        message: error.message,
-      });
+      return c.json({ message: error.message }, error.statusCode || 500);
     }
   }
 
   // Создать webhook
-  async createWebhook(req: Request, res: Response) {
+  async createWebhook(c: Context) {
     try {
-      const { userId } = req.context;
-      const { name, description, url, method, events, filters, headers, retryCount, retryDelay } =
-        req.body;
+      const apiContext = (c.get("context") as ApiContext | undefined) ?? null;
+      const userId = (c.get("user") as { id?: number } | undefined)?.id ?? c.get("userId");
+      const { name, description, url, method, events, filters, headers, retryCount, retryDelay } = await c.req.json<{
+        name: string;
+        description?: string;
+        url: string;
+        method?: string;
+        events: string[];
+        filters?: unknown;
+        headers?: unknown;
+        retryCount?: number;
+        retryDelay?: number;
+      }>();
 
-      if (!userId) {
+      if (!userId || !apiContext) {
         throw createError(401, "User not found");
       }
 
@@ -97,7 +106,7 @@ class WebhookControllerClass {
         throw createError(400, "Invalid URL format");
       }
 
-      const webhook = await req.context.prisma.webhook.create({
+      const webhook = await apiContext.prisma.webhook.create({
         data: {
           userId,
           name,
@@ -113,29 +122,39 @@ class WebhookControllerClass {
         },
       });
 
-      return res.status(201).json(serializeBigInt(webhook));
+      return c.json(serializeBigInt(webhook), 201);
     } catch (error: any) {
       logger.error(error.message, error);
-      return res.status(error.statusCode || 500).send({
-        message: error.message,
-      });
+      return c.json({ message: error.message }, error.statusCode || 500);
     }
   }
 
   // Обновить webhook
-  async updateWebhook(req: Request, res: Response) {
+  async updateWebhook(c: Context) {
     try {
-      const { userId } = req.context;
-      const { webhookId } = req.params;
+      const apiContext = (c.get("context") as ApiContext | undefined) ?? null;
+      const userId = (c.get("user") as { id?: number } | undefined)?.id ?? c.get("userId");
+      const { webhookId } = c.req.param();
       const { name, description, url, method, events, filters, headers, retryCount, retryDelay, status } =
-        req.body;
+        await c.req.json<{
+          name?: string;
+          description?: string;
+          url?: string;
+          method?: string;
+          events?: string[];
+          filters?: unknown;
+          headers?: unknown;
+          retryCount?: number;
+          retryDelay?: number;
+          status?: string;
+        }>();
 
-      if (!userId) {
+      if (!userId || !apiContext) {
         throw createError(401, "User not found");
       }
 
       // Проверяем что webhook существует и принадлежит пользователю
-      const existingWebhook = await req.context.prisma.webhook.findFirst({
+      const existingWebhook = await apiContext.prisma.webhook.findFirst({
         where: {
           id: +webhookId,
           userId,
@@ -167,31 +186,30 @@ class WebhookControllerClass {
       if (retryDelay !== undefined) updateData.retryDelay = retryDelay;
       if (status !== undefined) updateData.status = status;
 
-      const webhook = await req.context.prisma.webhook.update({
+      const webhook = await apiContext.prisma.webhook.update({
         where: { id: +webhookId },
         data: updateData,
       });
 
-      return res.json(serializeBigInt(webhook));
+      return c.json(serializeBigInt(webhook));
     } catch (error: any) {
       logger.error(error.message, error);
-      return res.status(error.statusCode || 500).send({
-        message: error.message,
-      });
+      return c.json({ message: error.message }, error.statusCode || 500);
     }
   }
 
   // Удалить webhook
-  async deleteWebhook(req: Request, res: Response) {
+  async deleteWebhook(c: Context) {
     try {
-      const { userId } = req.context;
-      const { webhookId } = req.params;
+      const apiContext = (c.get("context") as ApiContext | undefined) ?? null;
+      const userId = (c.get("user") as { id?: number } | undefined)?.id ?? c.get("userId");
+      const { webhookId } = c.req.param();
 
-      if (!userId) {
+      if (!userId || !apiContext) {
         throw createError(401, "User not found");
       }
 
-      const existingWebhook = await req.context.prisma.webhook.findFirst({
+      const existingWebhook = await apiContext.prisma.webhook.findFirst({
         where: {
           id: +webhookId,
           userId,
@@ -202,30 +220,29 @@ class WebhookControllerClass {
         throw createError(404, "Webhook not found");
       }
 
-      await req.context.prisma.webhook.delete({
+      await apiContext.prisma.webhook.delete({
         where: { id: +webhookId },
       });
 
-      return res.json({ message: "Webhook deleted successfully" });
+      return c.json({ message: "Webhook deleted successfully" });
     } catch (error: any) {
       logger.error(error.message, error);
-      return res.status(error.statusCode || 500).send({
-        message: error.message,
-      });
+      return c.json({ message: error.message }, error.statusCode || 500);
     }
   }
 
   // Тестовый запуск webhook
-  async testWebhook(req: Request, res: Response) {
+  async testWebhook(c: Context) {
     try {
-      const { userId } = req.context;
-      const { webhookId } = req.params;
+      const apiContext = (c.get("context") as ApiContext | undefined) ?? null;
+      const userId = (c.get("user") as { id?: number } | undefined)?.id ?? c.get("userId");
+      const { webhookId } = c.req.param();
 
-      if (!userId) {
+      if (!userId || !apiContext) {
         throw createError(401, "User not found");
       }
 
-      const webhook = await req.context.prisma.webhook.findFirst({
+      const webhook = await apiContext.prisma.webhook.findFirst({
         where: {
           id: +webhookId,
           userId,
@@ -237,7 +254,7 @@ class WebhookControllerClass {
       }
 
       // Выполняем тестовый webhook
-      await WebhookService.executeWebhook(req.context, webhook, "CUSTOM", {
+      await WebhookService.executeWebhook(apiContext, webhook, "CUSTOM", {
         event: "TEST",
         resourceType: "TEST",
         resourceId: 0,
@@ -248,27 +265,28 @@ class WebhookControllerClass {
         timestamp: new Date().toISOString(),
       });
 
-      return res.json({ message: "Test webhook triggered successfully" });
+      return c.json({ message: "Test webhook triggered successfully" });
     } catch (error: any) {
       logger.error(error.message, error);
-      return res.status(error.statusCode || 500).send({
-        message: error.message,
-      });
+      return c.json({ message: error.message }, error.statusCode || 500);
     }
   }
 
   // Получить историю выполнений
-  async getWebhookExecutions(req: Request, res: Response) {
+  async getWebhookExecutions(c: Context) {
     try {
-      const { userId } = req.context;
-      const { webhookId } = req.params;
-      const { limit = "50", offset = "0" } = req.query;
+      const apiContext = (c.get("context") as ApiContext | undefined) ?? null;
+      const userId = (c.get("user") as { id?: number } | undefined)?.id ?? c.get("userId");
+      const { webhookId } = c.req.param();
+      const query = c.req.query();
+      const limit = Number(query.limit ?? "50");
+      const offset = Number(query.offset ?? "0");
 
-      if (!userId) {
+      if (!userId || !apiContext) {
         throw createError(401, "User not found");
       }
 
-      const webhook = await req.context.prisma.webhook.findFirst({
+      const webhook = await apiContext.prisma.webhook.findFirst({
         where: {
           id: +webhookId,
           userId,
@@ -279,47 +297,46 @@ class WebhookControllerClass {
         throw createError(404, "Webhook not found");
       }
 
-      const executions = await req.context.prisma.webhookExecution.findMany({
+      const executions = await apiContext.prisma.webhookExecution.findMany({
         where: {
           webhookId: +webhookId,
         },
         orderBy: { triggeredAt: "desc" },
-        take: +limit,
-        skip: +offset,
+        take: limit,
+        skip: offset,
       });
 
-      const total = await req.context.prisma.webhookExecution.count({
+      const total = await apiContext.prisma.webhookExecution.count({
         where: {
           webhookId: +webhookId,
         },
       });
 
-      return res.json(
+      return c.json(
         serializeBigInt({
           executions,
           total,
-          limit: +limit,
-          offset: +offset,
-        })
+          limit,
+          offset,
+        }),
       );
     } catch (error: any) {
       logger.error(error.message, error);
-      return res.status(error.statusCode || 500).send({
-        message: error.message,
-      });
+      return c.json({ message: error.message }, error.statusCode || 500);
     }
   }
 
   // Получить запланированные webhooks
-  async getScheduledWebhooks(req: Request, res: Response) {
+  async getScheduledWebhooks(c: Context) {
     try {
-      const { userId } = req.context;
+      const apiContext = (c.get("context") as ApiContext | undefined) ?? null;
+      const userId = (c.get("user") as { id?: number } | undefined)?.id ?? c.get("userId");
 
-      if (!userId) {
+      if (!userId || !apiContext) {
         throw createError(401, "User not found");
       }
 
-      const scheduled = await req.context.prisma.scheduledWebhook.findMany({
+      const scheduled = await apiContext.prisma.scheduledWebhook.findMany({
         where: {
           webhook: {
             userId,
@@ -337,17 +354,15 @@ class WebhookControllerClass {
         orderBy: { scheduledFor: "asc" },
       });
 
-      return res.json(serializeBigInt(scheduled));
+      return c.json(serializeBigInt(scheduled));
     } catch (error: any) {
       logger.error(error.message, error);
-      return res.status(error.statusCode || 500).send({
-        message: error.message,
-      });
+      return c.json({ message: error.message }, error.statusCode || 500);
     }
   }
 
   // Получить доступные события для подписки
-  async getAvailableEvents(req: Request, res: Response) {
+  async getAvailableEvents(c: Context) {
     try {
       const events = [
         {
@@ -422,12 +437,10 @@ class WebhookControllerClass {
         },
       ];
 
-      return res.json(events);
+      return c.json(events);
     } catch (error: any) {
       logger.error(error.message, error);
-      return res.status(error.statusCode || 500).send({
-        message: error.message,
-      });
+      return c.json({ message: error.message }, error.statusCode || 500);
     }
   }
 }

@@ -1,5 +1,5 @@
 import crypto from "crypto";
-import { Request, Response } from "express";
+import type { Context } from "hono";
 import { prisma } from "../configs/config.js";
 import { v4 as uuidv4 } from "uuid";
 import { generateJwt } from "../utils/generateJwt.js";
@@ -44,28 +44,27 @@ function verifyTelegramAuth(data: TelegramAuthData, botToken: string): boolean {
 /**
  * Обработчик для Telegram Login Widget callback
  */
-export async function handleTelegramAuth(req: Request, res: Response) {
+export async function handleTelegramAuth(c: Context) {
   try {
-    const telegramData = req.query as unknown as TelegramAuthData;
+    const query = c.req.query();
+    const telegramData = query as unknown as TelegramAuthData;
 
     // Проверяем наличие обязательных полей
     if (!telegramData.id || !telegramData.hash || !telegramData.auth_date) {
-      return res.redirect(`${process.env.CLIENT_URL}/login?error=${encodeURIComponent("Invalid Telegram data")}`);
+      return c.redirect(`${process.env.CLIENT_URL}/login?error=${encodeURIComponent("Invalid Telegram data")}`);
     }
 
     // Проверяем подлинность данных
     const botToken = process.env.TELEGRAM_BOT_TOKEN;
     if (!botToken) {
       console.error("TELEGRAM_BOT_TOKEN not configured");
-      return res.redirect(
-        `${process.env.CLIENT_URL}/login?error=${encodeURIComponent("Telegram auth not configured")}`
-      );
+      return c.redirect(`${process.env.CLIENT_URL}/login?error=${encodeURIComponent("Telegram auth not configured")}`);
     }
 
     const isValid = verifyTelegramAuth(telegramData, botToken);
     if (!isValid) {
-      return res.redirect(
-        `${process.env.CLIENT_URL}/login?error=${encodeURIComponent("Invalid Telegram authentication")}`
+      return c.redirect(
+        `${process.env.CLIENT_URL}/login?error=${encodeURIComponent("Invalid Telegram authentication")}`,
       );
     }
 
@@ -74,7 +73,7 @@ export async function handleTelegramAuth(req: Request, res: Response) {
     const now = new Date();
     const dayInMs = 24 * 60 * 60 * 1000;
     if (now.getTime() - authDate.getTime() > dayInMs) {
-      return res.redirect(`${process.env.CLIENT_URL}/login?error=${encodeURIComponent("Telegram auth expired")}`);
+      return c.redirect(`${process.env.CLIENT_URL}/login?error=${encodeURIComponent("Telegram auth expired")}`);
     }
 
     // Ищем или создаем пользователя
@@ -127,8 +126,8 @@ export async function handleTelegramAuth(req: Request, res: Response) {
     const { accessToken, refreshToken } = generateJwt(user.id);
 
     // Получаем метаданные запроса
-    const userAgent = req.headers["user-agent"] || "Unknown";
-    const ip = req.ip || req.connection.remoteAddress || "Unknown";
+    const userAgent = c.req.header("user-agent") || "Unknown";
+    const ip = c.req.header("x-forwarded-for") || c.req.header("x-real-ip") || "Unknown";
 
     // Создаем сессию
     await prisma.session.create({
@@ -141,19 +140,19 @@ export async function handleTelegramAuth(req: Request, res: Response) {
     });
 
     // Устанавливаем cookie
-    res.cookie("refreshToken", refreshToken, {
-      maxAge: 30 * 24 * 60 * 60 * 1000,
+    c.cookie("refreshToken", refreshToken, {
+      maxAge: 30 * 24 * 60 * 60,
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
+      sameSite: "Lax",
     });
 
     // Редиректим на фронтенд с токеном
-    return res.redirect(`${process.env.CLIENT_URL}?token=${accessToken}`);
+    return c.redirect(`${process.env.CLIENT_URL}?token=${accessToken}`);
   } catch (error: any) {
     console.error("Telegram auth error:", error);
-    return res.redirect(
-      `${process.env.CLIENT_URL}/login?error=${encodeURIComponent(error.message || "Telegram auth failed")}`
+    return c.redirect(
+      `${process.env.CLIENT_URL}/login?error=${encodeURIComponent(error.message || "Telegram auth failed")}`,
     );
   }
 }

@@ -1,0 +1,10 @@
+{
+  "name": "mellocloud",
+  "private": true,
+  "scripts": {
+    "dev": "pnpm --parallel -r run dev",
+    "dev:backend": "pnpm --filter server dev",
+    "dev:frontend": "pnpm --filter client dev",
+    "build": "pnpm -r run build"
+  }
+}
