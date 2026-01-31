@@ -72,7 +72,7 @@ const CollaborativeNoteEditor: FC<CollaborativeNoteEditorProps> = ({
             <Badge status={isConnected ? "success" : "default"} />
             <Users size={16} className={styles.collaboratorsIcon} />
             <span>
-              {t("notes.sharing.collaborators")} ({collaborators.length})
+              {t("notes.share.collaborators")} ({collaborators.length})
             </span>
           </div>
           <div className={cn(styles.collaboratorsList)}>
@@ -80,7 +80,7 @@ const CollaborativeNoteEditor: FC<CollaborativeNoteEditorProps> = ({
               {collaborators.map((collab) => (
                 <Tooltip
                   key={collab.userId}
-                  title={`${collab.userName} (${t("notes.sharing.online")})`}
+                  title={`${collab.userName} (${t("notes.share.online")})`}
                 >
                   <Avatar
                     src={collab.avatar}

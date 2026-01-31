@@ -1,3 +1,5 @@
+@use "sass:color";
+
 .mainButton {
   padding: 10px 20px;
   border: none;
@@ -16,7 +18,7 @@
   background-color: #007bff;
 
   &:hover:not(:disabled) {
-    background-color: darken(#007bff, 10%);
+    background-color: color.adjust(#007bff, $lightness: -10%);
   }
 }
 
