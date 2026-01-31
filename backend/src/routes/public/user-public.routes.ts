@@ -1,128 +1,124 @@
-import { Router } from "express";
-import { check } from "express-validator";
-import passport from "../../configs/oAuth.js";
-import { prisma } from "../../configs/config.js";
-import { UserController } from "../../controllers/userController.js";
-import { generateJwt } from "../../utils/generateJwt.js";
-import { handleTelegramAuth } from "../../controllers/telegramAuth.js";
+import { Hono } from 'hono';
+import { zValidator } from '@hono/zod-validator';
+import { z } from 'zod';
+import passport from '../../configs/oAuth';
+import { prisma } from '../../configs/config';
+import { UserController } from '../../controllers/userController';
+import { generateJwt } from '../../utils/generateJwt';
+import { handleTelegramAuth } from '../../controllers/telegramAuth';
 
-const router: Router = Router();
+const router = new Hono();
 
 // ========================================
-// СТАНДАРТНАЯ АВТОРИЗАЦИЯ
+// VALIDATION SCHEMAS
 // ========================================
+const registerSchema = z.object({
+  email: z.string().email('Incorrect email'),
+  password: z.string().min(6, 'Password must be at least 6 characters'),
+});
 
+const loginSchema = z.object({
+  email: z.string().email('Incorrect email'),
+  password: z.string().min(1, 'Password cannot be empty'),
+});
+
+// ========================================
+// STANDARD AUTH
+// ========================================
 router.post(
-  "/register",
-  [
-    check("email", "Incorrect email").isEmail(),
-    check("password", "Password must be at least 6 characters").isLength({ min: 6 }),
-  ],
+  '/register',
+  zValidator('json', registerSchema),
   UserController.registration
 );
 
 router.post(
-  "/login",
-  [check("email", "Incorrect email").isEmail(), check("password", "Password cannot be empty").exists()],
+  '/login',
+  zValidator('json', loginSchema),
   UserController.login
 );
 
-router.get("/activate", UserController.activate);
+router.get('/activate', UserController.activate);
 
 // ========================================
 // GOOGLE OAUTH
 // ========================================
+router.get('/google', async (c) => {
+  // Passport интеграция с Hono требует обёртки
+  // Используем middleware adapter (см. ниже)
+  return c.redirect('/api/v1/user/google/auth');
+});
 
-router.get(
-  "/google",
-  passport.authenticate("google", {
-    scope: ["profile", "email"],
-    session: false,
-  })
-);
+router.get('/google/callback', async (c) => {
+  try {
+    const user = c.get('user'); // Из Passport middleware
+    const { accessToken, refreshToken } = generateJwt(user.id);
 
-router.get(
-  "/google/callback",
-  passport.authenticate("google", { session: false, failureRedirect: "/login" }),
-  async (req: any, res) => {
-    try {
-      const user = req.user;
-      const { accessToken, refreshToken } = generateJwt(user.id);
+    const userAgent = c.req.header('user-agent') || 'Unknown';
+    const ip = c.req.header('x-forwarded-for') || 'Unknown';
 
-      const userAgent = req.headers["user-agent"] || "Unknown";
-      const ip = req.ip || req.connection.remoteAddress || "Unknown";
+    await prisma.session.create({
+      data: {
+        userId: user.id,
+        refreshToken,
+        userAgent,
+        ip,
+      },
+    });
 
-      // Создаем сессию
-      await prisma.session.create({
-        data: {
-          userId: user.id,
-          refreshToken,
-          userAgent,
-          ip,
-        },
-      });
+    // Set cookie
+    c.cookie('refreshToken', refreshToken, {
+      maxAge: 30 * 24 * 60 * 60,
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'Lax',
+    });
 
-      res.cookie("refreshToken", refreshToken, {
-        maxAge: 30 * 24 * 60 * 60 * 1000,
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
-      });
-
-      // Redirect to frontend with token
-      res.redirect(`${process.env.CLIENT_URL}?token=${accessToken}`);
-    } catch (error: any) {
-      console.error("Google OAuth callback error:", error);
-      res.redirect(`${process.env.CLIENT_URL}/login?error=${encodeURIComponent(error.message)}`);
-    }
+    return c.redirect(`${process.env.CLIENT_URL}?token=${accessToken}`);
+  } catch (error: any) {
+    return c.redirect(`${process.env.CLIENT_URL}/login?error=${encodeURIComponent(error.message)}`);
   }
-);
+});
 
 // ========================================
-// TELEGRAM AUTH (использует Login Widget, не OAuth2)
+// TELEGRAM AUTH
 // ========================================
-
-router.get("/telegram/callback", handleTelegramAuth);
+router.get('/telegram/callback', handleTelegramAuth);
 
 // ========================================
-// YANDEX OAUTH
+// YANDEX OAUTH (аналогично Google)
 // ========================================
+router.get('/yandex', async (c) => {
+  return c.redirect('/api/v1/user/yandex/auth');
+});
 
-router.get("/yandex", passport.authenticate("yandex", { session: false }));
+router.get('/yandex/callback', async (c) => {
+  try {
+    const user = c.get('user');
+    const { accessToken, refreshToken } = generateJwt(user.id);
 
-router.get(
-  "/yandex/callback",
-  passport.authenticate("yandex", { session: false, failureRedirect: "/login" }),
-  async (req: any, res) => {
-    try {
-      const user = req.user;
-      const { accessToken, refreshToken } = generateJwt(user.id);
+    const userAgent = c.req.header('user-agent') || 'Unknown';
+    const ip = c.req.header('x-forwarded-for') || 'Unknown';
 
-      const userAgent = req.headers["user-agent"] || "Unknown";
-      const ip = req.ip || req.connection.remoteAddress || "Unknown";
+    await prisma.session.create({
+      data: {
+        userId: user.id,
+        refreshToken,
+        userAgent,
+        ip,
+      },
+    });
 
-      await prisma.session.create({
-        data: {
-          userId: user.id,
-          refreshToken,
-          userAgent,
-          ip,
-        },
-      });
+    c.cookie('refreshToken', refreshToken, {
+      maxAge: 30 * 24 * 60 * 60,
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'Lax',
+    });
 
-      res.cookie("refreshToken", refreshToken, {
-        maxAge: 30 * 24 * 60 * 60 * 1000,
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
-      });
-
-      res.redirect(`${process.env.CLIENT_URL}?token=${accessToken}`);
-    } catch (error: any) {
-      console.error("Yandex OAuth callback error:", error);
-      res.redirect(`${process.env.CLIENT_URL}/login?error=${encodeURIComponent(error.message)}`);
-    }
+    return c.redirect(`${process.env.CLIENT_URL}?token=${accessToken}`);
+  } catch (error: any) {
+    return c.redirect(`${process.env.CLIENT_URL}/login?error=${encodeURIComponent(error.message)}`);
   }
-);
+});
 
 export default router;

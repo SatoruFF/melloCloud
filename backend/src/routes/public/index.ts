@@ -1,14 +1,15 @@
-import { Router } from "express";
-import { publicMiddlewares } from "../../middleware/base.middleware.js";
-import userRouter from "./user-public.routes.js";
-import sharingRouter from "./sharing-public.routes.js";
+import { Hono } from 'hono';
+import { publicMiddlewares } from '../../middleware/base.middleware';
+import userRouter from './user-public.routes';
+import sharingRouter from "./sharing-public.routes";
 
-const publicRouter = Router();
+const publicRouter = new Hono();
 
-publicMiddlewares.forEach((m) => publicRouter.use(m));
+// middleware
+publicMiddlewares.forEach((m) => publicRouter.use('*', m));
 
-publicRouter.use("/user", userRouter);
-// publicRouter.use("/sharing", sharingRouter);
-publicRouter.use("/shared", sharingRouter); 
+publicRouter.route('/user', userRouter);
+
+publicRouter.route("/shared", sharingRouter); 
 
 export default publicRouter;

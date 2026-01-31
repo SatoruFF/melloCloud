@@ -1,8 +1,8 @@
 // base
-import type { Request, Response } from "express";
+import type { Context } from "hono";
 
 // services
-import { FETCH_LIMIT, prisma } from "../configs/config.js";
+import { prisma } from "../configs/config.js";
 import { Avatar } from "../helpers/avatar.js";
 import { FileService } from "../services/fileService.js";
 
@@ -12,7 +12,6 @@ import createError from "http-errors";
 import _ from "lodash";
 import { logger } from "../configs/logger.js";
 import "dotenv/config.js";
-import type { IFile } from "../types/File.js";
 
 const getUserById = async (userId: number) => {
   const user = await prisma.user.findUnique({
@@ -30,14 +29,23 @@ const getUserById = async (userId: number) => {
 class FileControllerClass {
   /**
    * Creates a new directory for the user.
-   * @param {Request} req - Express request object.
-   * @param {Response} res - Express response object.
-   * @returns {Promise<Response>} The created directory information or error message.
    */
-  async createDir(req: Request, res: Response) {
+  async createDir(c: Context) {
     try {
-      const { name, type, parent: parentId } = req.body;
-      const userId = _.get(req, ["user", "id"]);
+      const {
+        name,
+        type,
+        parent: parentId,
+      } = await c.req.json<{
+        name: string;
+        type: string;
+        parent?: number | null;
+      }>();
+      const userId = (c.get("user") as { id?: number } | undefined)?.id ?? c.get("userId");
+
+      if (!userId) {
+        throw createError(401, "User not found");
+      }
 
       const doubledFolder = await prisma.file.findFirst({
         where: { name, parentId },
@@ -52,18 +60,15 @@ class FileControllerClass {
       const fileInstance = {
         name,
         type,
-        parentId,
+        parentId: parentId ?? null,
         userId,
         path: "",
         url: "",
-        // storageGuid: user?.storageGuid,
       };
 
       if (parentId == null) {
-        // If no parent, set path as the folder name
         fileInstance.path = name;
       } else {
-        // If parent exists, get its path and append the new folder name
         const parentFile = await prisma.file.findFirst({
           where: { id: parentId, userId },
         });
@@ -79,38 +84,39 @@ class FileControllerClass {
         data: fileInstance,
       });
 
-      // Then, create the corresponding directory in S3
       const itemUrl = await FileService.createDir({
         ...fileInstance,
         storageGuid: user.storageGuid,
       });
 
-      // Update the database record with the S3 URL
       const updatedFile = await prisma.file.update({
         where: { id: file.id },
         data: { url: itemUrl },
       });
 
-      return res.json(updatedFile);
+      return c.json(updatedFile);
     } catch (error: any) {
       logger.error(error.message, error);
-      return res.status(error.statusCode || 500).send({
-        message: error.message,
-      });
+      return c.json({ message: error.message }, error.statusCode || 500);
     }
   }
 
   /**
    * Retrieves files for the user based on sort, search, and parent folder.
-   * @param {Request} req - Express request object.
-   * @param {Response} res - Express response object.
-   * @returns {Promise<Response>} The list of files or error message.
    */
-  async getFiles(req, res) {
+  async getFiles(c: Context) {
     try {
-      const { sort, search, limit, offset } = req.query;
-      const parentId = Number.parseInt(req.query.parent) || null;
-      const userId = _.get(req, ["user", "id"]);
+      const query = c.req.query();
+      const sort = query.sort;
+      const search = query.search;
+      const limit = query.limit;
+      const offset = query.offset;
+      const parentId = query.parent ? Number.parseInt(query.parent as string) : null;
+      const userId = (c.get("user") as { id?: number } | undefined)?.id ?? c.get("userId");
+
+      if (!userId) {
+        throw createError(401, "User not found");
+      }
 
       const user = await getUserById(userId);
 
@@ -125,139 +131,151 @@ class FileControllerClass {
       };
 
       const files = await FileService.getFiles(searchParams);
-      return res.json(files);
+
+      return c.json(files);
     } catch (error: any) {
       logger.error(error.message, error);
-      return res.status(error.statusCode || 500).send({
-        message: error.message,
-      });
+      return c.json({ message: error.message }, error.statusCode || 500);
     }
   }
 
   /**
    * Uploads a file for the user to the storage.
-   * @param {Request} req - Express request object.
-   * @param {Response} res - Express response object.
-   * @returns {Promise<Response>} The uploaded file data or error message.
+   * Hono: ожидает multipart/form-data и использует parseBody()
    */
-  async uploadFile(req, res) {
+  async uploadFile(c: Context) {
     try {
-      const file = req.files.file;
-      const userId = req.user.id;
-      const parentId = req.body.parent;
+      const body = await c.req.parseBody();
+      const file = body.file as File | undefined;
+      const parentId = body.parent as string | undefined;
+      const userId = (c.get("user") as { id?: number } | undefined)?.id ?? c.get("userId");
 
-      const user = await getUserById(userId);
+      if (!userId) {
+        throw createError(401, "User not found");
+      }
+
+      if (!file) {
+        throw createError(400, "File is required");
+      }
 
       const savedFile = await FileService.uploadFile(file, userId, parentId);
 
-      return res.json(savedFile);
+      return c.json(savedFile);
     } catch (error: any) {
       logger.error(error.message, error);
-      return res.status(error.statusCode || 500).send({
-        message: error.message,
-      });
+      return c.json({ message: error.message }, error.statusCode || 500);
     }
   }
 
   /**
    * Downloads a file for the user.
-   * @param {Request} req - Express request object.
-   * @param {Response} res - Express response object.
-   * @returns {Promise<Response>} The downloaded file stream or error message.
    */
-  async downloadFile(req, res) {
+  async downloadFile(c: Context) {
     try {
-      const userId = req.user.id;
-      const queryId = req.query.id;
+      const userId = (c.get("user") as { id?: number } | undefined)?.id ?? c.get("userId");
+      const queryId = c.req.query("id");
+
+      if (!userId) {
+        throw createError(401, "User not found");
+      }
+
+      if (!queryId) {
+        throw createError(400, "File id is required");
+      }
 
       const user = await getUserById(userId);
 
-      const { s3object, file } = await FileService.downloadFile(
-        queryId,
-        userId,
-        user.storageGuid,
-      );
+      const { s3object, file } = await FileService.downloadFile(queryId, userId, user.storageGuid);
 
       const stream = new PassThrough();
-      stream.end(s3object.Body);
+      stream.end(s3object.Body as any);
 
-      res.setHeader("Content-disposition", "attachment; filename=" + file.name);
-      res.setHeader("Content-type", file.type);
-      res.attachment(file.name);
-
-      stream.pipe(res);
+      return c.newResponse(stream as any, {
+        status: 200,
+        headers: {
+          "Content-Disposition": `attachment; filename=${file.name}`,
+          "Content-Type": file.type,
+        },
+      });
     } catch (error: any) {
       logger.error(error.message, error);
-      return res.status(error.statusCode || 500).send({
-        message: error.message,
-      });
+      return c.json({ message: error.message }, error.statusCode || 500);
     }
   }
 
   /**
    * Deletes a file for the user.
-   * @param {Request} req - Express request object.
-   * @param {Response} res - Express response object.
-   * @returns {Promise<Response>} The updated file list or error message.
    */
-  async deleteFile(req, res) {
+  async deleteFile(c: Context) {
     try {
-      const fileId = Number(req.query.id);
-      const userId = req.user.id;
+      const fileId = Number(c.req.query("id"));
+      const userId = (c.get("user") as { id?: number } | undefined)?.id ?? c.get("userId");
 
-      const user = await getUserById(userId);
+      if (!userId) {
+        throw createError(401, "User not found");
+      }
+
+      if (!fileId) {
+        throw createError(400, "File id is required");
+      }
+
+      await getUserById(userId);
 
       const allFiles = await FileService.deleteFile(fileId, userId);
 
-      return res.json(allFiles);
+      return c.json(allFiles);
     } catch (error: any) {
       logger.error(error.message, error);
-      return res.status(error.statusCode || 500).send({
-        message: error.message,
-      });
+      return c.json({ message: error.message }, error.statusCode || 500);
     }
   }
 
   /**
    * Uploads an avatar for the user.
-   * @param {Request} req - Express request object.
-   * @param {Response} res - Express response object.
-   * @returns {Promise<Response>} The avatar URL or error message.
    */
-  async uploadAvatar(req, res) {
+  async uploadAvatar(c: Context) {
     try {
-      const fileBuffer = req.files.file.data;
-      const userId = req.user.id;
+      const body = await c.req.parseBody();
+      const file = body.file as File | undefined;
+      const userId = (c.get("user") as { id?: number } | undefined)?.id ?? c.get("userId");
+
+      if (!userId) {
+        throw createError(401, "User not found");
+      }
+
+      if (!file) {
+        throw createError(400, "File is required");
+      }
+
+      const arrayBuffer = await file.arrayBuffer();
+      const fileBuffer = Buffer.from(arrayBuffer);
 
       const avatarUrl = await Avatar.uploadAvatar(fileBuffer, userId);
 
-      return res.json(avatarUrl);
+      return c.json(avatarUrl);
     } catch (error: any) {
       logger.error(error.message, error);
-      return res.status(error.statusCode || 500).send({
-        message: error.message,
-      });
+      return c.json({ message: error.message }, error.statusCode || 500);
     }
   }
 
   /**
    * Deletes the user's avatar.
-   * @param {Request} req - Express request object.
-   * @param {Response} res - Express response object.
-   * @returns {Promise<Response>} The user data after avatar deletion or error message.
    */
-  async deleteAvatar(req, res) {
+  async deleteAvatar(c: Context) {
     try {
-      const userId = req.user.id;
+      const userId = (c.get("user") as { id?: number } | undefined)?.id ?? c.get("userId");
+
+      if (!userId) {
+        throw createError(401, "User not found");
+      }
 
       const user = await Avatar.deleteAvatar(userId);
 
-      return res.json(user);
+      return c.json(user);
     } catch (error: any) {
       logger.error(error.message, error);
-      return res.status(error.statusCode || 500).send({
-        message: error.message,
-      });
+      return c.json({ message: error.message }, error.statusCode || 500);
     }
   }
 }

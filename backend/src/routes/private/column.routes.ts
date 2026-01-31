@@ -1,18 +1,18 @@
-import { Router } from "express";
+import { Hono } from "hono";
 import { ColumnController } from "../../controllers/taskColumn.js";
 
-const router: Router = Router();
+const router = new Hono();
 
 // Basic CRUD operations
-router.post("", ColumnController.create);
-router.get("", ColumnController.getAll);
-router.get("/:id", ColumnController.getById);
-router.put("/:id", ColumnController.update);
-router.delete("/:id", ColumnController.delete);
+router.post("/", (c) => ColumnController.create(c));
+router.get("/", (c) => ColumnController.getAll(c));
+router.get("/:id", (c) => ColumnController.getById(c));
+router.put("/:id", (c) => ColumnController.update(c));
+router.delete("/:id", (c) => ColumnController.delete(c));
 
 // Additional column operations
-router.patch("/reorder", ColumnController.reorder);
-router.patch("/move-task", ColumnController.moveTask);
-router.get("/stats", ColumnController.getStats);
+router.patch("/reorder", (c) => ColumnController.reorder(c));
+router.patch("/move-task", (c) => ColumnController.moveTask(c));
+router.get("/stats", (c) => ColumnController.getStats(c));
 
 export default router;

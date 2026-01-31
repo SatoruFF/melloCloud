@@ -1,24 +1,24 @@
-import { Router } from "express";
+import { Hono } from "hono";
 import { NotesController } from "../../controllers/noteController.js";
 
-const router = Router();
+const router = new Hono();
 
 // Get all user notes
-router.get("/", NotesController.getUserNotes);
+router.get("/", (c) => NotesController.getUserNotes(c));
 
 // Search notes
-router.get("/search", NotesController.searchNotes);
+router.get("/search", (c) => NotesController.searchNotes(c));
 
 // Get single note
-router.get("/:noteId", NotesController.getNote);
+router.get("/:noteId", (c) => NotesController.getNote(c));
 
 // Create note
-router.post("/", NotesController.createNote);
+router.post("/", (c) => NotesController.createNote(c));
 
 // Update note
-router.put("/:noteId", NotesController.updateNote);
+router.put("/:noteId", (c) => NotesController.updateNote(c));
 
 // Delete note
-router.delete("/:noteId", NotesController.deleteNote);
+router.delete("/:noteId", (c) => NotesController.deleteNote(c));
 
 export default router;

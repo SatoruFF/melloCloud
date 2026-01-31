@@ -1,31 +1,32 @@
-import type { Request, Response } from "express";
+import type { Context } from "hono";
 import createError from "http-errors";
 import { logger } from "../configs/logger.js";
 import { NotesService } from "../services/noteService.js";
 import { serializeBigInt } from "../helpers/serializeBigInt.js";
+import ApiContext from "../models/context.js";
 
 class NotesControllerClass {
-  async getUserNotes(req: Request, res: Response) {
+  async getUserNotes(c: Context) {
     try {
-      const { userId } = req.context;
+      const apiContext = (c.get("context") as ApiContext | undefined) ?? null;
+      const userId = (c.get("user") as { id?: number } | undefined)?.id ?? c.get("userId");
       if (!userId) {
         throw createError(401, "User not found");
       }
 
-      const notes = await NotesService.getUserNotes(req.context, userId);
-      return res.json(serializeBigInt(notes));
+      const notes = await NotesService.getUserNotes(apiContext, userId);
+      return c.json(serializeBigInt(notes));
     } catch (error: any) {
       logger.error(error.message, error);
-      return res.status(error.statusCode || 500).send({
-        message: error.message,
-      });
+      return c.json({ message: error.message }, error.statusCode || 500);
     }
   }
 
-  async getNote(req: Request, res: Response) {
+  async getNote(c: Context) {
     try {
-      const { userId } = req.context;
-      const { noteId } = req.params;
+      const apiContext = (c.get("context") as ApiContext | undefined) ?? null;
+      const userId = (c.get("user") as { id?: number } | undefined)?.id ?? c.get("userId");
+      const { noteId } = c.req.param();
 
       if (!userId) {
         throw createError(401, "User not found");
@@ -35,20 +36,23 @@ class NotesControllerClass {
         throw createError(400, "Note ID is required");
       }
 
-      const note = await NotesService.getNote(req.context, noteId, userId);
-      return res.json(serializeBigInt(note));
+      const note = await NotesService.getNote(apiContext, noteId, userId);
+      return c.json(serializeBigInt(note));
     } catch (error: any) {
       logger.error(error.message, error);
-      return res.status(error.statusCode || 500).send({
-        message: error.message,
-      });
+      return c.json({ message: error.message }, error.statusCode || 500);
     }
   }
 
-  async createNote(req: Request, res: Response) {
+  async createNote(c: Context) {
     try {
-      const { userId } = req.context;
-      const { title, content, tags } = req.body;
+      const apiContext = (c.get("context") as ApiContext | undefined) ?? null;
+      const userId = (c.get("user") as { id?: number } | undefined)?.id ?? c.get("userId");
+      const { title, content, tags } = await c.req.json<{
+        title: string;
+        content?: string;
+        tags?: unknown;
+      }>();
 
       if (!userId) {
         throw createError(401, "User not found");
@@ -63,26 +67,30 @@ class NotesControllerClass {
         throw createError(400, "Tags must be an array");
       }
 
-      const note = await NotesService.createNote(req.context, userId, {
+      const note = await NotesService.createNote(apiContext, userId, {
         title,
         content,
         tags,
       });
 
-      return res.status(201).json(serializeBigInt(note));
+      return c.json(serializeBigInt(note), 201);
     } catch (error: any) {
       logger.error(error.message, error);
-      return res.status(error.statusCode || 500).send({
-        message: error.message,
-      });
+      return c.json({ message: error.message }, error.statusCode || 500);
     }
   }
 
-  async updateNote(req: Request, res: Response) {
+  async updateNote(c: Context) {
     try {
-      const { userId } = req.context;
-      const { noteId } = req.params;
-      const { title, content, isStarred, tags } = req.body;
+      const apiContext = (c.get("context") as ApiContext | undefined) ?? null;
+      const userId = (c.get("user") as { id?: number } | undefined)?.id ?? c.get("userId");
+      const { noteId } = c.req.param();
+      const { title, content, isStarred, tags } = await c.req.json<{
+        title?: string;
+        content?: string;
+        isStarred?: boolean;
+        tags?: unknown;
+      }>();
 
       if (!userId) {
         throw createError(401, "User not found");
@@ -102,26 +110,25 @@ class NotesControllerClass {
         throw createError(400, "Tags must be an array");
       }
 
-      const note = await NotesService.updateNote(req.context, noteId, userId, {
+      const note = await NotesService.updateNote(apiContext, noteId, userId, {
         title,
         content,
         isStarred,
         tags,
       });
 
-      return res.json(serializeBigInt(note));
+      return c.json(serializeBigInt(note));
     } catch (error: any) {
       logger.error(error.message, error);
-      return res.status(error.statusCode || 500).send({
-        message: error.message,
-      });
+      return c.json({ message: error.message }, error.statusCode || 500);
     }
   }
 
-  async deleteNote(req: Request, res: Response) {
+  async deleteNote(c: Context) {
     try {
-      const { userId } = req.context;
-      const { noteId } = req.params;
+      const apiContext = (c.get("context") as ApiContext | undefined) ?? null;
+      const userId = (c.get("user") as { id?: number } | undefined)?.id ?? c.get("userId");
+      const { noteId } = c.req.param();
 
       if (!userId) {
         throw createError(401, "User not found");
@@ -131,20 +138,19 @@ class NotesControllerClass {
         throw createError(400, "Note ID is required");
       }
 
-      const result = await NotesService.deleteNote(req.context, noteId, userId);
-      return res.json(result);
+      const result = await NotesService.deleteNote(apiContext, noteId, userId);
+      return c.json(result);
     } catch (error: any) {
       logger.error(error.message, error);
-      return res.status(error.statusCode || 500).send({
-        message: error.message,
-      });
+      return c.json({ message: error.message }, error.statusCode || 500);
     }
   }
 
-  async searchNotes(req: Request, res: Response) {
+  async searchNotes(c: Context) {
     try {
-      const { userId } = req.context;
-      const { query } = req.query;
+      const apiContext = (c.get("context") as ApiContext | undefined) ?? null;
+      const userId = (c.get("user") as { id?: number } | undefined)?.id ?? c.get("userId");
+      const { query } = c.req.query();
 
       if (!userId) {
         throw createError(401, "User not found");
@@ -154,13 +160,11 @@ class NotesControllerClass {
         throw createError(400, "Search query is required");
       }
 
-      const notes = await NotesService.searchNotes(req.context, userId, query);
-      return res.json(serializeBigInt(notes));
+      const notes = await NotesService.searchNotes(apiContext, userId, query);
+      return c.json(serializeBigInt(notes));
     } catch (error: any) {
       logger.error(error.message, error);
-      return res.status(error.statusCode || 500).send({
-        message: error.message,
-      });
+      return c.json({ message: error.message }, error.statusCode || 500);
     }
   }
 }

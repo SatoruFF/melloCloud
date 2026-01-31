@@ -1,6 +1,5 @@
-import _ from "lodash";
 import "dotenv/config.js";
-import type { NextFunction, Request, Response } from "express";
+import type { Context } from "hono";
 import createError from "http-errors";
 
 import { logger } from "../configs/logger.js";
@@ -9,10 +8,19 @@ import { TaskService } from "../services/taskService.js";
 
 class TaskControllerClass {
   // Create task controller
-  async create(req: any, res: Response, next: NextFunction) {
+  async create(c: Context) {
     try {
-      const { title, content, priority, dueDate, columnId } = req.body;
-      const userId = req.user?.id;
+      const body = await c.req.json<{
+        title: string;
+        content?: string;
+        priority?: string;
+        dueDate?: string;
+        columnId?: number;
+      }>();
+
+      const { title, content, priority, dueDate, columnId } = body;
+      const user = c.get("user") as { id?: number } | undefined;
+      const userId = user?.id;
 
       if (!userId) {
         throw createError(401, "User not found");
@@ -27,19 +35,18 @@ class TaskControllerClass {
         userId,
       });
 
-      return res.json(task);
+      return c.json(task);
     } catch (error: any) {
       logger.error(error.message, error);
-      return res.status(error.statusCode || 500).send({
-        message: error.message,
-      });
+      return c.json({ message: error.message }, error.statusCode || 500);
     }
   }
 
   // Get all tasks for user
-  async getAll(req: any, res: Response) {
+  async getAll(c: Context) {
     try {
-      const userId = req.user?.id;
+      const user = c.get("user") as { id?: number } | undefined;
+      const userId = user?.id;
 
       if (!userId) {
         throw createError(401, "User not found");
@@ -47,19 +54,18 @@ class TaskControllerClass {
 
       const tasks = await TaskService.getAll(userId);
 
-      return res.json(tasks);
+      return c.json(tasks);
     } catch (error: any) {
       logger.error(error.message, error);
-      return res.status(error.statusCode || 500).send({
-        message: error.message,
-      });
+      return c.json({ message: error.message }, error.statusCode || 500);
     }
   }
 
   // Get kanban board data (columns with tasks)
-  async getKanban(req: any, res: Response) {
+  async getKanban(c: Context) {
     try {
-      const userId = req.user?.id;
+      const user = c.get("user") as { id?: number } | undefined;
+      const userId = user?.id;
 
       if (!userId) {
         throw createError(401, "User not found");
@@ -67,20 +73,19 @@ class TaskControllerClass {
 
       const kanbanData = await TaskService.getKanbanData(userId);
 
-      return res.json(kanbanData);
+      return c.json(kanbanData);
     } catch (error: any) {
       logger.error(error.message, error);
-      return res.status(error.statusCode || 500).send({
-        message: error.message,
-      });
+      return c.json({ message: error.message }, error.statusCode || 500);
     }
   }
 
   // Get tasks by column
-  async getByColumn(req: any, res: Response) {
+  async getByColumn(c: Context) {
     try {
-      const { columnId } = req.params;
-      const userId = req.user?.id;
+      const { columnId } = c.req.param();
+      const user = c.get("user") as { id?: number } | undefined;
+      const userId = user?.id;
 
       if (!userId) {
         throw createError(401, "User not found");
@@ -90,20 +95,19 @@ class TaskControllerClass {
 
       const tasks = await TaskService.getByColumn(Number(columnId), userId);
 
-      return res.json(tasks);
+      return c.json(tasks);
     } catch (error: any) {
       logger.error(error.message, error);
-      return res.status(error.statusCode || 500).send({
-        message: error.message,
-      });
+      return c.json({ message: error.message }, error.statusCode || 500);
     }
   }
 
   // Get task by ID
-  async getById(req: any, res: Response) {
+  async getById(c: Context) {
     try {
-      const { id } = req.params;
-      const userId = req.user?.id;
+      const { id } = c.req.param();
+      const user = c.get("user") as { id?: number } | undefined;
+      const userId = user?.id;
 
       if (!userId) {
         throw createError(401, "User not found");
@@ -115,21 +119,28 @@ class TaskControllerClass {
 
       if (!task) throw createError(404, "Task not found");
 
-      return res.json(task);
+      return c.json(task);
     } catch (error: any) {
       logger.error(error.message, error);
-      return res.status(error.statusCode || 500).send({
-        message: error.message,
-      });
+      return c.json({ message: error.message }, error.statusCode || 500);
     }
   }
 
   // Update task
-  async update(req: any, res: Response) {
+  async update(c: Context) {
     try {
-      const { id } = req.params;
-      const { title, content, priority, isDone, dueDate, columnId } = req.body;
-      const userId = req.user?.id;
+      const { id } = c.req.param();
+      const body = await c.req.json<{
+        title?: string;
+        content?: string;
+        priority?: string;
+        isDone?: boolean;
+        dueDate?: string;
+        columnId?: number;
+      }>();
+      const { title, content, priority, isDone, dueDate, columnId } = body;
+      const user = c.get("user") as { id?: number } | undefined;
+      const userId = user?.id;
 
       if (!userId) {
         throw createError(401, "User not found");
@@ -146,20 +157,19 @@ class TaskControllerClass {
         columnId,
       });
 
-      return res.json(task);
+      return c.json(task);
     } catch (error: any) {
       logger.error(error.message, error);
-      return res.status(error.statusCode || 500).send({
-        message: error.message,
-      });
+      return c.json({ message: error.message }, error.statusCode || 500);
     }
   }
 
   // Delete task
-  async delete(req: any, res: Response) {
+  async delete(c: Context) {
     try {
-      const { id } = req.params;
-      const userId = req.user?.id;
+      const { id } = c.req.param();
+      const user = c.get("user") as { id?: number } | undefined;
+      const userId = user?.id;
 
       if (!userId) {
         throw createError(401, "User not found");
@@ -169,20 +179,19 @@ class TaskControllerClass {
 
       await TaskService.delete(Number(id), userId);
 
-      return res.status(200).json({ message: "Task successfully deleted" });
+      return c.json({ message: "Task successfully deleted" }, 200);
     } catch (error: any) {
       logger.error(error.message, error);
-      return res.status(error.statusCode || 500).send({
-        message: error.message,
-      });
+      return c.json({ message: error.message }, error.statusCode || 500);
     }
   }
 
   // Toggle task completion status
-  async toggleComplete(req: any, res: Response) {
+  async toggleComplete(c: Context) {
     try {
-      const { id } = req.params;
-      const userId = req.user?.id;
+      const { id } = c.req.param();
+      const user = c.get("user") as { id?: number } | undefined;
+      const userId = user?.id;
 
       if (!userId) {
         throw createError(401, "User not found");
@@ -192,21 +201,21 @@ class TaskControllerClass {
 
       const task = await TaskService.toggleComplete(Number(id), userId);
 
-      return res.json(task);
+      return c.json(task);
     } catch (error: any) {
       logger.error(error.message, error);
-      return res.status(error.statusCode || 500).send({
-        message: error.message,
-      });
+      return c.json({ message: error.message }, error.statusCode || 500);
     }
   }
 
   // Move task to different column
-  async moveToColumn(req: any, res: Response) {
+  async moveToColumn(c: Context) {
     try {
-      const { id } = req.params;
-      const { columnId } = req.body;
-      const userId = req.user?.id;
+      const { id } = c.req.param();
+      const body = await c.req.json<{ columnId: number }>();
+      const { columnId } = body;
+      const user = c.get("user") as { id?: number } | undefined;
+      const userId = user?.id;
 
       if (!userId) {
         throw createError(401, "User not found");
@@ -217,20 +226,19 @@ class TaskControllerClass {
 
       const task = await TaskService.moveToColumn(Number(id), Number(columnId), userId);
 
-      return res.json(task);
+      return c.json(task);
     } catch (error: any) {
       logger.error(error.message, error);
-      return res.status(error.statusCode || 500).send({
-        message: error.message,
-      });
+      return c.json({ message: error.message }, error.statusCode || 500);
     }
   }
 
   // Search tasks
-  async search(req: any, res: Response) {
+  async search(c: Context) {
     try {
-      const query = req.query.query?.toString().toLowerCase();
-      const userId = req.user?.id;
+      const query = c.req.query("query")?.toString().toLowerCase();
+      const user = c.get("user") as { id?: number } | undefined;
+      const userId = user?.id;
 
       if (!userId) {
         throw createError(401, "User not found");
@@ -240,20 +248,19 @@ class TaskControllerClass {
 
       const tasks = await TaskService.search(userId, query);
 
-      return res.json(tasks);
+      return c.json(tasks);
     } catch (error: any) {
       logger.error(error.message, error);
-      return res.status(error.statusCode || 500).send({
-        message: error.message,
-      });
+      return c.json({ message: error.message }, error.statusCode || 500);
     }
   }
 
   // Get tasks by priority
-  async getByPriority(req: any, res: Response) {
+  async getByPriority(c: Context) {
     try {
-      const { priority } = req.params;
-      const userId = req.user?.id;
+      const { priority } = c.req.param();
+      const user = c.get("user") as { id?: number } | undefined;
+      const userId = user?.id;
 
       if (!userId) {
         throw createError(401, "User not found");
@@ -263,20 +270,19 @@ class TaskControllerClass {
 
       const tasks = await TaskService.getByPriority(userId, priority.toUpperCase());
 
-      return res.json(tasks);
+      return c.json(tasks);
     } catch (error: any) {
       logger.error(error.message, error);
-      return res.status(error.statusCode || 500).send({
-        message: error.message,
-      });
+      return c.json({ message: error.message }, error.statusCode || 500);
     }
   }
 
   // Get tasks by completion status
-  async getByStatus(req: any, res: Response) {
+  async getByStatus(c: Context) {
     try {
-      const { status } = req.params; // 'completed' or 'pending'
-      const userId = req.user?.id;
+      const { status } = c.req.param(); // 'completed' or 'pending'
+      const user = c.get("user") as { id?: number } | undefined;
+      const userId = user?.id;
 
       if (!userId) {
         throw createError(401, "User not found");
@@ -287,19 +293,18 @@ class TaskControllerClass {
       const isDone = status.toLowerCase() === "completed";
       const tasks = await TaskService.getByStatus(userId, isDone);
 
-      return res.json(tasks);
+      return c.json(tasks);
     } catch (error: any) {
       logger.error(error.message, error);
-      return res.status(error.statusCode || 500).send({
-        message: error.message,
-      });
+      return c.json({ message: error.message }, error.statusCode || 500);
     }
   }
 
   // Get overdue tasks
-  async getOverdue(req: any, res: Response) {
+  async getOverdue(c: Context) {
     try {
-      const userId = req.user?.id;
+      const user = c.get("user") as { id?: number } | undefined;
+      const userId = user?.id;
 
       if (!userId) {
         throw createError(401, "User not found");
@@ -307,20 +312,19 @@ class TaskControllerClass {
 
       const tasks = await TaskService.getOverdueTasks(userId);
 
-      return res.json(tasks);
+      return c.json(tasks);
     } catch (error: any) {
       logger.error(error.message, error);
-      return res.status(error.statusCode || 500).send({
-        message: error.message,
-      });
+      return c.json({ message: error.message }, error.statusCode || 500);
     }
   }
 
   // Get upcoming tasks
-  async getUpcoming(req: any, res: Response) {
+  async getUpcoming(c: Context) {
     try {
-      const userId = req.user?.id;
-      const days = Number(req.query.days) || 7;
+      const user = c.get("user") as { id?: number } | undefined;
+      const userId = user?.id;
+      const days = Number(c.req.query("days") ?? 7);
 
       if (!userId) {
         throw createError(401, "User not found");
@@ -328,19 +332,18 @@ class TaskControllerClass {
 
       const tasks = await TaskService.getUpcomingTasks(userId, days);
 
-      return res.json(tasks);
+      return c.json(tasks);
     } catch (error: any) {
       logger.error(error.message, error);
-      return res.status(error.statusCode || 500).send({
-        message: error.message,
-      });
+      return c.json({ message: error.message }, error.statusCode || 500);
     }
   }
 
   // Get task statistics
-  async getStats(req: any, res: Response) {
+  async getStats(c: Context) {
     try {
-      const userId = req.user?.id;
+      const user = c.get("user") as { id?: number } | undefined;
+      const userId = user?.id;
 
       if (!userId) {
         throw createError(401, "User not found");
@@ -348,20 +351,20 @@ class TaskControllerClass {
 
       const stats = await TaskService.getTaskStats(userId);
 
-      return res.json(stats);
+      return c.json(stats);
     } catch (error: any) {
       logger.error(error.message, error);
-      return res.status(error.statusCode || 500).send({
-        message: error.message,
-      });
+      return c.json({ message: error.message }, error.statusCode || 500);
     }
   }
 
   // Batch update tasks (for drag and drop)
-  async batchUpdate(req: any, res: Response) {
+  async batchUpdate(c: Context) {
     try {
-      const { updates } = req.body; // Array of { id, columnId, order }
-      const userId = req.user?.id;
+      const body = await c.req.json<{ updates: any[] }>();
+      const { updates } = body; // Array of { id, columnId, order }
+      const user = c.get("user") as { id?: number } | undefined;
+      const userId = user?.id;
 
       if (!userId) {
         throw createError(401, "User not found");
@@ -373,12 +376,10 @@ class TaskControllerClass {
 
       const tasks = await TaskService.batchUpdateTasks(userId, updates);
 
-      return res.json(tasks);
+      return c.json(tasks);
     } catch (error: any) {
       logger.error(error.message, error);
-      return res.status(error.statusCode || 500).send({
-        message: error.message,
-      });
+      return c.json({ message: error.message }, error.statusCode || 500);
     }
   }
 }
