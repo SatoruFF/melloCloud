@@ -8,7 +8,7 @@ import { useTranslation } from "react-i18next";
 
 const PlannerLayout = () => {
   const { t } = useTranslation();
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(true);
 
   return (
     <div className={styles.plannerLayout}>
