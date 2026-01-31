@@ -42,7 +42,10 @@ app.use(
 );
 
 app.use("*", logger()); // Hono встроенный logger
-app.use("*", compress()); // Сжатие ответов (gzip/brotli)
+// Сжатие только если доступен CompressionStream (Node 18.3+, Bun, браузер)
+if (typeof globalThis.CompressionStream !== "undefined") {
+  app.use("*", compress());
+}
 
 // Rate limiter (кастомный, см. ниже)
 app.use("*", rateLimiter);
