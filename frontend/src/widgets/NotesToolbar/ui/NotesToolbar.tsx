@@ -5,9 +5,12 @@ import { Button, message } from "antd";
 import { Share2, Save, Download, Printer, MoreHorizontal, Undo, Redo, Bold, Italic, Underline } from "lucide-react";
 import cn from "classnames";
 import styles from "./notes-toolbar.module.scss";
-import { ShareNotesDrawer } from "../../../features/shareNotesDrawer";
+import { ShareModal } from "../../../features/sharing/ui/ShareModal/ShareModal";
+import { ResourceType } from "../../../entities/sharing";
 
 interface NotesToolbarProps {
+  noteId?: string;
+  noteTitle?: string;
   onSave?: () => void;
   onDownload?: () => void;
   onPrint?: () => void;
@@ -25,6 +28,8 @@ interface NotesToolbarProps {
 }
 
 export const NotesToolbar = ({
+  noteId,
+  noteTitle,
   onSave,
   onDownload,
   onPrint,
@@ -41,7 +46,7 @@ export const NotesToolbar = ({
   className,
 }: NotesToolbarProps) => {
   const { t } = useTranslation();
-  const [shareDrawerOpen, setShareDrawerOpen] = useState(false);
+  const [shareModalOpen, setShareModalOpen] = useState(false);
 
   const handleSave = useCallback(() => {
     if (onSave) {
@@ -71,8 +76,12 @@ export const NotesToolbar = ({
   }, [onPrint]);
 
   const handleShare = useCallback(() => {
-    setShareDrawerOpen(true);
-  }, []);
+    if (!noteId || noteId === "new") {
+      message.info(t("notes.share.selectNote"));
+      return;
+    }
+    setShareModalOpen(true);
+  }, [noteId, t]);
 
   return (
     <>
@@ -169,8 +178,16 @@ export const NotesToolbar = ({
         </div>
       </div>
 
-      {/* Share Drawer */}
-      <ShareNotesDrawer open={shareDrawerOpen} onClose={() => setShareDrawerOpen(false)} />
+      {/* Share Modal — реальный шаринг через API */}
+      {noteId && noteId !== "new" && (
+        <ShareModal
+          open={shareModalOpen}
+          onClose={() => setShareModalOpen(false)}
+          resourceType={ResourceType.NOTE}
+          resourceId={Number(noteId)}
+          resourceName={noteTitle || t("notes.untitled")}
+        />
+      )}
     </>
   );
 };

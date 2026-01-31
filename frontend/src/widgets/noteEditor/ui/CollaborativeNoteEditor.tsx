@@ -114,6 +114,8 @@ const CollaborativeNoteEditor: FC<CollaborativeNoteEditorProps> = ({
       {/* Content Editor */}
       <div className={cn(styles.editorContent)}>
         <Editor
+          noteId={noteId}
+          noteTitle={title}
           initialContent={content}
           onSave={handleSave}
           autoSave={autoSave}

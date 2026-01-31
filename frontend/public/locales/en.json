@@ -172,6 +172,7 @@
       "downloading": "Download started"
     },
     "share": {
+      "selectNote": "Open a note to share it",
       "title": "Collaborative Access",
       "shareLink": "Access Link",
       "copyLink": "Copy Link",
