@@ -1,24 +1,21 @@
 import { Button, Input, Select, Card, Tag, Dropdown, Space, Typography, Badge, Empty, Spin } from "antd";
-import {
-  PlusOutlined,
-  DeleteOutlined,
-  EditOutlined,
-  MoreOutlined,
-  DragOutlined,
-  FileTextOutlined,
-  LoadingOutlined,
-} from "@ant-design/icons";
+import { Plus, Trash2, Edit, MoreVertical, GripVertical, FileText, Loader2 } from "lucide-react";
 import cn from "classnames";
+import { useState } from "react";
 import styles from "./kanban.module.scss";
-import { TaskColumn } from "../../../entities/task/types/tasks";
+import { TaskColumn, Task } from "../../../entities/task/types/tasks";
 import { useTasks } from "../hooks";
 import { useTranslation } from "react-i18next";
+import { TaskCardModal } from "./TaskCardModal";
 
 const { Text, Title } = Typography;
 const { Option } = Select;
 
-// TODO: destructure
-const Kanban = () => {
+interface KanbanProps {
+  boardId: number;
+}
+
+const Kanban = ({ boardId }: KanbanProps) => {
   const {
     tasks,
     columns,
@@ -39,6 +36,7 @@ const Kanban = () => {
     setShowAddColumn,
     setEditingColumn,
     addTask,
+    updateTask,
     deleteTask,
     deleteColumn,
     addColumn,
@@ -50,16 +48,17 @@ const Kanban = () => {
     editColumn,
     getPriorityColor,
     refetchKanban,
-  } = useTasks();
+  } = useTasks({ boardId });
 
   const { t } = useTranslation();
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
 
   const getColumnMenu = (column: TaskColumn) => ({
     items: [
       {
         key: "edit",
         label: t("planner.kanban.columns.edit"),
-        icon: <EditOutlined />,
+        icon: <Edit size={16} />,
         onClick: () => {
           setEditingColumn(column.id.toString());
           setEditColumnTitle(column.title);
@@ -70,7 +69,7 @@ const Kanban = () => {
             {
               key: "delete",
               label: t("planner.kanban.columns.delete"),
-              icon: <DeleteOutlined />,
+              icon: <Trash2 size={16} />,
               danger: true,
               onClick: () => deleteColumn(column.id),
             },
@@ -84,7 +83,7 @@ const Kanban = () => {
     return (
       <div className={cn(styles.kanbanContainer)}>
         <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "400px" }}>
-          <Spin size="large" indicator={<LoadingOutlined spin />} />
+          <Spin size="large" indicator={<Loader2 size={32} className={styles.spinningIcon} />} />
         </div>
       </div>
     );
@@ -122,7 +121,7 @@ const Kanban = () => {
       <div className={cn(styles.kanbanContainer)}>
         <div className={cn(styles.emptyState)}>
           <Empty
-            image={<FileTextOutlined className={cn(styles.emptyIcon)} />}
+            image={<FileText size={64} className={cn(styles.emptyIcon)} />}
             description={
               <div className={cn(styles.emptyDescription)}>
                 <Title level={3} className={cn(styles.emptyTitle)}>
@@ -155,14 +154,14 @@ const Kanban = () => {
                     }}
                     size="large"
                   >
-                    {t("kanban.actions.cancel")}
+                    {t("planner.kanban.actions.cancel")}
                   </Button>
                 </Space>
               </Card>
             ) : (
               <Button
                 type="primary"
-                icon={<PlusOutlined />}
+                icon={<Plus size={16} />}
                 onClick={() => setShowAddColumn(true)}
                 size="large"
                 className={cn(styles.createFirstColumnBtn)}
@@ -210,7 +209,7 @@ const Kanban = () => {
             </Select>
             <Button
               type="primary"
-              icon={<PlusOutlined />}
+              icon={<Plus size={16} />}
               onClick={addTask}
               size="large"
               className={cn(styles.addTaskBtn)}
@@ -273,7 +272,7 @@ const Kanban = () => {
                       />
                     </Space>
                     <Dropdown menu={getColumnMenu(column)} trigger={["click"]}>
-                      <Button type="text" icon={<MoreOutlined />} className={cn(styles.columnMenuBtn)} />
+                      <Button type="text" icon={<MoreVertical size={16} />} className={cn(styles.columnMenuBtn)} />
                     </Dropdown>
                   </div>
                 )}
@@ -293,17 +292,18 @@ const Kanban = () => {
                       draggable
                       onDragStart={(e) => onDragStart(e, task.id)}
                       onDragEnd={onDragEnd}
+                      onClick={() => setSelectedTask(task)}
                     >
                       <div className={cn(styles.taskContent)}>
                         <div className={cn(styles.taskHeader)}>
                           <Text strong className={cn(styles.taskText)}>
                             {task.title || task.content}
                           </Text>
-                          <div className={cn(styles.taskActions)}>
-                            <DragOutlined className={cn(styles.dragHandle)} />
+                          <div className={cn(styles.taskActions)} onClick={(e) => e.stopPropagation()}>
+                            <GripVertical size={16} className={cn(styles.dragHandle)} />
                             <Button
                               type="text"
-                              icon={<DeleteOutlined />}
+                              icon={<Trash2 size={16} />}
                               onClick={() => deleteTask(task.id)}
                               danger
                               size="small"
@@ -369,7 +369,7 @@ const Kanban = () => {
           ) : (
             <Button
               type="dashed"
-              icon={<PlusOutlined />}
+              icon={<Plus size={16} />}
               className={cn(styles.addColumnTrigger)}
               onClick={() => setShowAddColumn(true)}
               block
@@ -379,6 +379,17 @@ const Kanban = () => {
           )}
         </div>
       </div>
+
+      <TaskCardModal
+        open={!!selectedTask}
+        task={selectedTask}
+        columns={columns}
+        loading={loading}
+        onClose={() => setSelectedTask(null)}
+        onSave={updateTask}
+        onDelete={deleteTask}
+        getPriorityColor={getPriorityColor}
+      />
     </div>
   );
 };

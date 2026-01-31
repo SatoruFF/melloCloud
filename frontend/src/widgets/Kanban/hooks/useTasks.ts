@@ -66,8 +66,13 @@ const deserializeDates = <T extends Record<string, any>>(obj: T, dateFields: str
   return result;
 };
 
-export const useTasks = () => {
-  // Local UI state
+interface UseTasksOptions {
+  boardId: number | null;
+}
+
+export const useTasks = (options: UseTasksOptions) => {
+  const { boardId } = options ?? { boardId: null };
+
   const [newTaskText, setNewTaskText] = useState("");
   const [newTaskColumn, setNewTaskColumn] = useState("");
   const [newColumnTitle, setNewColumnTitle] = useState("");
@@ -92,13 +97,12 @@ export const useTasks = () => {
     editingColumn,
   } = useAppSelector((state) => state.taskColumns);
 
-  // API hooks
   const {
     data: kanbanData,
     error: kanbanError,
     isLoading: kanbanLoading,
     refetch: refetchKanban,
-  } = useGetKanbanDataQuery();
+  } = useGetKanbanDataQuery(boardId!, { skip: boardId == null });
 
   // Мутации
   const [createTaskMutation, { isLoading: isCreatingTask }] = useCreateTaskMutation();
@@ -257,12 +261,13 @@ export const useTasks = () => {
   // Column operations
   const addColumn = useCallback(async () => {
     const trimmed = newColumnTitle.trim();
-    if (!trimmed) return;
+    if (!trimmed || boardId == null) return;
 
     try {
       const newColumn = await createColumnMutation({
         title: trimmed,
         color: gothicColors[columns.length % gothicColors.length],
+        boardId,
       }).unwrap();
 
       // Сериализуем даты
@@ -282,7 +287,7 @@ export const useTasks = () => {
       dispatch(setColumnError(errorMsg));
       message.error(errorMsg);
     }
-  }, [newColumnTitle, columns.length, createColumnMutation, dispatch]);
+  }, [newColumnTitle, columns.length, createColumnMutation, dispatch, boardId]);
 
   const deleteColumn = useCallback(
     async (columnId: string | number) => {

@@ -7,23 +7,19 @@ import { logger } from "../configs/logger.js";
 import { ColumnService } from "../services/columnService.js";
 
 class ColumnControllerClass {
-  // Create column controller
   async create(c: Context) {
     try {
-      const body = await c.req.json<{ title: string; color?: string }>();
-      const { title, color } = body;
+      const body = await c.req.json<{ title: string; color?: string; boardId: number }>();
+      const { title, color, boardId } = body;
       const userId = (c.get("user") as { id?: number } | undefined)?.id ?? c.get("userId");
-
-      if (!userId) {
-        throw createError(401, "User not found");
-      }
-
+      if (!userId) throw createError(401, "User not found");
+      if (!boardId) throw createError(400, "boardId is required");
       const column = await ColumnService.create({
-        title,
-        color,
+        title: title ?? "Column",
+        color: color ?? "#5c6bc0",
         userId,
+        boardId,
       });
-
       return c.json(column);
     } catch (error: any) {
       logger.error(error.message, error);
@@ -31,17 +27,14 @@ class ColumnControllerClass {
     }
   }
 
-  // Get all columns for user
   async getAll(c: Context) {
     try {
       const userId = (c.get("user") as { id?: number } | undefined)?.id ?? c.get("userId");
-
-      if (!userId) {
-        throw createError(401, "User not found");
-      }
-
-      const columns = await ColumnService.getAll(userId);
-
+      if (!userId) throw createError(401, "User not found");
+      const boardId = c.req.query("boardId");
+      const columns = boardId
+        ? await ColumnService.getByBoardId(Number(boardId), userId)
+        : await ColumnService.getAll(userId);
       return c.json(columns);
     } catch (error: any) {
       logger.error(error.message, error);
@@ -168,17 +161,13 @@ class ColumnControllerClass {
     }
   }
 
-  // Get column statistics
   async getStats(c: Context) {
     try {
       const userId = (c.get("user") as { id?: number } | undefined)?.id ?? c.get("userId");
-
-      if (!userId) {
-        throw createError(401, "User not found");
-      }
-
-      const stats = await ColumnService.getColumnStats(userId);
-
+      if (!userId) throw createError(401, "User not found");
+      const boardId = c.req.query("boardId");
+      if (!boardId) throw createError(400, "boardId query is required");
+      const stats = await ColumnService.getColumnStats(userId, Number(boardId));
       return c.json(stats);
     } catch (error: any) {
       logger.error(error.message, error);

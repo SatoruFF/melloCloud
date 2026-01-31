@@ -5,6 +5,7 @@ import "dotenv/config.js";
 
 import { FETCH_LIMIT, prisma, s3 } from "../configs/config.js";
 import type { IFile, ISearchParams } from "./../types/File";
+import { NotificationService } from "./notificationService.js";
 
 interface CreateDirResponse {
   message: string;
@@ -119,30 +120,31 @@ class FileServiceClass {
       limit: filesLimit,
       offset: filesOffset = 0,
     } = searchParams;
-
+  
     const limit = Number(filesLimit) || Number(FETCH_LIMIT);
     const offset = Number(filesOffset) || 0;
-
+  
     // find by file name
     if (search) {
-      return await prisma.file.findMany({
+      const files = await prisma.file.findMany({
         where: {
           userId,
           parentId,
-          name: { contains: search, mode: "insensitive" }, // ILIKE analog in Prisma
+          name: { contains: search, mode: "insensitive" },
         },
       });
+      
+      return await this.enrichFilesWithSharingInfo(files);
     }
-
-    // FIXME: typo
+  
     const queryOptions: Prisma.FileFindManyArgs = {
       where: {
         AND: [{ userId }, { parentId }],
       },
-      take: limit, // analog LIMIT https://www.prisma.io/docs/orm/prisma-client/queries/pagination
-      skip: offset, // analog OFFSET
+      take: limit,
+      skip: offset,
     };
-
+  
     // find with sort query
     switch (sort) {
       case "name":
@@ -155,76 +157,123 @@ class FileServiceClass {
         queryOptions.orderBy = { createdAt: "asc" };
         break;
     }
-
-    return await prisma.file.findMany(queryOptions);
+  
+    const files = await prisma.file.findMany(queryOptions);
+    
+    return await this.enrichFilesWithSharingInfo(files);
   }
 
-  // upload file
-  async uploadFile(file: any, userId, parentId?: string): Promise<any> {
-    return prisma.$transaction(async (trx) => {
-      let parent;
-
-      if (parentId !== "null" && !_.isNil(parentId)) {
-        parent = await trx.file.findFirst({
-          where: { userId, id: Number(parentId) },
-        });
-      }
-
-      const user: any = await trx.user.findFirst({
-        where: { id: userId },
-      });
-
-      // check size on disc after upload
-      if (user.usedSpace + BigInt(file.size) > user.diskSpace) {
-        throw createError(400, "Not enough space on the disk");
-      }
-
-      user.usedSpace += BigInt(file.size);
-
-      let filePath;
-
-      // find parent with his path
-      if (parent) {
-        filePath = `${String(user.storageGuid)}/${parent.path}/${file.name}`;
-      } else {
-        filePath = `${String(user.storageGuid)}/${file.name}`;
-      }
-
-      const params = {
-        Bucket: process.env.S3_BUCKET_NAME,
-        Key: filePath,
-        Body: file.data,
-      };
-
-      const newFile = await s3.upload(params).promise();
-
-      // get url for download new file
-      const fileUrl = _.get(newFile, "Location", "");
-
-      const dbFile = await trx.file.create({
-        data: {
-          name: file.name,
-          type: file.name.split(".").pop(),
-          size: file.size,
-          path: parent?.path,
-          parentId: parent ? parent.id : null,
-          userId: user.id,
-          url: fileUrl,
-        },
-      });
-
-      // after we must fill used space
-      await trx.user.update({
-        where: {
-          id: user.id,
-        },
-        data: {
-          usedSpace: user.usedSpace,
-        },
-      });
-
-      return dbFile;
+  /**
+   * Upload a file to S3 and create a File record in the database.
+   * @param file - Web API File from multipart (name, type, size, arrayBuffer())
+   * @param userId - User ID
+   * @param parentId - Optional parent folder ID (string from form)
+   */
+  async uploadFile(
+    file: { name: string; type: string; size: number; arrayBuffer: () => Promise<ArrayBuffer> },
+    userId: number,
+    parentId?: string
+  ) {
+    const user: any = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { storageGuid: true, usedSpace: true, diskSpace: true },
     });
+    if (!user) {
+      throw createError(404, "User not found");
+    }
+
+    const fileSize = Number(file.size) || 0;
+    if (user.usedSpace + BigInt(fileSize) > user.diskSpace) {
+      throw createError(400, "Not enough disk space");
+    }
+
+    let folderPath = "";
+    const parentIdNum = parentId ? Number(parentId) : undefined;
+    if (parentIdNum && !_.isNaN(parentIdNum)) {
+      const parent = await prisma.file.findFirst({
+        where: { id: parentIdNum, userId },
+      });
+      if (parent) {
+        const base = parent.path ? `${parent.path}/` : "";
+        folderPath = `${base}${parent.name}`;
+      }
+    }
+
+    const keyPath = folderPath ? `${folderPath}/` : "";
+    const s3Key = `${user.storageGuid}/${keyPath}${file.name}`.replace(/\/{2,}/g, "/");
+
+    const buffer = Buffer.from(await file.arrayBuffer());
+    const params: IS3 = {
+      Bucket: process.env.S3_BUCKET_NAME,
+      Key: s3Key,
+      Body: buffer,
+    };
+    await s3.putObject(params as any).promise();
+
+    const dbPath = folderPath || "";
+    const created = await prisma.file.create({
+      data: {
+        name: file.name,
+        type: file.type || null,
+        size: fileSize,
+        path: dbPath,
+        userId,
+        parentId: parentIdNum ?? null,
+      },
+    });
+
+    await prisma.user.update({
+      where: { id: userId },
+      data: {
+        usedSpace: user.usedSpace + BigInt(fileSize),
+      },
+    });
+
+    try {
+      await NotificationService.create({
+        userId,
+        type: "FILE_UPLOAD",
+        title: "File uploaded",
+        text: file.name,
+        link: "/files",
+      });
+    } catch (_err) {
+      // non-blocking
+    }
+
+    return created;
+  }
+
+  private async enrichFilesWithSharingInfo(files: any[]) {
+    if (files.length === 0) return files;
+  
+    // Получаем все ID файлов
+    const fileIds = files.map(f => f.id);
+  
+    // Получаем все публичные ссылки для этих файлов за один запрос
+    const publicLinks = await prisma.permission.findMany({
+      where: {
+        resourceId: { in: fileIds },
+        resourceType: { in: ['FILE', 'FOLDER'] },
+        isPublic: true,
+      },
+      select: {
+        resourceId: true,
+        publicToken: true,
+      },
+    });
+  
+    // Создаем Map для быстрого доступа
+    const publicLinksMap = new Map(
+      publicLinks.map(link => [link.resourceId, link.publicToken])
+    );
+  
+    // Добавляем информацию о sharing к каждому файлу
+    return files.map(file => ({
+      ...file,
+      isShared: publicLinksMap.has(file.id),
+      publicToken: publicLinksMap.get(file.id),
+    }));
   }
 
   async downloadFile(queryId, userId, storageGuid) {

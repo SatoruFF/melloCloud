@@ -1,24 +1,37 @@
 import createError from "http-errors";
+import { ResourceType, PermissionLevel } from "@prisma/client";
 import { WebhookService } from "./webhookService.js";
+import { SharingService } from "./sharingService.js";
 
 class EventsServiceClass {
+  private async getSharedEventIds(context: any, userId: number): Promise<number[]> {
+    const permissions = await context.prisma.permission.findMany({
+      where: {
+        resourceType: ResourceType.EVENT,
+        subjectId: userId,
+        OR: [{ expiresAt: null }, { expiresAt: { gt: new Date() } }],
+      },
+      select: { resourceId: true },
+    });
+    return permissions.map((p) => p.resourceId);
+  }
+
   //
   // GET ALL USER EVENTS
   //
   async getUserEvents(context: any, userId: number) {
+    const sharedIds = await this.getSharedEventIds(context, userId);
+
     const events = await context.prisma.calendarEvent.findMany({
       where: {
         OR: [
-          // События где пользователь владелец
           { userId },
-          // События где пользователь участник
           {
             attendees: {
-              some: {
-                userId,
-              },
+              some: { userId },
             },
           },
+          ...(sharedIds.length > 0 ? [{ id: { in: sharedIds } }] : []),
         ],
       },
       include: {
@@ -65,17 +78,18 @@ class EventsServiceClass {
     startDate: Date,
     endDate: Date
   ) {
+    const sharedIds = await this.getSharedEventIds(context, userId);
+
     const events = await context.prisma.calendarEvent.findMany({
       where: {
         OR: [
           { userId },
           {
             attendees: {
-              some: {
-                userId,
-              },
+              some: { userId },
             },
           },
+          ...(sharedIds.length > 0 ? [{ id: { in: sharedIds } }] : []),
         ],
         AND: [
           {
@@ -129,17 +143,18 @@ class EventsServiceClass {
   // SEARCH EVENTS
   //
   async searchEvents(context: any, userId: number, query: string) {
+    const sharedIds = await this.getSharedEventIds(context, userId);
+
     const events = await context.prisma.calendarEvent.findMany({
       where: {
         OR: [
           { userId },
           {
             attendees: {
-              some: {
-                userId,
-              },
+              some: { userId },
             },
           },
+          ...(sharedIds.length > 0 ? [{ id: { in: sharedIds } }] : []),
         ],
         AND: [
           {
@@ -211,16 +226,14 @@ class EventsServiceClass {
   // GET SINGLE EVENT
   //
   async getEvent(context: any, eventId: string, userId: number) {
-    const event = await context.prisma.calendarEvent.findFirst({
+    let event = await context.prisma.calendarEvent.findFirst({
       where: {
         id: +eventId,
         OR: [
           { userId },
           {
             attendees: {
-              some: {
-                userId,
-              },
+              some: { userId },
             },
           },
         ],
@@ -258,6 +271,52 @@ class EventsServiceClass {
         },
       },
     });
+
+    if (!event) {
+      const { hasAccess } = await SharingService.checkUserPermission(
+        userId,
+        ResourceType.EVENT,
+        +eventId,
+      );
+      if (!hasAccess) {
+        throw createError(404, "Event not found");
+      }
+      event = await context.prisma.calendarEvent.findFirst({
+        where: { id: +eventId },
+        include: {
+          attendees: {
+            include: {
+              user: {
+                select: {
+                  id: true,
+                  userName: true,
+                  email: true,
+                  avatar: true,
+                },
+              },
+            },
+          },
+          task: {
+            select: {
+              id: true,
+              title: true,
+              content: true,
+              status: true,
+              priority: true,
+              dueDate: true,
+            },
+          },
+          user: {
+            select: {
+              id: true,
+              userName: true,
+              email: true,
+              avatar: true,
+            },
+          },
+        },
+      });
+    }
 
     if (!event) {
       throw createError(404, "Event not found");
@@ -417,16 +476,28 @@ class EventsServiceClass {
       allDay?: boolean;
     }
   ) {
-    // Проверяем существование и доступ
     const existingEvent = await context.prisma.calendarEvent.findFirst({
-      where: {
-        id: +eventId,
-        userId, // Только владелец может редактировать
-      },
+      where: { id: +eventId },
     });
 
     if (!existingEvent) {
-      throw createError(404, "Event not found or access denied");
+      throw createError(404, "Event not found");
+    }
+
+    const isOwner = existingEvent.userId === userId;
+    if (!isOwner) {
+      const { hasAccess, permissionLevel } = await SharingService.checkUserPermission(
+        userId,
+        ResourceType.EVENT,
+        +eventId,
+      );
+      const canEdit =
+        hasAccess &&
+        permissionLevel &&
+        [PermissionLevel.EDITOR, PermissionLevel.ADMIN, PermissionLevel.OWNER].includes(permissionLevel);
+      if (!canEdit) {
+        throw createError(403, "Event not found or access denied");
+      }
     }
 
     // Формируем данные для обновления
@@ -521,16 +592,28 @@ class EventsServiceClass {
   // DELETE EVENT
   //
   async deleteEvent(context: any, eventId: string, userId: number) {
-    // Проверяем существование и доступ
     const existingEvent = await context.prisma.calendarEvent.findFirst({
-      where: {
-        id: +eventId,
-        userId,
-      },
+      where: { id: +eventId },
     });
 
     if (!existingEvent) {
-      throw createError(404, "Event not found or access denied");
+      throw createError(404, "Event not found");
+    }
+
+    const isOwner = existingEvent.userId === userId;
+    if (!isOwner) {
+      const { hasAccess, permissionLevel } = await SharingService.checkUserPermission(
+        userId,
+        ResourceType.EVENT,
+        +eventId,
+      );
+      const canDelete =
+        hasAccess &&
+        permissionLevel &&
+        [PermissionLevel.ADMIN, PermissionLevel.OWNER].includes(permissionLevel);
+      if (!canDelete) {
+        throw createError(403, "Event not found or access denied");
+      }
     }
 
     // Удаляем все запланированные webhooks для этого события

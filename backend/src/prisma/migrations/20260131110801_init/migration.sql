@@ -1,5 +1,20 @@
 -- CreateEnum
-CREATE TYPE "ResourceType" AS ENUM ('NOTE', 'TASK', 'EVENT', 'FILE', 'CHAT', 'COLUMN');
+CREATE TYPE "ResourceType" AS ENUM ('NOTE', 'TASK', 'EVENT', 'FILE', 'FOLDER', 'CHAT', 'COLUMN', 'KANBAN_BOARD');
+
+-- CreateEnum
+CREATE TYPE "PermissionLevel" AS ENUM ('VIEWER', 'COMMENTER', 'EDITOR', 'ADMIN', 'OWNER');
+
+-- CreateEnum
+CREATE TYPE "ShareActivityType" AS ENUM ('SHARED', 'PERMISSION_CHANGED', 'PERMISSION_REVOKED', 'ACCESSED', 'DOWNLOADED', 'EDITED');
+
+-- CreateEnum
+CREATE TYPE "WebhookEvent" AS ENUM ('EVENT_CREATED', 'EVENT_UPDATED', 'EVENT_DELETED', 'EVENT_REMINDER_1H', 'EVENT_REMINDER_1D', 'EVENT_REMINDER_CUSTOM', 'TASK_CREATED', 'TASK_UPDATED', 'TASK_COMPLETED', 'TASK_OVERDUE', 'TASK_DUE_SOON', 'NOTE_CREATED', 'NOTE_UPDATED', 'NOTE_SHARED', 'FILE_UPLOADED', 'FILE_SHARED', 'CUSTOM');
+
+-- CreateEnum
+CREATE TYPE "WebhookStatus" AS ENUM ('ACTIVE', 'INACTIVE', 'FAILED', 'PAUSED');
+
+-- CreateEnum
+CREATE TYPE "WebhookMethod" AS ENUM ('GET', 'POST', 'PUT', 'PATCH', 'DELETE');
 
 -- CreateTable
 CREATE TABLE "User" (
@@ -19,6 +34,20 @@ CREATE TABLE "User" (
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Notification" (
+    "id" SERIAL NOT NULL,
+    "userId" INTEGER NOT NULL,
+    "type" TEXT NOT NULL,
+    "title" TEXT,
+    "text" TEXT NOT NULL,
+    "read" BOOLEAN NOT NULL DEFAULT false,
+    "link" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "Notification_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -121,8 +150,50 @@ CREATE TABLE "Note" (
     "tags" TEXT[],
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
+    "version" INTEGER NOT NULL DEFAULT 1,
 
     CONSTRAINT "Note_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "NoteCollaborator" (
+    "id" SERIAL NOT NULL,
+    "noteId" INTEGER NOT NULL,
+    "userId" INTEGER NOT NULL,
+    "cursorPosition" JSONB,
+    "selection" JSONB,
+    "color" TEXT NOT NULL DEFAULT '#1890ff',
+    "isActive" BOOLEAN NOT NULL DEFAULT true,
+    "lastActivity" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "NoteCollaborator_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "NoteHistory" (
+    "id" SERIAL NOT NULL,
+    "noteId" INTEGER NOT NULL,
+    "userId" INTEGER NOT NULL,
+    "operation" TEXT NOT NULL,
+    "data" JSONB NOT NULL,
+    "version" INTEGER NOT NULL,
+    "previousVersion" INTEGER,
+    "snapshot" JSONB,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "NoteHistory_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "KanbanBoard" (
+    "id" SERIAL NOT NULL,
+    "title" TEXT NOT NULL,
+    "userId" INTEGER NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "KanbanBoard_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -131,6 +202,7 @@ CREATE TABLE "TaskColumn" (
     "title" TEXT NOT NULL,
     "color" TEXT NOT NULL,
     "order" INTEGER NOT NULL,
+    "boardId" INTEGER NOT NULL,
     "userId" INTEGER NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -195,17 +267,55 @@ CREATE TABLE "EventAttendee" (
 -- CreateTable
 CREATE TABLE "Permission" (
     "id" SERIAL NOT NULL,
-    "subjectId" INTEGER NOT NULL,
+    "email" TEXT,
+    "subjectId" INTEGER,
     "subjectType" TEXT NOT NULL DEFAULT 'USER',
     "resourceId" INTEGER NOT NULL,
     "resourceType" "ResourceType" NOT NULL,
-    "level" INTEGER NOT NULL DEFAULT 1,
+    "permissionLevel" "PermissionLevel" NOT NULL DEFAULT 'VIEWER',
+    "isPublic" BOOLEAN NOT NULL DEFAULT false,
+    "publicToken" TEXT,
     "grantedBy" INTEGER,
     "expiresAt" TIMESTAMP(3),
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Permission_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "ShareActivity" (
+    "id" SERIAL NOT NULL,
+    "actorId" INTEGER NOT NULL,
+    "actorEmail" TEXT,
+    "targetId" INTEGER,
+    "targetEmail" TEXT,
+    "resourceType" "ResourceType" NOT NULL,
+    "resourceId" INTEGER NOT NULL,
+    "resourceName" TEXT,
+    "activityType" "ShareActivityType" NOT NULL,
+    "oldPermission" "PermissionLevel",
+    "newPermission" "PermissionLevel",
+    "ipAddress" TEXT,
+    "userAgent" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "ShareActivity_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "ActiveCollaborator" (
+    "id" SERIAL NOT NULL,
+    "userId" INTEGER NOT NULL,
+    "userName" TEXT NOT NULL,
+    "userAvatar" TEXT,
+    "resourceType" "ResourceType" NOT NULL,
+    "resourceId" INTEGER NOT NULL,
+    "cursorPosition" JSONB,
+    "editingSection" TEXT,
+    "lastActivity" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "ActiveCollaborator_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -234,6 +344,62 @@ CREATE TABLE "UserFeatureFlag" (
     CONSTRAINT "UserFeatureFlag_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "Webhook" (
+    "id" SERIAL NOT NULL,
+    "userId" INTEGER NOT NULL,
+    "name" TEXT NOT NULL,
+    "description" TEXT,
+    "url" TEXT NOT NULL,
+    "method" "WebhookMethod" NOT NULL DEFAULT 'POST',
+    "events" "WebhookEvent"[],
+    "filters" JSONB,
+    "headers" JSONB,
+    "retryCount" INTEGER NOT NULL DEFAULT 3,
+    "retryDelay" INTEGER NOT NULL DEFAULT 60,
+    "status" "WebhookStatus" NOT NULL DEFAULT 'ACTIVE',
+    "lastTriggeredAt" TIMESTAMP(3),
+    "successCount" INTEGER NOT NULL DEFAULT 0,
+    "failureCount" INTEGER NOT NULL DEFAULT 0,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "Webhook_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "WebhookExecution" (
+    "id" SERIAL NOT NULL,
+    "webhookId" INTEGER NOT NULL,
+    "event" "WebhookEvent" NOT NULL,
+    "payload" JSONB NOT NULL,
+    "statusCode" INTEGER,
+    "response" JSONB,
+    "error" TEXT,
+    "duration" INTEGER,
+    "attempt" INTEGER NOT NULL DEFAULT 1,
+    "success" BOOLEAN NOT NULL DEFAULT false,
+    "triggeredAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "WebhookExecution_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "ScheduledWebhook" (
+    "id" SERIAL NOT NULL,
+    "webhookId" INTEGER NOT NULL,
+    "resourceType" TEXT NOT NULL,
+    "resourceId" INTEGER NOT NULL,
+    "scheduledFor" TIMESTAMP(3) NOT NULL,
+    "executed" BOOLEAN NOT NULL DEFAULT false,
+    "executedAt" TIMESTAMP(3),
+    "event" "WebhookEvent" NOT NULL,
+    "payload" JSONB NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "ScheduledWebhook_pkey" PRIMARY KEY ("id")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 
@@ -245,6 +411,12 @@ CREATE INDEX "User_email_idx" ON "User"("email");
 
 -- CreateIndex
 CREATE INDEX "User_oauthProvider_oauthId_idx" ON "User"("oauthProvider", "oauthId");
+
+-- CreateIndex
+CREATE INDEX "Notification_userId_idx" ON "Notification"("userId");
+
+-- CreateIndex
+CREATE INDEX "Notification_userId_read_idx" ON "Notification"("userId", "read");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Session_refreshToken_key" ON "Session"("refreshToken");
@@ -271,6 +443,36 @@ CREATE INDEX "Note_userId_idx" ON "Note"("userId");
 CREATE INDEX "Note_isStarred_idx" ON "Note"("isStarred");
 
 -- CreateIndex
+CREATE INDEX "NoteCollaborator_noteId_idx" ON "NoteCollaborator"("noteId");
+
+-- CreateIndex
+CREATE INDEX "NoteCollaborator_userId_idx" ON "NoteCollaborator"("userId");
+
+-- CreateIndex
+CREATE INDEX "NoteCollaborator_lastActivity_idx" ON "NoteCollaborator"("lastActivity");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "NoteCollaborator_noteId_userId_key" ON "NoteCollaborator"("noteId", "userId");
+
+-- CreateIndex
+CREATE INDEX "NoteHistory_noteId_idx" ON "NoteHistory"("noteId");
+
+-- CreateIndex
+CREATE INDEX "NoteHistory_userId_idx" ON "NoteHistory"("userId");
+
+-- CreateIndex
+CREATE INDEX "NoteHistory_noteId_version_idx" ON "NoteHistory"("noteId", "version");
+
+-- CreateIndex
+CREATE INDEX "NoteHistory_createdAt_idx" ON "NoteHistory"("createdAt");
+
+-- CreateIndex
+CREATE INDEX "KanbanBoard_userId_idx" ON "KanbanBoard"("userId");
+
+-- CreateIndex
+CREATE INDEX "TaskColumn_boardId_idx" ON "TaskColumn"("boardId");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "CalendarEvent_taskId_key" ON "CalendarEvent"("taskId");
 
 -- CreateIndex
@@ -292,6 +494,9 @@ CREATE INDEX "EventAttendee_userId_idx" ON "EventAttendee"("userId");
 CREATE UNIQUE INDEX "EventAttendee_eventId_userId_key" ON "EventAttendee"("eventId", "userId");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "Permission_publicToken_key" ON "Permission"("publicToken");
+
+-- CreateIndex
 CREATE INDEX "Permission_subjectId_idx" ON "Permission"("subjectId");
 
 -- CreateIndex
@@ -301,7 +506,37 @@ CREATE INDEX "Permission_resourceId_resourceType_idx" ON "Permission"("resourceI
 CREATE INDEX "Permission_resourceType_idx" ON "Permission"("resourceType");
 
 -- CreateIndex
+CREATE INDEX "Permission_email_idx" ON "Permission"("email");
+
+-- CreateIndex
+CREATE INDEX "Permission_publicToken_idx" ON "Permission"("publicToken");
+
+-- CreateIndex
+CREATE INDEX "Permission_isPublic_idx" ON "Permission"("isPublic");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "Permission_subjectId_resourceId_resourceType_key" ON "Permission"("subjectId", "resourceId", "resourceType");
+
+-- CreateIndex
+CREATE INDEX "ShareActivity_actorId_idx" ON "ShareActivity"("actorId");
+
+-- CreateIndex
+CREATE INDEX "ShareActivity_resourceType_resourceId_idx" ON "ShareActivity"("resourceType", "resourceId");
+
+-- CreateIndex
+CREATE INDEX "ShareActivity_createdAt_idx" ON "ShareActivity"("createdAt");
+
+-- CreateIndex
+CREATE INDEX "ShareActivity_activityType_idx" ON "ShareActivity"("activityType");
+
+-- CreateIndex
+CREATE INDEX "ActiveCollaborator_resourceType_resourceId_idx" ON "ActiveCollaborator"("resourceType", "resourceId");
+
+-- CreateIndex
+CREATE INDEX "ActiveCollaborator_lastActivity_idx" ON "ActiveCollaborator"("lastActivity");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "ActiveCollaborator_userId_resourceType_resourceId_key" ON "ActiveCollaborator"("userId", "resourceType", "resourceId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "FeatureFlag_key_key" ON "FeatureFlag"("key");
@@ -323,6 +558,36 @@ CREATE INDEX "UserFeatureFlag_featureFlagId_idx" ON "UserFeatureFlag"("featureFl
 
 -- CreateIndex
 CREATE UNIQUE INDEX "UserFeatureFlag_userId_featureFlagId_key" ON "UserFeatureFlag"("userId", "featureFlagId");
+
+-- CreateIndex
+CREATE INDEX "Webhook_userId_idx" ON "Webhook"("userId");
+
+-- CreateIndex
+CREATE INDEX "Webhook_status_idx" ON "Webhook"("status");
+
+-- CreateIndex
+CREATE INDEX "Webhook_events_idx" ON "Webhook"("events");
+
+-- CreateIndex
+CREATE INDEX "WebhookExecution_webhookId_idx" ON "WebhookExecution"("webhookId");
+
+-- CreateIndex
+CREATE INDEX "WebhookExecution_triggeredAt_idx" ON "WebhookExecution"("triggeredAt");
+
+-- CreateIndex
+CREATE INDEX "WebhookExecution_success_idx" ON "WebhookExecution"("success");
+
+-- CreateIndex
+CREATE INDEX "ScheduledWebhook_scheduledFor_executed_idx" ON "ScheduledWebhook"("scheduledFor", "executed");
+
+-- CreateIndex
+CREATE INDEX "ScheduledWebhook_webhookId_idx" ON "ScheduledWebhook"("webhookId");
+
+-- CreateIndex
+CREATE INDEX "ScheduledWebhook_resourceType_resourceId_idx" ON "ScheduledWebhook"("resourceType", "resourceId");
+
+-- AddForeignKey
+ALTER TABLE "Notification" ADD CONSTRAINT "Notification_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Session" ADD CONSTRAINT "Session_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -355,6 +620,24 @@ ALTER TABLE "Message" ADD CONSTRAINT "Message_chatId_fkey" FOREIGN KEY ("chatId"
 ALTER TABLE "Note" ADD CONSTRAINT "Note_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "NoteCollaborator" ADD CONSTRAINT "NoteCollaborator_noteId_fkey" FOREIGN KEY ("noteId") REFERENCES "Note"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "NoteCollaborator" ADD CONSTRAINT "NoteCollaborator_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "NoteHistory" ADD CONSTRAINT "NoteHistory_noteId_fkey" FOREIGN KEY ("noteId") REFERENCES "Note"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "NoteHistory" ADD CONSTRAINT "NoteHistory_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "KanbanBoard" ADD CONSTRAINT "KanbanBoard_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "TaskColumn" ADD CONSTRAINT "TaskColumn_boardId_fkey" FOREIGN KEY ("boardId") REFERENCES "KanbanBoard"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "TaskColumn" ADD CONSTRAINT "TaskColumn_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -382,7 +665,22 @@ ALTER TABLE "EventAttendee" ADD CONSTRAINT "EventAttendee_eventId_fkey" FOREIGN 
 ALTER TABLE "EventAttendee" ADD CONSTRAINT "EventAttendee_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "Permission" ADD CONSTRAINT "Permission_grantedBy_fkey" FOREIGN KEY ("grantedBy") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Permission" ADD CONSTRAINT "Permission_subjectId_fkey" FOREIGN KEY ("subjectId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "UserFeatureFlag" ADD CONSTRAINT "UserFeatureFlag_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "UserFeatureFlag" ADD CONSTRAINT "UserFeatureFlag_featureFlagId_fkey" FOREIGN KEY ("featureFlagId") REFERENCES "FeatureFlag"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Webhook" ADD CONSTRAINT "Webhook_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "WebhookExecution" ADD CONSTRAINT "WebhookExecution_webhookId_fkey" FOREIGN KEY ("webhookId") REFERENCES "Webhook"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "ScheduledWebhook" ADD CONSTRAINT "ScheduledWebhook_webhookId_fkey" FOREIGN KEY ("webhookId") REFERENCES "Webhook"("id") ON DELETE CASCADE ON UPDATE CASCADE;

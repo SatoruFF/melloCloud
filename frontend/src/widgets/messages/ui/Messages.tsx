@@ -1,4 +1,4 @@
-import { Avatar, Input, Button, Empty, Tooltip, Alert } from "antd";
+import { Input, Button, Empty, Alert } from "antd";
 import { useTranslation } from "react-i18next";
 import { Send, Mic, Paperclip } from "lucide-react";
 import MessagesList from "./MessagesList";
@@ -14,7 +14,7 @@ const Messages = () => {
   const { t } = useTranslation();
   const currentChat = useAppSelector(getCurrentChat);
   const currentUser = useAppSelector(getUser);
-  const { id: currentUserId } = currentUser;
+  const { id: currentUserId } = currentUser || {};
   const { messages, sendMessage, error, isLoading } = useMessages();
   const [inputValue, setInputValue] = useState("");
 
@@ -42,12 +42,14 @@ const Messages = () => {
   if (!currentChat) {
     return (
       <div className={styles.emptyWrapper}>
-        <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={<span>💬 {t("messages.start-new-chat")}</span>} />
+        <Empty
+          image={Empty.PRESENTED_IMAGE_SIMPLE}
+          description={<span className={styles.emptyDescription}>💬 {t("messages.start-new-chat")}</span>}
+        />
       </div>
     );
   }
 
-  // FIXME: with translate
   return (
     <div className={styles.messagesWrapper}>
       <ChatHeader />
@@ -67,32 +69,31 @@ const Messages = () => {
           disabled={isLoading}
         />
         <div className={styles.buttonsWrapper}>
-          <Tooltip title="Голосовое сообщение">
-            <Button
-              type="text"
-              icon={<Mic />}
-              onClick={handleVoiceMessage}
-              className={styles.voiceButton}
-              aria-label="Voice message"
-            />
-          </Tooltip>
-          <Tooltip title="Прикрепить файл">
-            <Button
-              type="text"
-              icon={<Paperclip />}
-              onClick={handleAttachFile}
-              className={styles.attachButton}
-              aria-label="Attach file"
-            />
-          </Tooltip>
-          <Button
-            type="text"
-            icon={<Send />}
+          <button
+            onClick={handleVoiceMessage}
+            className={styles.voiceButton}
+            aria-label="Voice message"
+            title="Голосовое сообщение"
+          >
+            <Mic size={18} />
+          </button>
+          <button
+            onClick={handleAttachFile}
+            className={styles.attachButton}
+            aria-label="Attach file"
+            title="Прикрепить файл"
+          >
+            <Paperclip size={18} />
+          </button>
+          <button
             onClick={handleSendMessage}
             className={styles.sendButton}
             aria-label="Send message"
-            disabled={isLoading}
-          />
+            disabled={isLoading || !inputValue.trim()}
+            title="Отправить"
+          >
+            <Send size={18} />
+          </button>
         </div>
       </div>
     </div>

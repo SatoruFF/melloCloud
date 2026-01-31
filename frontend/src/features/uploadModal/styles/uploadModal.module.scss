@@ -1,7 +1,21 @@
 @use '../../../shared/styles/tmp.scss' as *;
 
-// .uplModalFileSpace {
-//     * {
-//         @extend %secondFont;
-//     }
-// }
+.uplModalFileSpace {
+  :global(.ant-upload-drag) {
+    .ant-upload-text,
+    .ant-upload-hint,
+    .ant-upload-drag-icon {
+      font-family: $main-font !important;
+    }
+
+    .ant-upload-text {
+      font-size: 16px;
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    .ant-upload-hint {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.6);
+    }
+  }
+}

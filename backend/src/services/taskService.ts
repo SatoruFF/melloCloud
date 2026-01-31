@@ -1,7 +1,10 @@
 import { prisma } from "../configs/config.js";
+import { ResourceType } from "@prisma/client";
 import _ from "lodash";
 import "dotenv/config.js";
 import createError from "http-errors";
+import { SharingService } from "./sharingService.js";
+import { NotificationService } from "./notificationService.js";
 
 interface ITaskData {
   title: string;
@@ -10,44 +13,51 @@ interface ITaskData {
   dueDate?: Date | string | null;
   columnId?: number;
   userId: number;
+  assignedToId?: number | null;
 }
 
 interface ITaskUpdate {
   title?: string;
   content?: string;
+  description?: string | null;
   priority?: string;
   isDone?: boolean;
   dueDate?: Date | string | null;
   columnId?: number;
+  assignedToId?: number | null;
 }
 
 class TaskServiceClass {
-  async create({ title, content, priority = "LOW", dueDate, columnId, userId }: ITaskData) {
+  private async ensureBoardAccess(boardId: number, userId: number) {
+    const { hasAccess } = await SharingService.checkUserPermission(
+      userId,
+      ResourceType.KANBAN_BOARD,
+      boardId
+    );
+    if (!hasAccess) {
+      throw createError(404, "Board not found");
+    }
+  }
+
+  async create({ title, content, priority = "LOW", dueDate, columnId, userId, assignedToId }: ITaskData) {
+    if (!title || !content) {
+      throw createError(400, "Title and content are required");
+    }
+    const validPriorities = ["LOW", "MEDIUM", "HIGH"];
+    if (priority && !validPriorities.includes(priority.toUpperCase())) {
+      throw createError(400, "Priority must be LOW, MEDIUM, or HIGH");
+    }
+    if (columnId) {
+      const column = await prisma.taskColumn.findFirst({
+        where: { id: columnId },
+      });
+      if (!column) {
+        throw createError(400, "Column not found");
+      }
+      await this.ensureBoardAccess(column.boardId, userId);
+    }
+
     return prisma.$transaction(async (trx) => {
-      // Validate required fields
-      if (!title || !content) {
-        throw createError(400, "Title and content are required");
-      }
-
-      // Validate priority
-      const validPriorities = ["LOW", "MEDIUM", "HIGH"];
-      if (priority && !validPriorities.includes(priority.toUpperCase())) {
-        throw createError(400, "Priority must be LOW, MEDIUM, or HIGH");
-      }
-
-      // Validate column if provided
-      if (columnId) {
-        const column = await trx.taskColumn.findFirst({
-          where: {
-            id: columnId,
-            userId,
-          },
-        });
-
-        if (!column) {
-          throw createError(400, "Column not found or doesn't belong to user");
-        }
-      }
 
       // Parse dueDate if it's a string
       let parsedDueDate = null;
@@ -68,6 +78,7 @@ class TaskServiceClass {
           dueDate: parsedDueDate,
           columnId,
           userId,
+          assignedToId: assignedToId ?? undefined,
         },
         include: {
           user: {
@@ -80,6 +91,25 @@ class TaskServiceClass {
           column: true,
         },
       });
+
+      if (assignedToId && assignedToId !== userId) {
+        try {
+          const assigner = await prisma.user.findUnique({
+            where: { id: userId },
+            select: { userName: true },
+          });
+          const assignerName = assigner?.userName ?? "Someone";
+          await NotificationService.create({
+            userId: assignedToId,
+            type: "TASK_ASSIGNED",
+            title: "Task assigned",
+            text: `${assignerName} assigned you: ${title}`,
+            link: `/planner?taskId=${task.id}`,
+          });
+        } catch (_err) {
+          // non-blocking
+        }
+      }
 
       return task;
     });
@@ -103,87 +133,64 @@ class TaskServiceClass {
     return tasks;
   }
 
-  // Get tasks by column
   async getByColumn(columnId: number, userId: number) {
-    // First verify the column belongs to the user
     const column = await prisma.taskColumn.findFirst({
-      where: {
-        id: columnId,
-        userId,
-      },
+      where: { id: columnId },
     });
-
-    if (!column) {
-      throw createError(404, "Column not found");
-    }
-
+    if (!column) throw createError(404, "Column not found");
+    await this.ensureBoardAccess(column.boardId, userId);
     const tasks = await prisma.task.findMany({
-      where: {
-        columnId,
-        userId,
-      },
-      include: {
-        column: true,
-      },
+      where: { columnId },
+      include: { column: true },
       orderBy: [{ isDone: "asc" }, { priority: "desc" }, { createdAt: "desc" }],
     });
-
     return tasks;
   }
 
-  // Get kanban board data (columns with tasks)
-  async getKanbanData(userId: number) {
+  async getKanbanData(boardId: number, userId: number) {
+    await this.ensureBoardAccess(boardId, userId);
     const columns = await prisma.taskColumn.findMany({
-      where: {
-        userId,
-      },
+      where: { boardId },
       include: {
         tasks: {
           orderBy: [{ isDone: "asc" }, { priority: "desc" }, { createdAt: "desc" }],
         },
       },
-      orderBy: {
-        order: "asc",
-      },
+      orderBy: { order: "asc" },
     });
-
     return columns;
   }
 
   async getById(id: number, userId: number) {
     const task = await prisma.task.findFirst({
-      where: {
-        id,
-        userId, // Ensure user can only access their own tasks
-      },
+      where: { id },
       include: {
-        user: {
-          select: {
-            id: true,
-            userName: true,
-            email: true,
-          },
-        },
+        user: { select: { id: true, userName: true, email: true } },
         column: true,
       },
     });
-
+    if (!task) return null;
+    if (task.column) {
+      await this.ensureBoardAccess(task.column.boardId, userId);
+    } else {
+      if (task.userId !== userId) throw createError(404, "Task not found");
+    }
     return task;
   }
 
   async update(id: number, userId: number, updateData: ITaskUpdate) {
-    return prisma.$transaction(async (trx) => {
-      // First check if task exists and belongs to user
-      const existingTask = await trx.task.findFirst({
-        where: {
-          id,
-          userId,
-        },
-      });
+    const existingTask = await prisma.task.findFirst({
+      where: { id },
+      include: { column: true },
+    });
+    if (!existingTask) throw createError(404, "Task not found");
+    if (existingTask.column) {
+      await this.ensureBoardAccess(existingTask.column.boardId, userId);
+    } else if (existingTask.userId !== userId) {
+      throw createError(404, "Task not found");
+    }
 
-      if (!existingTask) {
-        throw createError(404, "Task not found");
-      }
+    return prisma.$transaction(async (trx) => {
 
       // Validate priority if provided
       if (updateData.priority) {
@@ -194,17 +201,13 @@ class TaskServiceClass {
         updateData.priority = updateData.priority.toUpperCase();
       }
 
-      // Validate column if provided
       if (updateData.columnId) {
         const column = await trx.taskColumn.findFirst({
-          where: {
-            id: updateData.columnId,
-            userId,
-          },
+          where: { id: updateData.columnId },
         });
-
-        if (!column) {
-          throw createError(400, "Column not found or doesn't belong to user");
+        if (!column) throw createError(400, "Column not found");
+        if (existingTask.column && column.boardId !== existingTask.column.boardId) {
+          throw createError(400, "Column must be on the same board");
         }
       }
 
@@ -236,24 +239,46 @@ class TaskServiceClass {
         },
       });
 
+      if (
+        updateData.assignedToId !== undefined &&
+        updateData.assignedToId !== existingTask.assignedToId &&
+        updateData.assignedToId != null
+      ) {
+        try {
+          const assigner = await prisma.user.findUnique({
+            where: { id: userId },
+            select: { userName: true },
+          });
+          const assignerName = assigner?.userName ?? "Someone";
+          await NotificationService.create({
+            userId: updateData.assignedToId,
+            type: "TASK_ASSIGNED",
+            title: "Task assigned",
+            text: `${assignerName} assigned you: ${task.title}`,
+            link: `/planner?taskId=${task.id}`,
+          });
+        } catch (_err) {
+          // non-blocking
+        }
+      }
+
       return task;
     });
   }
 
   async delete(id: number, userId: number) {
+    const existingTask = await prisma.task.findFirst({
+      where: { id },
+      include: { column: true },
+    });
+    if (!existingTask) throw createError(404, "Task not found");
+    if (existingTask.column) {
+      await this.ensureBoardAccess(existingTask.column.boardId, userId);
+    } else if (existingTask.userId !== userId) {
+      throw createError(404, "Task not found");
+    }
+
     return prisma.$transaction(async (trx) => {
-      // First check if task exists and belongs to user
-      const existingTask = await trx.task.findFirst({
-        where: {
-          id,
-          userId,
-        },
-      });
-
-      if (!existingTask) {
-        throw createError(404, "Task not found");
-      }
-
       await trx.task.delete({
         where: {
           id,
@@ -265,19 +290,18 @@ class TaskServiceClass {
   }
 
   async toggleComplete(id: number, userId: number) {
+    const existingTask = await prisma.task.findFirst({
+      where: { id },
+      include: { column: true },
+    });
+    if (!existingTask) throw createError(404, "Task not found");
+    if (existingTask.column) {
+      await this.ensureBoardAccess(existingTask.column.boardId, userId);
+    } else if (existingTask.userId !== userId) {
+      throw createError(404, "Task not found");
+    }
+
     return prisma.$transaction(async (trx) => {
-      // First get current task state
-      const existingTask = await trx.task.findFirst({
-        where: {
-          id,
-          userId,
-        },
-      });
-
-      if (!existingTask) {
-        throw createError(404, "Task not found");
-      }
-
       const task = await trx.task.update({
         where: {
           id,
@@ -301,53 +325,34 @@ class TaskServiceClass {
     });
   }
 
-  // Move task to different column
   async moveToColumn(id: number, columnId: number, userId: number) {
+    const [existingTask, column] = await Promise.all([
+      prisma.task.findFirst({
+        where: { id },
+        include: { column: true },
+      }),
+      prisma.taskColumn.findFirst({
+        where: { id: columnId },
+      }),
+    ]);
+    if (!existingTask) throw createError(404, "Task not found");
+    if (!column) throw createError(404, "Column not found");
+    const taskBoardId = existingTask.column?.boardId ?? column.boardId;
+    if (column.boardId !== taskBoardId) {
+      throw createError(400, "Task and column must be on the same board");
+    }
+    await this.ensureBoardAccess(column.boardId, userId);
+
     return prisma.$transaction(async (trx) => {
-      // Verify task belongs to user
-      const existingTask = await trx.task.findFirst({
-        where: {
-          id,
-          userId,
-        },
-      });
 
-      if (!existingTask) {
-        throw createError(404, "Task not found");
-      }
-
-      // Verify column belongs to user
-      const column = await trx.taskColumn.findFirst({
-        where: {
-          id: columnId,
-          userId,
-        },
-      });
-
-      if (!column) {
-        throw createError(404, "Column not found");
-      }
-
-      const task = await trx.task.update({
-        where: {
-          id,
-        },
-        data: {
-          columnId,
-        },
+      return trx.task.update({
+        where: { id },
+        data: { columnId },
         include: {
-          user: {
-            select: {
-              id: true,
-              userName: true,
-              email: true,
-            },
-          },
+          user: { select: { id: true, userName: true, email: true } },
           column: true,
         },
       });
-
-      return task;
     });
   }
 

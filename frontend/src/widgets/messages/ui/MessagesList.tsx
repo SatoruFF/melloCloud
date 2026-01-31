@@ -1,4 +1,3 @@
-import { Avatar, List } from "antd";
 import cn from "classnames";
 import styles from "./messages-list.module.scss";
 import { memo, useEffect, useRef, useCallback, useState } from "react";
@@ -9,7 +8,7 @@ import { useTranslation } from "react-i18next";
 
 interface MessagesListProps {
   messages: Message[];
-  currentUserId: number;
+  currentUserId: number | undefined;
 }
 
 const MessagesList = ({ messages, currentUserId }: MessagesListProps) => {
@@ -21,7 +20,7 @@ const MessagesList = ({ messages, currentUserId }: MessagesListProps) => {
   // Компонент для отображения сообщения
   const MessageItem = useCallback(
     ({ message }: { message: Message }) => {
-      const isSelf = message.senderId == String(currentUserId);
+      const isSelf = String(message.senderId) === String(currentUserId);
       const formattedTime = message.createdAt
         ? DateTime.fromISO(message.createdAt.toString()).toFormat("HH:mm")
         : message.time || "--:--";

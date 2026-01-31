@@ -8,8 +8,9 @@ export const taskApi = rtkApi.injectEndpoints({
       query: () => ApiPaths.tasks,
     }),
 
-    getKanbanData: builder.query<TaskColumn[], void>({
-      query: () => `${ApiPaths.tasks}/kanban`,
+    getKanbanData: builder.query<TaskColumn[], number>({
+      query: boardId => `${ApiPaths.tasks}/kanban?boardId=${boardId}`,
+      providesTags: ['Kanban'],
     }),
 
     createTask: builder.mutation<
@@ -35,6 +36,7 @@ export const taskApi = rtkApi.injectEndpoints({
         taskId: string | number;
         title?: string;
         content?: string;
+        description?: string | null;
         priority?: string;
         isDone?: boolean;
         columnId?: number;
@@ -46,6 +48,7 @@ export const taskApi = rtkApi.injectEndpoints({
         method: 'PUT',
         body,
       }),
+      invalidatesTags: ['Kanban'],
     }),
 
     deleteTask: builder.mutation<{ message: string }, string | number>({

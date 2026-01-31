@@ -44,6 +44,9 @@ export const ApiPaths = {
   chats: 'chats',
   messages: 'messages',
 
+  // Boards (Kanban)
+  boards: 'boards',
+
   // Tasks
   tasks: 'tasks',
   tasksKanban: 'tasks/kanban',
@@ -75,6 +78,21 @@ export const ApiPaths = {
   webhooks: 'webhooks',
   webhooksEvents: 'webhooks/events',
   webhooksScheduled: 'webhooks/scheduled',
+
+  // Notifications
+  notifications: 'notifications',
+  notificationsUnreadCount: 'notifications/unread-count',
+  notificationsReadAll: 'notifications/read-all',
+
+  // Sharing
+  sharing: 'sharing',
+  sharingPermissions: 'sharing/permissions',
+  sharingPublicLink: 'sha/public-link',
+  sharingSharedWithMe: 'sharing/shared-with-me',
+  sharingSharedByMe: 'sharing/shared-by-me',
+  sharingCheckPermission: 'sharing/check-permission',
+  sharingActivity: 'sharing/activity',
+  sharingPublic: '/shared',
 } as const;
 
 // ========================================
@@ -116,8 +134,9 @@ export const Variables = {
   File_UploadAvatar: `${_baseUrl}/file/avatar`,
   File_DeleteAvatar: `${_baseUrl}/file/avatar`,
 
-  // WebSocket
-  Socket_URL: `${_baseSocketUrl}`,
+  // WebSocket: chat на /ws/chat, коллаборация заметок на /ws/notes
+  Socket_URL: `${_baseSocketUrl}/ws/chat`,
+  Socket_Notes_URL: `${_baseSocketUrl}/ws/notes`,
 
   // Misc
   TELEGRAM_BOT_NAME: import.meta.env.VITE_TELEGRAM_BOT_NAME || 'YourBotName',

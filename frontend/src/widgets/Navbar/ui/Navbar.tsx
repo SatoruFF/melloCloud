@@ -1,4 +1,4 @@
-import { ApiOutlined, MenuFoldOutlined, MenuUnfoldOutlined, SettingOutlined, UserOutlined } from "@ant-design/icons";
+import { Plug, Menu, X, Settings, User } from "lucide-react";
 import { Avatar, Button, Divider, Drawer, Tooltip, notification } from "antd";
 import cn from "classnames";
 import { motion } from "framer-motion";
@@ -42,7 +42,7 @@ const MyNavbar: React.FC = () => {
       message: t("auth.logout-success"),
       description: t("auth.logout-description"),
       placement: "topLeft",
-      icon: <ApiOutlined style={{ color: "#ff7875" }} />,
+      icon: <Plug size={20} style={{ color: "#ff7875" }} />,
     });
   }, [dispatch, navigate, t]);
 
@@ -90,7 +90,9 @@ const MyNavbar: React.FC = () => {
             <>
               <div className={cn(styles.navFiles)}>
                 <Button ghost>
-                  <NavLink to={FILE_ROUTE}>{t("files.my-files")}</NavLink>
+                  <NavLink to={FILE_ROUTE} className={cn(styles.links)}>
+                    {t("files.my-files")}
+                  </NavLink>
                 </Button>
               </div>
             </>
@@ -103,7 +105,7 @@ const MyNavbar: React.FC = () => {
               <Tooltip title={t("user.settings")}>
                 <div className={cn(styles.userInfo)} onClick={() => setProfile(true)}>
                   <p>{user?.userName}</p>
-                  <SettingOutlined />
+                  <Settings size={16} />
                 </div>
               </Tooltip>
             )}
@@ -119,7 +121,7 @@ const MyNavbar: React.FC = () => {
               {user?.avatar ? (
                 <Avatar size={40} src={user.avatar} alt={user?.userName || t("user.avatar")} />
               ) : (
-                <Avatar size={40} icon={<UserOutlined />} style={{ backgroundColor: "#1890ff" }} />
+                <Avatar size={40} icon={<User size={20} />} style={{ backgroundColor: "#1890ff" }} />
               )}
             </div>
             <Button className={cn(styles.mainLogout)} type="primary" onClick={logOut}>
@@ -140,19 +142,23 @@ const MyNavbar: React.FC = () => {
         <div className={cn(styles.navItems)}>
           <div className={cn(styles.navItem)}>
             <Button ghost>
-              <NavLink to={LOGIN_ROUTE}>{t("auth.authorization")}</NavLink>
+              <NavLink to={LOGIN_ROUTE} className={cn(styles.links)}>
+                {t("auth.authorization")}
+              </NavLink>
             </Button>
           </div>
           <div className={cn(styles.navItem)}>
             <Button ghost>
-              <NavLink to={REGISTRATION_ROUTE}>{t("auth.registration")}</NavLink>
+              <NavLink to={REGISTRATION_ROUTE} className={cn(styles.links)}>
+                {t("auth.registration")}
+              </NavLink>
             </Button>
           </div>
           <div className={cn(styles.navBurger)}>
             {!burger ? (
-              <MenuFoldOutlined className="burger-icon" onClick={() => setBurger(true)} />
+              <Menu size={24} className="burger-icon" onClick={() => setBurger(true)} />
             ) : (
-              <MenuUnfoldOutlined className="burger-icon" />
+              <X size={24} className="burger-icon" />
             )}
             <Drawer title={t("navbar.pages")} placement="left" onClose={() => setBurger(false)} open={burger}>
               <motion.div
@@ -162,7 +168,9 @@ const MyNavbar: React.FC = () => {
                 className={cn(styles.burgerItem)}
               >
                 <Divider>
-                  <NavLink to={WELCOME_ROUTE}>{t("navbar.home")}</NavLink>
+                  <NavLink to={WELCOME_ROUTE} className={cn(styles.links)}>
+                    {t("navbar.home")}
+                  </NavLink>
                 </Divider>
               </motion.div>
               <motion.div
@@ -172,7 +180,9 @@ const MyNavbar: React.FC = () => {
                 className={cn(styles.burgerItem)}
               >
                 <Divider>
-                  <NavLink to={LOGIN_ROUTE}>{t("auth.authorization")}</NavLink>
+                  <NavLink to={LOGIN_ROUTE} className={cn(styles.links)}>
+                    {t("auth.authorization")}
+                  </NavLink>
                 </Divider>
               </motion.div>
               <motion.div
@@ -182,7 +192,9 @@ const MyNavbar: React.FC = () => {
                 className={cn(styles.burgerItem)}
               >
                 <Divider>
-                  <NavLink to={REGISTRATION_ROUTE}>{t("auth.registration")}</NavLink>
+                  <NavLink to={REGISTRATION_ROUTE} className={cn(styles.links)}>
+                    {t("auth.registration")}
+                  </NavLink>
                 </Divider>
               </motion.div>
             </Drawer>

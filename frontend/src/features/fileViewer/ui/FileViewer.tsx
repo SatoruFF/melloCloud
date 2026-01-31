@@ -1,8 +1,7 @@
-import { FileFilled, PlayCircleOutlined, FileTextOutlined } from "@ant-design/icons";
 import { Button, Image, Modal, Spin } from "antd";
 import cn from "classnames";
-import { Folder, FileText, FileCode, FileArchive, FileSpreadsheet } from "lucide-react";
-import React, { useState, useEffect } from "react";
+import { Folder, FileText, FileCode, FileArchive, FileSpreadsheet, PlayCircle, File } from "lucide-react";
+import React, { useState } from "react";
 import ReactPlayer from "react-player";
 import { Document, Page, pdfjs } from "react-pdf";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
@@ -19,6 +18,9 @@ interface FileViewerProps {
   type: string;
   url?: string;
   fileName?: string;
+  className?: string;
+  style?: React.CSSProperties;
+  iconSize?: number;
 }
 
 // TODO: get away from here
@@ -53,7 +55,32 @@ const MARKDOWN_TYPES = ["md", "markdown"];
 const ARCHIVE_TYPES = ["zip", "rar", "7z", "tar", "gz"];
 const SPREADSHEET_TYPES = ["xlsx", "xls", "csv"];
 
-const FileViewer: React.FC<FileViewerProps> = ({ type, url, fileName }) => {
+/** MIME → расширение для просмотра (бэкенд может отдавать type как "text/plain") */
+const MIME_TO_EXT: Record<string, string> = {
+  "text/plain": "txt",
+  "text/html": "html",
+  "text/csv": "csv",
+  "text/css": "css",
+  "application/pdf": "pdf",
+  "application/json": "json",
+  "application/javascript": "js",
+  "text/javascript": "js",
+};
+
+function getViewerType(type: string, fileName?: string): string {
+  const t = (type || "").trim().toLowerCase();
+  if (!t) {
+    const ext = fileName?.split(".").pop()?.toLowerCase();
+    return ext || "";
+  }
+  const mimeBase = t.split(";")[0]?.trim() || t;
+  if (MIME_TO_EXT[mimeBase]) return MIME_TO_EXT[mimeBase];
+  if (!mimeBase.includes("/")) return mimeBase;
+  const ext = fileName?.split(".").pop()?.toLowerCase();
+  return ext || t;
+}
+
+const FileViewer: React.FC<FileViewerProps> = ({ type, url, fileName, className, style, iconSize = 50 }) => {
   const [isOpenPlayer, setIsOpenPlayer] = useState(false);
   const [isOpenPDF, setIsOpenPDF] = useState(false);
   const [isOpenCode, setIsOpenCode] = useState(false);
@@ -69,7 +96,7 @@ const FileViewer: React.FC<FileViewerProps> = ({ type, url, fileName }) => {
   const [spreadsheetData, setSpreadsheetData] = useState<any[][]>([]);
   const [loading, setLoading] = useState(false);
 
-  const fileType = type.toLowerCase();
+  const fileType = getViewerType(type, fileName);
 
   const isImage = IMAGE_TYPES.includes(fileType);
   const isPlayer = PLAYER_TYPES.includes(fileType);
@@ -168,46 +195,56 @@ const FileViewer: React.FC<FileViewerProps> = ({ type, url, fileName }) => {
 
   const determineViewer = (fileType: string, url?: string) => {
     if (fileType === "dir") {
-      return <Folder size={50} className={cn(styles.folder)} />;
+      return <Folder size={iconSize} className={cn(styles.folder)} />;
     }
 
     if (isImage && url) {
-      return <Image src={url} className={cn(styles.imageFile)} alt={fileName || fileType} />;
+      return (
+        <Image
+          src={url}
+          className={cn(styles.imageFile)}
+          alt={fileName || fileType}
+          width={iconSize}
+          height={iconSize}
+          style={{ objectFit: "contain" }}
+          preview={true}
+        />
+      );
     }
 
     if (isPlayer) {
-      return <PlayCircleOutlined className={cn(styles.playerIcon)} onClick={() => setIsOpenPlayer(true)} />;
+      return <PlayCircle size={iconSize} className={cn(styles.playerIcon)} onClick={() => setIsOpenPlayer(true)} />;
     }
 
     if (isPDF) {
-      return <FileText size={50} className={cn(styles.pdfIcon)} onClick={() => setIsOpenPDF(true)} />;
+      return <FileText size={iconSize} className={cn(styles.pdfIcon)} onClick={() => setIsOpenPDF(true)} />;
     }
 
     if (isDocument) {
-      return <FileTextOutlined className={cn(styles.documentIcon)} onClick={handleDocumentOpen} />;
+      return <FileText size={iconSize} className={cn(styles.documentIcon)} onClick={handleDocumentOpen} />;
     }
 
     if (isCode) {
-      return <FileCode size={50} className={cn(styles.codeIcon)} onClick={handleCodeOpen} />;
+      return <FileCode size={iconSize} className={cn(styles.codeIcon)} onClick={handleCodeOpen} />;
     }
 
     if (isMarkdown) {
-      return <FileText size={50} className={cn(styles.markdownIcon)} onClick={handleMarkdownOpen} />;
+      return <FileText size={iconSize} className={cn(styles.markdownIcon)} onClick={handleMarkdownOpen} />;
     }
 
     if (isSpreadsheet) {
-      return <FileSpreadsheet size={50} className={cn(styles.spreadsheetIcon)} onClick={handleSpreadsheetOpen} />;
+      return <FileSpreadsheet size={iconSize} className={cn(styles.spreadsheetIcon)} onClick={handleSpreadsheetOpen} />;
     }
 
     if (isArchive) {
-      return <FileArchive size={50} className={cn(styles.archiveIcon)} />;
+      return <FileArchive size={iconSize} className={cn(styles.archiveIcon)} />;
     }
 
-    return <FileFilled className={cn(styles.file)} />;
+    return <File size={iconSize} className={cn(styles.file)} />;
   };
 
   return (
-    <div className={cn(styles.allFileViewer)}>
+    <div className={cn(styles.allFileViewer, className)} style={style}>
       {determineViewer(fileType, url)}
 
       {/* Video/Audio Player Modal */}

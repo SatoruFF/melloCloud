@@ -1,5 +1,5 @@
 // react & core
-import React, { memo } from "react";
+import React, { memo, useState } from "react";
 import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 
@@ -9,17 +9,21 @@ import { useAppDispatch, useAppSelector } from "../../../app/store";
 
 // antd
 import { Button, Popconfirm, Tooltip, message } from "antd";
-import { QuestionCircleOutlined } from "@ant-design/icons";
 
 // external libs
 import cn from "classnames";
 import { get } from "lodash-es";
+import { Link as LinkIcon, Share2, Download, Trash2, AlertCircle } from "lucide-react"; // ✅ Все иконки из Lucide
 
 // features
 import { FileViewer } from "../../../features/fileViewer";
+import { ShareModal } from "../../../features/sharing";
 
 // shared
 import { sizeFormat } from "../../../shared";
+
+// entities
+import { ResourceType } from "../../../entities/sharing";
 
 // internal (entity)
 import { useDeleteFileMutation, useDownloadFileMutation } from "../model/api/fileApi";
@@ -33,6 +37,7 @@ import styles from "./file.module.scss";
 const File: React.FC<FileProps> = ({ file }) => {
   const { t } = useTranslation();
   const [messageApi, contextHolder] = message.useMessage();
+  const [shareModalOpen, setShareModalOpen] = useState(false);
 
   // Format file size
   const size = sizeFormat(file.size);
@@ -48,9 +53,16 @@ const File: React.FC<FileProps> = ({ file }) => {
 
   // Get file type
   const fileType = get(file, "type", "");
+  const isFolder = fileType === "dir";
+
+  // Определяем тип ресурса для sharing
+  const resourceType = isFolder ? ResourceType.FOLDER : ResourceType.FILE;
+
+  // Получаем isShared из файла
+  const isShared = file.isShared || false;
 
   const openDirHandler = () => {
-    if (file.type === "dir") {
+    if (isFolder) {
       dispatch(setDir(file.id));
       dispatch(pushToStack(currentDir));
       dispatch(pushToPath({ title: file.name }));
@@ -80,75 +92,145 @@ const File: React.FC<FileProps> = ({ file }) => {
     }
   };
 
+  const shareHandler = () => {
+    setShareModalOpen(true);
+  };
+
   if (rmLoading) {
     messageApi.loading(t("notes.loading"));
   }
 
+  // Plate View (Grid)
   if (fileView === "plate") {
     return (
       <>
         {contextHolder}
         <motion.div key={file.id} className={cn(styles.filePlateFileWrapper)} onDoubleClick={openDirHandler}>
-          <FileViewer type={fileType} url={file.url} />
+          <div className={styles.fileIconWrapper}>
+            <FileViewer type={fileType} url={file.url} fileName={file.name} />
+            {isShared && (
+              <div className={styles.sharedBadge}>
+                <LinkIcon size={14} />
+              </div>
+            )}
+          </div>
 
           <Tooltip title={file.name}>
             <div className={cn(styles.fileName)}>{file.name}</div>
           </Tooltip>
+
           <div className={cn(styles.fileBtns)}>
-            {file.type !== "dir" && (
-              <Button className={cn(styles.fileBtn, styles.fileDownload)} onClick={downloadHandler} type="link">
+            <Button
+              className={cn(styles.fileBtn, styles.fileShare)}
+              onClick={shareHandler}
+              type="link"
+              icon={<Share2 size={16} />}
+            >
+              {isShared ? t("files.manage-share") : t("files.share")}
+            </Button>
+
+            {!isFolder && (
+              <Button
+                className={cn(styles.fileBtn, styles.fileDownload)}
+                onClick={downloadHandler}
+                type="link"
+                icon={<Download size={16} />}
+              >
                 {t("files.download")}
               </Button>
             )}
+
             <Popconfirm
               title={t("files.delete")}
               description={t("files.confirm")}
               onConfirm={deleteHandler}
               okText={t("common.yes")}
               cancelText={t("common.no")}
-              icon={<QuestionCircleOutlined style={{ color: "red" }} />}
+              icon={<AlertCircle size={18} style={{ color: "red" }} />}
             >
-              <Button className={cn(styles.fileBtn, styles.fileDelete)} type="link" danger>
+              <Button className={cn(styles.fileBtn, styles.fileDelete)} type="link" danger icon={<Trash2 size={16} />}>
                 {t("files.delete")}
               </Button>
             </Popconfirm>
           </div>
         </motion.div>
+
+        <ShareModal
+          open={shareModalOpen}
+          onClose={() => setShareModalOpen(false)}
+          resourceType={resourceType}
+          resourceId={Number(file.id)}
+          resourceName={file.name}
+        />
       </>
     );
   }
 
+  // List View
   return (
     <>
       {contextHolder}
       <motion.div key={file.id} className={cn(styles.fileWrapper)} onDoubleClick={openDirHandler}>
-        <FileViewer type={fileType} url={file.url} />
+        <div className={styles.fileIconWrapper}>
+          <FileViewer type={fileType} url={file.url} fileName={file.name} />
+          {isShared && (
+            <div className={styles.sharedBadgeList}>
+              <LinkIcon size={12} />
+            </div>
+          )}
+        </div>
 
         <Tooltip title={file.name}>
           <div className={cn(styles.fileName)}>{file.name}</div>
         </Tooltip>
+
         <div className={cn(styles.fileDate)}>
           {file.updatedAt ? file.updatedAt.slice(0, 10) : t("files.unknown-date")}
         </div>
+
         <div className={cn(styles.fileSize)}>{size}</div>
-        {file.type !== "dir" && (
-          <Button className={cn(styles.fileBtn, styles.fileDownload)} onClick={downloadHandler} ghost>
+
+        <Button
+          className={cn(styles.fileBtn, styles.fileShare)}
+          onClick={shareHandler}
+          icon={<Share2 size={16} />}
+          ghost
+        >
+          {isShared ? t("files.manage-share") : t("files.share")}
+        </Button>
+
+        {!isFolder && (
+          <Button
+            className={cn(styles.fileBtn, styles.fileDownload)}
+            onClick={downloadHandler}
+            ghost
+            icon={<Download size={16} />}
+          >
             {t("files.download")}
           </Button>
         )}
+
         <Popconfirm
           title={t("files.delete")}
           description={t("files.confirm")}
           onConfirm={deleteHandler}
           okText={t("common.yes")}
           cancelText={t("common.no")}
-          icon={<QuestionCircleOutlined style={{ color: "red" }} />}
+          icon={<AlertCircle size={18} style={{ color: "red" }} />}
         >
-          <Button className={cn(styles.fileBtn, styles.fileDelete)} type="link" danger>
+          <Button className={cn(styles.fileBtn, styles.fileDelete)} type="link" danger icon={<Trash2 size={16} />}>
             {t("files.delete")}
           </Button>
         </Popconfirm>
       </motion.div>
+
+      <ShareModal
+        open={shareModalOpen}
+        onClose={() => setShareModalOpen(false)}
+        resourceType={resourceType}
+        resourceId={Number(file.id)}
+        resourceName={file.name}
+      />
     </>
   );
 };

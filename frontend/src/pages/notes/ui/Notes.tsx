@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { NotesLayout } from "../../../widgets/notesLayout";
-import { NoteEditor } from "../../../widgets/noteEditor";
+import { CollaborativeNoteEditor } from "../../../widgets/noteEditor";
 import { NotesList } from "../../../widgets/notesList";
 import {
   useGetNoteQuery,
@@ -75,7 +75,7 @@ const Notes = () => {
         });
       }
     },
-    [noteId, currentNoteTitle, updateNote, createNote, navigate, t, api]
+    [noteId, currentNoteTitle, updateNote, createNote, navigate, t, api],
   );
 
   const handleTitleChange = useCallback((newTitle: string) => {
@@ -148,7 +148,7 @@ const Notes = () => {
         currentNoteId={noteId}
         onCreateNote={handleCreateNewNote}
       >
-        <NoteEditor
+        <CollaborativeNoteEditor
           key={noteId}
           noteId={noteId}
           title={currentNoteTitle}

@@ -5,6 +5,7 @@ import { logger } from "../configs/logger.js";
 import type { IMessage } from "../types/Message.js";
 import { z } from "zod";
 import { ChatService } from "./chatService.js";
+import { NotificationService } from "./notificationService.js";
 
 // Схема для валидации сообщений
 const messageSchema = z.object({
@@ -82,7 +83,7 @@ class MessagesServiceClass<T extends IMessage> {
       // Шифруем текст сообщения
       const textToSave = encrypt ? await serializeMessage({ text: validatedMessage.text }) : validatedMessage.text;
 
-      return context.prisma.$transaction(async (trx) => {
+      const result = await context.prisma.$transaction(async (trx) => {
         const chatId = await ChatService.getOrCreatePrivateChat(trx, {
           senderId: message.senderId,
           receiverId: message.receiverId,
@@ -98,8 +99,39 @@ class MessagesServiceClass<T extends IMessage> {
         });
 
         logger.info("Encrypted message saved to database:", { id: savedMessage.id });
-        return savedMessage;
+        return { savedMessage, chatId };
       });
+
+      const { savedMessage, chatId } = result;
+
+      const chatUsers = await prisma.chatUser.findMany({
+        where: { chatId },
+        select: { userId: true },
+      });
+      const sender = await prisma.user.findUnique({
+        where: { id: validatedMessage.senderId },
+        select: { userName: true },
+      });
+      const senderName = sender?.userName ?? "Someone";
+      const textPreview = validatedMessage.text.length > 50 ? `${validatedMessage.text.slice(0, 50)}…` : validatedMessage.text;
+
+      for (const { userId } of chatUsers) {
+        if (userId !== validatedMessage.senderId) {
+          try {
+            await NotificationService.create({
+              userId,
+              type: "MESSAGE",
+              title: "New message",
+              text: `${senderName}: ${textPreview}`,
+              link: `/chats?chatId=${chatId}`,
+            });
+          } catch (err) {
+            logger.error("Failed to create message notification", err);
+          }
+        }
+      }
+
+      return { ...savedMessage, text: validatedMessage.text };
     } catch (error) {
       logger.error("Error saving message:", error);
       throw new Error("Failed to save message");

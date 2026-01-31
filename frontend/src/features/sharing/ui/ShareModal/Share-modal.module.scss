@@ -1,0 +1,72 @@
+.shareModal {
+  :global(.ant-modal-body) {
+    padding: 24px;
+    max-height: 70vh;
+    overflow-y: auto;
+  }
+
+  :global(.ant-divider) {
+    margin: 16px 0;
+  }
+}
+
+.modalTitle {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  span {
+    font-size: 16px;
+    font-weight: 600;
+  }
+}
+
+.section {
+  h3 {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: rgba(0, 0, 0, 0.85);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+}
+
+.hint {
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.45);
+  margin: 8px 0 0;
+  line-height: 1.5;
+}
+
+.permissionsList {
+  :global(.ant-list-item) {
+    padding: 12px 0;
+    transition: background-color 0.2s;
+
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.02);
+      border-radius: 4px;
+      padding-left: 8px;
+      padding-right: 8px;
+    }
+  }
+
+  :global(.ant-list-item-meta-title) {
+    font-size: 14px;
+    margin-bottom: 4px;
+  }
+
+  :global(.ant-list-item-meta-description) {
+    font-size: 12px;
+    color: rgba(0, 0, 0, 0.45);
+  }
+}
+
+.permissionItem {
+  :global(.ant-list-item-action) {
+    display: flex;
+    gap: 8px;
+  }
+}

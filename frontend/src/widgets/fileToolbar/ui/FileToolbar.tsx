@@ -1,4 +1,4 @@
-import { AppstoreOutlined, LeftOutlined, UnorderedListOutlined, UploadOutlined } from "@ant-design/icons";
+import { LayoutGrid, List, ChevronLeft, Upload } from "lucide-react";
 import { Breadcrumb, Button, Input, Modal, Select } from "antd";
 import cn from "classnames";
 import { memo } from "react";
@@ -36,13 +36,13 @@ export const FileToolbar = memo(() => {
       <div className={cn(styles.diskWrapper)}>
         <div className={cn(styles.diskControlBtns)}>
           <Button onClick={goBack}>
-            <LeftOutlined />
+            <ChevronLeft size={16} />
           </Button>
           <Button onClick={() => setModal(true)}>
             <p className={cn(styles.diskCreateFolderTxt)}>{t("files.create-new-folder")}</p>
           </Button>
           <Button
-            icon={<UploadOutlined />}
+            icon={<Upload size={16} />}
             onClick={() => setUploadModal(true)}
             className={cn(styles.uploadBtn, styles.diskUpload)}
           >
@@ -61,8 +61,8 @@ export const FileToolbar = memo(() => {
           />
           <Search placeholder={t("files.search-placeholder")} className={cn(styles.searchFiles)} onSearch={onSearch} />
           <div className={cn(styles.visual)}>
-            <UnorderedListOutlined onClick={() => setFileView("list")} className={cn(styles.visualByList)} />
-            <AppstoreOutlined onClick={() => setFileView("plate")} className={cn(styles.visualByFile)} />
+            <List size={20} onClick={() => setFileView("list")} className={cn(styles.visualByList)} />
+            <LayoutGrid size={20} onClick={() => setFileView("plate")} className={cn(styles.visualByFile)} />
           </div>
           <Breadcrumb separator=">" className={cn(styles.breadcrumb)} items={paths} />
         </div>
@@ -71,7 +71,7 @@ export const FileToolbar = memo(() => {
           open={modal}
           onCancel={() => setModal(false)}
           footer={[
-            <Button type="primary" onClick={addNewFolder}>
+            <Button key="create" type="primary" onClick={addNewFolder}>
               {t("buttons.create-folder")}
             </Button>,
           ]}

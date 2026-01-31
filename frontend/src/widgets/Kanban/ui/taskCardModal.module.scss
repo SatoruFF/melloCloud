@@ -1,0 +1,295 @@
+@use "../../../shared/styles/tmp.scss" as *;
+
+// Корень модалки — убираем фон, рамки и outline у всех обёрток
+.modalRoot {
+  :global(.ant-modal-wrap),
+  :global(.ant-modal),
+  :global(.ant-modal-container) {
+    background: transparent !important;
+    box-shadow: none !important;
+    border: none !important;
+    outline: none !important;
+
+    &:focus,
+    &:focus-visible {
+      outline: none !important;
+      box-shadow: none !important;
+    }
+
+    &::before,
+    &::after {
+      display: none !important;
+    }
+  }
+
+  // Контейнер модалки в antd — убираем белый фон темы
+  :global(.ant-modal-container) {
+    background: #0a0a0f !important;
+  }
+
+  :global(.ant-modal-content) {
+    background: #0a0a0f !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    box-shadow: 0 24px 48px rgba(0, 0, 0, 0.5) !important;
+    border-radius: 16px !important;
+    outline: none !important;
+
+    &:focus,
+    &:focus-visible {
+      outline: none !important;
+    }
+  }
+
+  :global(.ant-modal-body) {
+    background: #0a0a0f !important;
+    color: rgba(255, 255, 255, 0.9);
+    padding: 24px 24px 32px !important;
+  }
+
+  :global(.ant-modal-close) {
+    color: rgba(255, 255, 255, 0.7) !important;
+
+    &:hover {
+      color: #fff !important;
+    }
+  }
+
+  // DatePicker (ant-picker) — тёмный фон, светлый текст и плейсхолдер
+  :global(.ant-picker) {
+    background: rgba(255, 255, 255, 0.06) !important;
+    border-color: rgba(255, 255, 255, 0.15) !important;
+
+    :global(.ant-picker-input input) {
+      background: transparent !important;
+      color: rgba(255, 255, 255, 0.95) !important;
+
+      &::placeholder {
+        color: rgba(255, 255, 255, 0.5) !important;
+      }
+    }
+
+    :global(.ant-picker-suffix),
+    :global(.ant-picker-clear) {
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    :global(.ant-picker-clear):hover {
+      color: rgba(255, 255, 255, 0.8);
+    }
+  }
+
+  // Инпуты и текстовые поля — тёмный фон, светлый текст
+  :global(.ant-input),
+  :global(.ant-input-affix-wrapper),
+  :global(textarea.ant-input) {
+    background: rgba(255, 255, 255, 0.06) !important;
+    border-color: rgba(255, 255, 255, 0.15) !important;
+    color: rgba(255, 255, 255, 0.95) !important;
+
+    &::placeholder {
+      color: rgba(255, 255, 255, 0.4);
+    }
+  }
+
+  :global(.ant-select-selector) {
+    background: rgba(255, 255, 255, 0.06) !important;
+    border-color: rgba(255, 255, 255, 0.15) !important;
+    color: rgba(255, 255, 255, 0.95) !important;
+  }
+
+  :global(.ant-select-arrow) {
+    color: rgba(255, 255, 255, 0.5);
+  }
+
+  :global(.ant-select-dropdown) {
+    background: #1a1a24 !important;
+
+    :global(.ant-select-item) {
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    :global(.ant-select-item-option-active),
+    :global(.ant-select-item-option-selected) {
+      background: rgba(139, 92, 246, 0.2) !important;
+    }
+  }
+}
+
+// Обёртка контента — без фона и без рамки
+.modalWrapper {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+.modal {
+  :global(.ant-modal-content) {
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    box-shadow: 0 24px 48px rgba(0, 0, 0, 0.4) !important;
+  }
+}
+
+.header {
+  margin-bottom: 20px;
+
+  .titleInput {
+    font-size: 18px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.95);
+    padding: 0 0 8px;
+    background: transparent !important;
+
+    &::placeholder {
+      color: rgba(255, 255, 255, 0.4);
+    }
+
+    &:focus {
+      box-shadow: none !important;
+    }
+  }
+
+  .meta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+  }
+
+  .priorityBadge {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #fff;
+  }
+
+  .createdAt {
+    font-size: 12px !important;
+    color: rgba(255, 255, 255, 0.5) !important;
+  }
+}
+
+.section {
+  margin-bottom: 20px;
+
+  .label {
+    display: block;
+    font-size: 12px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.6);
+    margin-bottom: 6px;
+  }
+
+  .textArea {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    color: rgba(255, 255, 255, 0.9) !important;
+    border-radius: 8px;
+
+    &::placeholder {
+      color: rgba(255, 255, 255, 0.4);
+    }
+
+    &:focus,
+    &:hover {
+      border-color: rgba(139, 92, 246, 0.6) !important;
+      box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.15) !important;
+    }
+  }
+
+  .select,
+  .selectFull {
+    width: 100%;
+
+    :global(.ant-select-selector) {
+      background: rgba(255, 255, 255, 0.05) !important;
+      border: 1px solid rgba(255, 255, 255, 0.15) !important;
+      color: rgba(255, 255, 255, 0.9) !important;
+      border-radius: 8px !important;
+    }
+
+    :global(.ant-select-arrow) {
+      color: rgba(255, 255, 255, 0.5);
+    }
+  }
+
+  .dateInput {
+    background: rgba(255, 255, 255, 0.06) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    color: rgba(255, 255, 255, 0.95) !important;
+    border-radius: 8px;
+
+    &::placeholder {
+      color: rgba(255, 255, 255, 0.4);
+    }
+
+    &::-webkit-calendar-picker-indicator {
+      filter: invert(1);
+      opacity: 0.8;
+    }
+  }
+}
+
+.row {
+  display: flex;
+  gap: 16px;
+
+  .section {
+    flex: 1;
+  }
+}
+
+.colorDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+
+  // Кнопка «Отмена» — тёмный фон, светлый текст (не белый на белом)
+  :global(.ant-btn-default) {
+    background: rgba(255, 255, 255, 0.08) !important;
+    border-color: rgba(255, 255, 255, 0.25) !important;
+    color: rgba(255, 255, 255, 0.95) !important;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.12) !important;
+      border-color: rgba(255, 255, 255, 0.4) !important;
+      color: #fff !important;
+    }
+  }
+
+  :global(.ant-btn-primary) {
+    background: linear-gradient(135deg, #8b5cf6, #a855f7) !important;
+    border: none !important;
+  }
+
+  // Кнопка «Удалить» (text + danger) — красный текст, без белого фона
+  :global(.ant-btn-text.ant-btn-dangerous),
+  :global(.ant-btn-text),
+  .deleteBtn {
+    background: transparent !important;
+    border: none !important;
+    color: #f87171 !important;
+
+    &:hover {
+      background: rgba(239, 68, 68, 0.12) !important;
+      color: #ef4444 !important;
+    }
+
+    :global(.anticon) {
+      color: inherit;
+    }
+  }
+}

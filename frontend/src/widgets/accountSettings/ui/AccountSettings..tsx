@@ -1,11 +1,4 @@
-import {
-  LogoutOutlined,
-  EditOutlined,
-  LockOutlined,
-  DeleteOutlined,
-  UserOutlined,
-  MailOutlined,
-} from "@ant-design/icons";
+import { LogOut, Edit, Lock, Trash2, User, Mail } from "lucide-react";
 import { Button, Card, Space, Typography, notification } from "antd";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -44,7 +37,7 @@ const AccountSettings = () => {
       message: t("auth.logout"),
       description: t("auth.logout-success"),
       placement: "topLeft",
-      icon: <LogoutOutlined style={{ color: "#ff7875" }} />,
+      icon: <LogOut size={20} style={{ color: "#ff7875" }} />,
     });
   };
 
@@ -55,10 +48,10 @@ const AccountSettings = () => {
           <Title level={4}>{t("user.profile-info")}</Title>
           <Space direction="vertical" size="middle" className={styles.cardContent}>
             <Text>
-              <UserOutlined /> {t("auth.nickname")}: <strong>{user.userName}</strong>
+              <User size={16} style={{ marginRight: 8 }} /> {t("auth.nickname")}: <strong>{user.userName}</strong>
             </Text>
             <Text>
-              <MailOutlined /> {t("auth.email")}: <strong>{user.email}</strong>
+              <Mail size={16} style={{ marginRight: 8 }} /> {t("auth.email")}: <strong>{user.email}</strong>
             </Text>
             <Text>
               {t("user.role")}: <strong>{user.role}</strong>
@@ -69,7 +62,7 @@ const AccountSettings = () => {
                 {usedSize} / {totalSpace}
               </strong>
             </Text>
-            <Button type="primary" danger icon={<LogoutOutlined />} onClick={logOut} className={styles.logoutButton}>
+            <Button type="primary" danger icon={<LogOut size={16} />} onClick={logOut} className={styles.logoutButton}>
               {t("auth.logout")}
             </Button>
           </Space>
@@ -78,13 +71,13 @@ const AccountSettings = () => {
         <Card className={styles.card}>
           <Title level={4}>{t("user.actions")}</Title>
           <Space direction="vertical" className={styles.cardContent}>
-            <Button icon={<EditOutlined />} block onClick={() => setChangeInfoModal(true)}>
+            <Button icon={<Edit size={16} />} block onClick={() => setChangeInfoModal(true)}>
               {t("auth.change-profile-info")}
             </Button>
-            <Button icon={<LockOutlined />} block onClick={() => setChangePassModal(true)}>
+            <Button icon={<Lock size={16} />} block onClick={() => setChangePassModal(true)}>
               {t("auth.change-password")}
             </Button>
-            <Button icon={<DeleteOutlined />} danger block onClick={() => setDeleteModal(true)}>
+            <Button icon={<Trash2 size={16} />} danger block onClick={() => setDeleteModal(true)}>
               {t("auth.delete-account")}
             </Button>
           </Space>

@@ -2,7 +2,9 @@
   "application-name": "Mello.",
   "common": {
     "yes": "Yes",
-    "no": "No"
+    "no": "No",
+    "created": "created",
+    "loading": "Loading..."
   },
   "home": {
     "primary-name": "Mello",
@@ -83,6 +85,9 @@
   },
   "files": {
     "my-files": "My files",
+    "share": "Share",
+    "manage-share": "Manage",
+    "size": "size",
     "create-new-folder": "Create new folder",
     "enter-folder-name": "Enter a folder name...",
     "upload-file": "Click to upload",
@@ -90,7 +95,14 @@
     "order-by": "Order by",
     "upload-files-title": "Upload files",
     "upload-files-text": "Click or drag file to this area to upload",
-    "upload-files-hint": "You can upload up to 5 files at the same time. Downloading illegal content is prohibited",
+    "upload-files-hint": "Drag files here or click to select. Up to 10 files at a time.",
+    "upload-success": "{{name}} uploaded",
+    "upload-failed": "Failed to upload {{name}}",
+    "file-removed": "File removed",
+    "file-remove-failed": "Failed to remove file",
+    "upload-success-many": "{{count}} files uploaded",
+    "upload-unauthorized": "Sign in to upload files",
+    "upload-failed-many": "Failed to upload {{count}} files",
     "download": "Download",
     "delete": "Delete",
     "confirm": "Are you sure?",
@@ -160,6 +172,7 @@
       "downloading": "Download started"
     },
     "share": {
+      "selectNote": "Open a note to share it",
       "title": "Collaborative Access",
       "shareLink": "Access Link",
       "copyLink": "Copy Link",
@@ -221,13 +234,56 @@
     "openDrawer": "Open notifications",
     "newMessage": "🔔 New message",
     "fileUploaded": "📁 File uploaded",
-    "authSuccess": "✅ Auth success"
+    "authSuccess": "✅ Auth success",
+    "clearAll": "Clear all",
+    "empty": "Empty",
+    "types": {
+      "MESSAGE": "New message",
+      "FILE_UPLOAD": "File uploaded",
+      "TASK_ASSIGNED": "Task assigned",
+      "AUTH_SUCCESS": "Auth success"
+    }
+  },
+  "modules": {
+    "title": "Modules & tools",
+    "subtitle": "Additional tools to boost your productivity",
+
+    "pomodoro": {
+      "name": "Pomodoro timer",
+      "description": "Focus timer based on the Pomodoro technique with work and break intervals."
+    },
+    "calculator": {
+      "name": "Calculator",
+      "description": "Simple calculator for quick calculations inside your workspace."
+    },
+    "habit-tracker": {
+      "name": "Habit tracker",
+      "description": "Track your daily habits and progress toward personal goals."
+    },
+    "quick-notes": {
+      "name": "Quick notes",
+      "description": "Lightweight notes you can create in a couple of seconds without leaving the app."
+    }
   },
   "planner": {
     "planning": "Planning",
     "tabs": {
       "kanban": "Kanban",
       "calendar": "Calendar"
+    },
+    "boards": {
+      "title": "My boards",
+      "empty": "You have no boards yet",
+      "createFirst": "Create your first board",
+      "newBoard": "New board",
+      "create": "Create board",
+      "created": "Board created",
+      "createFailed": "Failed to create board",
+      "defaultTitle": "My board",
+      "titlePlaceholder": "Board title",
+      "backToList": "Back to boards",
+      "share": "Share",
+      "shared": "Shared"
     },
     "kanban": {
       "welcome": {
@@ -254,6 +310,18 @@
           "medium": "MEDIUM",
           "high": "HIGH"
         }
+      },
+      "card": {
+        "titlePlaceholder": "Task title",
+        "created": "Created",
+        "description": "Description",
+        "descriptionPlaceholder": "Add a more detailed description...",
+        "content": "Content",
+        "contentPlaceholder": "Task content...",
+        "priority": "Priority",
+        "dueDate": "Due date",
+        "column": "Column",
+        "save": "Save"
       },
       "actions": {
         "add": "Add",
@@ -340,7 +408,7 @@
     "chats": "Chats",
     "notes": "Notes",
     "planner": "Planner",
-    "pomodoro": "Pomodoro",
+    "modules": "Modules",
     "admin-panel": "Admin panel"
   },
   "buttons": {
@@ -352,5 +420,69 @@
     "delete-avatar": "Delete avatar",
     "reload-page": "reload page",
     "copy-error": "Copy error"
+  },
+  "sharing": {
+    "publicLink": {
+      "loading": "Loading shared content...",
+      "sharedContent": "Shared Content",
+      "untitled": "Untitled",
+      "content": "Content",
+      "readOnly": "Read-Only Access",
+      "readOnlyDescription": "You are viewing this content in read-only mode. Sign in to get full access.",
+      "download": "Download",
+      "error": {
+        "title": "Link not found or expired",
+        "description": "This public link may have been deleted or expired. Please contact the person who shared it with you."
+      }
+    },
+    "modal": {
+      "title": "Share \"{{resourceName}}\"",
+      "invitePeople": "Invite people",
+      "emailPlaceholder": "Enter email address",
+      "share": "Share",
+      "hint": "Tip: User will receive notification email if they have an account, or an invitation to join.",
+      "publicLinkSharing": "Public link sharing",
+      "createPublicLink": "Create public link",
+      "publicLinkHint": "Anyone with the link will be able to view this resource without signing in",
+      "publicLinkActive": "Anyone with the link can view this {{resourceType}}",
+      "peopleWithAccess": "People with access ({{count}})",
+      "noCollaborators": "No collaborators yet. Share to invite people!",
+      "copyLink": "Copy link",
+      "deleteLink": "Delete public link",
+      "removeAccess": "Remove access",
+      "pending": "Pending",
+      "temporary": "Temporary",
+      "expires": "Expires: {{date}}",
+      "unknownUser": "Unknown User"
+    },
+    "permissions": {
+      "owner": "Owner",
+      "admin": "Admin",
+      "editor": "Can Edit",
+      "commenter": "Can Comment",
+      "viewer": "Can View",
+      "descriptions": {
+        "owner": "Full control, can delete and manage permissions",
+        "admin": "Can edit and share with others",
+        "editor": "Can view and edit content",
+        "commenter": "Can view and add comments",
+        "viewer": "Can only view content"
+      }
+    },
+    "messages": {
+      "emailRequired": "Please enter an email address",
+      "invalidEmail": "Please enter a valid email address",
+      "shareSuccess": "Successfully shared with {{email}}",
+      "shareFailed": "Failed to share resource",
+      "publicLinkCreated": "Public link created and copied to clipboard!",
+      "publicLinkCreateFailed": "Failed to create public link",
+      "publicLinkDeleted": "Public link deleted",
+      "publicLinkDeleteFailed": "Failed to delete public link",
+      "linkCopied": "Link copied to clipboard!",
+      "accessRevoked": "Access revoked{{userName}}",
+      "accessRevokeFailed": "Failed to revoke permission",
+      "permissionUpdated": "Permission level updated",
+      "permissionUpdateFailed": "Failed to update permission"
+    }
   }
 }

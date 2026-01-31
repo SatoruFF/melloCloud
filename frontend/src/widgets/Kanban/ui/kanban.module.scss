@@ -1,8 +1,7 @@
 @use "../../../shared/styles/tmp.scss" as *;
 
 .kanbanContainer {
-  min-height: 100vh;
-  // background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+  min-height: 0;
   padding: 24px;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   @include diskBackground;
@@ -54,6 +53,159 @@
   &:hover {
     transform: translateY(-2px) !important;
     box-shadow: 0 12px 40px rgba(139, 92, 246, 0.4) !important;
+  }
+}
+
+// Board list loading state
+.boardListLoading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 320px;
+}
+
+// Board list empty state (Empty component)
+.boardListEmpty {
+  :global(.ant-empty-description) {
+    color: rgba(255, 255, 255, 0.7) !important;
+  }
+
+  :global(.ant-empty-image) {
+    svg {
+      color: rgba(255, 255, 255, 0.35);
+    }
+  }
+}
+
+// Board list (Trello-like)
+.boardListWrap {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 24px 0;
+
+  .boardListTitle {
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 24px;
+    font-size: 22px;
+  }
+
+  :global(.ant-list) {
+    .ant-list-item {
+      border: none !important;
+    }
+
+    .ant-list-empty-text {
+      color: rgba(255, 255, 255, 0.7) !important;
+    }
+  }
+}
+
+.boardListCreateForm {
+  margin-top: 16px;
+
+  :global(.ant-input) {
+    margin-bottom: 12px;
+  }
+}
+
+.boardListCreateActions {
+  display: flex;
+  gap: 8px;
+}
+
+.boardListNewBoardBtn {
+  margin-top: 16px;
+}
+
+.boardCard {
+  border-radius: 12px !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  cursor: pointer;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border-color: rgba(139, 92, 246, 0.4) !important;
+  }
+
+  :global(.ant-card-body) {
+    padding: 20px !important;
+  }
+}
+
+.boardCardContent {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.boardCardTitle {
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.boardCardBadge {
+  margin-left: auto;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+// Board header (back + title + share) — margin по горизонтали совпадает с padding контента планировщика (16px)
+.boardHeader {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 16px;
+  margin: 0 -16px 24px -16px;
+  background: rgba(0, 0, 0, 0.2);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  min-height: 48px;
+  flex-wrap: nowrap;
+}
+
+.boardHeaderBack {
+  flex-shrink: 0;
+  color: rgba(255, 255, 255, 0.85) !important;
+  padding-left: 0 !important;
+
+  &:hover {
+    color: rgba(255, 255, 255, 1) !important;
+  }
+
+  :global(.anticon) {
+    color: inherit;
+  }
+}
+
+.boardHeaderTitle {
+  flex: 1;
+  min-width: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.95);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.boardHeaderShare {
+  flex-shrink: 0;
+  white-space: nowrap;
+  min-width: 88px;
+  color: rgba(255, 255, 255, 0.9) !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(255, 255, 255, 0.25) !important;
+
+  &:hover {
+    color: #e9d5ff !important;
+    background: rgba(139, 92, 246, 0.25) !important;
+    border-color: rgba(139, 92, 246, 0.6) !important;
+  }
+
+  :global(.anticon) {
+    color: inherit;
   }
 }
 

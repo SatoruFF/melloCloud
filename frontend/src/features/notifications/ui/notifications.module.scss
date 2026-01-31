@@ -1,55 +1,155 @@
 .notifications {
   position: relative;
-  display: inline-block;
+  display: inline-flex;
   cursor: pointer;
+  user-select: none;
 
   .iconWrapper {
     position: relative;
-    width: 36px;
-    height: 36px;
+    width: 40px;
+    height: 40px;
     display: flex;
     align-items: center;
     justify-content: center;
+    border-radius: 50%;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.1);
+      transform: scale(1.05);
+    }
+
+    &:active {
+      transform: scale(0.95);
+    }
   }
 
   .icon {
-    font-size: 28px;
     color: #fff;
-    transition: color 0.3s ease;
+    transition: all 0.3s ease;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
 
-    &:hover {
+    .iconWrapper:hover & {
       color: #40a9ff;
+      animation: bellRing 0.5s ease-in-out;
     }
   }
 
   .badge {
     position: absolute;
-    top: -6px;
-    right: -6px;
-    background-color: #ff4d4f;
+    top: 0;
+    right: 0;
+    background: linear-gradient(135deg, #ff4d4f 0%, #ff7875 100%);
     color: white;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 700;
     border-radius: 50%;
-    padding: 0 7px;
-    min-width: 22px;
-    height: 22px;
+    min-width: 20px;
+    height: 20px;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+    padding: 0 5px;
+    box-shadow:
+      0 2px 8px rgba(255, 77, 79, 0.4),
+      0 0 0 2px rgba(0, 0, 0, 0.1);
+    animation: badgePulse 2s ease-in-out infinite;
+    transform-origin: center;
+  }
+}
+
+@keyframes bellRing {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  10%,
+  30% {
+    transform: rotate(-10deg);
+  }
+  20%,
+  40% {
+    transform: rotate(10deg);
+  }
+  50% {
+    transform: rotate(0deg);
+  }
+}
+
+@keyframes badgePulse {
+  0%,
+  100% {
+    transform: scale(1);
+    box-shadow:
+      0 2px 8px rgba(255, 77, 79, 0.4),
+      0 0 0 2px rgba(0, 0, 0, 0.1);
+  }
+  50% {
+    transform: scale(1.1);
+    box-shadow:
+      0 4px 12px rgba(255, 77, 79, 0.6),
+      0 0 0 2px rgba(0, 0, 0, 0.1);
   }
 }
 
 .drawer {
-  .ant-drawer-header {
-    border-bottom: 1px solid #f0f0f0;
-    font-weight: 600;
-    font-size: 18px;
+  :global(.ant-drawer-header) {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 20px 24px;
+
+    :global(.ant-drawer-title) {
+      color: #f1f5f9;
+      font-weight: 600;
+      font-size: 18px;
+    }
+
+    :global(.ant-drawer-close) {
+      color: #cbd5e1;
+      opacity: 0.9;
+      transition: all 0.2s;
+
+      &:hover {
+        opacity: 1;
+        color: #f1f5f9;
+      }
+    }
   }
 
-  .ant-drawer-body {
-    background-color: #fafafa;
+  :global(.ant-drawer-body) {
+    background: #1e293b;
+    padding: 0;
+  }
+}
+
+.drawerHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  color: #f1f5f9;
+}
+
+.clearBtn {
+  background: rgba(59, 130, 246, 0.2);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  color: #93c5fd;
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: 500;
+
+  &:hover {
+    background: rgba(59, 130, 246, 0.3);
+    border-color: rgba(59, 130, 246, 0.5);
+    color: #bfdbfe;
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
   }
 }
 
@@ -62,25 +162,164 @@
 .listItem {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px 0;
-  font-size: 16px;
-  color: #333;
-  border-bottom: 1px solid #e8e8e8;
-  transition: background-color 0.2s ease;
-
-  &:last-child {
-    border-bottom: none;
-  }
+  gap: 16px;
+  padding: 16px 24px;
+  background: #0f172a;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  transition: all 0.2s ease;
+  cursor: pointer;
+  position: relative;
 
   &:hover {
-    background-color: #f0f5ff;
+    background: #1e293b;
+    transform: translateX(4px);
+
+    .removeBtn {
+      opacity: 1;
+      visibility: visible;
+    }
+  }
+
+  &.unread {
+    background: rgba(59, 130, 246, 0.08);
+
+    &::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 4px;
+      background: linear-gradient(180deg, #3b82f6 0%, #60a5fa 100%);
+    }
   }
 }
 
-.itemIcon {
-  width: 20px;
-  height: 20px;
-  color: #1890ff;
+.itemIconWrapper {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
   flex-shrink: 0;
+
+  svg {
+    width: 20px;
+    height: 20px;
+    color: #dbeafe;
+  }
+}
+
+.itemContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.itemText {
+  font-size: 15px;
+  color: #f1f5f9;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.itemSubtext {
+  font-size: 13px;
+  color: #94a3b8;
+  line-height: 1.3;
+}
+
+.itemTime {
+  font-size: 13px;
+  color: #94a3b8;
+}
+
+.unreadDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #3b82f6;
+  flex-shrink: 0;
+  box-shadow: 0 0 8px rgba(59, 130, 246, 0.6);
+  animation: dotPulse 2s ease-in-out infinite;
+}
+
+@keyframes dotPulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.3);
+    opacity: 0.7;
+  }
+}
+
+.removeBtn {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  border: none;
+  background: rgba(255, 255, 255, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  opacity: 0;
+  visibility: hidden;
+  flex-shrink: 0;
+
+  svg {
+    color: #94a3b8;
+  }
+
+  &:hover {
+    background: #dc2626;
+
+    svg {
+      color: white;
+    }
+  }
+
+  &:active {
+    transform: scale(0.9);
+  }
+}
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 24px;
+  text-align: center;
+}
+
+.emptyIcon {
+  color: #475569;
+  margin-bottom: 16px;
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.emptyText {
+  font-size: 16px;
+  color: #94a3b8;
+  margin: 0;
 }

@@ -1,4 +1,4 @@
-import { CheckSquareTwoTone, CloseCircleTwoTone } from "@ant-design/icons";
+import { CheckSquare, XCircle } from "lucide-react";
 import { message } from "antd";
 import cn from "classnames";
 import _ from "lodash-es";
@@ -24,12 +24,18 @@ const Activate = () => {
 
   const handleActivate = async () => {
     if (!token) throw new Error(t("auth.activate.invalidToken"));
-    const user = await activateUser(token).unwrap();
+    const response = await activateUser(token).unwrap();
     if (error) {
       return message.error(`error: ${error.error}`);
     }
-    const userData = user.data ? user.data : user;
-    dispatch(setUser(userData as any));
+    const userData = response?.data ?? response;
+    const authUser = userData?.user ?? userData;
+    const accessToken = userData?.token;
+    if (!authUser || !accessToken) {
+      message.error(t("auth.activate.defaultError"));
+      return;
+    }
+    dispatch(setUser({ user: authUser, token: accessToken }));
     navigate(FILE_ROUTE);
   };
 
@@ -58,7 +64,7 @@ const Activate = () => {
       <div className={cn(styles.activateContainer)}>
         <div className={cn(styles.activateMessage)}>
           <div className={cn(styles.activateIcon)}>
-            <CheckSquareTwoTone />
+            <CheckSquare size={64} color="#52c41a" />
           </div>
           <h1>{t("auth.activate.successTitle")}</h1>
           <p>
@@ -76,7 +82,7 @@ const Activate = () => {
       <div className={cn(styles.activateContainer)}>
         <div className={cn(styles.activateMessage)}>
           <div className={cn(styles.activateIcon)}>
-            <CloseCircleTwoTone twoToneColor="red" />
+            <XCircle size={64} color="#ff4d4f" />
           </div>
           <h1>{t("auth.activate.failedTitle")}</h1>
           <p>{t("auth.activate.failedMessage")}</p>
@@ -90,7 +96,7 @@ const Activate = () => {
     <div className={cn(styles.activateContainer)}>
       <div className={cn(styles.activateMessage)}>
         <div className={cn(styles.activateIcon)}>
-          <CheckSquareTwoTone />
+          <CheckSquare size={64} color="#52c41a" />
         </div>
         <h1>{t("auth.activate.emailSentTitle")}</h1>
         <p className={cn(styles.activateInfo)}>

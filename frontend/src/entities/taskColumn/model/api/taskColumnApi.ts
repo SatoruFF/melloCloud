@@ -4,9 +4,9 @@ import { TaskColumn } from '../../types/taskColumns';
 
 export const taskColumnApi = rtkApi.injectEndpoints({
   endpoints: builder => ({
-    // Column endpoints
-    getColumns: builder.query<TaskColumn[], void>({
-      query: () => ApiPaths.columns,
+    getColumns: builder.query<TaskColumn[], number | void>({
+      query: boardId =>
+        boardId != null ? `${ApiPaths.columns}?boardId=${boardId}` : ApiPaths.columns,
     }),
 
     createColumn: builder.mutation<
@@ -14,6 +14,7 @@ export const taskColumnApi = rtkApi.injectEndpoints({
       {
         title: string;
         color: string;
+        boardId: number;
       }
     >({
       query: body => ({
@@ -21,6 +22,7 @@ export const taskColumnApi = rtkApi.injectEndpoints({
         method: 'POST',
         body,
       }),
+      invalidatesTags: ['Kanban'],
     }),
 
     updateColumn: builder.mutation<
@@ -37,6 +39,7 @@ export const taskColumnApi = rtkApi.injectEndpoints({
         method: 'PUT',
         body,
       }),
+      invalidatesTags: ['Kanban'],
     }),
 
     deleteColumn: builder.mutation<{ message: string }, string | number>({
@@ -44,6 +47,7 @@ export const taskColumnApi = rtkApi.injectEndpoints({
         url: `${ApiPaths.columns}/${columnId}`,
         method: 'DELETE',
       }),
+      invalidatesTags: ['Kanban'],
     }),
 
     reorderColumns: builder.mutation<
@@ -58,6 +62,7 @@ export const taskColumnApi = rtkApi.injectEndpoints({
         method: 'PATCH',
         body: { columnOrders },
       }),
+      invalidatesTags: ['Kanban'],
     }),
 
     getColumnStats: builder.query<
@@ -75,9 +80,9 @@ export const taskColumnApi = rtkApi.injectEndpoints({
           low: number;
         };
       }>,
-      void
+      number
     >({
-      query: () => `${ApiPaths.columns}/stats`,
+      query: boardId => `${ApiPaths.columns}/stats?boardId=${boardId}`,
     }),
   }),
 });

@@ -328,6 +328,161 @@
   font-weight: 400;
 }
 
+// Event Details Drawer — чёрный фон, контрастный текст и кнопки
+.eventDrawer {
+  :global(.ant-drawer-content),
+  :global(.ant-drawer-content-wrapper) {
+    background: #0a0a0a !important;
+  }
+  :global(.ant-drawer-header) {
+    background: #0a0a0a !important;
+    border-bottom-color: #27272a !important;
+
+    :global(.ant-drawer-title) {
+      color: #fff !important;
+    }
+
+    :global(.ant-drawer-close) {
+      color: #fff !important;
+
+      &:hover {
+        color: #fff !important;
+        opacity: 0.8;
+      }
+    }
+  }
+  :global(.ant-drawer-body) {
+    background: #0a0a0a !important;
+    padding: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    flex: 1 !important;
+    color: #f1f5f9 !important;
+  }
+  // Текст и элементы — светлые на чёрном
+  :global(.ant-drawer-body) .detailLabel {
+    color: #94a3b8 !important;
+  }
+  :global(.ant-drawer-body) .detailValue {
+    color: #f1f5f9 !important;
+  }
+  :global(.ant-drawer-body) .icon {
+    color: #94a3b8 !important;
+  }
+  :global(.ant-drawer-body) .categoryBadge {
+    color: #d4d4d8 !important;
+    border-color: #3f3f46 !important;
+  }
+  :global(.ant-drawer-body) .description {
+    color: #a1a1aa !important;
+  }
+  :global(.ant-drawer-body) .attendeeBadge {
+    background: #27272a !important;
+    border-color: #3f3f46 !important;
+    color: #e4e4e7 !important;
+  }
+  // Кнопки футера — явный контраст
+  :global(.ant-drawer-body) .secondaryButton {
+    background: #27272a !important;
+    border: 1px solid #3f3f46 !important;
+    color: #f1f5f9 !important;
+    &:hover {
+      background: #3f3f46 !important;
+      border-color: #52525b !important;
+      color: #fafafa !important;
+    }
+  }
+  :global(.ant-drawer-body) .primaryButton {
+    background: #1890ff !important;
+    border: 1px solid #1890ff !important;
+    color: #fff !important;
+    &:hover {
+      background: #40a9ff !important;
+      border-color: #40a9ff !important;
+    }
+  }
+  :global(.ant-drawer-body) .dangerButton {
+    background: #dc2626 !important;
+    border: 1px solid #dc2626 !important;
+    color: #fff !important;
+  }
+  :global(.ant-drawer-body) .footerRight {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+  :global(.ant-drawer-body) .secondaryButton,
+  :global(.ant-drawer-body) .primaryButton,
+  :global(.ant-drawer-body) .dangerButton {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: 500;
+    font-size: 13px;
+    cursor: pointer;
+    height: 32px;
+    border: 1px solid transparent;
+  }
+
+  // DatePicker (ant-picker) в drawer — тёмная тема
+  :global(.ant-picker) {
+    background: #27272a !important;
+    border-color: #3f3f46 !important;
+
+    :global(.ant-picker-input input) {
+      background: transparent !important;
+      color: #f1f5f9 !important;
+
+      &::placeholder {
+        color: #71717a !important;
+      }
+    }
+
+    :global(.ant-picker-suffix),
+    :global(.ant-picker-clear) {
+      color: #94a3b8;
+    }
+  }
+}
+
+.datePicker {
+  width: 100%;
+}
+
+.drawerInner {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  background: #0a0a0a;
+  color: #f1f5f9;
+}
+
+.drawerBody {
+  padding: 20px;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background: #0a0a0a;
+  color: inherit;
+}
+
+.drawerFooter {
+  padding: 16px 20px;
+  border-top: 1px solid #27272a;
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  align-items: center;
+  margin-top: auto;
+  background: #0a0a0a;
+  flex-shrink: 0;
+}
+
 // Modal Styles (shadcn style)
 .overlay {
   background: rgba(0, 0, 0, 0.75);
@@ -369,6 +524,26 @@
   &::-webkit-scrollbar-thumb {
     background: #3f3f46;
     border-radius: 3px;
+  }
+
+  // DatePicker (ant-picker) в модалке — тёмная тема
+  :global(.ant-picker) {
+    background: #27272a !important;
+    border-color: #3f3f46 !important;
+
+    :global(.ant-picker-input input) {
+      background: transparent !important;
+      color: #f1f5f9 !important;
+
+      &::placeholder {
+        color: #71717a !important;
+      }
+    }
+
+    :global(.ant-picker-suffix),
+    :global(.ant-picker-clear) {
+      color: #94a3b8;
+    }
   }
 }
 

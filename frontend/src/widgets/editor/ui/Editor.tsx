@@ -11,6 +11,8 @@ import styles from "./editor.module.scss";
 import "./editor.scss";
 
 interface EditorProps {
+  noteId?: string;
+  noteTitle?: string;
   initialContent?: any;
   onSave?: (content: any) => void;
   onContentChange?: (content: any) => void;
@@ -25,6 +27,8 @@ interface EditorProps {
 }
 
 export const Editor = ({
+  noteId,
+  noteTitle,
   initialContent,
   onSave,
   onContentChange,
@@ -249,6 +253,8 @@ export const Editor = ({
   return (
     <div className={cn(styles.editorWrapper, className)}>
       <NotesToolbar
+        noteId={noteId}
+        noteTitle={noteTitle}
         onSave={handleSave}
         onDownload={handleDownload}
         onPrint={handlePrint}

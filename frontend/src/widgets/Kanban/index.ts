@@ -1,3 +1,4 @@
-import Kanban from "./ui/Kanban";
+import { KanbanBoardWrapper } from "./ui/KanbanBoardWrapper";
+import { BoardList } from "./ui/BoardList";
 
-export { Kanban as KanbanBoard };
+export { KanbanBoardWrapper as KanbanBoard, BoardList };

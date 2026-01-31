@@ -4,9 +4,68 @@
   .image-file {
     max-width: 95px;
     max-height: 85px;
-    // .img-toolbar-wrapper {
+  }
+}
 
-    // }
+.fileIconWrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sharedBadge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #52c41a, #73d13d);
+  border: 2px solid white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(82, 196, 26, 0.4);
+  z-index: 10;
+  animation: pulse 2s ease-in-out infinite;
+
+  svg {
+    color: white;
+    stroke-width: 2.5;
+  }
+}
+
+// ✅ Badge для list view (маленький, справа от иконки)
+.sharedBadgeList {
+  position: absolute;
+  top: 50%;
+  right: -8px; // ✅ Смещаем правее, чтобы не перекрывало
+  transform: translateY(-50%); // ✅ Центрируем по вертикали
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #52c41a, #73d13d);
+  border: 1.5px solid white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(82, 196, 26, 0.4);
+  z-index: 10;
+
+  svg {
+    color: white;
+    stroke-width: 2.5;
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    box-shadow: 0 2px 8px rgba(82, 196, 26, 0.4);
+  }
+  50% {
+    box-shadow: 0 2px 16px rgba(82, 196, 26, 0.8);
   }
 }
 
@@ -14,7 +73,7 @@
   box-sizing: border-box;
   margin-top: 8px;
   display: grid;
-  grid-template-columns: 1fr 4fr repeat(4, 1fr);
+  grid-template-columns: 1fr 4fr repeat(5, 1fr);
   color: white;
   padding: 10px;
   align-items: center;
@@ -25,9 +84,13 @@
     display: none;
   }
 
+  .fileIconWrapper {
+    grid-column-start: 1;
+    padding: 8px;
+  }
+
   .fileName {
     grid-column-start: 2;
-
     width: 100px;
     box-sizing: border-box;
     padding: 8px;
@@ -39,13 +102,11 @@
   .fileDate {
     grid-column-start: 5;
     justify-self: center;
-
     width: 100%;
     height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
-    justify-self: center;
     box-sizing: border-box;
     padding: 8px;
   }
@@ -53,13 +114,11 @@
   .fileSize {
     grid-column-start: 6;
     justify-self: center;
-
     width: 100%;
     height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
-    justify-self: center;
     box-sizing: border-box;
     padding: 8px;
   }
@@ -73,18 +132,37 @@
       grid-column-start: 4;
     }
 
-    .fileDownload {
-      grid-column-start: 5;
-      display: block;
-      width: 70%;
+    .fileShare,
+    .fileDownload,
+    .fileDelete {
+      display: flex;
       align-self: center;
+      min-width: 0;
+      max-width: 100%;
+    }
+
+    .fileShare {
+      grid-column-start: 5;
+    }
+
+    .fileDownload {
+      grid-column-start: 6;
     }
 
     .fileDelete {
-      grid-column-start: 6;
-      display: block;
-      width: 70%;
-      align-self: center;
+      grid-column-start: 7;
+    }
+
+    .fileBtn {
+      min-width: 0;
+      overflow: hidden;
+
+      :global(.ant-btn) {
+        min-width: 0;
+        padding: 4px 8px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
     }
   }
 
@@ -92,7 +170,6 @@
   .file {
     font-size: 250%;
     color: white;
-    //width: 100px;
     box-sizing: border-box;
     padding: 8px;
     border-radius: 10px;
@@ -112,6 +189,13 @@
   transition-duration: 0.5s;
   @extend %file-image;
 
+  .fileIconWrapper {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
   .folder,
   .file {
     font-size: 60px;
@@ -127,9 +211,28 @@
     @extend %secondFont;
   }
 
+  .fileBtns {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    width: 100%;
+  }
+
   .fileBtn {
     display: none;
+    font-size: 12px;
+    padding: 2px 8px;
+    height: auto;
   }
+
+  .fileShare {
+    color: #1890ff;
+
+    &:hover {
+      color: #40a9ff;
+    }
+  }
+
   &:hover {
     .fileBtn {
       display: block;
@@ -141,5 +244,59 @@
   .filePlateFileWrapper {
     width: 110px;
     height: 150px;
+  }
+
+  .fileWrapper {
+    grid-template-columns: 1fr 4fr repeat(4, 1fr);
+
+    &:hover {
+      .fileShare {
+        grid-column-start: 5;
+      }
+
+      .fileDownload {
+        grid-column-start: 6;
+      }
+
+      .fileDelete {
+        display: none;
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 576px) {
+  .fileWrapper {
+    grid-template-columns: 1fr 3fr 1fr 1fr;
+
+    .fileDate,
+    .fileSize {
+      display: none;
+    }
+
+    .fileBtn {
+      display: none !important;
+    }
+  }
+
+  .sharedBadge {
+    width: 20px;
+    height: 20px;
+
+    svg {
+      width: 12px;
+      height: 12px;
+    }
+  }
+
+  .sharedBadgeList {
+    width: 14px;
+    height: 14px;
+    right: -6px;
+
+    svg {
+      width: 10px;
+      height: 10px;
+    }
   }
 }

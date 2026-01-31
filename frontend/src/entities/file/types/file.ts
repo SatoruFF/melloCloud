@@ -5,12 +5,14 @@ export interface IFile {
   size: number;
   url?: string;
   updatedAt?: string;
+  isShared?: boolean;
+  publicToken?: string;
 }
 
 export interface FileListSchema {
   files: IFile[];
   currentDir: string | null;
-  dirStack: (string | null)[]; // IF CURRENT DIR === root = null
+  dirStack: (string | null)[];
   view: string;
   paths: { title: string }[];
   limit: number;
