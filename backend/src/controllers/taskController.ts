@@ -16,9 +16,10 @@ class TaskControllerClass {
         priority?: string;
         dueDate?: string;
         columnId?: number;
+        assignedToId?: number | null;
       }>();
 
-      const { title, content, priority, dueDate, columnId } = body;
+      const { title, content, priority, dueDate, columnId, assignedToId } = body;
       const user = c.get("user") as { id?: number } | undefined;
       const userId = user?.id;
 
@@ -33,6 +34,7 @@ class TaskControllerClass {
         dueDate,
         columnId,
         userId,
+        assignedToId,
       });
 
       return c.json(task);
@@ -134,8 +136,9 @@ class TaskControllerClass {
         isDone?: boolean;
         dueDate?: string;
         columnId?: number;
+        assignedToId?: number | null;
       }>();
-      const { title, content, description, priority, isDone, dueDate, columnId } = body;
+      const { title, content, description, priority, isDone, dueDate, columnId, assignedToId } = body;
       const user = c.get("user") as { id?: number } | undefined;
       const userId = user?.id;
 
@@ -153,6 +156,7 @@ class TaskControllerClass {
         isDone,
         dueDate,
         columnId,
+        assignedToId,
       });
 
       return c.json(task);

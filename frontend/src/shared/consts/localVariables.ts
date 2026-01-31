@@ -79,6 +79,11 @@ export const ApiPaths = {
   webhooksEvents: 'webhooks/events',
   webhooksScheduled: 'webhooks/scheduled',
 
+  // Notifications
+  notifications: 'notifications',
+  notificationsUnreadCount: 'notifications/unread-count',
+  notificationsReadAll: 'notifications/read-all',
+
   // Sharing
   sharing: 'sharing',
   sharingPermissions: 'sharing/permissions',

@@ -5,6 +5,7 @@ import "dotenv/config.js";
 
 import { FETCH_LIMIT, prisma, s3 } from "../configs/config.js";
 import type { IFile, ISearchParams } from "./../types/File";
+import { NotificationService } from "./notificationService.js";
 
 interface CreateDirResponse {
   message: string;
@@ -227,6 +228,18 @@ class FileServiceClass {
         usedSpace: user.usedSpace + BigInt(fileSize),
       },
     });
+
+    try {
+      await NotificationService.create({
+        userId,
+        type: "FILE_UPLOAD",
+        title: "File uploaded",
+        text: file.name,
+        link: "/files",
+      });
+    } catch (_err) {
+      // non-blocking
+    }
 
     return created;
   }

@@ -58,9 +58,27 @@ model User {
 
   noteCollaborations NoteCollaborator[]
   noteHistories      NoteHistory[]
-  
+
+  notifications Notification[]
+
   @@index([email])
   @@index([oauthProvider, oauthId])
+}
+
+// Notifications
+model Notification {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      String   // MESSAGE, FILE_UPLOAD, TASK_ASSIGNED, AUTH_SUCCESS, etc.
+  title     String?
+  text      String
+  read      Boolean  @default(false)
+  link      String?
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([userId, read])
 }
 
 // Session model

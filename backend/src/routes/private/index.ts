@@ -10,6 +10,7 @@ import boardRouter from './board.routes';
 import noteRouter from './note.routes';
 import eventRouter from './events.routes';
 import webhookRouter from './webhook.routes';
+import notificationRouter from './notification.routes';
 
 const privateRouter = new Hono();
 
@@ -26,5 +27,6 @@ privateRouter.route('/boards', boardRouter);
 privateRouter.route('/notes', noteRouter);
 privateRouter.route('/events', eventRouter);
 privateRouter.route('/webhooks', webhookRouter);
+privateRouter.route('/notifications', notificationRouter);
 
 export default privateRouter;

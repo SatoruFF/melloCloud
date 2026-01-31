@@ -3,7 +3,8 @@
   "common": {
     "yes": "Yes",
     "no": "No",
-    "created": "created"
+    "created": "created",
+    "loading": "Loading..."
   },
   "home": {
     "primary-name": "Mello",
@@ -234,7 +235,13 @@
     "fileUploaded": "📁 File uploaded",
     "authSuccess": "✅ Auth success",
     "clearAll": "Clear all",
-    "empty": "Empty"
+    "empty": "Empty",
+    "types": {
+      "MESSAGE": "New message",
+      "FILE_UPLOAD": "File uploaded",
+      "TASK_ASSIGNED": "Task assigned",
+      "AUTH_SUCCESS": "Auth success"
+    }
   },
   "modules": {
     "title": "Modules & tools",

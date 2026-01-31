@@ -37,6 +37,20 @@ CREATE TABLE "User" (
 );
 
 -- CreateTable
+CREATE TABLE "Notification" (
+    "id" SERIAL NOT NULL,
+    "userId" INTEGER NOT NULL,
+    "type" TEXT NOT NULL,
+    "title" TEXT,
+    "text" TEXT NOT NULL,
+    "read" BOOLEAN NOT NULL DEFAULT false,
+    "link" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "Notification_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "Session" (
     "id" TEXT NOT NULL,
     "userId" INTEGER NOT NULL,
@@ -399,6 +413,12 @@ CREATE INDEX "User_email_idx" ON "User"("email");
 CREATE INDEX "User_oauthProvider_oauthId_idx" ON "User"("oauthProvider", "oauthId");
 
 -- CreateIndex
+CREATE INDEX "Notification_userId_idx" ON "Notification"("userId");
+
+-- CreateIndex
+CREATE INDEX "Notification_userId_read_idx" ON "Notification"("userId", "read");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "Session_refreshToken_key" ON "Session"("refreshToken");
 
 -- CreateIndex
@@ -565,6 +585,9 @@ CREATE INDEX "ScheduledWebhook_webhookId_idx" ON "ScheduledWebhook"("webhookId")
 
 -- CreateIndex
 CREATE INDEX "ScheduledWebhook_resourceType_resourceId_idx" ON "ScheduledWebhook"("resourceType", "resourceId");
+
+-- AddForeignKey
+ALTER TABLE "Notification" ADD CONSTRAINT "Notification_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Session" ADD CONSTRAINT "Session_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;

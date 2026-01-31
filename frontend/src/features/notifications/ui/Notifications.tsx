@@ -2,35 +2,65 @@ import { Drawer } from "antd";
 import { Bell, CheckCircle, FileText, MessageSquare, X } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { DateTime } from "luxon";
 import cn from "classnames";
+import {
+  useGetNotificationsQuery,
+  useGetUnreadCountQuery,
+  useMarkAsReadMutation,
+  useRemoveNotificationMutation,
+  useClearAllNotificationsMutation,
+} from "../../../entities/notification";
+import type { Notification as NotificationType } from "../../../entities/notification";
 import styles from "./notifications.module.scss";
 
+function getIconByType(type: string) {
+  switch (type) {
+    case "MESSAGE":
+      return <MessageSquare />;
+    case "FILE_UPLOAD":
+      return <FileText />;
+    case "TASK_ASSIGNED":
+    case "AUTH_SUCCESS":
+      return <CheckCircle />;
+    default:
+      return <Bell />;
+  }
+}
+
 export const Notifications = () => {
-  const { t } = useTranslation();
-  const [notifications, setNotifications] = useState([
-    { id: 1, icon: <MessageSquare />, text: t("notifications.newMessage"), time: "2 мин назад", unread: true },
-    { id: 2, icon: <FileText />, text: t("notifications.fileUploaded"), time: "10 мин назад", unread: true },
-    { id: 3, icon: <CheckCircle />, text: t("notifications.authSuccess"), time: "1 час назад", unread: false },
-  ]);
+  const { t, i18n } = useTranslation();
   const [open, setOpen] = useState(false);
 
-  const unreadCount = notifications.filter((n) => n.unread).length;
+  const { data: notifications = [], isLoading: listLoading } = useGetNotificationsQuery(undefined, {
+    skip: !open,
+  });
+  const { data: unreadData } = useGetUnreadCountQuery();
+  const unreadCount = unreadData?.count ?? 0;
+
+  const [markAsRead] = useMarkAsReadMutation();
+  const [removeNotification] = useRemoveNotificationMutation();
+  const [clearAll] = useClearAllNotificationsMutation();
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
-  const markAsRead = (id: number) => {
-    setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, unread: false } : n)));
+  const handleMarkAsRead = (n: NotificationType) => {
+    if (!n.read) markAsRead(n.id);
   };
 
-  const removeNotification = (id: number) => {
-    setNotifications((prev) => prev.filter((n) => n.id !== id));
+  const handleRemove = (e: React.MouseEvent, id: number) => {
+    e.stopPropagation();
+    removeNotification(id);
   };
 
-  const clearAll = () => {
-    setNotifications([]);
+  const handleClearAll = () => {
+    clearAll();
     handleClose();
   };
+
+  const formatTime = (dateStr: string) =>
+    DateTime.fromISO(dateStr).setLocale(i18n.language || "en").toRelative() ?? dateStr;
 
   return (
     <>
@@ -46,7 +76,7 @@ export const Notifications = () => {
           <div className={styles.drawerHeader}>
             <span>{t("notifications.title")}</span>
             {notifications.length > 0 && (
-              <button onClick={clearAll} className={styles.clearBtn}>
+              <button onClick={handleClearAll} className={styles.clearBtn}>
                 {t("notifications.clearAll")}
               </button>
             )}
@@ -59,27 +89,37 @@ export const Notifications = () => {
         className={styles.drawer}
         closeIcon={<X size={20} />}
       >
-        {notifications.length === 0 ? (
+        {listLoading ? (
+          <div className={styles.empty}>
+            <span>{t("common.loading") || "Loading..."}</span>
+          </div>
+        ) : notifications.length === 0 ? (
           <div className={styles.empty}>
             <Bell size={64} className={styles.emptyIcon} />
             <p className={styles.emptyText}>{t("notifications.empty")}</p>
           </div>
         ) : (
           <ul className={styles.list}>
-            {notifications.map(({ id, icon, text, time, unread }) => (
-              <li key={id} className={cn(styles.listItem, { [styles.unread]: unread })} onClick={() => markAsRead(id)}>
-                <div className={styles.itemIconWrapper}>{icon}</div>
+            {notifications.map((n) => (
+              <li
+                key={n.id}
+                className={cn(styles.listItem, { [styles.unread]: !n.read })}
+                onClick={() => handleMarkAsRead(n)}
+              >
+                <div className={styles.itemIconWrapper}>{getIconByType(n.type)}</div>
                 <div className={styles.itemContent}>
-                  <span className={styles.itemText}>{text}</span>
-                  <span className={styles.itemTime}>{time}</span>
+                  <span className={styles.itemText}>
+                    {t(`notifications.types.${n.type}`) || n.title || n.text}
+                  </span>
+                  {n.text !== (n.title ?? n.text) && (
+                    <span className={styles.itemSubtext}>{n.text}</span>
+                  )}
+                  <span className={styles.itemTime}>{formatTime(n.createdAt)}</span>
                 </div>
-                {unread && <div className={styles.unreadDot} />}
+                {!n.read && <div className={styles.unreadDot} />}
                 <button
                   className={styles.removeBtn}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    removeNotification(id);
-                  }}
+                  onClick={(e) => handleRemove(e, n.id)}
                   aria-label="Remove notification"
                 >
                   <X size={16} />

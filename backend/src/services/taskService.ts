@@ -4,6 +4,7 @@ import _ from "lodash";
 import "dotenv/config.js";
 import createError from "http-errors";
 import { SharingService } from "./sharingService.js";
+import { NotificationService } from "./notificationService.js";
 
 interface ITaskData {
   title: string;
@@ -12,6 +13,7 @@ interface ITaskData {
   dueDate?: Date | string | null;
   columnId?: number;
   userId: number;
+  assignedToId?: number | null;
 }
 
 interface ITaskUpdate {
@@ -22,6 +24,7 @@ interface ITaskUpdate {
   isDone?: boolean;
   dueDate?: Date | string | null;
   columnId?: number;
+  assignedToId?: number | null;
 }
 
 class TaskServiceClass {
@@ -36,7 +39,7 @@ class TaskServiceClass {
     }
   }
 
-  async create({ title, content, priority = "LOW", dueDate, columnId, userId }: ITaskData) {
+  async create({ title, content, priority = "LOW", dueDate, columnId, userId, assignedToId }: ITaskData) {
     if (!title || !content) {
       throw createError(400, "Title and content are required");
     }
@@ -75,6 +78,7 @@ class TaskServiceClass {
           dueDate: parsedDueDate,
           columnId,
           userId,
+          assignedToId: assignedToId ?? undefined,
         },
         include: {
           user: {
@@ -87,6 +91,25 @@ class TaskServiceClass {
           column: true,
         },
       });
+
+      if (assignedToId && assignedToId !== userId) {
+        try {
+          const assigner = await prisma.user.findUnique({
+            where: { id: userId },
+            select: { userName: true },
+          });
+          const assignerName = assigner?.userName ?? "Someone";
+          await NotificationService.create({
+            userId: assignedToId,
+            type: "TASK_ASSIGNED",
+            title: "Task assigned",
+            text: `${assignerName} assigned you: ${title}`,
+            link: `/planner?taskId=${task.id}`,
+          });
+        } catch (_err) {
+          // non-blocking
+        }
+      }
 
       return task;
     });
@@ -215,6 +238,29 @@ class TaskServiceClass {
           column: true,
         },
       });
+
+      if (
+        updateData.assignedToId !== undefined &&
+        updateData.assignedToId !== existingTask.assignedToId &&
+        updateData.assignedToId != null
+      ) {
+        try {
+          const assigner = await prisma.user.findUnique({
+            where: { id: userId },
+            select: { userName: true },
+          });
+          const assignerName = assigner?.userName ?? "Someone";
+          await NotificationService.create({
+            userId: updateData.assignedToId,
+            type: "TASK_ASSIGNED",
+            title: "Task assigned",
+            text: `${assignerName} assigned you: ${task.title}`,
+            link: `/planner?taskId=${task.id}`,
+          });
+        } catch (_err) {
+          // non-blocking
+        }
+      }
 
       return task;
     });
