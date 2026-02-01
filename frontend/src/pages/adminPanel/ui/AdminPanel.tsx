@@ -18,6 +18,14 @@ import {
   useDeleteAdminEventMutation,
   useGetAdminBoardsQuery,
   useDeleteAdminBoardMutation,
+  useGetAdminFeatureFlagsQuery,
+  useCreateAdminFeatureFlagMutation,
+  useUpdateAdminFeatureFlagMutation,
+  useDeleteAdminFeatureFlagMutation,
+  useGetAdminFeatureFlagUsersQuery,
+  useSetAdminFeatureFlagUserMutation,
+  useRemoveAdminFeatureFlagUserMutation,
+  type AdminFeatureFlagItem,
 } from "../../../features/admin/api/adminApi";
 import { sizeFormat } from "../../../shared";
 import styles from "./admin-panel.module.scss";
@@ -58,6 +66,10 @@ const AdminPanel = () => {
   const [eventsPage, setEventsPage] = useState(1);
   const [boardsPage, setBoardsPage] = useState(1);
   const [editUserModal, setEditUserModal] = useState<{ id: number; userName: string | null; email: string; role: string; isActivated: boolean; isBlocked: boolean; diskSpace: string } | null>(null);
+  const [featureFlagModal, setFeatureFlagModal] = useState<AdminFeatureFlagItem | null>(null);
+  const [featureFlagForm] = Form.useForm();
+  const [overrideModalFlag, setOverrideModalFlag] = useState<AdminFeatureFlagItem | null>(null);
+  const [overrideForm] = Form.useForm();
 
   const { data: statsData, isLoading: statsLoading } = useGetAdminStatsQuery();
   const { data: usersData, isLoading: usersLoading } = useGetAdminUsersQuery({ page: usersPage, limit: PAGE_SIZE });
@@ -68,8 +80,22 @@ const AdminPanel = () => {
   const { data: tasksData, isLoading: tasksLoading } = useGetAdminTasksQuery({ page: tasksPage, limit: PAGE_SIZE });
   const { data: eventsData, isLoading: eventsLoading } = useGetAdminEventsQuery({ page: eventsPage, limit: PAGE_SIZE });
   const { data: boardsData, isLoading: boardsLoading } = useGetAdminBoardsQuery({ page: boardsPage, limit: PAGE_SIZE });
+  const { data: featureFlagsData, isLoading: featureFlagsLoading } = useGetAdminFeatureFlagsQuery();
+  const { data: overrideUsersData, isLoading: overrideUsersLoading } = useGetAdminFeatureFlagUsersQuery(
+    overrideModalFlag?.id ?? 0,
+    { skip: !overrideModalFlag }
+  );
+  const { data: overrideUsersListData } = useGetAdminUsersQuery(
+    { page: 1, limit: 500 },
+    { skip: !overrideModalFlag }
+  );
 
   const [updateUser, { isLoading: updateUserLoading }] = useUpdateAdminUserMutation();
+  const [createFeatureFlag] = useCreateAdminFeatureFlagMutation();
+  const [updateFeatureFlag, { isLoading: updateFeatureFlagLoading }] = useUpdateAdminFeatureFlagMutation();
+  const [deleteFeatureFlag] = useDeleteAdminFeatureFlagMutation();
+  const [setFeatureFlagUser, { isLoading: setOverrideLoading }] = useSetAdminFeatureFlagUserMutation();
+  const [removeFeatureFlagUser] = useRemoveAdminFeatureFlagUserMutation();
   const [deleteFile] = useDeleteAdminFileMutation();
   const [deleteNote] = useDeleteAdminNoteMutation();
   const [deleteTask] = useDeleteAdminTaskMutation();
@@ -241,6 +267,89 @@ const AdminPanel = () => {
     },
   ];
 
+  const featureFlagColumns: ColumnsType<AdminFeatureFlagItem> = [
+    { title: "ID", dataIndex: "id", width: 70 },
+    { title: "Key", dataIndex: "key", width: 120 },
+    { title: "Name", dataIndex: "name", ellipsis: true },
+    { title: "Description", dataIndex: "description", ellipsis: true },
+    { title: "Enabled", dataIndex: "isEnabled", width: 90, render: (v: boolean) => (v ? "Yes" : "No") },
+    { title: "Overrides", dataIndex: ["_count", "enabledForUsers"], width: 90 },
+    {
+      title: "Actions",
+      width: 200,
+      render: (_, record) => (
+        <>
+          <Button type="link" size="small" onClick={() => setOverrideModalFlag(record)}>
+            Overrides
+          </Button>
+          <Button type="link" size="small" onClick={() => { setFeatureFlagModal(record); featureFlagForm.setFieldsValue({ key: record.key, name: record.name, description: record.description ?? "", isEnabled: record.isEnabled }); }}>
+            Edit
+          </Button>
+          <Button type="link" danger size="small" onClick={() => handleDelete(deleteFeatureFlag, record.id, "Flag")}>
+            Delete
+          </Button>
+        </>
+      ),
+    },
+  ];
+
+  const handleCreateFeatureFlag = useCallback(() => {
+    setFeatureFlagModal(null);
+    featureFlagForm.resetFields();
+    featureFlagForm.setFieldsValue({ isEnabled: false });
+    setFeatureFlagModal({ id: 0, key: "", name: "", description: null, isEnabled: false, _count: { enabledForUsers: 0 } } as AdminFeatureFlagItem);
+  }, [featureFlagForm]);
+
+  const handleSaveFeatureFlag = useCallback(async () => {
+    try {
+      const values = await featureFlagForm.validateFields();
+      if (featureFlagModal?.id) {
+        await updateFeatureFlag({ id: featureFlagModal.id, key: values.key, name: values.name, description: values.description || null, isEnabled: values.isEnabled }).unwrap();
+        message.success("Feature flag updated");
+      } else {
+        await createFeatureFlag({ key: values.key, name: values.name, description: values.description || undefined, isEnabled: values.isEnabled }).unwrap();
+        message.success("Feature flag created");
+      }
+      setFeatureFlagModal(null);
+    } catch (e: any) {
+      if (e?.data?.message) message.error(e.data.message);
+      else if (e?.errorFields) return;
+      else message.error("Failed to save");
+    }
+  }, [featureFlagModal, featureFlagForm, updateFeatureFlag, createFeatureFlag]);
+
+  const handleAddOverride = useCallback(async () => {
+    if (!overrideModalFlag) return;
+    try {
+      const values = await overrideForm.validateFields();
+      await setFeatureFlagUser({
+        featureFlagId: overrideModalFlag.id,
+        userId: values.userId,
+        isEnabled: values.isEnabled,
+      }).unwrap();
+      message.success("Override set");
+      overrideForm.resetFields();
+      overrideForm.setFieldsValue({ isEnabled: true });
+    } catch (e: any) {
+      if (e?.data?.message) message.error(e.data.message);
+      else if (e?.errorFields) return;
+      else message.error("Failed to set override");
+    }
+  }, [overrideModalFlag, overrideForm, setFeatureFlagUser]);
+
+  const handleRemoveOverride = useCallback(
+    async (userId: number) => {
+      if (!overrideModalFlag) return;
+      try {
+        await removeFeatureFlagUser({ featureFlagId: overrideModalFlag.id, userId }).unwrap();
+        message.success("Override removed");
+      } catch {
+        message.error("Failed to remove override");
+      }
+    },
+    [overrideModalFlag, removeFeatureFlagUser]
+  );
+
   const tabItems = [
     { key: "dashboard", label: "Dashboard", isDashboard: true },
     { key: "users", label: "Users", children: usersData?.data ?? [], columns: userColumns, loading: usersLoading, page: usersPage, total: usersData?.total ?? 0, setPage: setUsersPage },
@@ -251,6 +360,7 @@ const AdminPanel = () => {
     { key: "boards", label: "Boards", children: boardsData?.data ?? [], columns: boardColumns, loading: boardsLoading, page: boardsPage, total: boardsData?.total ?? 0, setPage: setBoardsPage },
     { key: "invites", label: "Invites", children: invitesData?.data ?? [], columns: inviteColumns, loading: invitesLoading, page: invitesPage, total: invitesData?.total ?? 0, setPage: setInvitesPage },
     { key: "sessions", label: "Sessions", children: sessionsData?.data ?? [], columns: sessionColumns, loading: sessionsLoading, page: sessionsPage, total: sessionsData?.total ?? 0, setPage: setSessionsPage },
+    { key: "featureFlags", label: "Feature flags", isFeatureFlags: true, children: featureFlagsData ?? [], columns: featureFlagColumns, loading: featureFlagsLoading },
   ];
 
   return (
@@ -429,6 +539,34 @@ const AdminPanel = () => {
                 ),
               };
             }
+            if (item.isFeatureFlags) {
+              const { key, label, children, columns, loading } = item;
+              return {
+                key,
+                label,
+                children: (
+                  <div className={styles.tableWrap}>
+                    <div style={{ marginBottom: 16 }}>
+                      <Button type="primary" onClick={handleCreateFeatureFlag}>
+                        Create feature flag
+                      </Button>
+                      <p style={{ marginTop: 8, color: "rgba(255,255,255,0.65)", fontSize: 12 }}>
+                        Key must match frontend: files, notes, chats, planner, kanban, webhooks. Global &quot;Enabled&quot; = for everyone; use &quot;User overrides&quot; in DB for per-user.
+                      </p>
+                    </div>
+                    <Table
+                      rowKey="id"
+                      loading={loading}
+                      columns={columns}
+                      dataSource={children}
+                      size="small"
+                      scroll={{ x: 700 }}
+                      pagination={false}
+                    />
+                  </div>
+                ),
+              };
+            }
             const { key, label, children, columns, loading, page, total, setPage } = item;
             return {
               key,
@@ -483,6 +621,90 @@ const AdminPanel = () => {
                 <InputNumber min={0} style={{ width: "100%" }} />
               </Form.Item>
             </Form>
+          )}
+        </Modal>
+
+        <Modal
+          title={featureFlagModal?.id ? "Edit feature flag" : "Create feature flag"}
+          open={!!featureFlagModal}
+          onCancel={() => setFeatureFlagModal(null)}
+          onOk={handleSaveFeatureFlag}
+          confirmLoading={updateFeatureFlagLoading}
+          destroyOnClose
+          okText="Save"
+        >
+          {featureFlagModal && (
+            <Form form={featureFlagForm} layout="vertical">
+              <Form.Item name="key" label="Key (e.g. files, notes)" rules={[{ required: true }]}>
+                <Input placeholder="files" disabled={!!featureFlagModal.id} />
+              </Form.Item>
+              <Form.Item name="name" label="Name" rules={[{ required: true }]}>
+                <Input placeholder="Files" />
+              </Form.Item>
+              <Form.Item name="description" label="Description">
+                <Input.TextArea rows={2} placeholder="File storage feature" />
+              </Form.Item>
+              <Form.Item name="isEnabled" label="Enabled globally" valuePropName="checked">
+                <Switch />
+              </Form.Item>
+            </Form>
+          )}
+        </Modal>
+
+        <Modal
+          title={overrideModalFlag ? `User overrides: ${overrideModalFlag.name}` : ""}
+          open={!!overrideModalFlag}
+          onCancel={() => { setOverrideModalFlag(null); overrideForm.resetFields(); }}
+          footer={null}
+          width={640}
+          destroyOnClose
+        >
+          {overrideModalFlag && (
+            <>
+              <p style={{ marginBottom: 16, color: "rgba(255,255,255,0.65)", fontSize: 12 }}>
+                Per-user overrides: if a user is listed below, their value overrides the global &quot;Enabled&quot; for this flag.
+              </p>
+              <div style={{ marginBottom: 16 }}>
+                <Form form={overrideForm} layout="inline" onFinish={handleAddOverride} initialValues={{ isEnabled: true }}>
+                  <Form.Item name="userId" label="User" rules={[{ required: true, message: "Select user" }]} style={{ minWidth: 200 }}>
+                    <Select
+                      placeholder="Select user"
+                      showSearch
+                      optionFilterProp="label"
+                      options={overrideUsersListData?.data?.map((u: any) => ({ value: u.id, label: u.email || u.userName || `#${u.id}` })) ?? []}
+                    />
+                  </Form.Item>
+                  <Form.Item name="isEnabled" label="Enabled" valuePropName="checked">
+                    <Switch />
+                  </Form.Item>
+                  <Form.Item>
+                    <Button type="primary" htmlType="submit" loading={setOverrideLoading}>
+                      Add override
+                    </Button>
+                  </Form.Item>
+                </Form>
+              </div>
+              <Table
+                rowKey="userId"
+                loading={overrideUsersLoading}
+                dataSource={overrideUsersData ?? []}
+                size="small"
+                columns={[
+                  { title: "User", key: "user", render: (_: any, r: any) => r.user?.email || r.user?.userName || `#${r.userId}` },
+                  { title: "Enabled", dataIndex: "isEnabled", width: 90, render: (v: boolean) => (v ? "Yes" : "No") },
+                  {
+                    title: "Actions",
+                    width: 90,
+                    render: (_: any, r: any) => (
+                      <Button type="link" danger size="small" onClick={() => handleRemoveOverride(r.userId)}>
+                        Remove
+                      </Button>
+                    ),
+                  },
+                ]}
+                pagination={false}
+              />
+            </>
           )}
         </Modal>
       </div>

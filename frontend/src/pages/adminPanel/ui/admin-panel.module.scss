@@ -105,6 +105,17 @@
     color: var(--admin-text-secondary);
     border-color: var(--admin-border);
   }
+  :global(.ant-empty) {
+    color: var(--admin-text-secondary);
+  }
+  :global(.ant-empty-image) {
+    opacity: 0.85;
+  }
+  /* Иконка Empty по умолчанию чёрная — инвертируем для тёмной темы */
+  :global(.ant-empty-image svg) {
+    filter: invert(1);
+    opacity: 0.65;
+  }
   :global(.ant-empty-description) {
     color: var(--admin-text-secondary);
   }

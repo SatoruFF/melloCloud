@@ -128,6 +128,15 @@ export interface AdminStatsResponse {
   activeUsersByDay: Array<{ date: string; count: number }>;
 }
 
+export interface AdminFeatureFlagItem {
+  id: number;
+  key: string;
+  name: string;
+  description: string | null;
+  isEnabled: boolean;
+  _count: { enabledForUsers: number };
+}
+
 export const adminApi = rtkApi.injectEndpoints({
   endpoints: (build) => ({
     getAdminUsers: build.query<AdminUsersResponse, PaginationParams | void>({
@@ -236,6 +245,70 @@ export const adminApi = rtkApi.injectEndpoints({
       }),
       invalidatesTags: ['AdminBoards'],
     }),
+    getAdminFeatureFlags: build.query<AdminFeatureFlagItem[], void>({
+      query: () => ApiPaths.adminFeatureFlags,
+      providesTags: ['AdminFeatureFlags'],
+    }),
+    createAdminFeatureFlag: build.mutation<
+      AdminFeatureFlagItem,
+      { key: string; name: string; description?: string; isEnabled?: boolean }
+    >({
+      query: (body) => ({
+        url: ApiPaths.adminFeatureFlags,
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: ['AdminFeatureFlags'],
+    }),
+    updateAdminFeatureFlag: build.mutation<
+      AdminFeatureFlagItem,
+      { id: number; key?: string; name?: string; description?: string | null; isEnabled?: boolean }
+    >({
+      query: ({ id, ...body }) => ({
+        url: `${ApiPaths.adminFeatureFlags}/${id}`,
+        method: 'PATCH',
+        body,
+      }),
+      invalidatesTags: ['AdminFeatureFlags'],
+    }),
+    deleteAdminFeatureFlag: build.mutation<{ ok: boolean }, number>({
+      query: (id) => ({
+        url: `${ApiPaths.adminFeatureFlags}/${id}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['AdminFeatureFlags'],
+    }),
+    getAdminFeatureFlagUsers: build.query<
+      Array<{ userId: number; isEnabled: boolean; user: { id: number; userName: string | null; email: string } }>,
+      number
+    >({
+      query: (id) => `${ApiPaths.adminFeatureFlags}/${id}/users`,
+      providesTags: (_, __, id) => [{ type: 'AdminFeatureFlags', id: `users-${id}` }],
+    }),
+    setAdminFeatureFlagUser: build.mutation<
+      { ok: boolean },
+      { featureFlagId: number; userId: number; isEnabled: boolean }
+    >({
+      query: ({ featureFlagId, userId, isEnabled }) => ({
+        url: `${ApiPaths.adminFeatureFlags}/${featureFlagId}/users`,
+        method: 'POST',
+        body: { userId, isEnabled },
+      }),
+      invalidatesTags: (_, __, { featureFlagId }) => [
+        'AdminFeatureFlags',
+        { type: 'AdminFeatureFlags', id: `users-${featureFlagId}` },
+      ],
+    }),
+    removeAdminFeatureFlagUser: build.mutation<{ ok: boolean }, { featureFlagId: number; userId: number }>({
+      query: ({ featureFlagId, userId }) => ({
+        url: `${ApiPaths.adminFeatureFlags}/${featureFlagId}/users/${userId}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: (_, __, { featureFlagId }) => [
+        'AdminFeatureFlags',
+        { type: 'AdminFeatureFlags', id: `users-${featureFlagId}` },
+      ],
+    }),
   }),
 });
 
@@ -256,4 +329,11 @@ export const {
   useDeleteAdminEventMutation,
   useGetAdminBoardsQuery,
   useDeleteAdminBoardMutation,
+  useGetAdminFeatureFlagsQuery,
+  useCreateAdminFeatureFlagMutation,
+  useUpdateAdminFeatureFlagMutation,
+  useDeleteAdminFeatureFlagMutation,
+  useGetAdminFeatureFlagUsersQuery,
+  useSetAdminFeatureFlagUserMutation,
+  useRemoveAdminFeatureFlagUserMutation,
 } = adminApi;

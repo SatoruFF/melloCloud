@@ -6,6 +6,8 @@ import { AppRouter } from "./providers/router";
 import { useAuthQuery } from "../entities/user";
 import { setUser } from "../entities/user";
 import { Spinner } from "../shared";
+import { setFeatureFlags } from "../shared/lib/features/setGetFeatures";
+import { useGetFeatureFlagsQuery } from "../shared/api/featureFlagsApi";
 import { Navbar as MyNavbar } from "../widgets/Navbar";
 import { AddToHomeScreenBanner } from "../features/addToHomeScreen";
 import { ErrorBoundary } from "./providers/ErrorBoundary";
@@ -17,16 +19,20 @@ import styles from "./styles/application.module.scss";
 function App() {
   const dispatch = useAppDispatch();
   const { data, isLoading } = useAuthQuery();
+  const { data: flagsData } = useGetFeatureFlagsQuery(undefined, { skip: !data });
 
   useEffect(() => {
-    // const appEnv = process.env.mode || 'test';
-
-    // console.log('App Environment:', appEnv);
     const check = async () => {
       data && dispatch(setUser(data));
     };
     check();
-  }, [data]);
+  }, [data, dispatch]);
+
+  useEffect(() => {
+    if (flagsData) {
+      setFeatureFlags(flagsData);
+    }
+  }, [flagsData]);
 
   if (isLoading) {
     return <Spinner fullscreen />;

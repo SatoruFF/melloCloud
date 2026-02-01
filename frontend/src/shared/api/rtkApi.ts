@@ -31,6 +31,6 @@ const baseQueryWithBlockedCheck: BaseQueryFn = async (args, api, extraOptions) =
 export const rtkApi = createApi({
   reducerPath: 'api',
   baseQuery: baseQueryWithBlockedCheck,
-  tagTypes: ['Notes', 'Permissions', 'Kanban', 'Board', 'Notification', 'AdminUsers', 'AdminFiles', 'AdminNotes', 'AdminInvites', 'AdminSessions', 'AdminTasks', 'AdminEvents', 'AdminBoards'],
+  tagTypes: ['Notes', 'Permissions', 'Kanban', 'Board', 'Notification', 'AdminUsers', 'AdminFiles', 'AdminNotes', 'AdminInvites', 'AdminSessions', 'AdminTasks', 'AdminEvents', 'AdminBoards', 'AdminFeatureFlags'],
   endpoints: () => ({}),
 });
