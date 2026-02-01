@@ -22,9 +22,9 @@
 .backToListBtn {
   width: 100%;
   padding: 10px 16px;
-  background: #18181b;
-  color: #9ca3af;
-  border: 1px solid #27272f;
+  background: transparent;
+  color: #94a3b8;
+  border: 1px solid #334155;
   border-radius: 8px;
   font-size: 14px;
   font-weight: 500;
@@ -33,53 +33,53 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  transition: all 0.2s ease;
+  transition: color 0.2s ease, background 0.2s ease, border-color 0.2s ease;
 
   svg {
     color: inherit;
+    flex-shrink: 0;
   }
 
   &:hover {
-    background: #27272f;
-    border-color: #3f3f46;
-    color: #e5e7eb;
-    transform: translateX(-2px);
+    background: #1e293b;
+    border-color: #475569;
+    color: #e2e8f0;
   }
 
   &:active {
-    transform: scale(0.98);
+    background: #334155;
   }
 }
 
 .createBtn {
   width: 100%;
   padding: 10px 16px;
-  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-  color: #ffffff;
-  border: none;
+  background: #334155;
+  color: #f1f5f9;
+  border: 1px solid #475569;
   border-radius: 8px;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 500;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.6);
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 
   svg {
     color: inherit;
+    flex-shrink: 0;
   }
 
   &:hover {
-    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
-    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.8);
-    transform: translateY(-1px);
+    background: #475569;
+    border-color: #64748b;
+    color: #fff;
   }
 
   &:active {
-    transform: translateY(0) scale(0.98);
+    background: #475569;
   }
 }
 
@@ -125,12 +125,12 @@
   }
 
   &:focus {
-    border-color: #6366f1;
+    border-color: #475569;
     background: #0b0b0f;
-    box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.4);
+    box-shadow: 0 0 0 2px rgba(71, 85, 105, 0.3);
 
     ~ .searchIcon {
-      color: #a5b4fc;
+      color: #94a3b8;
     }
   }
 }
@@ -179,7 +179,7 @@
     transform: translateY(-50%);
     width: 3px;
     height: 0;
-    background: linear-gradient(180deg, #6366f1, #8b5cf6);
+    background: #64748b;
     border-radius: 0 2px 2px 0;
     transition: height 0.2s ease;
   }
@@ -187,7 +187,6 @@
   &:hover {
     background: #27272f;
     border-color: #3f3f46;
-    transform: translateX(4px);
 
     &::before {
       height: 70%;
@@ -195,20 +194,21 @@
   }
 
   &.active {
-    background: radial-gradient(circle at top left, #4f46e5 0, #111827 55%);
-    border-color: #4f46e5;
+    background: #27272f;
+    border-color: #475569;
 
     &::before {
       height: 100%;
+      background: #94a3b8;
     }
 
     .noteTitle {
-      color: #e5e7eb;
+      color: #f1f5f9;
       font-weight: 600;
     }
 
     .noteIcon {
-      color: #a5b4fc;
+      color: #94a3b8;
     }
   }
 }
@@ -271,28 +271,27 @@
 .iconBtn {
   width: 44px;
   height: 44px;
-  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-  color: #ffffff;
-  border: none;
+  background: #27272f;
+  color: #94a3b8;
+  border: 1px solid #334155;
   border-radius: 10px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.8);
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 
   svg {
     color: inherit;
   }
 
   &:hover {
-    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
-    transform: scale(1.1);
-    box-shadow: 0 4px 12px rgba(15, 23, 42, 1);
+    background: #334155;
+    border-color: #475569;
+    color: #e2e8f0;
   }
 
   &:active {
-    transform: scale(0.95);
+    background: #3f3f46;
   }
 }
