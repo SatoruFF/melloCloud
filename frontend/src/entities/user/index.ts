@@ -12,6 +12,8 @@ export {
   useGetSessionsQuery,
   useDeleteSessionMutation,
   useChangeInfoMutation,
+  useChangePasswordMutation,
+  useDeleteAccountMutation,
   useActivateUserMutation,
   useSearchUsersQuery,
 } from './model/api/user';

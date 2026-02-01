@@ -4,7 +4,8 @@
     "yes": "Да",
     "no": "Нет",
     "created": "Создано",
-    "loading": "Загрузка..."
+    "loading": "Загрузка...",
+    "saved": "Успешно сохранено"
   },
   "pwa": {
     "addToHomeScreen": {
@@ -75,6 +76,12 @@
     "logout-success": "Вы успешно вышли",
     "change-password": "Изменить пароль",
     "delete-account": "Удалить аккаунт",
+    "current-password": "Текущий пароль",
+    "new-password": "Новый пароль",
+    "confirm-password": "Подтвердите новый пароль",
+    "password-changed": "Пароль успешно изменён",
+    "account-deleted": "Аккаунт успешно удалён",
+    "delete-account-confirm": "Введите пароль для подтверждения удаления аккаунта. Действие необратимо.",
     "logout-description": "Вы успешно вышли из аккаунта",
     "activate": {
       "invalidToken": "Некорректный токен",

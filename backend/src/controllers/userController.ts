@@ -249,9 +249,43 @@ class UserControllerClass {
     }
   }
 
-  // Обновление информации о пользователе (заглушка, если будешь реализовывать)
   async changeInfo(c: Context) {
-    return c.json({ message: "Not implemented" }, 501);
+    try {
+      const userId = (c.get("user") as { id?: number } | undefined)?.id ?? c.get("userId");
+      if (!userId) throw createError(401, "User not found");
+      const body = await c.req.json<{ userName?: string }>();
+      const updated = await UserService.updateUserInfo(userId, body);
+      return c.json(updated);
+    } catch (error: any) {
+      logger.error(error.message, error);
+      return c.json({ message: error.message }, error.statusCode || 500);
+    }
+  }
+
+  async changePassword(c: Context) {
+    try {
+      const userId = (c.get("user") as { id?: number } | undefined)?.id ?? c.get("userId");
+      if (!userId) throw createError(401, "User not found");
+      const body = await c.req.json<{ currentPassword: string; newPassword: string }>();
+      const result = await UserService.changePassword(userId, body.currentPassword, body.newPassword);
+      return c.json(result);
+    } catch (error: any) {
+      logger.error(error.message, error);
+      return c.json({ message: error.message }, error.statusCode || 500);
+    }
+  }
+
+  async deleteAccount(c: Context) {
+    try {
+      const userId = (c.get("user") as { id?: number } | undefined)?.id ?? c.get("userId");
+      if (!userId) throw createError(401, "User not found");
+      const body = await c.req.json<{ password: string }>();
+      const result = await UserService.deleteAccount(userId, body.password);
+      return c.json(result);
+    } catch (error: any) {
+      logger.error(error.message, error);
+      return c.json({ message: error.message }, error.statusCode || 500);
+    }
   }
 }
 

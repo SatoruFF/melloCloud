@@ -2,17 +2,33 @@
 
 .settingsPage {
   padding: 24px;
+  --settings-bg: #1f1f1f;
+  --settings-surface: #262626;
+  --settings-border: #303030;
+  --settings-text: rgba(255, 255, 255, 0.85);
+  --settings-text-secondary: rgba(255, 255, 255, 0.65);
+  background: var(--settings-bg);
+  color: var(--settings-text);
+
+  /* Все текст и заголовки Ant Design — светлый на тёмном фоне */
+  :global(.ant-typography) {
+    color: var(--settings-text) !important;
+  }
 
   .card {
     border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-    background-color: #fff;
+    border: 1px solid var(--settings-border);
+    background: var(--settings-surface);
     @extend %mainFont;
 
-    h4 {
+    :global(.ant-card-body) {
+      color: var(--settings-text) !important;
+    }
+
+    :global(.ant-typography.ant-typography-h4) {
       margin-bottom: 16px;
       font-weight: 600;
-      color: #1f1f1f;
+      color: var(--settings-text) !important;
     }
   }
 
@@ -21,16 +37,28 @@
     flex-direction: column;
     gap: 12px;
 
-    .ant-typography {
+    :global(.ant-typography) {
       font-size: 15px;
+      color: var(--settings-text) !important;
     }
 
     strong {
       font-weight: 600;
+      color: var(--settings-text) !important;
     }
 
     button {
       @extend %secondFont;
+    }
+
+    :global(.ant-btn:not(.ant-btn-danger)) {
+      border-color: var(--settings-border);
+      color: var(--settings-text);
+      background: transparent;
+    }
+    :global(.ant-btn:not(.ant-btn-danger):hover) {
+      border-color: #1890ff;
+      color: #1890ff;
     }
   }
 

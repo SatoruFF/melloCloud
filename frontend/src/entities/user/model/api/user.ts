@@ -120,6 +120,7 @@ export const userApi = createApi({
 
     auth: builder.query<any, void>({
       query: () => Variables.User_Auth,
+      providesTags: ['User'],
     }),
 
     logout: builder.mutation<any, void>({
@@ -157,10 +158,29 @@ export const userApi = createApi({
     }),
 
     // User profile endpoints
-    changeInfo: builder.mutation<any, any>({
+    changeInfo: builder.mutation<any, { userName?: string }>({
       query: body => ({
         url: Variables.User_ChangeInfo,
         method: 'PATCH',
+        body,
+      }),
+    }),
+
+    changePassword: builder.mutation<
+      { success: boolean },
+      { currentPassword: string; newPassword: string }
+    >({
+      query: body => ({
+        url: Variables.User_ChangePassword,
+        method: 'PATCH',
+        body,
+      }),
+    }),
+
+    deleteAccount: builder.mutation<{ success: boolean }, { password: string }>({
+      query: body => ({
+        url: Variables.User_DeleteAccount,
+        method: 'DELETE',
         body,
       }),
     }),
@@ -176,6 +196,8 @@ export const {
   useLoginMutation,
   useAuthQuery,
   useChangeInfoMutation,
+  useChangePasswordMutation,
+  useDeleteAccountMutation,
   useActivateUserMutation,
   useSearchUsersQuery,
   useLogoutMutation,

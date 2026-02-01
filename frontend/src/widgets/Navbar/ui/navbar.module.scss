@@ -187,3 +187,12 @@
     }
   }
 }
+
+.settingsDrawer {
+  :global(.ant-drawer-title) {
+    color: rgba(255, 255, 255, 0.85);
+  }
+  :global(.ant-drawer-close) {
+    color: rgba(255, 255, 255, 0.65);
+  }
+}

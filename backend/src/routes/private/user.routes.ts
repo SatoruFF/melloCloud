@@ -10,8 +10,16 @@ const router = new Hono();
 // ========================================
 
 const changeInfoSchema = z.object({
-  email: z.string().email("Incorrect email").optional(),
   userName: z.string().min(1, "User name cannot be empty").optional(),
+});
+
+const changePasswordSchema = z.object({
+  currentPassword: z.string().min(1, "Current password is required"),
+  newPassword: z.string().min(6, "New password must be at least 6 characters"),
+});
+
+const deleteAccountSchema = z.object({
+  password: z.string().min(1, "Password is required"),
 });
 
 // ========================================
@@ -35,6 +43,8 @@ router.delete("/sessions/:sessionId", (c) => UserController.deleteSession(c));
 // ========================================
 
 router.patch("/changeinfo", zValidator("json", changeInfoSchema), (c) => UserController.changeInfo(c));
+router.patch("/changepassword", zValidator("json", changePasswordSchema), (c) => UserController.changePassword(c));
+router.delete("/account", zValidator("json", deleteAccountSchema), (c) => UserController.deleteAccount(c));
 
 router.get("/search", (c) => UserController.search(c));
 router.get("/:id", (c) => UserController.getById(c));

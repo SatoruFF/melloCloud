@@ -4,7 +4,8 @@
     "yes": "Yes",
     "no": "No",
     "created": "created",
-    "loading": "Loading..."
+    "loading": "Loading...",
+    "saved": "Saved successfully"
   },
   "pwa": {
     "addToHomeScreen": {
@@ -75,6 +76,12 @@
     "logout-success": "Logout success",
     "change-password": "Change password",
     "delete-account": "Delete account",
+    "current-password": "Current password",
+    "new-password": "New password",
+    "confirm-password": "Confirm new password",
+    "password-changed": "Password changed successfully",
+    "account-deleted": "Account deleted successfully",
+    "delete-account-confirm": "Type your password to confirm account deletion. This action cannot be undone.",
     "logout-description": "You successfully logout from account",
     "activate": {
       "invalidToken": "Invalid token",

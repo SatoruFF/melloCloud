@@ -19,6 +19,8 @@ export const ApiPaths = {
   userSessions: 'user/sessions',
   userSearch: 'user/search',
   userChangeInfo: 'user/changeinfo',
+  userChangePassword: 'user/changepassword',
+  userDeleteAccount: 'user/account',
 
   // Auth
   register: 'user/register',
@@ -130,6 +132,8 @@ export const Variables = {
   User_Sessions: `${_baseUrl}/user/sessions`,
   User_Search: `${_baseUrl}/user/search`,
   User_ChangeInfo: `${_baseUrl}/user/changeinfo`,
+  User_ChangePassword: `${_baseUrl}/user/changepassword`,
+  User_DeleteAccount: `${_baseUrl}/user/account`,
   User_GetById: `${_baseUrl}/user`,
 
   // Auth endpoints

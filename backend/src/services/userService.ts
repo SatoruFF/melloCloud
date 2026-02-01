@@ -368,11 +368,88 @@ class UserServiceClass {
     });
   }
 
+  /** Обновление профиля: только userName. */
+  async updateUserInfo(userId: number, data: { userName?: string }) {
+    if (!data.userName) {
+      throw createError(400, "Nothing to update");
+    }
+    const trimmed = data.userName.trim();
+    if (!trimmed) throw createError(400, "User name cannot be empty");
+    const existing = await prisma.user.findFirst({ where: { userName: trimmed, id: { not: userId } } });
+    if (existing) throw createError(400, "User name already taken");
+    const user = await prisma.user.update({
+      where: { id: userId },
+      data: { userName: trimmed },
+      select: { id: true, userName: true, email: true, role: true, avatar: true, diskSpace: true, usedSpace: true },
+    });
+    return {
+      ...user,
+      diskSpace: user.diskSpace.toString(),
+      usedSpace: user.usedSpace.toString(),
+    };
+  }
+
   async getById(context: any, id: number) {
     return await context.prisma.user.findFirst({
       where: { id: { equals: id } },
       select: { id: true, userName: true },
     });
+  }
+
+  /** Смена пароля: проверка текущего пароля и установка нового. */
+  async changePassword(userId: number, currentPassword: string, newPassword: string) {
+    const user = await prisma.user.findUnique({ where: { id: userId }, select: { id: true, password: true } });
+    if (!user || !user.password) {
+      throw createError(400, "Cannot change password for this account");
+    }
+    const valid = bcrypt.compareSync(currentPassword, user.password);
+    if (!valid) {
+      throw createError(400, "Current password is incorrect");
+    }
+    if (!newPassword || newPassword.length < 6) {
+      throw createError(400, "New password must be at least 6 characters");
+    }
+    const hashPassword = await bcrypt.hash(newPassword, 5);
+    await prisma.user.update({
+      where: { id: userId },
+      data: { password: hashPassword },
+    });
+    return { success: true };
+  }
+
+  /** Удаление аккаунта: проверка пароля, удаление сессий, связанных данных и пользователя. */
+  async deleteAccount(userId: number, password: string) {
+    const user = await prisma.user.findUnique({ where: { id: userId }, select: { id: true, password: true } });
+    if (!user || !user.password) {
+      throw createError(400, "Cannot delete this account");
+    }
+    const valid = bcrypt.compareSync(password, user.password);
+    if (!valid) {
+      throw createError(400, "Password is incorrect");
+    }
+    await prisma.$transaction(async (trx) => {
+      await trx.session.deleteMany({ where: { userId } });
+      await trx.task.updateMany({ where: { assignedToId: userId }, data: { assignedToId: null } });
+      await trx.invite.updateMany({ where: { userId }, data: { userId: null } });
+      await trx.file.deleteMany({ where: { userId } });
+      await trx.userConfig.deleteMany({ where: { userId } });
+      await trx.chatUser.deleteMany({ where: { userId } });
+      await trx.message.deleteMany({ where: { senderId: userId } });
+      await trx.noteCollaborator.deleteMany({ where: { userId } });
+      await trx.noteHistory.deleteMany({ where: { userId } });
+      await trx.task.deleteMany({ where: { userId } });
+      await trx.eventAttendee.deleteMany({ where: { userId } });
+      await trx.userFeatureFlag.deleteMany({ where: { userId } });
+      await trx.webhook.deleteMany({ where: { userId } });
+      await trx.permission.deleteMany({ where: { subjectId: userId } });
+      await trx.notification.deleteMany({ where: { userId } });
+      await trx.note.deleteMany({ where: { userId } });
+      await trx.taskColumn.deleteMany({ where: { userId } });
+      await trx.kanbanBoard.deleteMany({ where: { userId } });
+      await trx.calendarEvent.deleteMany({ where: { userId } });
+      await trx.user.delete({ where: { id: userId } });
+    });
+    return { success: true };
   }
 }
 
