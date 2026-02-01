@@ -7,6 +7,7 @@ import { useAuthQuery } from "../entities/user";
 import { setUser } from "../entities/user";
 import { Spinner } from "../shared";
 import { Navbar as MyNavbar } from "../widgets/Navbar";
+import { AddToHomeScreenBanner } from "../features/addToHomeScreen";
 import { ErrorBoundary } from "./providers/ErrorBoundary";
 import { useAppDispatch } from "./store/store";
 
@@ -39,6 +40,7 @@ function App() {
           <Suspense fallback={<Spinner fullscreen />}>
             <MyNavbar />
             <AppRouter />
+            <AddToHomeScreenBanner />
           </Suspense>
         </main>
       </ErrorBoundary>

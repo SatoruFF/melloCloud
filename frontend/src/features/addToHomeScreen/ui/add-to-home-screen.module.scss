@@ -1,0 +1,20 @@
+.banner {
+  position: fixed;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  width: calc(100% - 32px);
+  max-width: 420px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.alert {
+  border-radius: 8px;
+
+  :global(.ant-alert-content) {
+    margin-right: 8px;
+  }
+}

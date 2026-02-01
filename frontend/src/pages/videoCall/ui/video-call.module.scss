@@ -1,0 +1,23 @@
+.wrapper {
+  width: 100%;
+  height: 100vh;
+  min-height: 400px;
+  background: hsl(240 5.9% 10%);
+}
+
+.error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 24px;
+  color: hsl(0 0% 98%);
+  text-align: center;
+
+  .hint {
+    margin-top: 8px;
+    font-size: 14px;
+    color: hsl(240 5% 64.9%);
+  }
+}

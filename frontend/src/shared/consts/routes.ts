@@ -7,6 +7,7 @@ export const FILE_ROUTE: string = '/files';
 export const PROFILE_ROUTE: string = '/profile';
 export const PROFILE_MULTIPLE_ROUTE: string = '/profile/:id';
 export const CHATS_ROUTE: string = '/chats';
+export const CALL_ROUTE: string = '/call';
 export const NOTES_ROUTE: string = '/notes';
 export const NOTES_DETAIL_ROUTE: string = '/notes/:noteId';
 export const SHARED_PUBLIC_ROUTE = '/shared/:token';
