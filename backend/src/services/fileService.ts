@@ -293,6 +293,37 @@ class FileServiceClass {
     return { file, s3object };
   }
 
+  /** Возвращает подписанный URL для превью файла (короткий срок действия). */
+  async getFilePreviewUrl(fileId: number, userId: number): Promise<string> {
+    const file: any = await prisma.file.findFirst({
+      where: { id: fileId, userId },
+    });
+    if (!file) {
+      throw createError(404, "File not found");
+    }
+    if (file.type === "dir") {
+      throw createError(400, "Preview is not available for directories");
+    }
+    const user: any = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { storageGuid: true },
+    });
+    if (!user?.storageGuid) {
+      throw createError(500, "Storage not found");
+    }
+    let filePath = `${String(user.storageGuid)}/${file.path}/${file.name}`;
+    filePath = filePath.replace(/\/{2,}/g, "/");
+    const getParams: IS3 = {
+      Bucket: S3_BUCKET_NAME,
+      Key: filePath,
+    };
+    const signedUrl = await s3.getSignedUrlPromise("getObject", {
+      ...getParams,
+      Expires: 3600,
+    } as any);
+    return signedUrl;
+  }
+
   async deleteFile(fileId, userId) {
     return prisma.$transaction(async (trx) => {
       if (_.isNaN(fileId)) {

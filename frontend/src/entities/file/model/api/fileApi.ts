@@ -53,11 +53,24 @@ export const fileApi = rtkApi.injectEndpoints({
         return ApiPaths.file + (queryParams || '');
       },
     }),
+    getFilePreviewUrl: builder.query<{ url: string }, number | string>({
+      query: (fileId) => ({
+        url: `${ApiPaths.filePreviewUrl}?id=${fileId}`,
+      }),
+    }),
+    getFileContent: builder.query<Blob, number | string>({
+      query: (fileId) => ({
+        url: `${ApiPaths.fileContent}?id=${fileId}`,
+        responseHandler: async (response: Response) => response.blob(),
+      }),
+    }),
   }),
 });
 
 export const {
   useGetFilesQuery,
+  useLazyGetFilePreviewUrlQuery,
+  useLazyGetFileContentQuery,
   useCreateDirMutation,
   useDownloadFileMutation,
   useDeleteFileMutation,

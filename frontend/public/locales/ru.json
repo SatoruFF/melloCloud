@@ -123,6 +123,7 @@
     "delete-failed": "Не удалось удалить файл",
     "download-success": "Файл успешно скачан",
     "download-failed": "Не удалось скачать файл",
+    "preview-failed": "Не удалось открыть превью",
     "unknown-date": "неизвестно",
     "order": {
       "name": "имя",

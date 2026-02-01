@@ -5,6 +5,8 @@ const router = new Hono();
 
 router.post("/", (c) => FileController.createDir(c));
 router.get("/", (c) => FileController.getFiles(c));
+router.get("/preview-url", (c) => FileController.getFilePreviewUrl(c));
+router.get("/content", (c) => FileController.getFileContent(c));
 router.post("/upload", (c) => FileController.uploadFile(c));
 router.post("/download", (c) => FileController.downloadFile(c));
 router.delete("/delete", (c) => FileController.deleteFile(c));

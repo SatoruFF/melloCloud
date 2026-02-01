@@ -38,6 +38,8 @@ export const ApiPaths = {
   fileUpload: 'file/upload',
   fileDownload: 'file/download',
   fileDelete: 'file/delete',
+  filePreviewUrl: 'file/preview-url',
+  fileContent: 'file/content',
   fileAvatar: 'file/avatar',
 
   // Chat & Messages
