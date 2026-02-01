@@ -6,6 +6,12 @@
     "created": "created",
     "loading": "Loading..."
   },
+  "pwa": {
+    "addToHomeScreen": {
+      "message": "Add Mello to your home screen for quick access: browser menu → «Add to Home Screen» or «Install app».",
+      "dismiss": "Close"
+    }
+  },
   "home": {
     "primary-name": "Mello",
     "about-product": "Your lightweight, cross-platform personal workspace for cloud, chat, files, and tasks — all in one app.",
@@ -272,7 +278,13 @@
     "no-users-found": "Users not found",
     "error-title": "Error",
     "error-loading": "Failed to load chats. Please try again.",
-    "error-search": "Search error"
+    "error-search": "Search error",
+    "videoCall": {
+      "start": "Video call",
+      "guest": "Guest",
+      "noRoom": "No call room specified.",
+      "hint": "Click «Video call» in the chat to start."
+    }
   },
   "messages": {
     "messages-input-placeholder": "write message...",

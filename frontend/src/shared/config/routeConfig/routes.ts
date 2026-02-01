@@ -5,6 +5,7 @@ import {
   ACTIVATION_ROUTE,
   ADMIN_ROUTE,
   ACCESS_DENIED_ROUTE,
+  CALL_ROUTE,
   CHATS_ROUTE,
   FILE_ROUTE,
   LOGIN_ROUTE,
@@ -43,6 +44,7 @@ const KanbanPage = lazy(() => import('../../../pages/planner/KanbanPage/ui/Kanba
 const CalendarPage = lazy(() => import('../../../pages/planner/CalendarPage/ui/CalendarPage'));
 
 const Activate = lazy(() => import('../../../pages/activate/ui/Activate'));
+const VideoCall = lazy(() => import('../../../pages/videoCall/ui/VideoCall'));
 
 export interface IRoute {
   path: string;
@@ -94,6 +96,7 @@ const privateRoutes: IRoute[] = createRoutes([
   { path: FILE_ROUTE, element: FileSpace, private: true },
   { path: PROFILE_ROUTE, element: Profile, private: true },
   { path: CHATS_ROUTE, element: Chats, private: true },
+  { path: CALL_ROUTE, element: VideoCall, private: true },
   { path: NOTES_ROUTE, element: Notes, private: true },
   { path: NOTES_DETAIL_ROUTE, element: Notes, private: true },
 

@@ -1,13 +1,21 @@
+.headerRow {
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+  border-bottom: 1px solid hsl(240 3.7% 15.9%);
+  background: hsl(240 5.9% 10%);
+}
+
 .chatHeader {
   display: flex;
   align-items: center;
   gap: 16px;
-  width: 100%;
+  flex: 1;
+  min-width: 0;
   padding: 16px;
   box-sizing: border-box;
   border: none;
-  border-bottom: 1px solid hsl(240 3.7% 15.9%);
-  background: hsl(240 5.9% 10%);
+  background: transparent;
   cursor: pointer;
   text-align: left;
   transition: background 0.15s ease;
@@ -20,6 +28,24 @@
     margin-left: auto;
     color: hsl(240 5% 64.9%);
     flex-shrink: 0;
+  }
+}
+
+.videoCallBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 16px;
+  border: none;
+  border-left: 1px solid hsl(240 3.7% 15.9%);
+  background: transparent;
+  color: hsl(240 5% 64.9%);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+
+  &:hover {
+    background: hsl(240 5.9% 14%);
+    color: hsl(0 0% 98%);
   }
 }
 
