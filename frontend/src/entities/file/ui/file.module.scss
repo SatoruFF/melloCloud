@@ -177,6 +177,7 @@
 }
 
 .filePlateFileWrapper {
+  position: relative;
   overflow: hidden;
   width: 125px;
   height: 150px;
@@ -187,6 +188,7 @@
   justify-content: space-evenly;
   text-align: center;
   transition-duration: 0.5s;
+  border-radius: 8px;
   @extend %file-image;
 
   .fileIconWrapper {
@@ -212,17 +214,32 @@
   }
 
   .fileBtns {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     display: flex;
     flex-direction: column;
-    gap: 4px;
-    width: 100%;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(4px);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 5;
+    padding: 8px;
   }
 
   .fileBtn {
-    display: none;
+    display: block;
     font-size: 12px;
-    padding: 2px 8px;
+    padding: 4px 12px;
     height: auto;
+    width: 100%;
+    max-width: 110px;
+    white-space: nowrap;
   }
 
   .fileShare {
@@ -234,8 +251,8 @@
   }
 
   &:hover {
-    .fileBtn {
-      display: block;
+    .fileBtns {
+      opacity: 1;
     }
   }
 }

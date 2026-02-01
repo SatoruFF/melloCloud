@@ -89,18 +89,59 @@
 
 @media screen and (max-width: 992px) {
   .diskWrapper {
+    height: auto;
+    min-height: $file-toolbar-height;
+
     .diskControlBtns {
       height: auto;
       padding: 10px;
       box-sizing: border-box;
-      display: grid;
-      grid-template-columns: 1fr 3fr 3fr;
-      grid-template-rows: 1fr 1fr;
-      .visual {
-        width: 100%;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding-left: 10px;
+
+      > button,
+      > .diskOrder,
+      > .searchFiles {
+        flex: 0 1 auto;
       }
+
+      .searchFiles {
+        width: 100%;
+        order: 10;
+      }
+
+      .visual {
+        width: auto;
+        gap: 12px;
+        margin-left: auto;
+      }
+
       .breadcrumb {
         display: none;
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .diskWrapper {
+    .diskControlBtns {
+      gap: 6px;
+
+      .diskCreateFolderTxt {
+        display: none;
+      }
+
+      .diskUpload {
+        span {
+          display: none;
+        }
+      }
+
+      .diskOrder {
+        min-width: 100px;
       }
     }
   }
@@ -109,18 +150,28 @@
 @media screen and (max-width: 576px) {
   .diskWrapper {
     .diskControlBtns {
-      .disk-order {
-        width: 70px;
+      padding: 8px;
+      padding-left: 8px;
+      gap: 4px;
+
+      > button {
+        padding: 4px 8px;
+        font-size: 12px;
       }
-      .diskUpload,
-      upload-btn {
-        width: 90%;
-        text-overflow: ellipsis;
-        overflow: hidden;
-        white-space: nowrap;
+
+      .diskOrder {
+        min-width: 80px;
+        font-size: 12px;
       }
+
+      .searchFiles {
+        width: 100%;
+        order: 10;
+      }
+
       .visual {
-        width: 80px;
+        width: auto;
+        gap: 8px;
       }
     }
   }
