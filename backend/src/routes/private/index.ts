@@ -13,6 +13,7 @@ import webhookRouter from './webhook.routes';
 import notificationRouter from './notification.routes';
 import sharingRouter from './sharing.hono.routes';
 import adminRouter from './admin.routes';
+import featureFlagsRouter from './featureFlags.routes';
 
 const privateRouter = new Hono();
 
@@ -32,5 +33,6 @@ privateRouter.route('/webhooks', webhookRouter);
 privateRouter.route('/notifications', notificationRouter);
 privateRouter.route('/sharing', sharingRouter);
 privateRouter.route('/admin', adminRouter);
+privateRouter.route('/feature-flags', featureFlagsRouter);
 
 export default privateRouter;

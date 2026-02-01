@@ -3,6 +3,7 @@ import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
 import { prisma } from "../../configs/config.js";
 import { adminMiddleware } from "../../middleware/admin.middleware.js";
+import * as FeatureFlagService from "../../services/featureFlagService.js";
 
 const adminRouter = new Hono();
 
@@ -282,6 +283,75 @@ adminRouter.delete("/boards/:id", async (c) => {
   const id = Number(c.req.param("id"));
   if (!Number.isFinite(id)) return c.json({ message: "Invalid id" }, 400);
   await prisma.kanbanBoard.delete({ where: { id } });
+  return c.json({ ok: true });
+});
+
+// ========== FEATURE FLAGS ==========
+adminRouter.get("/feature-flags", async (c) => {
+  const flags = await FeatureFlagService.listFlags();
+  return c.json(flags);
+});
+
+const createFeatureFlagSchema = z.object({
+  key: z.string().min(1),
+  name: z.string().min(1),
+  description: z.string().optional(),
+  isEnabled: z.boolean().optional().default(false),
+});
+
+adminRouter.post("/feature-flags", zValidator("json", createFeatureFlagSchema), async (c) => {
+  const body = c.req.valid("json");
+  const flag = await FeatureFlagService.createFlag(body);
+  return c.json(flag);
+});
+
+const updateFeatureFlagSchema = z.object({
+  key: z.string().min(1).optional(),
+  name: z.string().min(1).optional(),
+  description: z.string().optional().nullable(),
+  isEnabled: z.boolean().optional(),
+});
+
+adminRouter.patch("/feature-flags/:id", zValidator("json", updateFeatureFlagSchema), async (c) => {
+  const id = Number(c.req.param("id"));
+  if (!Number.isFinite(id)) return c.json({ message: "Invalid id" }, 400);
+  const body = c.req.valid("json");
+  const flag = await FeatureFlagService.updateFlag(id, body);
+  return c.json(flag);
+});
+
+adminRouter.delete("/feature-flags/:id", async (c) => {
+  const id = Number(c.req.param("id"));
+  if (!Number.isFinite(id)) return c.json({ message: "Invalid id" }, 400);
+  await FeatureFlagService.deleteFlag(id);
+  return c.json({ ok: true });
+});
+
+adminRouter.get("/feature-flags/:id/users", async (c) => {
+  const id = Number(c.req.param("id"));
+  if (!Number.isFinite(id)) return c.json({ message: "Invalid id" }, 400);
+  const users = await FeatureFlagService.getFlagUsers(id);
+  return c.json(users);
+});
+
+const setUserFlagSchema = z.object({
+  userId: z.number(),
+  isEnabled: z.boolean(),
+});
+
+adminRouter.post("/feature-flags/:id/users", zValidator("json", setUserFlagSchema), async (c) => {
+  const id = Number(c.req.param("id"));
+  if (!Number.isFinite(id)) return c.json({ message: "Invalid id" }, 400);
+  const { userId, isEnabled } = c.req.valid("json");
+  await FeatureFlagService.setUserFlag(id, userId, isEnabled);
+  return c.json({ ok: true });
+});
+
+adminRouter.delete("/feature-flags/:id/users/:userId", async (c) => {
+  const id = Number(c.req.param("id"));
+  const userId = Number(c.req.param("userId"));
+  if (!Number.isFinite(id) || !Number.isFinite(userId)) return c.json({ message: "Invalid id" }, 400);
+  await FeatureFlagService.removeUserFlag(id, userId);
   return c.json({ ok: true });
 });
 

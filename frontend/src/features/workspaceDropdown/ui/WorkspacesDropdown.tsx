@@ -13,32 +13,49 @@ import { Dropdown, type MenuProps, Space } from "antd";
 import { useTranslation } from "react-i18next";
 import { NavLink } from "react-router-dom";
 import { CHATS_ROUTE, FILE_ROUTE, NOTES_ROUTE, MODULES_ROUTE, PLANNER_ROUTE, ADMIN_ROUTE } from "../../../shared/consts/routes";
+import { getFeatureFlag } from "../../../shared/lib/features/setGetFeatures";
 
 const WorkspacesDropdown = ({ viewAll, logOut, setProfile, isAdmin }: { viewAll: boolean; logOut: any; setProfile: any; isAdmin?: boolean }) => {
   const { t } = useTranslation();
 
   const items: MenuProps["items"] = [
-    {
-      key: "1",
-      label: <NavLink to={CHATS_ROUTE}>{t("tabs.chats")}</NavLink>,
-      icon: <MessageSquare size={16} />,
-    },
-    {
-      key: "2",
-      label: <NavLink to={NOTES_ROUTE}>{t("tabs.notes")}</NavLink>,
-      icon: <FileText size={16} />,
-    },
-    {
-      key: "3",
-      label: <NavLink to={PLANNER_ROUTE}>{t("tabs.planner")}</NavLink>,
-      icon: <CalendarCheck size={16} />,
-    },
-    {
-      key: "4",
-      label: <NavLink to={MODULES_ROUTE}>{t("tabs.modules")}</NavLink>,
-      danger: true,
-      icon: <Blocks size={16} />,
-    },
+    ...(getFeatureFlag("chats")
+      ? [
+          {
+            key: "1",
+            label: <NavLink to={CHATS_ROUTE}>{t("tabs.chats")}</NavLink>,
+            icon: <MessageSquare size={16} />,
+          },
+        ]
+      : []),
+    ...(getFeatureFlag("notes")
+      ? [
+          {
+            key: "2",
+            label: <NavLink to={NOTES_ROUTE}>{t("tabs.notes")}</NavLink>,
+            icon: <FileText size={16} />,
+          },
+        ]
+      : []),
+    ...(getFeatureFlag("planner")
+      ? [
+          {
+            key: "3",
+            label: <NavLink to={PLANNER_ROUTE}>{t("tabs.planner")}</NavLink>,
+            icon: <CalendarCheck size={16} />,
+          },
+        ]
+      : []),
+    ...(getFeatureFlag("kanban")
+      ? [
+          {
+            key: "4",
+            label: <NavLink to={MODULES_ROUTE}>{t("tabs.modules")}</NavLink>,
+            danger: true,
+            icon: <Blocks size={16} />,
+          },
+        ]
+      : []),
     ...(isAdmin
       ? [
           {
@@ -51,12 +68,14 @@ const WorkspacesDropdown = ({ viewAll, logOut, setProfile, isAdmin }: { viewAll:
   ];
 
   if (viewAll) {
-    items.push(
-      {
+    if (getFeatureFlag("files")) {
+      items.push({
         key: "6",
         label: <NavLink to={FILE_ROUTE}>{t("tabs.files")}</NavLink>,
         icon: <FolderOpen size={16} />,
-      },
+      });
+    }
+    items.push(
       {
         key: "7",
         label: <div onClick={() => setProfile(true)}>{t("tabs.settings")}</div>,

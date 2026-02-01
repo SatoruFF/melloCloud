@@ -1,3 +1,9 @@
+/** Ключи фич, управляемых из админки. Глобально: isEnabled; для юзера: UserFeatureFlag.isEnabled. */
 export interface FeatureFlags {
-	someFeature?: boolean;
+	files?: boolean;
+	notes?: boolean;
+	chats?: boolean;
+	planner?: boolean;
+	kanban?: boolean;
+	webhooks?: boolean;
 }

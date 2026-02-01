@@ -86,6 +86,9 @@ export const ApiPaths = {
   notificationsUnreadCount: 'notifications/unread-count',
   notificationsReadAll: 'notifications/read-all',
 
+  // Feature flags (for current user)
+  featureFlags: 'feature-flags',
+
   // Sharing
   sharing: 'sharing',
   sharingPermissions: 'sharing/permissions',
@@ -107,6 +110,7 @@ export const ApiPaths = {
   adminEvents: 'admin/events',
   adminBoards: 'admin/boards',
   adminStats: 'admin/stats',
+  adminFeatureFlags: 'admin/feature-flags',
 } as const;
 
 // ========================================

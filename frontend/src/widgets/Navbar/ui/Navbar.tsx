@@ -18,6 +18,7 @@ import {
   REGISTRATION_ROUTE,
   WELCOME_ROUTE,
 } from "../../../shared/consts/routes";
+import { getFeatureFlag } from "../../../shared/lib/features/setGetFeatures";
 import AccountSettings from "../../accountSettings/ui/AccountSettings.";
 
 import { Notifications } from "../../../features/notifications";
@@ -87,7 +88,7 @@ const MyNavbar: React.FC = () => {
 
       {isAuth ? (
         <div className={cn(styles.navItems)}>
-          {!isTabletOrMobile && (
+          {!isTabletOrMobile && getFeatureFlag("files") && (
             <>
               <div className={cn(styles.navFiles)}>
                 <Button ghost>
