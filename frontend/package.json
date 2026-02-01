@@ -88,6 +88,8 @@
     "react-virtuoso": "^4.13.0",
     "react-window": "^1.8.11",
     "react-window-infinite-loader": "^1.0.10",
+    "@nivo/bar": "^0.87.0",
+    "@nivo/core": "^0.87.0",
     "redux-persist": "^6.0.0",
     "sass": "^1.86.0",
     "ts-node": "^10.9.2",

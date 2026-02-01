@@ -8,6 +8,7 @@ export interface IUserModel {
   avatar?: string | null;
   role?: string;
   isActivated?: boolean;
+  isAdmin?: boolean;
   token: string;
   refreshToken: string;
 }
@@ -23,13 +24,15 @@ export class UserDto {
     avatar: string;
     role: string;
     isActivated: boolean;
+    isAdmin: boolean;
   };
 
   token: string;
   refreshToken: string;
 
   constructor(model: IUserModel) {
-    const { id, userName, email, diskSpace, usedSpace, avatar, role, isActivated, token, refreshToken } = model;
+    const { id, userName, email, diskSpace, usedSpace, avatar, role, isActivated, isAdmin, token, refreshToken } =
+      model;
     this.user = {
       id,
       userName,
@@ -38,7 +41,8 @@ export class UserDto {
       usedSpace,
       avatar: avatar || "",
       role: role || "USER",
-      isActivated: isActivated || false,
+      isActivated: isActivated ?? false,
+      isAdmin: isAdmin ?? false,
     };
     this.token = token;
     this.refreshToken = refreshToken;

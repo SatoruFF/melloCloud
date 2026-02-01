@@ -25,6 +25,13 @@
     "just-error": "Something went wrong(",
     "details": "Error details"
   },
+  "access-denied": {
+    "title": "Access to the system is restricted",
+    "message": "Unfortunately, access to the system has been restricted for your account. If you believe this is an error, please contact the administrator. We are happy to help and look into it.",
+    "wish": "Thank you for your understanding.",
+    "home": "Home",
+    "sign-in-another": "Sign in with another account"
+  },
   "home-anchor": {
     "title": "Title",
     "more": "More",
@@ -332,6 +339,7 @@
     "events": {
       "title": "Calendar",
       "loading": "Loading calendar...",
+      "noEvents": "No events to display",
       "actions": {
         "create": "Create Event",
         "edit": "Edit",

@@ -7,7 +7,7 @@ import { NavLink, useNavigate, useSearchParams } from "react-router-dom";
 import { useAppDispatch } from "../../../app/store/store";
 import { userApi } from "../../../entities/user/model/api/user";
 import { setUser } from "../../../entities/user/model/slice/userSlice";
-import { FILE_ROUTE, REGISTRATION_ROUTE } from "../../../shared/consts/routes";
+import { ACCESS_DENIED_ROUTE, FILE_ROUTE, REGISTRATION_ROUTE } from "../../../shared/consts/routes";
 import { Variables } from "../../../shared/consts/localVariables";
 import cn from "classnames";
 import { Spinner } from "../../../shared";
@@ -116,6 +116,10 @@ const Login = () => {
 
       navigate(FILE_ROUTE);
     } catch (e: any) {
+      if (e?.data?.code === "USER_BLOCKED") {
+        navigate(ACCESS_DENIED_ROUTE, { replace: true });
+        return;
+      }
       const errorMsg = e?.data?.message || e?.error || e?.message || "Unknown error occurred";
       messageApi.open({
         type: "error",

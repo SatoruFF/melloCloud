@@ -77,6 +77,14 @@ const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQue
     }
   }
 
+  if (result.error && result.error.status === 403) {
+    const data = (result.error as any)?.data;
+    if (data?.code === 'USER_BLOCKED') {
+      api.dispatch(logout());
+      window.location.href = '/access-denied';
+    }
+  }
+
   return result;
 };
 

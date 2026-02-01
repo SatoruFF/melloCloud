@@ -1,6 +1,6 @@
 import crypto from "crypto";
 import type { Context } from "hono";
-import { prisma } from "../configs/config.js";
+import { CLIENT_URL, isProduction, prisma, TELEGRAM_BOT_TOKEN } from "../configs/config.js";
 import { v4 as uuidv4 } from "uuid";
 import { generateJwt } from "../utils/generateJwt.js";
 import { FileService } from "../services/fileService.js";
@@ -51,20 +51,20 @@ export async function handleTelegramAuth(c: Context) {
 
     // Проверяем наличие обязательных полей
     if (!telegramData.id || !telegramData.hash || !telegramData.auth_date) {
-      return c.redirect(`${process.env.CLIENT_URL}/login?error=${encodeURIComponent("Invalid Telegram data")}`);
+      return c.redirect(`${CLIENT_URL}/login?error=${encodeURIComponent("Invalid Telegram data")}`);
     }
 
     // Проверяем подлинность данных
-    const botToken = process.env.TELEGRAM_BOT_TOKEN;
+    const botToken = TELEGRAM_BOT_TOKEN;
     if (!botToken) {
       console.error("TELEGRAM_BOT_TOKEN not configured");
-      return c.redirect(`${process.env.CLIENT_URL}/login?error=${encodeURIComponent("Telegram auth not configured")}`);
+      return c.redirect(`${CLIENT_URL}/login?error=${encodeURIComponent("Telegram auth not configured")}`);
     }
 
     const isValid = verifyTelegramAuth(telegramData, botToken);
     if (!isValid) {
       return c.redirect(
-        `${process.env.CLIENT_URL}/login?error=${encodeURIComponent("Invalid Telegram authentication")}`,
+        `${CLIENT_URL}/login?error=${encodeURIComponent("Invalid Telegram authentication")}`,
       );
     }
 
@@ -73,7 +73,7 @@ export async function handleTelegramAuth(c: Context) {
     const now = new Date();
     const dayInMs = 24 * 60 * 60 * 1000;
     if (now.getTime() - authDate.getTime() > dayInMs) {
-      return c.redirect(`${process.env.CLIENT_URL}/login?error=${encodeURIComponent("Telegram auth expired")}`);
+      return c.redirect(`${CLIENT_URL}/login?error=${encodeURIComponent("Telegram auth expired")}`);
     }
 
     // Ищем или создаем пользователя
@@ -143,16 +143,16 @@ export async function handleTelegramAuth(c: Context) {
     c.cookie("refreshToken", refreshToken, {
       maxAge: 30 * 24 * 60 * 60,
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: isProduction,
       sameSite: "Lax",
     });
 
     // Редиректим на фронтенд с токеном
-    return c.redirect(`${process.env.CLIENT_URL}?token=${accessToken}`);
+    return c.redirect(`${CLIENT_URL}?token=${accessToken}`);
   } catch (error: any) {
     console.error("Telegram auth error:", error);
     return c.redirect(
-      `${process.env.CLIENT_URL}/login?error=${encodeURIComponent(error.message || "Telegram auth failed")}`,
+      `${CLIENT_URL}/login?error=${encodeURIComponent(error.message || "Telegram auth failed")}`,
     );
   }
 }

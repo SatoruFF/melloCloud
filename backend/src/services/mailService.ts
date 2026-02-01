@@ -2,9 +2,15 @@
 // FIXME: remove this in future
 import _ from 'lodash';
 
-import 'dotenv/config.js';
 import nodemailer from 'nodemailer';
 
+import {
+  SERVICE_NAME,
+  SMTP_HOST,
+  SMTP_PASSWORD,
+  SMTP_PORT,
+  SMTP_USER,
+} from '../configs/config.js';
 import { getTemplate } from '../utils/getTemplate.js';
 
 class MailServiceClass {
@@ -12,21 +18,21 @@ class MailServiceClass {
 
   constructor() {
     this.transport = nodemailer.createTransport({
-      host: process.env.SMTP_HOST,
-      port: process.env.SMTP_PORT,
-      secure: process.env.SMTP_PORT == 465,
+      host: SMTP_HOST,
+      port: SMTP_PORT,
+      secure: SMTP_PORT === 465,
       auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASSWORD,
+        user: SMTP_USER,
+        pass: SMTP_PASSWORD,
       },
     });
   }
 
   async sendActivationMail(to: string, userData: any) {
     await this.transport.sendMail({
-      from: process.env.SMTP_USER,
+      from: SMTP_USER,
       to,
-      subject: `Account activation on ${process.env.SEVICE_NAME || 'mello'}`,
+      subject: `Account activation on ${SERVICE_NAME}`,
       text: '',
       html: getTemplate(userData),
     });

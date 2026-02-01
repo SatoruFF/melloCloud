@@ -1,5 +1,5 @@
-import "dotenv/config.js";
 import { webcrypto } from "crypto";
+import { MESSAGE_ENCRYPTION_KEY } from "../configs/config.js";
 
 const ALGORITHM = "AES-GCM";
 const IV_LENGTH = 12; // 96 bits recommended for GCM
@@ -16,7 +16,7 @@ const getEncryptionKey = async (): Promise<webcrypto.CryptoKey> => {
     return cachedKey;
   }
 
-  const keyString = process.env.MESSAGE_ENCRYPTION_KEY;
+  const keyString = MESSAGE_ENCRYPTION_KEY;
   if (!keyString) {
     throw new Error("MESSAGE_ENCRYPTION_KEY is not set in environment variables");
   }

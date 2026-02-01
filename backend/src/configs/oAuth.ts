@@ -1,21 +1,27 @@
 import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import { Strategy as YandexStrategy } from "passport-yandex";
-import { prisma } from "../configs/config.js";
+import {
+  API_URL,
+  GOOGLE_CLIENT_ID,
+  GOOGLE_CLIENT_SECRET,
+  prisma,
+  YANDEX_CLIENT_ID,
+  YANDEX_CLIENT_SECRET,
+} from "../configs/config.js";
 import { v4 as uuidv4 } from "uuid";
 import { FileService } from "../services/fileService.js";
-import "dotenv/config.js";
 
 // ========================================
 // Google OAuth Strategy
 // ========================================
-if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
+if (GOOGLE_CLIENT_ID && GOOGLE_CLIENT_SECRET) {
   passport.use(
     new GoogleStrategy(
       {
-        clientID: process.env.GOOGLE_CLIENT_ID,
-        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-        callbackURL: `${process.env.API_URL}/auth/google/callback`,
+        clientID: GOOGLE_CLIENT_ID,
+        clientSecret: GOOGLE_CLIENT_SECRET,
+        callbackURL: `${API_URL}/auth/google/callback`,
       },
       async (accessToken, refreshToken, profile, done) => {
         try {
@@ -75,13 +81,13 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
 // ========================================
 // Yandex OAuth Strategy
 // ========================================
-if (process.env.YANDEX_CLIENT_ID && process.env.YANDEX_CLIENT_SECRET) {
+if (YANDEX_CLIENT_ID && YANDEX_CLIENT_SECRET) {
   passport.use(
     new YandexStrategy(
       {
-        clientID: process.env.YANDEX_CLIENT_ID,
-        clientSecret: process.env.YANDEX_CLIENT_SECRET,
-        callbackURL: `${process.env.API_URL}/auth/yandex/callback`,
+        clientID: YANDEX_CLIENT_ID,
+        clientSecret: YANDEX_CLIENT_SECRET,
+        callbackURL: `${API_URL}/auth/yandex/callback`,
       },
       async (accessToken: string, refreshToken: string, profile: any, done: any) => {
         try {

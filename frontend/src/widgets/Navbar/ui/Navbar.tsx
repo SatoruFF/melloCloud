@@ -23,12 +23,13 @@ import AccountSettings from "../../accountSettings/ui/AccountSettings.";
 import { Notifications } from "../../../features/notifications";
 import LanguageSwitcher from "../../languageSwitcher/ui/LanguageSwitcher";
 import styles from "./navbar.module.scss";
-import { getUserAuthSelector, getUserSelector } from "../../../entities/user";
+import { checkIsAdmin, getUserAuthSelector, getUserSelector } from "../../../entities/user";
 
 const MyNavbar: React.FC = () => {
   const { t } = useTranslation();
   const isAuth = useAppSelector(getUserAuthSelector);
   const user = useAppSelector(getUserSelector);
+  const isAdmin = useAppSelector(checkIsAdmin);
   const [profile, setProfile] = useState(false);
   const [burger, setBurger] = useState(false);
   const dispatch = useAppDispatch();
@@ -98,7 +99,7 @@ const MyNavbar: React.FC = () => {
             </>
           )}
 
-          <WorkspacesDropdown setProfile={setProfile} logOut={logOut} viewAll={isTabletOrMobile} />
+          <WorkspacesDropdown setProfile={setProfile} logOut={logOut} viewAll={isTabletOrMobile} isAdmin={isAdmin} />
 
           <div className={cn(styles.navUser)}>
             {!isTabletOrMobile && (

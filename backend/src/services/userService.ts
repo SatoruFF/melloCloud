@@ -1,12 +1,11 @@
 import { v4 as uuidv4 } from "uuid";
-import { prisma } from "../configs/config.js";
+import { CLIENT_URL, getAdminUserIds, prisma } from "../configs/config.js";
 import { UserDto } from "../dtos/user-dto.js";
 import { FileService } from "./fileService.js";
 import { MailService } from "./mailService.js";
 import { SessionService } from "./sessionService.js";
 import bcrypt from "bcryptjs";
 import _ from "lodash";
-import "dotenv/config.js";
 import createError from "http-errors";
 import { generateJwt } from "../utils/generateJwt.js";
 import { validateAccessToken, validateRefreshToken } from "../utils/validateJwt.js";
@@ -44,7 +43,7 @@ class UserServiceClass {
         data: { userName, email, password: hashPassword, activationToken },
       });
 
-      activationToken = `${process.env.CLIENT_URL}/activate?token=${activationToken}`;
+      activationToken = `${CLIENT_URL}/activate?token=${activationToken}`;
       await MailService.sendActivationMail(email, { ...invite, activationToken });
 
       return _.omit(invite, invitePrivateProps);
@@ -123,6 +122,10 @@ class UserServiceClass {
         throw createError(400, `Incorrect login or password`);
       }
 
+      if (user.isBlocked) {
+        throw createError(403, "USER_BLOCKED");
+      }
+
       const { accessToken, refreshToken } = generateJwt(user.id);
 
       // Создаем новую сессию
@@ -184,6 +187,10 @@ class UserServiceClass {
       throw createError(401, "Invalid token");
     }
 
+    if (user.isBlocked) {
+      throw createError(403, "USER_BLOCKED");
+    }
+
     const { accessToken, refreshToken } = generateJwt(user.id);
     const diskSpace = user.diskSpace.toString();
     const usedSpace = user.usedSpace.toString();
@@ -197,6 +204,8 @@ class UserServiceClass {
       usedSpace,
       avatar: user.avatar,
       role: user.role,
+      isActivated: user.isActivated,
+      isAdmin: getAdminUserIds().includes(user.id),
       token: accessToken,
       refreshToken,
     });

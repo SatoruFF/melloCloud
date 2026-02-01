@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 import { logger } from "../configs/logger.js";
 import { parseJson } from "./parseJson.js";
 import ApiContext from "../models/context.js";
-import { prisma } from "../configs/config.js";
+import { ACCESS_SECRET_KEY, prisma } from "../configs/config.js";
 
 interface NoteClient {
   ws: WebSocket;
@@ -36,7 +36,7 @@ export function setupNoteWebSocket(wss: WebSocketServer) {
         return;
       }
 
-      const decoded = jwt.verify(token, process.env.ACCESS_SECRET_KEY as string) as
+      const decoded = jwt.verify(token, ACCESS_SECRET_KEY) as
         | { payload?: number; id?: number }
         | number;
       const rawId =

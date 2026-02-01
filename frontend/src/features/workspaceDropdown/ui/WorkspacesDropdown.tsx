@@ -7,13 +7,14 @@ import {
   Settings,
   LogOut,
   ChevronDown,
+  Shield,
 } from "lucide-react";
 import { Dropdown, type MenuProps, Space } from "antd";
 import { useTranslation } from "react-i18next";
 import { NavLink } from "react-router-dom";
-import { CHATS_ROUTE, FILE_ROUTE, NOTES_ROUTE, MODULES_ROUTE, PLANNER_ROUTE } from "../../../shared/consts/routes";
+import { CHATS_ROUTE, FILE_ROUTE, NOTES_ROUTE, MODULES_ROUTE, PLANNER_ROUTE, ADMIN_ROUTE } from "../../../shared/consts/routes";
 
-const WorkspacesDropdown = ({ viewAll, logOut, setProfile }: { viewAll: boolean; logOut: any; setProfile: any }) => {
+const WorkspacesDropdown = ({ viewAll, logOut, setProfile, isAdmin }: { viewAll: boolean; logOut: any; setProfile: any; isAdmin?: boolean }) => {
   const { t } = useTranslation();
 
   const items: MenuProps["items"] = [
@@ -38,6 +39,15 @@ const WorkspacesDropdown = ({ viewAll, logOut, setProfile }: { viewAll: boolean;
       danger: true,
       icon: <Blocks size={16} />,
     },
+    ...(isAdmin
+      ? [
+          {
+            key: "admin",
+            label: <NavLink to={ADMIN_ROUTE}>Admin</NavLink>,
+            icon: <Shield size={16} />,
+          },
+        ]
+      : []),
   ];
 
   if (viewAll) {

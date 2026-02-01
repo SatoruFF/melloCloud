@@ -1,7 +1,10 @@
 import { Context, Next } from 'hono';
 import jwt from 'jsonwebtoken';
-import 'dotenv/config';
 import ApiContext from '../models/context';
+import { ACCESS_SECRET_KEY, prisma } from '../configs/config.js';
+
+const BLOCKED_MESSAGE =
+  "Unfortunately, access to the system has been restricted for your account. If you believe this is an error, please contact the administrator.";
 
 export const authMiddleware = async (c: Context, next: Next) => {
   // OPTIONS requests skip auth
@@ -17,7 +20,7 @@ export const authMiddleware = async (c: Context, next: Next) => {
       return c.json({ message: 'Auth error with token' }, 401);
     }
 
-    const decoded = jwt.verify(token, process.env.ACCESS_SECRET_KEY as string) as
+    const decoded = jwt.verify(token, ACCESS_SECRET_KEY) as
       | { payload?: number | string; id?: number }
       | number;
 
@@ -29,6 +32,17 @@ export const authMiddleware = async (c: Context, next: Next) => {
     const id = typeof rawId === "number" && Number.isFinite(rawId) ? rawId : Number(rawId);
     if (!Number.isFinite(id) || id < 1) {
       return c.json({ message: "Invalid token" }, 401);
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { id },
+      select: { isBlocked: true },
+    });
+    if (!user) {
+      return c.json({ message: "Invalid token" }, 401);
+    }
+    if (user.isBlocked) {
+      return c.json({ message: BLOCKED_MESSAGE, code: "USER_BLOCKED" }, 403);
     }
 
     // Сохраняем в контекст Hono (аналог req.user)

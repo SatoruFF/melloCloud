@@ -24,7 +24,9 @@ model User {
   role         String       @default("USER")
   files        File[]
   isActivated  Boolean      @default(false)
-  
+  /** Заблокирован администратором — не может войти и использовать систему */
+  isBlocked    Boolean      @default(false)
+
   oauthProvider String?
   oauthId       String?
   
