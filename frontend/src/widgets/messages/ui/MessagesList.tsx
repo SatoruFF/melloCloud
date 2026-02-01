@@ -17,7 +17,6 @@ const MessagesList = ({ messages, currentUserId }: MessagesListProps) => {
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   const prevMessagesLengthRef = useRef(messages.length);
 
-  // Компонент для отображения сообщения
   const MessageItem = useCallback(
     ({ message }: { message: Message }) => {
       const isSelf = String(message.senderId) === String(currentUserId);
@@ -37,7 +36,6 @@ const MessagesList = ({ messages, currentUserId }: MessagesListProps) => {
     [currentUserId]
   );
 
-  // Рендер элемента для виртуализации
   const itemContent = useCallback(
     (index: number) => {
       const message = messages[index];
@@ -46,7 +44,6 @@ const MessagesList = ({ messages, currentUserId }: MessagesListProps) => {
     [messages, MessageItem]
   );
 
-  // Скролл к низу при новых сообщениях
   useEffect(() => {
     if (messages.length === 0) return;
 
@@ -54,14 +51,12 @@ const MessagesList = ({ messages, currentUserId }: MessagesListProps) => {
     const prevLength = prevMessagesLengthRef.current;
 
     if (isInitialLoad) {
-      // При первой загрузке сразу скроллим вниз без анимации
       virtuosoRef.current?.scrollToIndex({
         index: currentLength - 1,
         behavior: "auto",
       });
       setIsInitialLoad(false);
     } else if (currentLength > prevLength) {
-      // При новых сообщениях скроллим плавно
       virtuosoRef.current?.scrollToIndex({
         index: currentLength - 1,
         behavior: "smooth",
@@ -71,7 +66,6 @@ const MessagesList = ({ messages, currentUserId }: MessagesListProps) => {
     prevMessagesLengthRef.current = currentLength;
   }, [messages.length, isInitialLoad]);
 
-  // Альтернативный подход: startReached для подгрузки старых сообщений (пока не работает)
   const handleStartReached = useCallback(() => {
     console.log("Reached start - load more messages");
   }, []);
@@ -93,14 +87,13 @@ const MessagesList = ({ messages, currentUserId }: MessagesListProps) => {
           ref={virtuosoRef}
           totalCount={messages.length}
           itemContent={itemContent}
-          initialTopMostItemIndex={messages.length - 1} // Начинаем с последнего элемента
-          followOutput="smooth" // Автоматически следуем за новыми сообщениями
-          alignToBottom // Выравниваем по низу
+          initialTopMostItemIndex={messages.length - 1}
+          followOutput="smooth"
+          alignToBottom
           startReached={handleStartReached}
           style={{ height: "100%" }}
           className={styles.virtuosoContainer}
           components={{
-            // Кастомный скроллер для лучшего контроля
             Scroller: ({ style, children, ...props }) => (
               <div
                 {...props}

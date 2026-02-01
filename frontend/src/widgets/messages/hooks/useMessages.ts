@@ -68,21 +68,17 @@ export const useMessages = () => {
 
   const sendMessage = (text: string) => {
     const currentUserId = currentUser?.id;
-    const receiverId = currentChat?.receiver?.id;
-    if (!currentUserId || !receiverId) return;
+    if (!currentUserId) return;
 
-    const newMessage: Message = {
-      senderId: currentUserId,
-      receiverId,
-      text,
-      time: new Date().toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-      }),
-      self: true,
-    };
-
-    socketRef.current?.send(JSON.stringify(newMessage));
+    const isGroup = Boolean(currentChat?.isGroup);
+    if (isGroup) {
+      if (!currentChat?.id) return;
+      socketRef.current?.send(JSON.stringify({ chatId: currentChat.id, senderId: currentUserId, text }));
+    } else {
+      const receiverId = currentChat?.receiver?.id;
+      if (!receiverId) return;
+      socketRef.current?.send(JSON.stringify({ receiverId, senderId: currentUserId, text }));
+    }
   };
 
   return { messages, sendMessage, fetchMessages, error, isLoading };

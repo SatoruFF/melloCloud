@@ -132,6 +132,37 @@ class ChatServiceClass {
 
     return newChat.id;
   }
+
+  /**
+   * Создаёт групповой чат. Участники: создатель + participantIds.
+   */
+  async createGroupChat(
+    context: { prisma: typeof prisma },
+    params: { title: string; creatorId: number; participantIds: number[] }
+  ) {
+    const { title, creatorId, participantIds } = params;
+    const allUserIds = [creatorId, ...participantIds.filter((id) => id !== creatorId)];
+    const uniqueUserIds = _.uniq(allUserIds);
+
+    const encryptedTitle = await serializeMessage({ text: title });
+
+    const chat = await context.prisma.chat.create({
+      data: {
+        isGroup: true,
+        title: encryptedTitle,
+        users: {
+          create: uniqueUserIds.map((userId) => ({
+            user: { connect: { id: userId } },
+          })),
+        },
+      },
+      include: {
+        users: { include: { user: true } },
+      },
+    });
+
+    return chat;
+  }
 }
 
 export const ChatService = new ChatServiceClass();

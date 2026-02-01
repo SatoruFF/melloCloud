@@ -2,11 +2,25 @@
   display: flex;
   align-items: center;
   gap: 16px;
+  width: 100%;
   padding: 16px;
   box-sizing: border-box;
-  border-bottom: 1px solid #e2e2e2;
-  background-color: #ffffff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  border: none;
+  border-bottom: 1px solid hsl(240 3.7% 15.9%);
+  background: hsl(240 5.9% 10%);
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s ease;
+
+  &:hover {
+    background: hsl(240 5.9% 14%);
+  }
+
+  .chevron {
+    margin-left: auto;
+    color: hsl(240 5% 64.9%);
+    flex-shrink: 0;
+  }
 }
 
 .avatar {
@@ -21,11 +35,11 @@
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  background-color: #f0f0f0;
+  background: hsl(240 5.9% 15%);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #888;
+  color: hsl(240 5% 64.9%);
 }
 
 .chatInfo {
@@ -36,10 +50,10 @@
 .chatName {
   font-size: 15px;
   font-weight: 600;
-  color: #333;
+  color: hsl(0 0% 98%);
 }
 
 .chatStatus {
   font-size: 14px;
-  color: #888;
+  color: hsl(240 5% 64.9%);
 }

@@ -144,11 +144,14 @@ const ChatList: React.FC = () => {
               onClick={() => {
                 dispatch(
                   setCurrentChat({
-                    id: chat.id || null,
-                    receiver: {
-                      id: chat.receiver?.id || null,
-                      userName: chat.receiver?.userName || null,
-                    },
+                    id: chat.id ?? null,
+                    isGroup: chat.isGroup ?? false,
+                    title: chat.title ?? null,
+                    receiver: chat.isGroup
+                      ? null
+                      : chat.receiver
+                        ? { id: chat.receiver.id, userName: chat.receiver.userName, avatar: chat.receiver.avatar }
+                        : null,
                   }),
                 );
               }}

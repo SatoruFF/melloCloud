@@ -7,13 +7,17 @@ import { z } from "zod";
 import { ChatService } from "./chatService.js";
 import { NotificationService } from "./notificationService.js";
 
-// Схема для валидации сообщений
-const messageSchema = z.object({
-  text: z.string().min(1, "Text is required"),
-  senderId: z.number().int().positive("Sender ID must be a positive integer"),
-  receiverId: z.number().int().positive("Receiver ID must be a positive integer").optional(),
-  chatId: z.number().int().positive("Chat ID must be a positive integer").optional(),
-});
+// Схема для валидации сообщений (receiverId или chatId — для группового чата)
+const messageSchema = z
+  .object({
+    text: z.string().min(1, "Text is required"),
+    senderId: z.number().int().positive("Sender ID must be a positive integer"),
+    receiverId: z.number().int().positive().optional(),
+    chatId: z.number().int().positive().optional(),
+  })
+  .refine((data) => data.chatId != null || data.receiverId != null, {
+    message: "Either chatId (group) or receiverId (private) is required",
+  });
 
 class MessagesServiceClass<T extends IMessage> {
   public message: T;
@@ -84,11 +88,22 @@ class MessagesServiceClass<T extends IMessage> {
       const textToSave = encrypt ? await serializeMessage({ text: validatedMessage.text }) : validatedMessage.text;
 
       const result = await context.prisma.$transaction(async (trx) => {
-        const chatId = await ChatService.getOrCreatePrivateChat(trx, {
-          senderId: message.senderId,
-          receiverId: message.receiverId,
-          text: validatedMessage.text,
-        });
+        let chatId: number;
+        if (validatedMessage.chatId != null) {
+          const inChat = await trx.chatUser.findFirst({
+            where: { chatId: validatedMessage.chatId, userId: validatedMessage.senderId },
+          });
+          if (!inChat) {
+            throw new Error("Access denied: user is not part of this chat.");
+          }
+          chatId = validatedMessage.chatId;
+        } else {
+          chatId = await ChatService.getOrCreatePrivateChat(trx, {
+            senderId: message.senderId,
+            receiverId: message.receiverId!,
+            text: validatedMessage.text,
+          });
+        }
 
         const savedMessage = await trx.message.create({
           data: {
