@@ -181,7 +181,7 @@
   },
   "lint-staged": {
     "**/*.{js,mjs,cjs,jsx,ts,mts,cts,tsx,vue,astro,svelte}": [
-      "pnpm run lint:fix"
+      "biome check --write --no-errors-on-unmatched"
     ],
     "*.scss": "stylelint --fix"
   }

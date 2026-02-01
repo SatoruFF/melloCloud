@@ -81,10 +81,11 @@
     "eslint": "^9.21.0",
     "eslint-config-standard": "^17.1.0",
     "eslint-plugin-import": "^2.31.0",
-    "eslint-plugin-n": "^15.0.0 || ^16.0.0 ",
+    "eslint-plugin-n": "^15.0.0 || ^16.0.0",
     "eslint-plugin-promise": "^6.0.0",
     "husky": "^9.1.7",
     "jest": "^29.7.0",
+    "lint-staged": "^15.5.0",
     "oxlint": "^0.15.14",
     "prisma": "^6.11.1",
     "ts-node": "^10.9.2",
@@ -95,6 +96,8 @@
     "schema": "src/prisma/schema.prisma"
   },
   "lint-staged": {
-    "**/*.{js,mjs,cjs,jsx,ts,mts,cts,tsx,vue,astro,svelte}": "oxlint"
+    "**/*.{js,mjs,cjs,jsx,ts,mts,cts,tsx,vue,astro,svelte}": [
+      "biome check --write --no-errors-on-unmatched"
+    ]
   }
 }

@@ -14,7 +14,14 @@
     "editor.defaultFormatter": "biomejs.biome",
     "editor.formatOnPaste": true,
     "editor.formatOnSave": true,
-    "i18n-ally.keystyle": "nested"
+    "i18n-ally.keystyle": "nested",
+    "eslint.enable": false,
+    "editor.codeActionsOnSave": {
+      "source.organizeImports.biome": "explicit"
+    }
+  },
+  "extensions": {
+    "recommendations": ["biomejs.biome"]
   }
 }
 // why this workspace was created: https://github.com/biomejs/biome/issues/1556
