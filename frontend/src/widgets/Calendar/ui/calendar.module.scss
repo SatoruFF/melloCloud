@@ -254,6 +254,13 @@
     border-color: #27272a !important;
   }
 
+  // «Нет событий» в списке — светлый текст на тёмном фоне (дефолт FullCalendar чёрный)
+  .fc-list-empty,
+  .fc-list-empty * {
+    color: #a1a1aa !important;
+    background-color: transparent !important;
+  }
+
   .fc-list-event {
     cursor: pointer !important;
     transition: background 0.15s !important;
@@ -449,6 +456,11 @@
 
 .datePicker {
   width: 100%;
+}
+
+// Выпадающая панель DatePicker рендерится в портале; поднимаем её выше модалки (z-index: 10000) и Drawer
+.datePickerDropdown {
+  z-index: 10001 !important;
 }
 
 .drawerInner {
@@ -895,5 +907,10 @@
   justify-content: center;
   height: 400px;
   color: #a1a1aa;
+  font-size: 14px;
+}
+
+.noEventsMessage {
+  color: #a1a1aa !important;
   font-size: 14px;
 }

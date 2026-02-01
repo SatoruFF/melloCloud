@@ -1,16 +1,13 @@
-import 'dotenv/config';
 import jwt from 'jsonwebtoken';
 import _ from 'lodash';
-
-const accessSecretKey = process.env.ACCESS_SECRET_KEY;
-const refreshSecretKey = process.env.REFRESH_SECRET_KEY;
+import { ACCESS_SECRET_KEY, REFRESH_SECRET_KEY } from '../configs/config.js';
 
 export const validateAccessToken = (accessToken: string) => {
-  const decoded = jwt.verify(accessToken, accessSecretKey);
+  const decoded = jwt.verify(accessToken, ACCESS_SECRET_KEY);
   return decoded;
 };
 
 export const validateRefreshToken = (refreshToken: string) => {
-  const decoded = jwt.verify(refreshToken, refreshSecretKey);
+  const decoded = jwt.verify(refreshToken, REFRESH_SECRET_KEY);
   return decoded;
 };

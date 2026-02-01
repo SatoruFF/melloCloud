@@ -18,4 +18,5 @@ export const PLANNER_CALENDAR_ROUTE: string = '/planner/calendar';
 
 export const MODULES_ROUTE: string = '/modules';
 export const MODULES_POMODORO: string = '/modules/pomodoro';
-// export const ADMIN_PANEL: string = "/admin";
+export const ADMIN_ROUTE: string = '/admin';
+export const ACCESS_DENIED_ROUTE: string = '/access-denied';

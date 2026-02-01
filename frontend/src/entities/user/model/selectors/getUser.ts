@@ -16,7 +16,8 @@ export const getUserLoading = createSelector([getUserState], userState => userSt
 // Derived selectors
 export const getUserRole = createSelector([getUser], user => user?.role);
 
-export const checkIsAdmin = createSelector([getUserRole], role => role === 'ADMIN');
+/** Доступ в админку: только пользователи из ADMIN_USER_IDS на бэкенде (поле isAdmin в ответе auth). */
+export const checkIsAdmin = createSelector([getUser], user => user?.isAdmin === true);
 
 export const checkIsActivated = createSelector([getUser], user => user?.isActivated ?? false);
 

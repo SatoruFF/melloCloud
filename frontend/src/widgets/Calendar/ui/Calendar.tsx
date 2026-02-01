@@ -157,11 +157,15 @@ export default function Calendar() {
     try {
       const startDateTime = formData.allDay
         ? new Date(formData.startDate).toISOString()
-        : new Date(`${formData.startDate}T${formData.startTime}`).toISOString();
+        : new Date(
+            `${formData.startDate}T${formData.startTime || "09:00"}`,
+          ).toISOString();
 
       const endDateTime = formData.allDay
         ? new Date(formData.endDate).toISOString()
-        : new Date(`${formData.endDate}T${formData.endTime}`).toISOString();
+        : new Date(
+            `${formData.endDate}T${formData.endTime || "10:00"}`,
+          ).toISOString();
 
       const result = await createEvent({
         title: formData.title,
@@ -193,11 +197,15 @@ export default function Calendar() {
     try {
       const startDateTime = formData.allDay
         ? new Date(formData.startDate).toISOString()
-        : new Date(`${formData.startDate}T${formData.startTime}`).toISOString();
+        : new Date(
+            `${formData.startDate}T${formData.startTime || "09:00"}`,
+          ).toISOString();
 
       const endDateTime = formData.allDay
         ? new Date(formData.endDate).toISOString()
-        : new Date(`${formData.endDate}T${formData.endTime}`).toISOString();
+        : new Date(
+            `${formData.endDate}T${formData.endTime || "10:00"}`,
+          ).toISOString();
 
       const result = await updateEvent({
         eventId: selectedEvent.id,
@@ -318,28 +326,42 @@ export default function Calendar() {
   };
 
   const handleFormChange = (field: keyof EventFormData, value: any) => {
-    setFormData((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
+    setFormData((prev) => {
+      const next = { ...prev, [field]: value };
+      if (field === "allDay" && value === false) {
+        if (!next.startTime) next.startTime = "09:00";
+        if (!next.endTime) next.endTime = "10:00";
+      }
+      return next;
+    });
   };
 
-  const startPickerValue =
-    formData.allDay && formData.startDate
-      ? LuxonDateTime.fromFormat(formData.startDate, "yyyy-MM-dd")
-      : formData.startDate && formData.startTime
-        ? LuxonDateTime.fromISO(`${formData.startDate}T${formData.startTime}`)
-        : formData.startDate
-          ? LuxonDateTime.fromFormat(formData.startDate, "yyyy-MM-dd")
-          : null;
-  const endPickerValue =
-    formData.allDay && formData.endDate
-      ? LuxonDateTime.fromFormat(formData.endDate, "yyyy-MM-dd")
-      : formData.endDate && formData.endTime
-        ? LuxonDateTime.fromISO(`${formData.endDate}T${formData.endTime}`)
-        : formData.endDate
-          ? LuxonDateTime.fromFormat(formData.endDate, "yyyy-MM-dd")
-          : null;
+  const defaultStartTime = "09:00";
+  const defaultEndTime = "10:00";
+  const startPickerValue = (() => {
+    if (formData.allDay && formData.startDate) {
+      const d = LuxonDateTime.fromFormat(formData.startDate, "yyyy-MM-dd");
+      return d.invalid ? null : d;
+    }
+    if (formData.startDate) {
+      const s = formData.startTime || defaultStartTime;
+      const d = LuxonDateTime.fromISO(`${formData.startDate}T${s}`);
+      return d.invalid ? null : d;
+    }
+    return null;
+  })();
+  const endPickerValue = (() => {
+    if (formData.allDay && formData.endDate) {
+      const d = LuxonDateTime.fromFormat(formData.endDate, "yyyy-MM-dd");
+      return d.invalid ? null : d;
+    }
+    if (formData.endDate) {
+      const s = formData.endTime || defaultEndTime;
+      const d = LuxonDateTime.fromISO(`${formData.endDate}T${s}`);
+      return d.invalid ? null : d;
+    }
+    return null;
+  })();
 
   const handleStartChange = (date: DateTime | null) => {
     if (!date || date.invalid) return;
@@ -407,6 +429,8 @@ export default function Calendar() {
           dayMaxEvents={2}
           nowIndicator={true}
           height="auto"
+          noEventsContent={() => t("planner.events.noEvents")}
+          noEventsClassNames={[styles.noEventsMessage]}
           eventClick={handleEventClick}
           select={handleDateSelect}
           eventContent={(arg) => {
@@ -516,9 +540,12 @@ export default function Calendar() {
                         value={startPickerValue?.invalid ? null : startPickerValue}
                         onChange={handleStartChange}
                         className={styles.datePicker}
+                        popupClassName={styles.datePickerDropdown}
                         allowClear={false}
                         format={formData.allDay ? "dd.MM.yyyy" : "dd.MM.yyyy HH:mm"}
-                        showTime={!formData.allDay}
+                        showTime={
+                          !formData.allDay ? { format: "HH:mm" } : false
+                        }
                       />
                     </div>
                     <div className={styles.formGroup}>
@@ -527,9 +554,12 @@ export default function Calendar() {
                         value={endPickerValue?.invalid ? null : endPickerValue}
                         onChange={handleEndChange}
                         className={styles.datePicker}
+                        popupClassName={styles.datePickerDropdown}
                         allowClear={false}
                         format={formData.allDay ? "dd.MM.yyyy" : "dd.MM.yyyy HH:mm"}
-                        showTime={!formData.allDay}
+                        showTime={
+                          !formData.allDay ? { format: "HH:mm" } : false
+                        }
                       />
                     </div>
                   </div>
@@ -748,9 +778,12 @@ export default function Calendar() {
                       value={startPickerValue?.invalid ? null : startPickerValue}
                       onChange={handleStartChange}
                       className={styles.datePicker}
+                      popupClassName={styles.datePickerDropdown}
                       allowClear={false}
                       format={formData.allDay ? "dd.MM.yyyy" : "dd.MM.yyyy HH:mm"}
-                      showTime={!formData.allDay}
+                      showTime={
+                        !formData.allDay ? { format: "HH:mm" } : false
+                      }
                     />
                   </div>
                   <div className={styles.formGroup}>
@@ -759,9 +792,12 @@ export default function Calendar() {
                       value={endPickerValue?.invalid ? null : endPickerValue}
                       onChange={handleEndChange}
                       className={styles.datePicker}
+                      popupClassName={styles.datePickerDropdown}
                       allowClear={false}
                       format={formData.allDay ? "dd.MM.yyyy" : "dd.MM.yyyy HH:mm"}
-                      showTime={!formData.allDay}
+                      showTime={
+                        !formData.allDay ? { format: "HH:mm" } : false
+                      }
                     />
                   </div>
                 </div>

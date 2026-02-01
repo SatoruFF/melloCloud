@@ -93,6 +93,18 @@ export const ApiPaths = {
   sharingCheckPermission: 'sharing/check-permission',
   sharingActivity: 'sharing/activity',
   sharingPublic: '/shared',
+
+  // Admin (only for users in ADMIN_USER_IDS)
+  admin: 'admin',
+  adminUsers: 'admin/users',
+  adminFiles: 'admin/files',
+  adminNotes: 'admin/notes',
+  adminInvites: 'admin/invites',
+  adminSessions: 'admin/sessions',
+  adminTasks: 'admin/tasks',
+  adminEvents: 'admin/events',
+  adminBoards: 'admin/boards',
+  adminStats: 'admin/stats',
 } as const;
 
 // ========================================

@@ -1,8 +1,8 @@
 import _ from "lodash";
-import "dotenv/config.js";
 import type { Context } from "hono";
 import { getCookie, setCookie, deleteCookie } from "hono/cookie";
 import createError from "http-errors";
+import { isProduction } from "../configs/config.js";
 import { logger } from "../configs/logger.js";
 import { UserService } from "../services/userService.js";
 import ApiContext from "../models/context.js";
@@ -37,13 +37,23 @@ class UserControllerClass {
       setCookie(c, "refreshToken", userData.refreshToken, {
         maxAge: 30 * 24 * 60 * 60,
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
+        secure: isProduction,
         sameSite: "Strict",
       });
 
       return c.json(userData);
     } catch (error: any) {
       logger.error(error.message, error);
+      if (error.statusCode === 403 && error.message === "USER_BLOCKED") {
+        return c.json(
+          {
+            message:
+              "Unfortunately, access to the system has been restricted for your account. If you believe this is an error, please contact the administrator.",
+            code: "USER_BLOCKED",
+          },
+          403
+        );
+      }
       return c.json({ message: error.message }, error.statusCode || 500);
     }
   }
@@ -62,6 +72,16 @@ class UserControllerClass {
       return c.json(userData);
     } catch (error: any) {
       logger.error(error.message, error);
+      if (error.statusCode === 403 && error.message === "USER_BLOCKED") {
+        return c.json(
+          {
+            message:
+              "Unfortunately, access to the system has been restricted for your account. If you believe this is an error, please contact the administrator.",
+            code: "USER_BLOCKED",
+          },
+          403
+        );
+      }
       return c.json({ message: error.message }, error.statusCode || 500);
     }
   }
@@ -85,7 +105,7 @@ class UserControllerClass {
       setCookie(c, "refreshToken", userData.refreshToken, {
         maxAge: 30 * 24 * 60 * 60,
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
+        secure: isProduction,
         sameSite: "Strict",
       });
 
@@ -106,7 +126,7 @@ class UserControllerClass {
       setCookie(c, "refreshToken", userData.refreshToken, {
         maxAge: 30 * 24 * 60 * 60,
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
+        secure: isProduction,
         sameSite: "Strict",
       });
 

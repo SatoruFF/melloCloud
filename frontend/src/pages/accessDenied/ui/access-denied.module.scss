@@ -1,0 +1,87 @@
+.root {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+}
+
+.card {
+  max-width: 480px;
+  padding: 2rem;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+  text-align: center;
+}
+
+.icon {
+  color: #ff7875;
+  opacity: 0.9;
+  margin-bottom: 1rem;
+}
+
+.title {
+  margin: 0 0 1rem;
+  font-size: 1.35rem;
+  font-weight: 600;
+  color: #262626;
+  line-height: 1.35;
+}
+
+.message {
+  margin: 0 0 1rem;
+  font-size: 0.95rem;
+  color: #595959;
+  line-height: 1.6;
+}
+
+.wish {
+  margin: 0 0 1.5rem;
+  font-size: 0.9rem;
+  color: #8c8c8c;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: center;
+}
+
+.link,
+.linkPrimary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  text-decoration: none;
+  transition: background 0.2s, color 0.2s;
+}
+
+.link {
+  color: #595959;
+  border: 1px solid #d9d9d9;
+  background: #fff;
+
+  &:hover {
+    color: #1890ff;
+    border-color: #1890ff;
+    background: #e6f7ff;
+  }
+}
+
+.linkPrimary {
+  color: #fff;
+  background: #1890ff;
+  border: 1px solid #1890ff;
+
+  &:hover {
+    background: #40a9ff;
+    border-color: #40a9ff;
+    color: #fff;
+  }
+}

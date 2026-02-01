@@ -9,6 +9,8 @@ export interface IUser {
   avatar?: string | null;
   role: string; // "ADMIN" or "USER" from Prisma
   isActivated: boolean;
+  /** Доступ в админку: только пользователи из ADMIN_USER_IDS на бэкенде */
+  isAdmin?: boolean;
   oauthProvider?: string | null;
   oauthId?: string | null;
   createdAt?: string;

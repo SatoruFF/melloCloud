@@ -1,9 +1,7 @@
 import createError from "http-errors";
 import _ from "lodash";
 import type { Prisma } from "@prisma/client";
-import "dotenv/config.js";
-
-import { FETCH_LIMIT, prisma, s3 } from "../configs/config.js";
+import { FETCH_LIMIT, prisma, s3, S3_BUCKET_NAME } from "../configs/config.js";
 import type { IFile, ISearchParams } from "./../types/File";
 import { NotificationService } from "./notificationService.js";
 
@@ -35,13 +33,13 @@ class FileServiceClass {
     }
 
     const params: IS3 = {
-      Bucket: process.env.S3_BUCKET_NAME,
+      Bucket: S3_BUCKET_NAME,
       Key: folderPath,
       Body: "",
     };
 
     const getParams: IS3 = {
-      Bucket: process.env.S3_BUCKET_NAME,
+      Bucket: S3_BUCKET_NAME,
       Key: folderPath,
     };
 
@@ -60,7 +58,7 @@ class FileServiceClass {
       filePath = filePath.replace(/\/{2,}/g, "/");
 
       const params: IS3 = {
-        Bucket: process.env.S3_BUCKET_NAME,
+        Bucket: S3_BUCKET_NAME,
         Prefix: filePath,
       };
 
@@ -71,7 +69,7 @@ class FileServiceClass {
       }
 
       const deleteParams: IS3 = {
-        Bucket: process.env.S3_BUCKET_NAME,
+        Bucket: S3_BUCKET_NAME,
         Delete: { Objects: [] },
       };
 
@@ -87,7 +85,7 @@ class FileServiceClass {
       } else {
         await s3
           .deleteObject({
-            Bucket: process.env.S3_BUCKET_NAME,
+            Bucket: S3_BUCKET_NAME,
             Key: filePath,
           } as any)
           .promise();
@@ -100,7 +98,7 @@ class FileServiceClass {
       filePath = filePath.replace(/\/{2,}/g, "/");
 
       const params: IS3 = {
-        Bucket: process.env.S3_BUCKET_NAME,
+        Bucket: S3_BUCKET_NAME,
         Key: filePath,
       };
 
@@ -204,7 +202,7 @@ class FileServiceClass {
 
     const buffer = Buffer.from(await file.arrayBuffer());
     const params: IS3 = {
-      Bucket: process.env.S3_BUCKET_NAME,
+      Bucket: S3_BUCKET_NAME,
       Key: s3Key,
       Body: buffer,
     };
@@ -287,7 +285,7 @@ class FileServiceClass {
 
     const s3object = await s3
       .getObject({
-        Bucket: process.env.S3_BUCKET_NAME,
+        Bucket: S3_BUCKET_NAME,
         Key: `${filePath}`,
       })
       .promise();

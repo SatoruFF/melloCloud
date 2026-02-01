@@ -1,8 +1,9 @@
 import jwt from "jsonwebtoken";
 import type http from "http";
-import { MessageService } from "../services/messagesService.js";
+import { ACCESS_SECRET_KEY } from "../configs/config.js";
 import { getWebSocketConnection } from "../configs/webSocket.js";
 import { logger } from "../configs/logger.js";
+import { MessageService } from "../services/messagesService.js";
 import { parseJson } from "./parseJson.js";
 import ApiContext from "../models/context.js";
 
@@ -21,7 +22,7 @@ export function setupWebSocketServer(server: http.Server) {
         return;
       }
 
-      const decoded = jwt.verify(token, process.env.ACCESS_SECRET_KEY as string);
+      const decoded = jwt.verify(token, ACCESS_SECRET_KEY);
       const userId = Number(decoded.payload) === decoded.payload ? decoded.payload : decoded;
 
       context = new ApiContext(userId);

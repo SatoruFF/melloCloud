@@ -1,4 +1,4 @@
-import { prisma, s3 } from "../configs/config.js";
+import { FRONTEND_URL, prisma, s3, S3_BUCKET_NAME } from "../configs/config.js";
 import createError from "http-errors";
 import { ResourceType, PermissionLevel, ShareActivityType } from "@prisma/client";
 import crypto from "crypto";
@@ -265,7 +265,7 @@ class SharingServiceClass {
         },
       });
 
-      const url = `${process.env.FRONTEND_URL}/shared/${token}`;
+      const url = `${FRONTEND_URL}/shared/${token}`;
 
       return { token, url };
     });
@@ -593,7 +593,7 @@ class SharingServiceClass {
 
     const s3object = await s3
       .getObject({
-        Bucket: process.env.S3_BUCKET_NAME,
+        Bucket: S3_BUCKET_NAME,
         Key: filePath,
       })
       .promise();

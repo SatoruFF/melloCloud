@@ -2,7 +2,7 @@ import { Hono } from 'hono';
 import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
 import passport from '../../configs/oAuth';
-import { prisma } from '../../configs/config';
+import { CLIENT_URL, isProduction, prisma } from '../../configs/config';
 import { UserController } from '../../controllers/userController';
 import { generateJwt } from '../../utils/generateJwt';
 import { handleTelegramAuth } from '../../controllers/telegramAuth';
@@ -69,13 +69,13 @@ router.get('/google/callback', async (c) => {
     c.cookie('refreshToken', refreshToken, {
       maxAge: 30 * 24 * 60 * 60,
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure: isProduction,
       sameSite: 'Lax',
     });
 
-    return c.redirect(`${process.env.CLIENT_URL}?token=${accessToken}`);
+    return c.redirect(`${CLIENT_URL}?token=${accessToken}`);
   } catch (error: any) {
-    return c.redirect(`${process.env.CLIENT_URL}/login?error=${encodeURIComponent(error.message)}`);
+    return c.redirect(`${CLIENT_URL}/login?error=${encodeURIComponent(error.message)}`);
   }
 });
 
@@ -111,13 +111,13 @@ router.get('/yandex/callback', async (c) => {
     c.cookie('refreshToken', refreshToken, {
       maxAge: 30 * 24 * 60 * 60,
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure: isProduction,
       sameSite: 'Lax',
     });
 
-    return c.redirect(`${process.env.CLIENT_URL}?token=${accessToken}`);
+    return c.redirect(`${CLIENT_URL}?token=${accessToken}`);
   } catch (error: any) {
-    return c.redirect(`${process.env.CLIENT_URL}/login?error=${encodeURIComponent(error.message)}`);
+    return c.redirect(`${CLIENT_URL}/login?error=${encodeURIComponent(error.message)}`);
   }
 });
 

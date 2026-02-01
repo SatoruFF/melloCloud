@@ -1,0 +1,136 @@
+// Тёмная тема админки — изолированный блок
+.root {
+  --admin-bg: #141414;
+  --admin-surface: #1f1f1f;
+  --admin-border: #303030;
+  --admin-text: rgba(255, 255, 255, 0.85);
+  --admin-text-secondary: rgba(255, 255, 255, 0.65);
+
+  min-height: 100vh;
+  box-sizing: border-box;
+  background: var(--admin-bg);
+  color: var(--admin-text);
+  padding: 1.25rem 1.5rem;
+  width: 100%;
+}
+
+.title {
+  margin: 0 0 0.25rem 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--admin-text);
+}
+
+.subtitle {
+  margin: 0 0 1rem 0;
+  font-size: 0.875rem;
+  color: var(--admin-text-secondary);
+}
+
+.tabs {
+  :global(.ant-tabs-nav) {
+    margin-bottom: 0;
+  }
+  :global(.ant-tabs-tab) {
+    color: var(--admin-text-secondary);
+  }
+  :global(.ant-tabs-tab-active .ant-tabs-tab-btn) {
+    color: #fff;
+  }
+  :global(.ant-tabs-ink-bar) {
+    background: #1890ff;
+  }
+  :global(.ant-tabs-content-holder) {
+    padding-top: 0.75rem;
+  }
+}
+
+.dashboard {
+  padding: 0.25rem 0;
+}
+
+.statCard {
+  background: var(--admin-surface) !important;
+  border-color: var(--admin-border) !important;
+  :global(.ant-card-head) {
+    border-color: var(--admin-border);
+  }
+  :global(.ant-card-head-title) {
+    color: var(--admin-text);
+  }
+}
+
+.statTitle,
+.cardTitle {
+  color: var(--admin-text-secondary) !important;
+}
+
+.cardTitle {
+  color: var(--admin-text) !important;
+}
+
+.chartWrap {
+  color: var(--admin-text);
+  min-height: 280px;
+}
+
+.chartEmpty {
+  color: var(--admin-text-secondary);
+  margin: 0;
+}
+
+.tableWrap {
+  overflow-x: auto;
+  border-radius: 6px;
+  background: var(--admin-surface);
+  padding: 0;
+  :global(.ant-table) {
+    background: transparent;
+    color: var(--admin-text);
+  }
+  :global(.ant-table-thead > tr > th) {
+    background: var(--admin-surface) !important;
+    color: var(--admin-text-secondary) !important;
+    border-bottom-color: var(--admin-border) !important;
+  }
+  :global(.ant-table-tbody > tr > td) {
+    border-bottom-color: var(--admin-border) !important;
+    color: var(--admin-text);
+  }
+  :global(.ant-table-tbody > tr:hover > td) {
+    background: rgba(255, 255, 255, 0.04) !important;
+  }
+  :global(.ant-table-placeholder) {
+    background: var(--admin-surface) !important;
+    color: var(--admin-text-secondary);
+    border-color: var(--admin-border);
+  }
+  :global(.ant-empty-description) {
+    color: var(--admin-text-secondary);
+  }
+  :global(.ant-pagination) {
+    color: var(--admin-text-secondary);
+  }
+  :global(.ant-pagination-item) {
+    background: var(--admin-surface);
+    border-color: var(--admin-border);
+    a {
+      color: var(--admin-text);
+    }
+  }
+  :global(.ant-pagination-item-active) {
+    border-color: #1890ff;
+    a {
+      color: #1890ff;
+    }
+  }
+  :global(.ant-pagination-prev .ant-pagination-item-link),
+  :global(.ant-pagination-next .ant-pagination-item-link) {
+    background: var(--admin-surface);
+    border-color: var(--admin-border);
+    color: var(--admin-text);
+  }
+  :global(.ant-spin-dot-item) {
+    background: #1890ff;
+  }
+}

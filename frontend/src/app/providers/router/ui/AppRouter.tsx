@@ -8,6 +8,7 @@ import { Spinner } from "../../../../shared";
 import { type IRoute, routes } from "../../../../shared";
 import { NOT_FOUND } from "../../../../shared";
 import { RequireAuth } from "./RequireAuth";
+import { RequireAdmin } from "./RequireAdmin";
 
 const AppRouter = () => {
   const isUserLoading = useAppSelector((state) => state.user.isUserLoading);
@@ -19,7 +20,17 @@ const AppRouter = () => {
       </Suspense>
     );
 
-    const wrappedElement = route.private ? <RequireAuth roles={route?.roles ?? []}>{element}</RequireAuth> : element;
+    const wrappedElement = route.private
+      ? route.adminOnly
+        ? (
+            <RequireAuth roles={route?.roles ?? []}>
+              <RequireAdmin>{element}</RequireAdmin>
+            </RequireAuth>
+          )
+        : (
+            <RequireAuth roles={route?.roles ?? []}>{element}</RequireAuth>
+          )
+      : element;
 
     // If there are child routes
     if (route.children && route.children.length > 0) {

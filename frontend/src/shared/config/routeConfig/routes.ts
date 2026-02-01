@@ -3,6 +3,8 @@ import React from 'react';
 
 import {
   ACTIVATION_ROUTE,
+  ADMIN_ROUTE,
+  ACCESS_DENIED_ROUTE,
   CHATS_ROUTE,
   FILE_ROUTE,
   LOGIN_ROUTE,
@@ -22,8 +24,9 @@ import {
 
 import type { UserRolesType } from '../../../entities/user/model/types/user';
 import { NotFoundPage } from '../../../pages/notFoundPage';
-import { UserRoles } from '../../consts/roles';
 import { PublicShared } from '../../../pages/publicShared';
+import AdminPanel from '../../../pages/adminPanel';
+import AccessDenied from '../../../pages/accessDenied';
 
 const Welcome = lazy(() => import('../../../pages/home/ui/Welcome'));
 const Authorization = lazy(() => import('../../../pages/authorization/ui/Authorization'));
@@ -45,6 +48,8 @@ export interface IRoute {
   path: string;
   element: ReactElement;
   private?: boolean;
+  /** Только для пользователей из ADMIN_USER_IDS (бэкенд). Защищается RequireAdmin. */
+  adminOnly?: boolean;
   roles?: UserRolesType[];
   children?: IRoute[]; // добавляем поддержку вложенных роутов
 }
@@ -54,6 +59,7 @@ const createRoutes = (
     path: string;
     element: FC;
     private?: boolean;
+    adminOnly?: boolean;
     roles?: UserRolesType[];
     children?: {
       path: string;
@@ -79,6 +85,7 @@ const publicRoutes: IRoute[] = createRoutes([
   { path: REGISTRATION_ROUTE, element: Authorization },
   { path: ACTIVATION_ROUTE, element: Activate },
   { path: SHARED_PUBLIC_ROUTE, element: PublicShared },
+  { path: ACCESS_DENIED_ROUTE, element: AccessDenied },
   { path: NOT_FOUND, element: NotFoundPage },
 ]);
 
@@ -107,11 +114,7 @@ const privateRoutes: IRoute[] = createRoutes([
     private: true,
     children: [{ path: 'pomodoro', element: Pomodoro, private: true }],
   },
-]); // {
-// 	path: ADMIN_PANEL,
-// 	element: AdminPanel,
-// 	private: true,
-// 	roles: [UserRoles.ADMIN],
-// },
+  { path: ADMIN_ROUTE, element: AdminPanel, private: true, adminOnly: true },
+]);
 
 export const routes: IRoute[] = [...publicRoutes, ...privateRoutes];

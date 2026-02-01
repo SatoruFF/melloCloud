@@ -1,4 +1,3 @@
-import "dotenv/config";
 import cluster from "cluster";
 import { cpus } from "os";
 import { serve } from "@hono/node-server";
@@ -7,13 +6,13 @@ import app from "./app";
 import { getWebSocketConnection } from "./configs/webSocket";
 import { setupWebSocketServer } from "./helpers/setupWebSocket";
 import { setupNoteWebSocket } from "./helpers/noteWebSocket";
-import { PORT } from "./configs/config";
+import { PORT, WORKERS_COUNT } from "./configs/config";
 import { logger as customLogger } from "./configs/logger";
 
 const numCPU = cpus().length;
 
 if (cluster.isPrimary) {
-  const workerCounts = Number(process.env.WORKERS_COUNT) || numCPU;
+  const workerCounts = WORKERS_COUNT || numCPU;
 
   for (let i = 0; i < workerCounts; i++) {
     cluster.fork();

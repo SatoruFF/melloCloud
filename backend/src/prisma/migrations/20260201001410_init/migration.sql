@@ -28,6 +28,7 @@ CREATE TABLE "User" (
     "avatar" TEXT,
     "role" TEXT NOT NULL DEFAULT 'USER',
     "isActivated" BOOLEAN NOT NULL DEFAULT false,
+    "isBlocked" BOOLEAN NOT NULL DEFAULT false,
     "oauthProvider" TEXT,
     "oauthId" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
