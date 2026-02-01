@@ -1,11 +1,12 @@
-import { Clock, Star, Tag, Trash2, Settings } from "lucide-react";
-import { Avatar, Layout, Menu, Typography, Tooltip, Badge } from "antd";
+import { FileText, Star, Tag, Trash2 } from "lucide-react";
+import { Avatar, Layout, Menu, Typography, Tooltip } from "antd";
 import cn from "classnames";
 import styles from "./notes-sidebar.module.scss";
 import { useTranslation } from "react-i18next";
 import { useAppSelector } from "../../../app/store/store";
 import { getUserSelector } from "../../../entities/user";
 import React, { memo } from "react";
+import type { NotesViewFilter } from "../../../entities/note/model/api/noteApi";
 
 const { Sider } = Layout;
 const { Text } = Typography;
@@ -13,13 +14,30 @@ const { Text } = Typography;
 interface Props {
   collapsed: boolean;
   toggleCollapsed: () => void;
+  selectedView: NotesViewFilter;
+  onViewChange: (view: NotesViewFilter) => void;
+  selectedTag: string | null;
+  onTagSelect: (tag: string | null) => void;
 }
 
-const NotesSidebar: React.FC<Props> = ({ collapsed, toggleCollapsed }) => {
+const NotesSidebar: React.FC<Props> = ({
+  collapsed,
+  toggleCollapsed,
+  selectedView,
+  onViewChange,
+  selectedTag,
+  onTagSelect,
+}) => {
   const { t } = useTranslation();
   const { userName } = useAppSelector(getUserSelector);
 
-  const menuItems = [
+  const menuItems: { key: NotesViewFilter; icon: React.ReactNode; label: string; tooltip: string; className?: string }[] = [
+    {
+      key: "all",
+      icon: <FileText size={18} />,
+      label: t("notes.all") ?? "All",
+      tooltip: t("notes.allTooltip") ?? "All notes",
+    },
     {
       key: "starred",
       icon: <Star size={18} />,
@@ -39,14 +57,12 @@ const NotesSidebar: React.FC<Props> = ({ collapsed, toggleCollapsed }) => {
       tooltip: t("notes.trashTooltip"),
       className: styles.dangerAction,
     },
-    {
-      key: "settings",
-      icon: <Settings size={18} />,
-      label: t("notes.settings"),
-      tooltip: t("notes.settingsTooltip"),
-      className: styles.bottomAction,
-    },
   ];
+
+  const handleMenuSelect = ({ key }: { key: string }) => {
+    if (key === "tags") onTagSelect(null);
+    onViewChange(key as NotesViewFilter);
+  };
 
   return (
     <Sider
@@ -66,18 +82,17 @@ const NotesSidebar: React.FC<Props> = ({ collapsed, toggleCollapsed }) => {
         </div>
       )}
 
-      <Menu mode="vertical" className={styles.menu} selectable={false}>
-        {menuItems.map(({ key, icon, label, tooltip, badge, className }) => (
+      <Menu
+        mode="vertical"
+        className={styles.menu}
+        selectedKeys={[selectedView]}
+        onSelect={handleMenuSelect}
+      >
+        {menuItems.map(({ key, icon, label, tooltip, className }) => (
           <Menu.Item key={key} className={cn(styles.menuItem, className)}>
             <Tooltip title={tooltip} placement="right">
               <span className={styles.menuItemInner}>
-                {badge ? (
-                  <Badge count={badge} offset={[10, 0]}>
-                    {icon}
-                  </Badge>
-                ) : (
-                  icon
-                )}
+                {icon}
                 {!collapsed && <span className={styles.menuLabel}>{label}</span>}
               </span>
             </Tooltip>

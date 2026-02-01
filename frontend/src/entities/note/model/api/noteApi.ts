@@ -1,14 +1,34 @@
 import { ApiPaths, rtkApi } from '../../../../shared';
 import type { Note } from '../../types/note';
 
+export type NotesView = 'all' | 'starred' | 'trash';
+export type NotesViewFilter = 'all' | 'starred' | 'tags' | 'trash';
+
+export interface GetNotesParams {
+  view?: NotesView;
+  tag?: string;
+}
+
 export const notesApi = rtkApi.injectEndpoints({
   endpoints: builder => ({
-    // Get all notes
-    getNotes: builder.query<Note[], void>({
-      query: () => ApiPaths.notes,
-      providesTags: result =>
+    // Get notes with optional filter: view (all | starred | trash), tag
+    getNotes: builder.query<Note[], GetNotesParams | void>({
+      query: (params) => {
+        const view = (params as GetNotesParams)?.view ?? 'all';
+        const tag = (params as GetNotesParams)?.tag;
+        const search = new URLSearchParams();
+        if (view) search.set('view', view);
+        if (tag) search.set('tag', tag);
+        const q = search.toString();
+        return q ? `${ApiPaths.notes}?${q}` : ApiPaths.notes;
+      },
+      providesTags: (result, _error, arg) =>
         result
-          ? [...result.map(note => ({ type: 'Notes' as const, id: note.id })), { type: 'Notes' as const, id: 'LIST' }]
+          ? [
+              ...result.map(note => ({ type: 'Notes' as const, id: note.id })),
+              { type: 'Notes' as const, id: 'LIST' },
+              ...(typeof arg === 'object' && arg ? [{ type: 'Notes' as const, id: `LIST-${arg.view}-${arg.tag ?? ''}` }] : []),
+            ]
           : [{ type: 'Notes' as const, id: 'LIST' }],
     }),
 
@@ -34,13 +54,16 @@ export const notesApi = rtkApi.injectEndpoints({
       invalidatesTags: [{ type: 'Notes', id: 'LIST' }],
     }),
 
-    // Update note
+    // Update note (title, content, isStarred, isRemoved, tags)
     updateNote: builder.mutation<
       Note,
       {
         noteId: string;
         title?: string;
         content?: any;
+        isStarred?: boolean;
+        isRemoved?: boolean;
+        tags?: string[];
       }
     >({
       query: ({ noteId, ...body }) => ({

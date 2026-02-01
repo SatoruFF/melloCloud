@@ -30,9 +30,13 @@ const mapContent = <T extends { content: any }>(
 
 class NotesServiceClass {
   //
-  // GET MANY — свои заметки + расшаренные с пользователем
+  // GET MANY — свои заметки + расшаренные. Фильтры: view (all | starred | trash), tag
   //
-  async getUserNotes(context, userId: number) {
+  async getUserNotes(
+    context,
+    userId: number,
+    opts?: { view?: "all" | "starred" | "trash"; tag?: string }
+  ) {
     const sharedPermissionIds = await context.prisma.permission.findMany({
       where: {
         resourceType: ResourceType.NOTE,
@@ -43,10 +47,25 @@ class NotesServiceClass {
     });
     const sharedIds = sharedPermissionIds.map((p) => p.resourceId);
 
+    const view = opts?.view ?? "all";
+    const tag = opts?.tag?.trim();
+
+    const andConditions: any[] = [{ OR: [{ userId }, { id: { in: sharedIds } }] }];
+
+    if (view === "trash") {
+      andConditions.push({ isRemoved: true });
+    } else {
+      andConditions.push({ isRemoved: false });
+      if (view === "starred") {
+        andConditions.push({ isStarred: true });
+      }
+      if (tag) {
+        andConditions.push({ tags: { has: tag } });
+      }
+    }
+
     const notes = await context.prisma.note.findMany({
-      where: {
-        OR: [{ userId }, { id: { in: sharedIds } }],
-      },
+      where: { AND: andConditions },
       orderBy: { updatedAt: "desc" },
       select: {
         id: true,
@@ -56,6 +75,7 @@ class NotesServiceClass {
         updatedAt: true,
         userId: true,
         isStarred: true,
+        isRemoved: true,
         tags: true,
       },
     });
@@ -77,6 +97,7 @@ class NotesServiceClass {
         updatedAt: true,
         userId: true,
         isStarred: true,
+        isRemoved: true,
         tags: true,
       },
     });
@@ -96,6 +117,7 @@ class NotesServiceClass {
           updatedAt: true,
           userId: true,
           isStarred: true,
+          isRemoved: true,
           tags: true,
         },
       });
@@ -135,7 +157,7 @@ class NotesServiceClass {
     context,
     noteId: string,
     userId: number,
-    data: { title?: string; content?: any; isStarred?: boolean; tags?: string[] }
+    data: { title?: string; content?: any; isStarred?: boolean; isRemoved?: boolean; tags?: string[] }
   ) {
     let existingNote = await context.prisma.note.findFirst({
       where: { id: +noteId, userId },
@@ -181,7 +203,10 @@ class NotesServiceClass {
 
     if (data.tags !== undefined) {
       updateData.tags = data.tags;
- 
+    }
+
+    if (data.isRemoved !== undefined) {
+      updateData.isRemoved = data.isRemoved;
     }
 
     const note = await context.prisma.note.update({
@@ -244,6 +269,7 @@ class NotesServiceClass {
       where: {
         AND: [
           { OR: [{ userId: +userId }, { id: { in: sharedIds } }] },
+          { isRemoved: false },
           {
             OR: [
               { title: { contains: query, mode: "insensitive" } },
@@ -262,6 +288,7 @@ class NotesServiceClass {
         updatedAt: true,
         userId: true,
         isStarred: true,
+        isRemoved: true,
         tags: true,
       },
     });

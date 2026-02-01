@@ -1,4 +1,4 @@
-import React, { memo, useState, useCallback, useEffect } from "react";
+import React, { memo, useState, useCallback, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import cn from "classnames";
 import { message } from "antd";
@@ -9,17 +9,30 @@ import {
   useCreateNoteMutation,
   useSearchNotesQuery,
 } from "../../../entities/note/model/api/noteApi";
+import type { NotesViewFilter } from "../../../entities/note/model/api/noteApi";
 import { NoteCard } from "../../../entities/note";
 import styles from "./notesList.module.scss";
 import { useTranslation } from "react-i18next";
 
-const NotesList = () => {
+interface NotesListProps {
+  view: NotesViewFilter;
+  selectedTag: string | null;
+  onTagSelect: (tag: string | null) => void;
+}
+
+const NotesList = ({ view, selectedTag, onTagSelect }: NotesListProps) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
 
-  const { data: notes = [], isLoading, error } = useGetNotesQuery();
+  const getNotesParams = useMemo(() => {
+    const viewParam = view === "trash" ? "trash" : view === "starred" ? "starred" : "all";
+    const tagParam = view === "tags" ? selectedTag ?? undefined : undefined;
+    return { view: viewParam, tag: tagParam };
+  }, [view, selectedTag]);
+
+  const { data: notes = [], isLoading, error } = useGetNotesQuery(getNotesParams);
   const [deleteNote, { isLoading: isDeleting }] = useDeleteNoteMutation();
   const [updateNote] = useUpdateNoteMutation();
   const [_, { isLoading: isCreating }] = useCreateNoteMutation();
@@ -28,6 +41,12 @@ const NotesList = () => {
     skip: !debouncedSearch.trim(),
   });
 
+  const uniqueTags = useMemo(() => {
+    const set = new Set<string>();
+    notes.forEach((n) => (n.tags ?? []).forEach((tag) => set.add(tag)));
+    return Array.from(set).sort();
+  }, [notes]);
+
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearch(searchQuery);
@@ -35,7 +54,31 @@ const NotesList = () => {
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
-  const handleDeleteNote = useCallback(
+  const handleMoveToTrash = useCallback(
+    async (noteId: number) => {
+      try {
+        await updateNote({ noteId: String(noteId), isRemoved: true }).unwrap();
+        message.success(t("notes.movedToTrash") ?? "Заметка перемещена в корзину");
+      } catch (err) {
+        message.error(t("notes.updateFailed"));
+      }
+    },
+    [updateNote, t]
+  );
+
+  const handleRestore = useCallback(
+    async (noteId: number) => {
+      try {
+        await updateNote({ noteId: String(noteId), isRemoved: false }).unwrap();
+        message.success(t("notes.restored") ?? "Заметка восстановлена");
+      } catch (err) {
+        message.error(t("notes.updateFailed"));
+      }
+    },
+    [updateNote, t]
+  );
+
+  const handleDeletePermanently = useCallback(
     async (noteId: number) => {
       try {
         await deleteNote(String(noteId)).unwrap();
@@ -66,6 +109,7 @@ const NotesList = () => {
   }, [navigate]);
 
   const displayNotes = debouncedSearch.trim() ? searchResults || [] : notes;
+  const isTrashView = view === "trash";
 
   if (error) {
     return (
@@ -121,14 +165,55 @@ const NotesList = () => {
           />
         </div>
 
+        {view === "tags" && uniqueTags.length > 0 && (
+          <div className={cn(styles.tagFilter)}>
+            <span className={cn(styles.tagFilterLabel)}>{t("notes.filterByTag") ?? "Тег:"}</span>
+            <div className={cn(styles.tagChips)}>
+              <button
+                type="button"
+                className={cn(styles.tagChip, { [styles.tagChipActive]: selectedTag === null })}
+                onClick={() => onTagSelect(null)}
+              >
+                {t("notes.all") ?? "Все"}
+              </button>
+              {uniqueTags.map((tag) => (
+                <button
+                  key={tag}
+                  type="button"
+                  className={cn(styles.tagChip, { [styles.tagChipActive]: selectedTag === tag })}
+                  onClick={() => onTagSelect(tag)}
+                >
+                  {tag}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
         {isLoading ? (
           <div className={cn(styles.emptyState)}>
             <h2>{t("notes.loading")}</h2>
           </div>
         ) : notes.length === 0 ? (
           <div className={cn(styles.emptyState)}>
-            <h2>{t("notes.empty")}</h2>
-            <p>{t("notes.createFirstNote")}</p>
+            <h2>
+              {isTrashView
+                ? t("notes.trashEmpty") ?? "Корзина пуста"
+                : view === "starred"
+                  ? t("notes.starredEmpty") ?? "Нет избранных заметок"
+                  : view === "tags"
+                    ? t("notes.noTags") ?? "Нет заметок с тегами"
+                    : t("notes.empty")}
+            </h2>
+            <p>
+              {isTrashView
+                ? t("notes.trashEmptyHint") ?? "Удалённые заметки появятся здесь"
+                : view === "starred"
+                  ? t("notes.starredEmptyHint") ?? "Отметьте заметки звёздочкой"
+                  : view === "tags"
+                    ? t("notes.tagsEmptyHint") ?? "Добавьте теги к заметкам"
+                    : t("notes.createFirstNote")}
+            </p>
           </div>
         ) : displayNotes.length === 0 ? (
           <div className={cn(styles.emptyState)}>
@@ -142,9 +227,12 @@ const NotesList = () => {
                 <NoteCard
                   key={note.id}
                   note={note}
-                  onDelete={handleDeleteNote}
+                  onDelete={handleMoveToTrash}
                   onToggleStar={handleToggleStar}
                   isDeleting={isDeleting}
+                  isTrashView={isTrashView}
+                  onRestore={isTrashView ? handleRestore : undefined}
+                  onDeletePermanently={isTrashView ? handleDeletePermanently : undefined}
                 />
               ))}
             </div>

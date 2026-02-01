@@ -8,6 +8,7 @@ import {
   useCreateNoteMutation,
   useUpdateNoteMutation,
 } from "../../../entities/note/model/api/noteApi";
+import type { NotesViewFilter } from "../../../entities/note/model/api/noteApi";
 import { notification, Button } from "antd";
 import { useTranslation } from "react-i18next";
 import { NotesSidebar } from "../../../widgets/notesSidebar";
@@ -19,6 +20,8 @@ const Notes = () => {
   const { noteId } = useParams<{ noteId: string }>();
   const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(true);
+  const [notesView, setNotesView] = useState<NotesViewFilter>("all");
+  const [selectedTag, setSelectedTag] = useState<string | null>(null);
   const [currentNoteTitle, setCurrentNoteTitle] = useState("");
   const [api, contextHolder] = notification.useNotification();
 
@@ -106,9 +109,20 @@ const Notes = () => {
       <>
         {contextHolder}
         <div className={styles.notesListLayout}>
-          <NotesSidebar collapsed={collapsed} toggleCollapsed={() => setCollapsed((v) => !v)} />
+          <NotesSidebar
+            collapsed={collapsed}
+            toggleCollapsed={() => setCollapsed((v) => !v)}
+            selectedView={notesView}
+            onViewChange={setNotesView}
+            selectedTag={selectedTag}
+            onTagSelect={setSelectedTag}
+          />
           <div className={styles.notesListContent}>
-            <NotesList />
+            <NotesList
+              view={notesView}
+              selectedTag={selectedTag}
+              onTagSelect={setSelectedTag}
+            />
           </div>
         </div>
       </>

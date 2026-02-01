@@ -14,7 +14,11 @@ class NotesControllerClass {
         throw createError(401, "User not found");
       }
 
-      const notes = await NotesService.getUserNotes(apiContext, userId);
+      const query = c.req.query();
+      const view = (query.view as "all" | "starred" | "trash") || "all";
+      const tag = typeof query.tag === "string" ? query.tag : undefined;
+
+      const notes = await NotesService.getUserNotes(apiContext, userId, { view, tag });
       return c.json(serializeBigInt(notes));
     } catch (error: any) {
       logger.error(error.message, error);
@@ -85,10 +89,11 @@ class NotesControllerClass {
       const apiContext = (c.get("context") as ApiContext | undefined) ?? null;
       const userId = (c.get("user") as { id?: number } | undefined)?.id ?? c.get("userId");
       const { noteId } = c.req.param();
-      const { title, content, isStarred, tags } = await c.req.json<{
+      const { title, content, isStarred, isRemoved, tags } = await c.req.json<{
         title?: string;
         content?: string;
         isStarred?: boolean;
+        isRemoved?: boolean;
         tags?: unknown;
       }>();
 
@@ -100,9 +105,12 @@ class NotesControllerClass {
         throw createError(400, "Note ID is required");
       }
 
-      // Валидация isStarred
+      // Валидация isStarred / isRemoved
       if (isStarred !== undefined && typeof isStarred !== "boolean") {
         throw createError(400, "isStarred must be a boolean");
+      }
+      if (isRemoved !== undefined && typeof isRemoved !== "boolean") {
+        throw createError(400, "isRemoved must be a boolean");
       }
 
       // Валидация tags
@@ -114,6 +122,7 @@ class NotesControllerClass {
         title,
         content,
         isStarred,
+        isRemoved,
         tags,
       });
 

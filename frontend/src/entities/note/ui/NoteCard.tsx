@@ -1,24 +1,28 @@
 import React, { memo } from "react";
 import { useNavigate } from "react-router-dom";
 import { Popconfirm } from "antd";
-import { Star, Trash2 } from "lucide-react";
+import { Star, Trash2, RotateCcw } from "lucide-react";
 import cn from "classnames";
 import { useTranslation } from "react-i18next";
 import styles from "./noteCard.module.scss";
-import { ApiPaths } from "../../../shared";
 
 interface NoteCardProps {
   note: {
-    id: number;
+    id: number | string;
     title: string;
     content: any;
     updatedAt: string;
     isStarred?: boolean;
+    isRemoved?: boolean;
     tags?: string[];
   };
   onDelete: (id: number) => void;
   onToggleStar: (id: number, isStarred: boolean) => void;
   isDeleting?: boolean;
+  /** В корзине: показывать «Восстановить» и «Удалить навсегда» вместо «В корзину» */
+  isTrashView?: boolean;
+  onRestore?: (id: number) => void;
+  onDeletePermanently?: (id: number) => void;
 }
 
 const extractTextContent = (content: any): string => {
@@ -54,7 +58,15 @@ const formatDate = (dateString: string, t: any) => {
   return date.toLocaleDateString();
 };
 
-export const NoteCard: React.FC<NoteCardProps> = memo(({ note, onDelete, onToggleStar, isDeleting }) => {
+export const NoteCard: React.FC<NoteCardProps> = memo(({
+  note,
+  onDelete,
+  onToggleStar,
+  isDeleting,
+  isTrashView,
+  onRestore,
+  onDeletePermanently,
+}) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const textContent = extractTextContent(note.content);
@@ -68,19 +80,19 @@ export const NoteCard: React.FC<NoteCardProps> = memo(({ note, onDelete, onToggl
     ) {
       return;
     }
-    navigate(`/${ApiPaths.notes}/${note.id}`);
+    navigate(`/notes/${note.id}`);
   };
 
   const handleCardKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
-      navigate(`/${ApiPaths.notes}/${note.id}`);
+      navigate(`/notes/${note.id}`);
     }
   };
 
   const handleStarClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    onToggleStar(note.id, !note.isStarred);
+    onToggleStar(Number(note.id), !note.isStarred);
   };
 
   const handleActionsClick = (e: React.MouseEvent) => {
@@ -100,16 +112,18 @@ export const NoteCard: React.FC<NoteCardProps> = memo(({ note, onDelete, onToggl
       tabIndex={0}
       aria-label={`${t("notes.note")}: ${note.title || t("notes.untitled")}`}
     >
-      {/* Star Button */}
-      <button
-        className={cn(styles.starBtn, { [styles.starred]: note.isStarred })}
-        onClick={handleStarClick}
-        title={note.isStarred ? t("notes.unstar") : t("notes.star")}
-        type="button"
-        aria-label={note.isStarred ? t("notes.unstar") : t("notes.star")}
-      >
-        <Star size={18} fill={note.isStarred ? "currentColor" : "none"} />
-      </button>
+      {/* Star Button — скрыт в корзине */}
+      {!isTrashView && (
+        <button
+          className={cn(styles.starBtn, { [styles.starred]: note.isStarred })}
+          onClick={handleStarClick}
+          title={note.isStarred ? t("notes.unstar") : t("notes.star")}
+          type="button"
+          aria-label={note.isStarred ? t("notes.unstar") : t("notes.star")}
+        >
+          <Star size={18} fill={note.isStarred ? "currentColor" : "none"} />
+        </button>
+      )}
 
       <div className={cn(styles.noteHeader)}>
         <h3>{note.title || t("notes.untitled")}</h3>
@@ -120,24 +134,63 @@ export const NoteCard: React.FC<NoteCardProps> = memo(({ note, onDelete, onToggl
           role="group"
           aria-label={t("notes.actions")}
         >
-          <Popconfirm
-            title={t("notes.deleteConfirm")}
-            okText={t("common.yes")}
-            cancelText={t("common.no")}
-            onConfirm={() => onDelete(note.id)}
-            placement="topRight"
-          >
-            <button
-              type="button"
-              className={cn(styles.actionBtn, styles.deleteBtn)}
-              onClick={(e) => e.stopPropagation()}
-              title={t("notes.delete")}
-              disabled={isDeleting}
-              aria-label={t("notes.delete")}
+          {isTrashView ? (
+            <>
+              {onRestore && (
+                <button
+                  type="button"
+                  className={cn(styles.actionBtn, styles.restoreBtn)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onRestore(Number(note.id));
+                  }}
+                  title={t("notes.restore") ?? "Восстановить"}
+                  aria-label={t("notes.restore") ?? "Восстановить"}
+                >
+                  <RotateCcw size={16} />
+                </button>
+              )}
+              {onDeletePermanently && (
+                <Popconfirm
+                  title={t("notes.deletePermanentlyConfirm") ?? "Удалить заметку навсегда?"}
+                  okText={t("common.yes")}
+                  cancelText={t("common.no")}
+                  onConfirm={() => onDeletePermanently(Number(note.id))}
+                  placement="topRight"
+                >
+                  <button
+                    type="button"
+                    className={cn(styles.actionBtn, styles.deleteBtn)}
+                    onClick={(e) => e.stopPropagation()}
+                    title={t("notes.deletePermanently") ?? "Удалить навсегда"}
+                    disabled={isDeleting}
+                    aria-label={t("notes.deletePermanently") ?? "Удалить навсегда"}
+                  >
+                    <Trash2 size={16} />
+                  </button>
+                </Popconfirm>
+              )}
+            </>
+          ) : (
+            <Popconfirm
+              title={t("notes.moveToTrashConfirm") ?? "Переместить в корзину?"}
+              okText={t("common.yes")}
+              cancelText={t("common.no")}
+              onConfirm={() => onDelete(Number(note.id))}
+              placement="topRight"
             >
-              <Trash2 size={16} />
-            </button>
-          </Popconfirm>
+              <button
+                type="button"
+                className={cn(styles.actionBtn, styles.deleteBtn)}
+                onClick={(e) => e.stopPropagation()}
+                title={t("notes.moveToTrash") ?? "В корзину"}
+                disabled={isDeleting}
+                aria-label={t("notes.moveToTrash") ?? "В корзину"}
+              >
+                <Trash2 size={16} />
+              </button>
+            </Popconfirm>
+          )}
         </div>
       </div>
 

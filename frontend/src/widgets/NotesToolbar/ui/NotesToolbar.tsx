@@ -1,8 +1,9 @@
 // NotesToolbar.tsx
 import { useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { Button, message } from "antd";
-import { Share2, Save, Download, Printer, MoreHorizontal, Undo, Redo, Bold, Italic, Underline } from "lucide-react";
+import { Button, Dropdown, message } from "antd";
+import type { MenuProps } from "antd";
+import { Share2, Save, Download, Printer, MoreHorizontal, Undo, Redo, Sun, Moon, Languages } from "lucide-react";
 import cn from "classnames";
 import styles from "./notes-toolbar.module.scss";
 import { ShareModal } from "../../../features/sharing/ui/ShareModal/ShareModal";
@@ -16,14 +17,11 @@ interface NotesToolbarProps {
   onPrint?: () => void;
   onUndo?: () => void;
   onRedo?: () => void;
-  onBold?: () => void;
-  onItalic?: () => void;
-  onUnderline?: () => void;
   canUndo?: boolean;
   canRedo?: boolean;
-  isBold?: boolean;
-  isItalic?: boolean;
-  isUnderline?: boolean;
+  editorTheme?: "light" | "dark";
+  onThemeChange?: (theme: "light" | "dark") => void;
+  onTranslate?: () => void;
   className?: string;
 }
 
@@ -35,14 +33,11 @@ export const NotesToolbar = ({
   onPrint,
   onUndo,
   onRedo,
-  onBold,
-  onItalic,
-  onUnderline,
   canUndo = true,
   canRedo = true,
-  isBold = false,
-  isItalic = false,
-  isUnderline = false,
+  editorTheme = "light",
+  onThemeChange,
+  onTranslate,
   className,
 }: NotesToolbarProps) => {
   const { t } = useTranslation();
@@ -83,6 +78,34 @@ export const NotesToolbar = ({
     setShareModalOpen(true);
   }, [noteId, t]);
 
+  const moreMenuItems: MenuProps["items"] = [
+    {
+      key: "theme",
+      label: t("notes.toolbar.theme"),
+      icon: editorTheme === "dark" ? <Moon size={14} /> : <Sun size={14} />,
+      children: [
+        {
+          key: "theme-light",
+          label: t("notes.toolbar.themeLight"),
+          icon: <Sun size={14} />,
+          onClick: () => onThemeChange?.("light"),
+        },
+        {
+          key: "theme-dark",
+          label: t("notes.toolbar.themeDark"),
+          icon: <Moon size={14} />,
+          onClick: () => onThemeChange?.("dark"),
+        },
+      ],
+    },
+    {
+      key: "translate",
+      icon: <Languages size={14} />,
+      label: t("notes.toolbar.translate"),
+      onClick: onTranslate,
+    },
+  ];
+
   return (
     <>
       <div className={cn(styles.toolbar, className)}>
@@ -103,7 +126,7 @@ export const NotesToolbar = ({
           </div>
         </div>
 
-        {/* Center Section - Formatting */}
+        {/* Center Section - Undo/Redo */}
         <div className={cn(styles.toolbarSection, styles.toolbarCenter)}>
           <div className={cn(styles.buttonGroup, styles.formatGroup)}>
             <Button
@@ -119,32 +142,6 @@ export const NotesToolbar = ({
               onClick={onRedo}
               disabled={!canRedo}
               className={cn(styles.toolbarButton, styles.iconButton)}
-              type="text"
-              size="small"
-            />
-          </div>
-
-          <div className={cn(styles.separator)} />
-
-          <div className={cn(styles.buttonGroup, styles.formatGroup)}>
-            <Button
-              icon={<Bold size={16} />}
-              onClick={onBold}
-              className={cn(styles.toolbarButton, styles.iconButton, isBold && styles.active)}
-              type="text"
-              size="small"
-            />
-            <Button
-              icon={<Italic size={16} />}
-              onClick={onItalic}
-              className={cn(styles.toolbarButton, styles.iconButton, isItalic && styles.active)}
-              type="text"
-              size="small"
-            />
-            <Button
-              icon={<Underline size={16} />}
-              onClick={onUnderline}
-              className={cn(styles.toolbarButton, styles.iconButton, isUnderline && styles.active)}
               type="text"
               size="small"
             />
@@ -168,12 +165,15 @@ export const NotesToolbar = ({
               type="text"
               title={t("notes.toolbar.print")}
             />
-            <Button
-              icon={<MoreHorizontal size={16} />}
-              className={cn(styles.toolbarButton, styles.iconButton)}
-              type="text"
-              title={t("notes.toolbar.more")}
-            />
+            <Dropdown menu={{ items: moreMenuItems }} trigger={["click"]} placement="bottomRight">
+              <Button
+                icon={<MoreHorizontal size={16} />}
+                className={cn(styles.toolbarButton, styles.iconButton)}
+                type="text"
+                title={t("notes.toolbar.more")}
+                onClick={(e) => e.stopPropagation()}
+              />
+            </Dropdown>
           </div>
         </div>
       </div>

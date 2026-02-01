@@ -4,11 +4,14 @@ import "@blocknote/mantine/style.css";
 import { useCreateBlockNote } from "@blocknote/react";
 import { useState, useCallback, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { message } from "antd";
+import { message, Modal, Select, Input, Button } from "antd";
 import cn from "classnames";
 import { NotesToolbar } from "../../NotesToolbar";
 import styles from "./editor.module.scss";
 import "./editor.scss";
+
+const NOTES_THEME_KEY = "notesEditorTheme";
+const LIBRE_TRANSLATE_URL = "https://libretranslate.com/translate";
 
 interface EditorProps {
   noteId?: string;
@@ -43,6 +46,17 @@ export const Editor = ({
   const [canRedo, setCanRedo] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [lastSavedContent, setLastSavedContent] = useState<any>(initialContent);
+  const [editorTheme, setEditorTheme] = useState<"light" | "dark">(() => {
+    try {
+      const saved = localStorage.getItem(NOTES_THEME_KEY);
+      if (saved === "dark" || saved === "light") return saved;
+    } catch {}
+    return "light";
+  });
+  const [translateModalOpen, setTranslateModalOpen] = useState(false);
+  const [translateTargetLang, setTranslateTargetLang] = useState("ru");
+  const [translatedText, setTranslatedText] = useState("");
+  const [translateLoading, setTranslateLoading] = useState(false);
 
   // Create BlockNote editor
   const editor = useCreateBlockNote({
@@ -62,28 +76,19 @@ export const Editor = ({
     return () => clearTimeout(saveTimer);
   }, [hasUnsavedChanges, autoSave, autoSaveDelay]);
 
-  // Track content changes
+  // Track content changes and undo/redo state
   useEffect(() => {
     if (!editor) return;
 
-    const handleChange = () => {
+    const unsubscribe = editor.onChange?.((_editor, _context) => {
       const currentContent = editor.document;
-
-      // Check if content has actually changed
-      const contentChanged = JSON.stringify(currentContent) !== JSON.stringify(lastSavedContent);
-
-      if (contentChanged) {
-        setHasUnsavedChanges(true);
-
-        if (onContentChange) {
-          onContentChange(currentContent);
-        }
-      }
-    };
-
-    // Subscribe to editor changes
-    // Note: BlockNote may have different event system, adjust accordingly
-    const unsubscribe = editor.onChange?.(handleChange);
+      setHasUnsavedChanges(
+        JSON.stringify(currentContent) !== JSON.stringify(lastSavedContent)
+      );
+      setCanUndo(true); // после изменений есть что отменять
+      setCanRedo(false); // новый ввод сбрасывает redo-стек
+      if (onContentChange) onContentChange(currentContent);
+    });
 
     return () => {
       if (unsubscribe) unsubscribe();
@@ -179,9 +184,9 @@ export const Editor = ({
   const handleUndo = useCallback(() => {
     if (!editor) return;
     try {
-      editor.undo?.();
-      setCanUndo(editor.canUndo?.() ?? false);
-      setCanRedo(editor.canRedo?.() ?? true);
+      const didUndo = editor.undo();
+      setCanRedo(true);
+      if (!didUndo) setCanUndo(false);
     } catch (err) {
       console.error("Undo error:", err);
     }
@@ -190,52 +195,69 @@ export const Editor = ({
   const handleRedo = useCallback(() => {
     if (!editor) return;
     try {
-      editor.redo?.();
-      setCanRedo(editor.canRedo?.() ?? false);
-      setCanUndo(editor.canUndo?.() ?? true);
+      const didRedo = editor.redo();
+      setCanUndo(true);
+      if (!didRedo) setCanRedo(false);
     } catch (err) {
       console.error("Redo error:", err);
     }
   }, [editor]);
 
-  const handleBold = useCallback(() => {
-    if (!editor) return;
+  const handleThemeChange = useCallback((theme: "light" | "dark") => {
+    setEditorTheme(theme);
     try {
-      editor.toggleStyles?.({ bold: true });
-    } catch (err) {
-      console.error("Bold error:", err);
-    }
+      localStorage.setItem(NOTES_THEME_KEY, theme);
+    } catch {}
+  }, []);
+
+  const getDocumentPlainText = useCallback((): string => {
+    if (!editor) return "";
+    const doc = editor.document;
+    if (!Array.isArray(doc)) return "";
+    return doc
+      .map((block: any) => {
+        const content = block.content;
+        if (Array.isArray(content)) return content.map((c: any) => c.text || "").join("");
+        return typeof content === "string" ? content : "";
+      })
+      .join("\n\n");
   }, [editor]);
 
-  const handleItalic = useCallback(() => {
-    if (!editor) return;
+  const handleTranslateOpen = useCallback(() => {
+    setTranslatedText("");
+    setTranslateModalOpen(true);
+  }, []);
+
+  const handleTranslate = useCallback(async () => {
+    const text = getDocumentPlainText();
+    if (!text.trim()) {
+      message.warning(t("notes.toolbar.translateEmpty"));
+      return;
+    }
+    setTranslateLoading(true);
+    setTranslatedText("");
     try {
-      editor.toggleStyles?.({ italic: true });
+      const res = await fetch(LIBRE_TRANSLATE_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          q: text.slice(0, 5000),
+          source: "auto",
+          target: translateTargetLang,
+          format: "text",
+        }),
+      });
+      if (!res.ok) throw new Error("Translate API error");
+      const data = (await res.json()) as { translatedText?: string };
+      setTranslatedText(data.translatedText || "");
+      if (!data.translatedText) message.warning(t("notes.toolbar.translateNoResult"));
     } catch (err) {
-      console.error("Italic error:", err);
+      console.error("Translate error:", err);
+      message.error(t("notes.toolbar.translateError"));
+    } finally {
+      setTranslateLoading(false);
     }
-  }, [editor]);
-
-  const handleUnderline = useCallback(() => {
-    if (!editor) return;
-    try {
-      editor.toggleStyles?.({ underline: true });
-    } catch (err) {
-      console.error("Underline error:", err);
-    }
-  }, [editor]);
-
-  // Update formatting states based on selection
-  useEffect(() => {
-    if (!editor) return;
-
-    const updateStates = () => {
-      setCanUndo(editor.canUndo?.() ?? false);
-      setCanRedo(editor.canRedo?.() ?? false);
-    };
-
-    updateStates();
-  }, [editor]);
+  }, [getDocumentPlainText, translateTargetLang, t]);
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -260,23 +282,58 @@ export const Editor = ({
         onPrint={handlePrint}
         onUndo={handleUndo}
         onRedo={handleRedo}
-        onBold={handleBold}
-        onItalic={handleItalic}
-        onUnderline={handleUnderline}
         canUndo={canUndo}
         canRedo={canRedo}
-        isBold={false}
-        isItalic={false}
-        isUnderline={false}
+        editorTheme={editorTheme}
+        onThemeChange={handleThemeChange}
+        onTranslate={handleTranslateOpen}
         hasUnsavedChanges={hasUnsavedChanges}
         className={cn(styles.toolbar)}
       />
 
       <div className={cn(styles.editorContainer)}>
         <div className={cn(styles.blocknoteContainer)}>
-          <BlockNoteView editor={editor} className={cn(styles.editor)} editable={!readOnly} theme="light" />
+          <BlockNoteView editor={editor} className={cn(styles.editor)} editable={!readOnly} theme={editorTheme} />
         </div>
       </div>
+
+      <Modal
+        title={t("notes.toolbar.translateNote")}
+        open={translateModalOpen}
+        onCancel={() => setTranslateModalOpen(false)}
+        footer={null}
+        width={560}
+        destroyOnClose
+      >
+        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          <div>
+            <label style={{ display: "block", marginBottom: 4 }}>{t("notes.toolbar.translateTo")}</label>
+            <Select
+              value={translateTargetLang}
+              onChange={setTranslateTargetLang}
+              options={[
+                { value: "ru", label: "Русский" },
+                { value: "en", label: "English" },
+                { value: "de", label: "Deutsch" },
+                { value: "es", label: "Español" },
+                { value: "fr", label: "Français" },
+              ]}
+              style={{ width: "100%" }}
+            />
+          </div>
+          <div>
+            <Button type="primary" onClick={handleTranslate} loading={translateLoading} block>
+              {translateLoading ? t("notes.toolbar.translating") : t("notes.toolbar.translate")}
+            </Button>
+          </div>
+          {translatedText ? (
+            <div>
+              <label style={{ display: "block", marginBottom: 4 }}>{t("notes.toolbar.translationResult")}</label>
+              <Input.TextArea readOnly value={translatedText} rows={8} style={{ resize: "vertical" }} />
+            </div>
+          ) : null}
+        </div>
+      </Modal>
     </div>
   );
 };

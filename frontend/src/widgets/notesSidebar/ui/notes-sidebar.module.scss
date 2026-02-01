@@ -2,6 +2,18 @@
   width: 100%;
   background: #18181b;
   color: #e5e7eb;
+
+  /* Выбранный пункт меню — тёмный фон, светлый текст (перебиваем дефолт AntD) */
+  .ant-menu-item.ant-menu-item-selected {
+    background-color: #3f3f46 !important;
+    color: #ffffff !important;
+  }
+
+  .ant-menu-item.ant-menu-item-selected .menuItemInner,
+  .ant-menu-item.ant-menu-item-selected .menuLabel,
+  .ant-menu-item.ant-menu-item-selected svg {
+    color: #ffffff !important;
+  }
 }
 
 /* Переопределяем AntD меню под тёмный фон */
@@ -15,6 +27,19 @@
 
   .ant-menu-item {
     padding-inline: 12px !important;
+  }
+
+  /* Выбранный пункт — тёмный фон, светлый текст (перебиваем дефолт AntD) */
+  :global(.ant-menu-item-selected),
+  :global(li.ant-menu-item.ant-menu-item-selected) {
+    background-color: #3f3f46 !important;
+    color: #ffffff !important;
+
+    &,
+    .menuItemInner,
+    svg {
+      color: #ffffff !important;
+    }
   }
 }
 
@@ -49,16 +74,6 @@
 
 .menuItem:hover {
   background-color: #27272f !important;
-  color: #ffffff !important;
-
-  svg {
-    color: inherit;
-  }
-}
-
-.ant-menu-item-selected {
-  background-color: #4b5563 !important;
-  font-weight: 500;
   color: #ffffff !important;
 
   svg {

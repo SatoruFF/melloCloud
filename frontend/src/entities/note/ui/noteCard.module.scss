@@ -125,6 +125,14 @@
       border-color: rgba(239, 68, 68, 0.3);
     }
   }
+
+  .restoreBtn {
+    &:hover:not(:disabled) {
+      color: #22c55e;
+      background: rgba(34, 197, 94, 0.1);
+      border-color: rgba(34, 197, 94, 0.3);
+    }
+  }
   
   .noteContent {
     font-size: 14px;

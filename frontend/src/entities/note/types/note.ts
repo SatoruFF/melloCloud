@@ -5,6 +5,9 @@ export interface Note {
   createdAt: string;
   updatedAt: string;
   userId: number;
+  isStarred?: boolean;
+  isRemoved?: boolean;
+  tags?: string[];
 }
 
 export interface NotesState {
