@@ -78,6 +78,8 @@
 .markdownModalFileViewer,
 .documentModalFileViewer,
 .spreadsheetModalFileViewer {
+  margin-bottom: 24px;
+
   :global(.ant-modal-body) {
     padding: 16px;
     max-height: 70vh;
@@ -88,6 +90,19 @@
 .mainPlayer {
   background: #000;
   border-radius: 8px;
+}
+
+.audioPlayerWrapper {
+  padding: 24px 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.audioPlayer {
+  width: 100%;
+  max-width: 400px;
+  height: 48px;
 }
 
 .pdfContainer {

@@ -123,6 +123,7 @@
     "delete-failed": "Failed to delete file",
     "download-success": "File downloaded successfully",
     "download-failed": "Failed to download file",
+    "preview-failed": "Failed to open preview",
     "unknown-date": "unknown",
     "order": {
       "name": "name",

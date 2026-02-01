@@ -140,6 +140,27 @@ class FileControllerClass {
   }
 
   /**
+   * Returns a signed URL for file preview (e.g. for double-click preview in UI).
+   */
+  async getFilePreviewUrl(c: Context) {
+    try {
+      const fileId = Number(c.req.query("id"));
+      const userId = (c.get("user") as { id?: number } | undefined)?.id ?? c.get("userId");
+      if (!userId) {
+        throw createError(401, "User not found");
+      }
+      if (Number.isNaN(fileId)) {
+        throw createError(400, "Invalid file id");
+      }
+      const url = await FileService.getFilePreviewUrl(fileId, userId);
+      return c.json({ url });
+    } catch (error: any) {
+      logger.error(error.message, error);
+      return c.json({ message: error.message }, error.statusCode || 500);
+    }
+  }
+
+  /**
    * Uploads a file for the user to the storage.
    * Hono: ожидает multipart/form-data и использует parseBody()
    */
@@ -195,6 +216,36 @@ class FileControllerClass {
         headers: {
           "Content-Disposition": `attachment; filename=${file.name}`,
           "Content-Type": file.type,
+        },
+      });
+    } catch (error: any) {
+      logger.error(error.message, error);
+      return c.json({ message: error.message }, error.statusCode || 500);
+    }
+  }
+
+  /**
+   * Returns file content for preview (no CORS: frontend fetches via API with auth).
+   */
+  async getFileContent(c: Context) {
+    try {
+      const userId = (c.get("user") as { id?: number } | undefined)?.id ?? c.get("userId");
+      const fileId = Number(c.req.query("id"));
+      if (!userId) {
+        throw createError(401, "User not found");
+      }
+      if (Number.isNaN(fileId)) {
+        throw createError(400, "Invalid file id");
+      }
+      const user = await getUserById(userId);
+      const { s3object, file } = await FileService.downloadFile(fileId, userId, user.storageGuid);
+      const stream = new PassThrough();
+      stream.end(s3object.Body as any);
+      return c.newResponse(stream as any, {
+        status: 200,
+        headers: {
+          "Content-Disposition": `inline; filename="${file.name}"`,
+          "Content-Type": file.type || "application/octet-stream",
         },
       });
     } catch (error: any) {

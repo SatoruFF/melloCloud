@@ -1,7 +1,7 @@
 import { Button, Image, Modal, Spin } from "antd";
 import cn from "classnames";
 import { Folder, FileText, FileCode, FileArchive, FileSpreadsheet, PlayCircle, File } from "lucide-react";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ReactPlayer from "react-player";
 import { Document, Page, pdfjs } from "react-pdf";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
@@ -9,6 +9,7 @@ import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 import ReactMarkdown from "react-markdown";
 import mammoth from "mammoth";
 import * as XLSX from "xlsx";
+import { useLazyGetFileContentQuery } from "../../../entities/file/model/api/fileApi";
 import styles from "./file-viewer.module.scss";
 
 // PDF worker setup
@@ -18,15 +19,21 @@ interface FileViewerProps {
   type: string;
   url?: string;
   fileName?: string;
+  /** ID файла для загрузки контента через API (обходит CORS при превью) */
+  fileId?: string | number;
   className?: string;
   style?: React.CSSProperties;
   iconSize?: number;
+  /** Триггер: при true открыть превью (по двойному клику по строке файла) */
+  openPreview?: boolean;
+  /** Вызов после закрытия превью */
+  onPreviewClose?: () => void;
 }
 
 // TODO: get away from here
 const IMAGE_TYPES = ["png", "jpg", "jpeg", "gif", "webp", "svg", "bmp", "ico"];
-const VIDEO_TYPES = ["mp4", "webm", "ogv", "avi", "mov", "mkv"];
-const AUDIO_TYPES = ["mp3", "wav", "ogg", "m4a", "flac", "aac"];
+const VIDEO_TYPES = ["mp4", "webm", "ogv", "avi", "mov", "mkv", "m4v", "3gp"];
+const AUDIO_TYPES = ["mp3", "wav", "ogg", "m4a", "flac", "aac", "opus", "weba"];
 const PLAYER_TYPES = [...VIDEO_TYPES, ...AUDIO_TYPES, "hls", "dash"];
 const PDF_TYPES = ["pdf"];
 const DOCUMENT_TYPES = ["doc", "docx", "txt", "rtf"];
@@ -37,7 +44,10 @@ const CODE_TYPES = [
   "tsx",
   "css",
   "scss",
+  "sass",
+  "less",
   "html",
+  "htm",
   "json",
   "xml",
   "py",
@@ -45,13 +55,45 @@ const CODE_TYPES = [
   "cpp",
   "c",
   "h",
+  "hpp",
   "go",
   "rs",
   "php",
   "rb",
   "sh",
+  "bash",
+  "zsh",
+  "yaml",
+  "yml",
+  "toml",
+  "swift",
+  "kt",
+  "kts",
+  "sql",
+  "vue",
+  "svelte",
+  "env",
+  "log",
+  "diff",
 ];
 const MARKDOWN_TYPES = ["md", "markdown"];
+
+/** Расширение файла → язык для Prism (некоторые отличаются) */
+const CODE_TO_PRISM_LANG: Record<string, string> = {
+  h: "c",
+  hpp: "cpp",
+  rs: "rust",
+  yml: "yaml",
+  htm: "html",
+  kts: "kotlin",
+  vue: "markup",
+  svelte: "markup",
+  toml: "markup",
+  env: "bash",
+  log: "markup",
+  diff: "diff",
+};
+
 const ARCHIVE_TYPES = ["zip", "rar", "7z", "tar", "gz"];
 const SPREADSHEET_TYPES = ["xlsx", "xls", "csv"];
 
@@ -65,6 +107,32 @@ const MIME_TO_EXT: Record<string, string> = {
   "application/json": "json",
   "application/javascript": "js",
   "text/javascript": "js",
+  // Audio
+  "audio/mpeg": "mp3",
+  "audio/mp3": "mp3",
+  "audio/wav": "wav",
+  "audio/x-wav": "wav",
+  "audio/ogg": "ogg",
+  "audio/webm": "weba",
+  "audio/flac": "flac",
+  "audio/aac": "aac",
+  "audio/mp4": "m4a",
+  "audio/x-m4a": "m4a",
+  "audio/opus": "opus",
+  // Video
+  "video/mp4": "mp4",
+  "video/webm": "webm",
+  "video/ogg": "ogv",
+  "video/x-msvideo": "avi",
+  "video/quicktime": "mov",
+  "video/x-matroska": "mkv",
+  "video/m4v": "m4v",
+  "video/3gpp": "3gp",
+  // Code / text
+  "application/xml": "xml",
+  "text/x-python": "py",
+  "application/x-yaml": "yaml",
+  "text/yaml": "yaml",
 };
 
 function getViewerType(type: string, fileName?: string): string {
@@ -80,13 +148,25 @@ function getViewerType(type: string, fileName?: string): string {
   return ext || t;
 }
 
-const FileViewer: React.FC<FileViewerProps> = ({ type, url, fileName, className, style, iconSize = 50 }) => {
+const FileViewer: React.FC<FileViewerProps> = ({
+  type,
+  url,
+  fileName,
+  fileId,
+  className,
+  style,
+  iconSize = 50,
+  openPreview = false,
+  onPreviewClose,
+}) => {
+  const [getFileContent] = useLazyGetFileContentQuery();
   const [isOpenPlayer, setIsOpenPlayer] = useState(false);
   const [isOpenPDF, setIsOpenPDF] = useState(false);
   const [isOpenCode, setIsOpenCode] = useState(false);
   const [isOpenMarkdown, setIsOpenMarkdown] = useState(false);
   const [isOpenDocument, setIsOpenDocument] = useState(false);
   const [isOpenSpreadsheet, setIsOpenSpreadsheet] = useState(false);
+  const [isOpenImage, setIsOpenImage] = useState(false);
 
   const [numPages, setNumPages] = useState<number>(0);
   const [pageNumber, setPageNumber] = useState(1);
@@ -100,6 +180,7 @@ const FileViewer: React.FC<FileViewerProps> = ({ type, url, fileName, className,
 
   const isImage = IMAGE_TYPES.includes(fileType);
   const isPlayer = PLAYER_TYPES.includes(fileType);
+  const isAudio = AUDIO_TYPES.includes(fileType);
   const isPDF = PDF_TYPES.includes(fileType);
   const isDocument = DOCUMENT_TYPES.includes(fileType);
   const isCode = CODE_TYPES.includes(fileType);
@@ -113,8 +194,7 @@ const FileViewer: React.FC<FileViewerProps> = ({ type, url, fileName, className,
       const response = await fetch(url);
       const text = await response.text();
       return text;
-    } catch (error) {
-      console.error("Error fetching content:", error);
+    } catch {
       return "";
     } finally {
       setLoading(false);
@@ -128,8 +208,7 @@ const FileViewer: React.FC<FileViewerProps> = ({ type, url, fileName, className,
       const arrayBuffer = await response.arrayBuffer();
       const result = await mammoth.convertToHtml({ arrayBuffer });
       setDocumentContent(result.value);
-    } catch (error) {
-      console.error("Error loading document:", error);
+    } catch {
       setDocumentContent("Failed to load document");
     } finally {
       setLoading(false);
@@ -146,8 +225,7 @@ const FileViewer: React.FC<FileViewerProps> = ({ type, url, fileName, className,
       const worksheet = workbook.Sheets[sheetName];
       const data = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
       setSpreadsheetData(data as any[][]);
-    } catch (error) {
-      console.error("Error loading spreadsheet:", error);
+    } catch {
       setSpreadsheetData([["Failed to load spreadsheet"]]);
     } finally {
       setLoading(false);
@@ -155,38 +233,143 @@ const FileViewer: React.FC<FileViewerProps> = ({ type, url, fileName, className,
   };
 
   const handleCodeOpen = async () => {
-    if (url) {
-      const content = await fetchTextContent(url);
-      setCodeContent(content);
+    setLoading(true);
+    try {
+      if (fileId != null) {
+        const blob = await getFileContent(fileId).unwrap();
+        const content = await blob.text();
+        setCodeContent(content);
+        setIsOpenCode(true);
+      } else if (url) {
+        const content = await fetchTextContent(url);
+        setCodeContent(content);
+        setIsOpenCode(true);
+      }
+    } catch {
+      setCodeContent("");
       setIsOpenCode(true);
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleMarkdownOpen = async () => {
-    if (url) {
-      const content = await fetchTextContent(url);
-      setMarkdownContent(content);
+    setLoading(true);
+    try {
+      if (fileId != null) {
+        const blob = await getFileContent(fileId).unwrap();
+        const content = await blob.text();
+        setMarkdownContent(content);
+        setIsOpenMarkdown(true);
+      } else if (url) {
+        const content = await fetchTextContent(url);
+        setMarkdownContent(content);
+        setIsOpenMarkdown(true);
+      }
+    } catch {
+      setMarkdownContent("");
       setIsOpenMarkdown(true);
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleDocumentOpen = async () => {
-    if (url) {
-      if (fileType === "txt") {
-        const content = await fetchTextContent(url);
-        setDocumentContent(`<pre>${content}</pre>`);
-      } else {
-        await fetchDocumentContent(url);
+    setLoading(true);
+    try {
+      if (fileId != null) {
+        const blob = await getFileContent(fileId).unwrap();
+        if (fileType === "txt") {
+          const content = await blob.text();
+          setDocumentContent(`<pre>${content}</pre>`);
+        } else {
+          const arrayBuffer = await blob.arrayBuffer();
+          const result = await mammoth.convertToHtml({ arrayBuffer });
+          setDocumentContent(result.value);
+        }
+        setIsOpenDocument(true);
+      } else if (url) {
+        if (fileType === "txt") {
+          const content = await fetchTextContent(url);
+          setDocumentContent(`<pre>${content}</pre>`);
+        } else {
+          await fetchDocumentContent(url);
+        }
+        setIsOpenDocument(true);
       }
+    } catch {
+      setDocumentContent("Failed to load document");
       setIsOpenDocument(true);
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleSpreadsheetOpen = async () => {
-    if (url) {
-      await fetchSpreadsheetContent(url);
+    setLoading(true);
+    try {
+      if (fileId != null) {
+        const blob = await getFileContent(fileId).unwrap();
+        const arrayBuffer = await blob.arrayBuffer();
+        const workbook = XLSX.read(arrayBuffer, { type: "array" });
+        const sheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[sheetName];
+        const data = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+        setSpreadsheetData(data as any[][]);
+        setIsOpenSpreadsheet(true);
+      } else if (url) {
+        await fetchSpreadsheetContent(url);
+        setIsOpenSpreadsheet(true);
+      }
+    } catch {
+      setSpreadsheetData([["Failed to load spreadsheet"]]);
       setIsOpenSpreadsheet(true);
+    } finally {
+      setLoading(false);
     }
+  };
+
+  // Открыть превью по триггеру (двойной клик по строке файла)
+  useEffect(() => {
+    if (!openPreview) return;
+    if (!url && fileId == null) return;
+    if (isImage && url) setIsOpenImage(true);
+    else if (isPlayer && url) setIsOpenPlayer(true);
+    else if (isPDF && url) setIsOpenPDF(true);
+    else if (isDocument) handleDocumentOpen();
+    else if (isCode) handleCodeOpen();
+    else if (isMarkdown) handleMarkdownOpen();
+    else if (isSpreadsheet) handleSpreadsheetOpen();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- open only when openPreview/url/fileId change
+  }, [openPreview, url, fileId]);
+
+  const closePlayer = () => {
+    setIsOpenPlayer(false);
+    onPreviewClose?.();
+  };
+  const closePDF = () => {
+    setIsOpenPDF(false);
+    onPreviewClose?.();
+  };
+  const closeCode = () => {
+    setIsOpenCode(false);
+    onPreviewClose?.();
+  };
+  const closeMarkdown = () => {
+    setIsOpenMarkdown(false);
+    onPreviewClose?.();
+  };
+  const closeDocument = () => {
+    setIsOpenDocument(false);
+    onPreviewClose?.();
+  };
+  const closeSpreadsheet = () => {
+    setIsOpenSpreadsheet(false);
+    onPreviewClose?.();
+  };
+  const closeImage = () => {
+    setIsOpenImage(false);
+    onPreviewClose?.();
   };
 
   const onDocumentLoadSuccess = ({ numPages }: { numPages: number }) => {
@@ -213,27 +396,27 @@ const FileViewer: React.FC<FileViewerProps> = ({ type, url, fileName, className,
     }
 
     if (isPlayer) {
-      return <PlayCircle size={iconSize} className={cn(styles.playerIcon)} onClick={() => setIsOpenPlayer(true)} />;
+      return <PlayCircle size={iconSize} className={cn(styles.playerIcon)} />;
     }
 
     if (isPDF) {
-      return <FileText size={iconSize} className={cn(styles.pdfIcon)} onClick={() => setIsOpenPDF(true)} />;
+      return <FileText size={iconSize} className={cn(styles.pdfIcon)} />;
     }
 
     if (isDocument) {
-      return <FileText size={iconSize} className={cn(styles.documentIcon)} onClick={handleDocumentOpen} />;
+      return <FileText size={iconSize} className={cn(styles.documentIcon)} />;
     }
 
     if (isCode) {
-      return <FileCode size={iconSize} className={cn(styles.codeIcon)} onClick={handleCodeOpen} />;
+      return <FileCode size={iconSize} className={cn(styles.codeIcon)} />;
     }
 
     if (isMarkdown) {
-      return <FileText size={iconSize} className={cn(styles.markdownIcon)} onClick={handleMarkdownOpen} />;
+      return <FileText size={iconSize} className={cn(styles.markdownIcon)} />;
     }
 
     if (isSpreadsheet) {
-      return <FileSpreadsheet size={iconSize} className={cn(styles.spreadsheetIcon)} onClick={handleSpreadsheetOpen} />;
+      return <FileSpreadsheet size={iconSize} className={cn(styles.spreadsheetIcon)} />;
     }
 
     if (isArchive) {
@@ -249,18 +432,50 @@ const FileViewer: React.FC<FileViewerProps> = ({ type, url, fileName, className,
 
       {/* Video/Audio Player Modal */}
       <Modal
-        title="Media Player"
+        title={isAudio ? "Audio" : "Video"}
         className={cn(styles.playerModalFileViewer)}
         open={isOpenPlayer}
-        onCancel={() => setIsOpenPlayer(false)}
+        onCancel={closePlayer}
         footer={[
-          <Button key="close" onClick={() => setIsOpenPlayer(false)}>
+          <Button key="close" onClick={closePlayer}>
             Close
           </Button>,
         ]}
-        width={900}
+        width={isAudio ? 500 : 900}
       >
-        {url && <ReactPlayer className={styles.mainPlayer} controls url={url} width="100%" height="500px" />}
+        {url &&
+          (isAudio ? (
+            <div className={cn(styles.audioPlayerWrapper)}>
+              <audio className={cn(styles.audioPlayer)} controls src={url}>
+                <track kind="captions" src="" />
+                Your browser does not support the audio element.
+              </audio>
+            </div>
+          ) : (
+            <ReactPlayer className={styles.mainPlayer} controls url={url} width="100%" height="500px" />
+          ))}
+      </Modal>
+
+      {/* Image Preview Modal (double-click) */}
+      <Modal
+        title={fileName || "Image"}
+        className={cn(styles.playerModalFileViewer)}
+        open={isOpenImage}
+        onCancel={closeImage}
+        footer={[
+          <Button key="close" onClick={closeImage}>
+            Close
+          </Button>,
+        ]}
+        width={800}
+      >
+        {url && (
+          <img
+            src={url}
+            alt={fileName || "Preview"}
+            style={{ maxWidth: "100%", height: "auto", display: "block", margin: "0 auto" }}
+          />
+        )}
       </Modal>
 
       {/* PDF Viewer Modal */}
@@ -268,7 +483,7 @@ const FileViewer: React.FC<FileViewerProps> = ({ type, url, fileName, className,
         title="PDF Viewer"
         className={cn(styles.pdfModalFileViewer)}
         open={isOpenPDF}
-        onCancel={() => setIsOpenPDF(false)}
+        onCancel={closePDF}
         footer={[
           <Button key="prev" onClick={() => setPageNumber(Math.max(1, pageNumber - 1))} disabled={pageNumber <= 1}>
             Previous
@@ -283,7 +498,7 @@ const FileViewer: React.FC<FileViewerProps> = ({ type, url, fileName, className,
           >
             Next
           </Button>,
-          <Button key="close" onClick={() => setIsOpenPDF(false)}>
+          <Button key="close" onClick={closePDF}>
             Close
           </Button>,
         ]}
@@ -303,9 +518,9 @@ const FileViewer: React.FC<FileViewerProps> = ({ type, url, fileName, className,
         title={`Code Viewer - ${fileName || fileType.toUpperCase()}`}
         className={cn(styles.codeModalFileViewer)}
         open={isOpenCode}
-        onCancel={() => setIsOpenCode(false)}
+        onCancel={closeCode}
         footer={[
-          <Button key="close" onClick={() => setIsOpenCode(false)}>
+          <Button key="close" onClick={closeCode}>
             Close
           </Button>,
         ]}
@@ -315,7 +530,7 @@ const FileViewer: React.FC<FileViewerProps> = ({ type, url, fileName, className,
           <Spin />
         ) : (
           <SyntaxHighlighter
-            language={fileType}
+            language={CODE_TO_PRISM_LANG[fileType] ?? fileType}
             style={vscDarkPlus}
             showLineNumbers
             customStyle={{ maxHeight: "600px" }}
@@ -330,9 +545,9 @@ const FileViewer: React.FC<FileViewerProps> = ({ type, url, fileName, className,
         title={`Markdown - ${fileName || "Document"}`}
         className={cn(styles.markdownModalFileViewer)}
         open={isOpenMarkdown}
-        onCancel={() => setIsOpenMarkdown(false)}
+        onCancel={closeMarkdown}
         footer={[
-          <Button key="close" onClick={() => setIsOpenMarkdown(false)}>
+          <Button key="close" onClick={closeMarkdown}>
             Close
           </Button>,
         ]}
@@ -352,9 +567,9 @@ const FileViewer: React.FC<FileViewerProps> = ({ type, url, fileName, className,
         title={`Document - ${fileName || fileType.toUpperCase()}`}
         className={cn(styles.documentModalFileViewer)}
         open={isOpenDocument}
-        onCancel={() => setIsOpenDocument(false)}
+        onCancel={closeDocument}
         footer={[
-          <Button key="close" onClick={() => setIsOpenDocument(false)}>
+          <Button key="close" onClick={closeDocument}>
             Close
           </Button>,
         ]}
@@ -372,9 +587,9 @@ const FileViewer: React.FC<FileViewerProps> = ({ type, url, fileName, className,
         title={`Spreadsheet - ${fileName || fileType.toUpperCase()}`}
         className={cn(styles.spreadsheetModalFileViewer)}
         open={isOpenSpreadsheet}
-        onCancel={() => setIsOpenSpreadsheet(false)}
+        onCancel={closeSpreadsheet}
         footer={[
-          <Button key="close" onClick={() => setIsOpenSpreadsheet(false)}>
+          <Button key="close" onClick={closeSpreadsheet}>
             Close
           </Button>,
         ]}

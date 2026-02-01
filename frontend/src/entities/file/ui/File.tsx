@@ -26,7 +26,7 @@ import { sizeFormat } from "../../../shared";
 import { ResourceType } from "../../../entities/sharing";
 
 // internal (entity)
-import { useDeleteFileMutation, useDownloadFileMutation } from "../model/api/fileApi";
+import { useDeleteFileMutation, useDownloadFileMutation, useLazyGetFilePreviewUrlQuery } from "../model/api/fileApi";
 import { pushToPath, pushToStack, setDir, setFiles } from "../model/slice/fileSlice";
 import { getCurrentFileDirSelector, getCurrentFileViewSelector } from "../model/selectors/getFiles";
 import type { FileProps } from "../types/file";
@@ -38,6 +38,8 @@ const File: React.FC<FileProps> = ({ file }) => {
   const { t } = useTranslation();
   const [messageApi, contextHolder] = message.useMessage();
   const [shareModalOpen, setShareModalOpen] = useState(false);
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   // Format file size
   const size = sizeFormat(file.size);
@@ -50,6 +52,7 @@ const File: React.FC<FileProps> = ({ file }) => {
   // RTK Query
   const [downloadFile] = useDownloadFileMutation();
   const [deleteFile, { isLoading: rmLoading }] = useDeleteFileMutation();
+  const [getFilePreviewUrl] = useLazyGetFilePreviewUrlQuery();
 
   // Get file type
   const fileType = get(file, "type", "");
@@ -96,6 +99,25 @@ const File: React.FC<FileProps> = ({ file }) => {
     setShareModalOpen(true);
   };
 
+  const handleDoubleClick = async (e: React.MouseEvent) => {
+    if ((e.target as HTMLElement).closest("button") || (e.target as HTMLElement).closest(".ant-popconfirm")) {
+      return;
+    }
+    if (isFolder) {
+      openDirHandler();
+    } else if (file.url) {
+      setPreviewOpen(true);
+    } else {
+      try {
+        const { url } = await getFilePreviewUrl(file.id).unwrap();
+        setPreviewUrl(url);
+        setPreviewOpen(true);
+      } catch (err: any) {
+        messageApi.error(err?.data?.message || t("files.preview-failed") || "Preview failed");
+      }
+    }
+  };
+
   if (rmLoading) {
     messageApi.loading(t("notes.loading"));
   }
@@ -105,9 +127,19 @@ const File: React.FC<FileProps> = ({ file }) => {
     return (
       <>
         {contextHolder}
-        <motion.div key={file.id} className={cn(styles.filePlateFileWrapper)} onDoubleClick={openDirHandler}>
+        <motion.div key={file.id} className={cn(styles.filePlateFileWrapper)} onDoubleClick={handleDoubleClick}>
           <div className={styles.fileIconWrapper}>
-            <FileViewer type={fileType} url={file.url} fileName={file.name} />
+            <FileViewer
+              type={fileType}
+              url={file.url || previewUrl || undefined}
+              fileName={file.name}
+              fileId={isFolder ? undefined : file.id}
+              openPreview={previewOpen}
+              onPreviewClose={() => {
+                setPreviewOpen(false);
+                setPreviewUrl(null);
+              }}
+            />
             {isShared && (
               <div className={styles.sharedBadge}>
                 <LinkIcon size={14} />
@@ -170,9 +202,19 @@ const File: React.FC<FileProps> = ({ file }) => {
   return (
     <>
       {contextHolder}
-      <motion.div key={file.id} className={cn(styles.fileWrapper)} onDoubleClick={openDirHandler}>
+      <motion.div key={file.id} className={cn(styles.fileWrapper)} onDoubleClick={handleDoubleClick}>
         <div className={styles.fileIconWrapper}>
-          <FileViewer type={fileType} url={file.url} fileName={file.name} />
+            <FileViewer
+              type={fileType}
+              url={file.url || previewUrl || undefined}
+              fileName={file.name}
+              fileId={isFolder ? undefined : file.id}
+              openPreview={previewOpen}
+              onPreviewClose={() => {
+                setPreviewOpen(false);
+                setPreviewUrl(null);
+              }}
+            />
           {isShared && (
             <div className={styles.sharedBadgeList}>
               <LinkIcon size={12} />
