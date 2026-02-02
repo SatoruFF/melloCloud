@@ -1,8 +1,8 @@
-import React, { memo, useCallback, type FC } from "react";
+import React, { memo, useCallback, useEffect, type FC } from "react";
 import { Editor } from "../../editor";
 import { Spin, Avatar, Tooltip, Badge } from "antd";
 import { useTranslation } from "react-i18next";
-import { useNoteCollaboration } from "../../../shared";
+import { useYjsCollaboration } from "../../../shared/lib/hooks/useYjsCollaboration";
 import { Users } from "lucide-react";
 import styles from "../styles/noteEditor.module.scss";
 import cn from "classnames";
@@ -36,22 +36,28 @@ const CollaborativeNoteEditor: FC<CollaborativeNoteEditorProps> = ({
 }) => {
   const { t } = useTranslation();
 
-  const { collaborators, isConnected } = useNoteCollaboration({
+  const { isConnected, collaborators, updateContent } = useYjsCollaboration({
     noteId,
-    onContentUpdate: (data) => {
-      // Применение изменений от других пользователей (TODO: интеграция с BlockNote/OT)
-      console.log("[Collab] Content update from server:", data);
-    },
-    onConflict: (serverVersion) => {
-      console.warn("[Collab] Version conflict, server version:", serverVersion);
+    initialContent: content,
+    onContentUpdate: (updatedContent) => {
+      // Контент обновлен через Yjs, можно обновить Editor если нужно
+      console.log("[YjsCollab] Content updated:", updatedContent);
     },
   });
+
+  // Обновлять Yjs при изменении контента в Editor
+  useEffect(() => {
+    if (content && updateContent) {
+      const contentArray = Array.isArray(content) ? content : [content];
+      updateContent(contentArray);
+    }
+  }, [content, updateContent]);
 
   const handleSave = useCallback(
     (savedContent: unknown) => {
       onSave(savedContent);
     },
-    [onSave],
+    [onSave]
   );
 
   if (isLoading) {
@@ -78,10 +84,7 @@ const CollaborativeNoteEditor: FC<CollaborativeNoteEditorProps> = ({
           <div className={cn(styles.collaboratorsList)}>
             <Avatar.Group maxCount={5}>
               {collaborators.map((collab) => (
-                <Tooltip
-                  key={collab.userId}
-                  title={`${collab.userName} (${t("notes.share.online")})`}
-                >
+                <Tooltip key={collab.userId} title={`${collab.userName} (${t("notes.share.online")})`}>
                   <Avatar
                     src={collab.avatar}
                     style={{

@@ -6,7 +6,8 @@ import { PORT } from "./configs/config";
 import { logger as customLogger } from "./configs/logger";
 import { getWebSocketConnection } from "./configs/webSocket";
 import { setupWebSocketServer } from "./helpers/setupWebSocket";
-import { setupNoteWebSocket } from "./helpers/noteWebSocket";
+// import { setupNoteWebSocket } from "./helpers/noteWebSocket"; // Старая система коллаборации - заменена на Yjs
+import { setupYjsWebSocket } from "./helpers/yjsWebSocket";
 
 const port = Number(PORT) || 3000;
 
@@ -27,28 +28,18 @@ interface FetchGlobals {
       method?: string;
       headers?: Record<string, string>;
       body?: unknown;
-    },
+    }
   ) => object;
-  WritableStream: new (underlyingSink?: {
-    write?(chunk: unknown): void;
-    close?(): void;
-  }) => object;
+  WritableStream: new (underlyingSink?: { write?(chunk: unknown): void; close?(): void }) => object;
 }
 
-const { Request: RequestCtor, WritableStream: WritableStreamCtor } =
-  globalThis as unknown as FetchGlobals;
+const { Request: RequestCtor, WritableStream: WritableStreamCtor } = globalThis as unknown as FetchGlobals;
 
 function readBody(req: http.IncomingMessage): Promise<Buffer | null> {
   return new Promise((resolve, reject) => {
     const chunks: Buffer[] = [];
     req.on("data", (chunk: Buffer) => chunks.push(chunk));
-    req.on("end", () =>
-      resolve(
-        chunks.length > 0
-          ? Buffer.concat(chunks as unknown as readonly Uint8Array[])
-          : null,
-      ),
-    );
+    req.on("end", () => resolve(chunks.length > 0 ? Buffer.concat(chunks as unknown as readonly Uint8Array[]) : null));
     req.on("error", reject);
   });
 }
@@ -62,7 +53,7 @@ const server = http.createServer(async (req, res) => {
         method: req.method,
         headers: headersToRecord(req.headers),
         ...(body && body.length > 0 && { body }),
-      }),
+      })
     );
     res.writeHead(response.status, Object.fromEntries(response.headers));
     if (response.body) {
@@ -74,7 +65,7 @@ const server = http.createServer(async (req, res) => {
           close() {
             res.end();
           },
-        }),
+        })
       );
     } else {
       res.end();
@@ -86,10 +77,16 @@ const server = http.createServer(async (req, res) => {
   }
 });
 
-// WebSocket: chat на /ws/chat, коллаборация заметок на /ws/notes
+// WebSocket: chat на /ws/chat
 setupWebSocketServer(server);
-const wssNotes = getWebSocketConnection(server, "/ws/notes");
-setupNoteWebSocket(wssNotes);
+
+// Старая система коллаборации заметок - закомментирована, заменена на Yjs
+// const wssNotes = getWebSocketConnection(server, "/ws/notes");
+// setupNoteWebSocket(wssNotes);
+
+// Yjs WebSocket для новой системы коллаборации на /ws/yjs-notes
+const wssYjsNotes = getWebSocketConnection(server, "/ws/yjs-notes");
+setupYjsWebSocket(wssYjsNotes);
 
 server.listen(port, () => {
   customLogger.info(`⚡️[server]: 🚀 Bun server (HTTP + WS) is running at: ${port}`);
