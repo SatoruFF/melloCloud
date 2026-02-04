@@ -1,5 +1,5 @@
 import { Plug, Menu, X, Settings, User } from "lucide-react";
-import { Avatar, Button, Divider, Drawer, Tooltip, notification } from "antd";
+import { Avatar, Divider, Drawer, Tooltip, notification } from "antd";
 import cn from "classnames";
 import { motion } from "framer-motion";
 import React, { useCallback, useState } from "react";
@@ -18,6 +18,7 @@ import {
   REGISTRATION_ROUTE,
   WELCOME_ROUTE,
 } from "../../../shared/consts/routes";
+import { PrimaryButton } from "../../../shared";
 import { getFeatureFlag } from "../../../shared/lib/features/setGetFeatures";
 import AccountSettings from "../../accountSettings/ui/AccountSettings.";
 
@@ -91,11 +92,9 @@ const MyNavbar: React.FC = () => {
           {!isTabletOrMobile && getFeatureFlag("files") && (
             <>
               <div className={cn(styles.navFiles)}>
-                <Button ghost>
-                  <NavLink to={FILE_ROUTE} className={cn(styles.links)}>
-                    {t("files.my-files")}
-                  </NavLink>
-                </Button>
+                <NavLink to={FILE_ROUTE} className={cn(styles.navLinkButton, styles.links)}>
+                  {t("files.my-files")}
+                </NavLink>
               </div>
             </>
           )}
@@ -126,9 +125,9 @@ const MyNavbar: React.FC = () => {
                 <Avatar size={40} icon={<User size={20} />} style={{ backgroundColor: "#1890ff" }} />
               )}
             </div>
-            <Button className={cn(styles.mainLogout)} type="primary" onClick={logOut}>
+            <PrimaryButton className={cn(styles.mainLogout)} theme="primary" onClick={logOut}>
               {t("auth.logout")}
-            </Button>
+            </PrimaryButton>
           </div>
           <Drawer
             title={t("user.settings")}
@@ -145,18 +144,14 @@ const MyNavbar: React.FC = () => {
       ) : (
         <div className={cn(styles.navItems)}>
           <div className={cn(styles.navItem)}>
-            <Button ghost>
-              <NavLink to={LOGIN_ROUTE} className={cn(styles.links)}>
-                {t("auth.authorization")}
-              </NavLink>
-            </Button>
+            <NavLink to={LOGIN_ROUTE} className={cn(styles.navLinkButton, styles.links)}>
+              {t("auth.authorization")}
+            </NavLink>
           </div>
           <div className={cn(styles.navItem)}>
-            <Button ghost>
-              <NavLink to={REGISTRATION_ROUTE} className={cn(styles.links)}>
-                {t("auth.registration")}
-              </NavLink>
-            </Button>
+            <NavLink to={REGISTRATION_ROUTE} className={cn(styles.navLinkButton, styles.links)}>
+              {t("auth.registration")}
+            </NavLink>
           </div>
           <div className={cn(styles.navBurger)}>
             {!burger ? (

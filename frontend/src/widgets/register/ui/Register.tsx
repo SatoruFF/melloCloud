@@ -1,6 +1,6 @@
 import { Smile } from "lucide-react";
 import { unwrapResult } from "@reduxjs/toolkit";
-import { Button, Form, Input, message, notification } from "antd";
+import { Form, Input, message, notification } from "antd";
 import Divider from "antd/es/divider";
 import { memo, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -11,7 +11,7 @@ import { setUser } from "../../../entities/user/model/slice/userSlice";
 import { ACTIVATION_ROUTE, LOGIN_ROUTE } from "../../../shared/consts/routes";
 import { Variables } from "../../../shared/consts/localVariables";
 import cn from "classnames";
-import { Spinner } from "../../../shared";
+import { PrimaryButton, Spinner } from "../../../shared";
 import styles from "../styles/auth.module.scss";
 
 // FIXME
@@ -141,9 +141,9 @@ const Register = () => {
         {isLoading ? (
           <Spinner />
         ) : (
-          <Button onClick={handleCreate} type="primary" htmlType="submit" block>
+          <PrimaryButton onClick={handleCreate} type="submit" theme="primary" fullWidth>
             {t("auth.submit")}
-          </Button>
+          </PrimaryButton>
         )}
       </div>
       {enableOauth && (
@@ -151,40 +151,43 @@ const Register = () => {
           <Divider>Or sign up with</Divider>
           {/* OAuth Buttons */}
           <div className={styles.oauthButtons}>
-            <Button
+            <PrimaryButton
               className={styles.oauthButton}
               icon={<GoogleIcon />}
               onClick={() => handleOAuthLogin("google")}
-              block
+              fullWidth
+              theme="clear"
             >
               Google
-            </Button>
+            </PrimaryButton>
 
-            <Button
+            <PrimaryButton
               className={styles.oauthButton}
               icon={<TelegramIcon />}
               onClick={() => handleOAuthLogin("telegram")}
-              block
+              fullWidth
+              theme="clear"
             >
               Telegram
-            </Button>
+            </PrimaryButton>
 
-            <Button
+            <PrimaryButton
               className={styles.oauthButton}
               icon={<YandexIcon />}
               onClick={() => handleOAuthLogin("yandex")}
-              block
+              fullWidth
+              theme="clear"
             >
               Yandex
-            </Button>
+            </PrimaryButton>
           </div>
         </>
       )}
 
       <Divider orientation="left">{t("auth.have-account")}</Divider>
-      <Button block>
-        <NavLink to={LOGIN_ROUTE}>{t("auth.authorization")}</NavLink>
-      </Button>
+      <NavLink to={LOGIN_ROUTE} className={styles.linkAsButton}>
+        {t("auth.authorization")}
+      </NavLink>
     </div>
   );
 };

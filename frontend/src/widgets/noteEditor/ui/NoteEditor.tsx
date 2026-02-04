@@ -1,7 +1,7 @@
 import React, { memo, type FC } from "react";
 import { Editor } from "../../editor";
-import { Spin } from "antd";
 import { useTranslation } from "react-i18next";
+import { Spinner } from "../../../shared";
 import styles from "../styles/noteEditor.module.scss";
 import cn from "classnames";
 
@@ -36,7 +36,7 @@ const NoteEditor: FC<NoteEditorProps> = ({
   if (isLoading) {
     return (
       <div className={cn(styles.loading)}>
-        <Spin size="large" />
+        <Spinner size="large" />
         <p>{t("notes.loading")}</p>
       </div>
     );

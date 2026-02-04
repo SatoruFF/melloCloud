@@ -1,7 +1,9 @@
-import { Button, Image, Modal, Spin } from "antd";
+import { Image, Modal } from "antd";
 import cn from "classnames";
+import { PrimaryButton, Spinner } from "../../../shared";
 import { Folder, FileText, FileCode, FileArchive, FileSpreadsheet, PlayCircle, File } from "lucide-react";
 import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import ReactPlayer from "react-player";
 import { Document, Page, pdfjs } from "react-pdf";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
@@ -159,6 +161,7 @@ const FileViewer: React.FC<FileViewerProps> = ({
   openPreview = false,
   onPreviewClose,
 }) => {
+  const { t } = useTranslation();
   const [getFileContent] = useLazyGetFileContentQuery();
   const [isOpenPlayer, setIsOpenPlayer] = useState(false);
   const [isOpenPDF, setIsOpenPDF] = useState(false);
@@ -209,7 +212,7 @@ const FileViewer: React.FC<FileViewerProps> = ({
       const result = await mammoth.convertToHtml({ arrayBuffer });
       setDocumentContent(result.value);
     } catch {
-      setDocumentContent("Failed to load document");
+      setDocumentContent(t("fileViewer.failedLoadDocument"));
     } finally {
       setLoading(false);
     }
@@ -226,7 +229,7 @@ const FileViewer: React.FC<FileViewerProps> = ({
       const data = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
       setSpreadsheetData(data as any[][]);
     } catch {
-      setSpreadsheetData([["Failed to load spreadsheet"]]);
+      setSpreadsheetData([[t("fileViewer.failedLoadSpreadsheet")]]);
     } finally {
       setLoading(false);
     }
@@ -298,7 +301,7 @@ const FileViewer: React.FC<FileViewerProps> = ({
         setIsOpenDocument(true);
       }
     } catch {
-      setDocumentContent("Failed to load document");
+      setDocumentContent(t("fileViewer.failedLoadDocument"));
       setIsOpenDocument(true);
     } finally {
       setLoading(false);
@@ -322,7 +325,7 @@ const FileViewer: React.FC<FileViewerProps> = ({
         setIsOpenSpreadsheet(true);
       }
     } catch {
-      setSpreadsheetData([["Failed to load spreadsheet"]]);
+      setSpreadsheetData([[t("fileViewer.failedLoadSpreadsheet")]]);
       setIsOpenSpreadsheet(true);
     } finally {
       setLoading(false);
@@ -432,14 +435,14 @@ const FileViewer: React.FC<FileViewerProps> = ({
 
       {/* Video/Audio Player Modal */}
       <Modal
-        title={isAudio ? "Audio" : "Video"}
+        title={isAudio ? t("fileViewer.audio") : t("fileViewer.video")}
         className={cn(styles.playerModalFileViewer)}
         open={isOpenPlayer}
         onCancel={closePlayer}
         footer={[
-          <Button key="close" onClick={closePlayer}>
-            Close
-          </Button>,
+          <PrimaryButton key="close" theme="clear" onClick={closePlayer}>
+            {t("fileViewer.close")}
+          </PrimaryButton>,
         ]}
         width={isAudio ? 500 : 900}
       >
@@ -448,7 +451,7 @@ const FileViewer: React.FC<FileViewerProps> = ({
             <div className={cn(styles.audioPlayerWrapper)}>
               <audio className={cn(styles.audioPlayer)} controls src={url}>
                 <track kind="captions" src="" />
-                Your browser does not support the audio element.
+                {t("fileViewer.audioNotSupported")}
               </audio>
             </div>
           ) : (
@@ -458,21 +461,21 @@ const FileViewer: React.FC<FileViewerProps> = ({
 
       {/* Image Preview Modal (double-click) */}
       <Modal
-        title={fileName || "Image"}
+        title={fileName || t("fileViewer.image")}
         className={cn(styles.playerModalFileViewer)}
         open={isOpenImage}
         onCancel={closeImage}
         footer={[
-          <Button key="close" onClick={closeImage}>
-            Close
-          </Button>,
+          <PrimaryButton key="close" theme="clear" onClick={closeImage}>
+            {t("fileViewer.close")}
+          </PrimaryButton>,
         ]}
         width={800}
       >
         {url && (
           <img
             src={url}
-            alt={fileName || "Preview"}
+            alt={fileName || t("fileViewer.preview")}
             style={{ maxWidth: "100%", height: "auto", display: "block", margin: "0 auto" }}
           />
         )}
@@ -480,33 +483,34 @@ const FileViewer: React.FC<FileViewerProps> = ({
 
       {/* PDF Viewer Modal */}
       <Modal
-        title="PDF Viewer"
+        title={t("fileViewer.pdfViewer")}
         className={cn(styles.pdfModalFileViewer)}
         open={isOpenPDF}
         onCancel={closePDF}
         footer={[
-          <Button key="prev" onClick={() => setPageNumber(Math.max(1, pageNumber - 1))} disabled={pageNumber <= 1}>
-            Previous
-          </Button>,
+          <PrimaryButton key="prev" theme="clear" onClick={() => setPageNumber(Math.max(1, pageNumber - 1))} disabled={pageNumber <= 1}>
+            {t("fileViewer.previous")}
+          </PrimaryButton>,
           <span key="page" style={{ margin: "0 16px" }}>
-            Page {pageNumber} of {numPages}
+            {t("fileViewer.pageOf", { current: pageNumber, total: numPages })}
           </span>,
-          <Button
+          <PrimaryButton
             key="next"
+            theme="clear"
             onClick={() => setPageNumber(Math.min(numPages, pageNumber + 1))}
             disabled={pageNumber >= numPages}
           >
-            Next
-          </Button>,
-          <Button key="close" onClick={closePDF}>
-            Close
-          </Button>,
+            {t("fileViewer.next")}
+          </PrimaryButton>,
+          <PrimaryButton key="close" theme="clear" onClick={closePDF}>
+            {t("fileViewer.close")}
+          </PrimaryButton>,
         ]}
         width={900}
       >
         {url && (
           <div className={cn(styles.pdfContainer)}>
-            <Document file={url} onLoadSuccess={onDocumentLoadSuccess} loading={<Spin />}>
+            <Document file={url} onLoadSuccess={onDocumentLoadSuccess} loading={<Spinner />}>
               <Page pageNumber={pageNumber} width={850} />
             </Document>
           </div>
@@ -515,19 +519,19 @@ const FileViewer: React.FC<FileViewerProps> = ({
 
       {/* Code Viewer Modal */}
       <Modal
-        title={`Code Viewer - ${fileName || fileType.toUpperCase()}`}
+        title={t("fileViewer.codeViewer", { name: fileName || fileType.toUpperCase() })}
         className={cn(styles.codeModalFileViewer)}
         open={isOpenCode}
         onCancel={closeCode}
         footer={[
-          <Button key="close" onClick={closeCode}>
-            Close
-          </Button>,
+          <PrimaryButton key="close" theme="clear" onClick={closeCode}>
+            {t("fileViewer.close")}
+          </PrimaryButton>,
         ]}
         width={1000}
       >
         {loading ? (
-          <Spin />
+          <Spinner />
         ) : (
           <SyntaxHighlighter
             language={CODE_TO_PRISM_LANG[fileType] ?? fileType}
@@ -542,19 +546,19 @@ const FileViewer: React.FC<FileViewerProps> = ({
 
       {/* Markdown Viewer Modal */}
       <Modal
-        title={`Markdown - ${fileName || "Document"}`}
+        title={t("fileViewer.markdownViewer", { name: fileName || t("fileViewer.document") })}
         className={cn(styles.markdownModalFileViewer)}
         open={isOpenMarkdown}
         onCancel={closeMarkdown}
         footer={[
-          <Button key="close" onClick={closeMarkdown}>
-            Close
-          </Button>,
+          <PrimaryButton key="close" theme="clear" onClick={closeMarkdown}>
+            {t("fileViewer.close")}
+          </PrimaryButton>,
         ]}
         width={900}
       >
         {loading ? (
-          <Spin />
+          <Spinner />
         ) : (
           <div className={cn(styles.markdownContent)}>
             <ReactMarkdown>{markdownContent}</ReactMarkdown>
@@ -564,19 +568,19 @@ const FileViewer: React.FC<FileViewerProps> = ({
 
       {/* Document Viewer Modal */}
       <Modal
-        title={`Document - ${fileName || fileType.toUpperCase()}`}
+        title={t("fileViewer.documentViewer", { name: fileName || fileType.toUpperCase() })}
         className={cn(styles.documentModalFileViewer)}
         open={isOpenDocument}
         onCancel={closeDocument}
         footer={[
-          <Button key="close" onClick={closeDocument}>
-            Close
-          </Button>,
+          <PrimaryButton key="close" theme="clear" onClick={closeDocument}>
+            {t("fileViewer.close")}
+          </PrimaryButton>,
         ]}
         width={900}
       >
         {loading ? (
-          <Spin />
+          <Spinner />
         ) : (
           <div className={cn(styles.documentContent)} dangerouslySetInnerHTML={{ __html: documentContent }} />
         )}
@@ -584,19 +588,19 @@ const FileViewer: React.FC<FileViewerProps> = ({
 
       {/* Spreadsheet Viewer Modal */}
       <Modal
-        title={`Spreadsheet - ${fileName || fileType.toUpperCase()}`}
+        title={t("fileViewer.spreadsheetViewer", { name: fileName || fileType.toUpperCase() })}
         className={cn(styles.spreadsheetModalFileViewer)}
         open={isOpenSpreadsheet}
         onCancel={closeSpreadsheet}
         footer={[
-          <Button key="close" onClick={closeSpreadsheet}>
-            Close
-          </Button>,
+          <PrimaryButton key="close" theme="clear" onClick={closeSpreadsheet}>
+            {t("fileViewer.close")}
+          </PrimaryButton>,
         ]}
         width={1200}
       >
         {loading ? (
-          <Spin />
+          <Spinner />
         ) : (
           <div className={cn(styles.spreadsheetContent)}>
             <table className={cn(styles.spreadsheetTable)}>

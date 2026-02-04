@@ -1,6 +1,7 @@
-import { ConfigProvider, Table, Tabs, Button, message, Modal, Form, Input, Select, Switch, InputNumber, Card, Statistic, Row, Col, Spin } from "antd";
+import { ConfigProvider, Table, Tabs, Button, message, Modal, Form, Input, Select, Switch, InputNumber, Card, Statistic, Row, Col } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { useState, useCallback } from "react";
+import { useTranslation, Trans } from "react-i18next";
 import { ResponsiveBar } from "@nivo/bar";
 import {
   useGetAdminUsersQuery,
@@ -27,7 +28,7 @@ import {
   useRemoveAdminFeatureFlagUserMutation,
   type AdminFeatureFlagItem,
 } from "../../../features/admin/api/adminApi";
-import { sizeFormat } from "../../../shared";
+import { sizeFormat, Spinner } from "../../../shared";
 import styles from "./admin-panel.module.scss";
 
 // Ant Design dark theme
@@ -57,6 +58,7 @@ const darkTheme = {
 const PAGE_SIZE = 20;
 
 const AdminPanel = () => {
+  const { t } = useTranslation();
   const [usersPage, setUsersPage] = useState(1);
   const [filesPage, setFilesPage] = useState(1);
   const [notesPage, setNotesPage] = useState(1);
@@ -127,166 +129,170 @@ const AdminPanel = () => {
         isBlocked: values.isBlocked,
         diskSpace: values.diskSpace,
       }).unwrap();
-      message.success("User updated");
+      message.success(t("admin.messages.userUpdated"));
       setEditUserModal(null);
     } catch (e: any) {
       if (e?.data?.message) message.error(e.data.message);
       else if (e?.errorFields) return;
-      else message.error("Failed to update");
+      else message.error(t("admin.messages.failedToUpdate"));
     }
-  }, [editUserModal, form, updateUser]);
+  }, [editUserModal, form, updateUser, t]);
+
+  const entityKeys = { user: 1, file: 1, note: 1, task: 1, event: 1, board: 1, flag: 1 } as const;
+  type AdminEntityKey = keyof typeof entityKeys;
 
   const handleDelete = useCallback(
-    async (mutation: (id: number) => any, id: number, label: string) => {
+    async (mutation: (id: number) => any, id: number, entityKey: AdminEntityKey) => {
+      const label = t(`admin.entities.${entityKey}`);
       try {
         await mutation(id).unwrap();
-        message.success(`${label} deleted`);
+        message.success(t("admin.messages.deleted", { label }));
       } catch {
-        message.error(`Failed to delete ${label.toLowerCase()}`);
+        message.error(t("admin.messages.failedToDelete", { label }));
       }
     },
-    []
+    [t]
   );
 
   const userColumns: ColumnsType<Record<string, unknown>> = [
-    { title: "ID", dataIndex: "id", width: 70 },
-    { title: "User name", dataIndex: "userName", ellipsis: true },
-    { title: "Email", dataIndex: "email", ellipsis: true },
-    { title: "Role", dataIndex: "role", width: 90 },
-    { title: "Activated", dataIndex: "isActivated", width: 90, render: (v: boolean) => (v ? "Yes" : "No") },
-    { title: "Blocked", dataIndex: "isBlocked", width: 80, render: (v: boolean) => (v ? "Yes" : "No") },
-    { title: "Disk", dataIndex: "diskSpace", width: 90 },
-    { title: "Used", dataIndex: "usedSpace", width: 90 },
+    { title: t("admin.columns.id"), dataIndex: "id", width: 70 },
+    { title: t("admin.columns.userName"), dataIndex: "userName", ellipsis: true },
+    { title: t("admin.columns.email"), dataIndex: "email", ellipsis: true },
+    { title: t("admin.columns.role"), dataIndex: "role", width: 90 },
+    { title: t("admin.columns.activated"), dataIndex: "isActivated", width: 90, render: (v: boolean) => (v ? t("common.yes") : t("common.no")) },
+    { title: t("admin.columns.blocked"), dataIndex: "isBlocked", width: 80, render: (v: boolean) => (v ? t("common.yes") : t("common.no")) },
+    { title: t("admin.columns.disk"), dataIndex: "diskSpace", width: 90 },
+    { title: t("admin.columns.used"), dataIndex: "usedSpace", width: 90 },
     {
-      title: "Actions",
+      title: t("admin.columns.actions"),
       width: 100,
       render: (_, record) => (
         <Button type="link" size="small" onClick={() => handleEditUser(record as Parameters<typeof handleEditUser>[0])}>
-          Edit
+          {t("admin.actions.edit")}
         </Button>
       ),
     },
   ];
 
   const fileColumns: ColumnsType<Record<string, unknown>> = [
-    { title: "ID", dataIndex: "id", width: 70 },
-    { title: "Type", dataIndex: "type", width: 80 },
-    { title: "Size", dataIndex: "size", width: 80 },
-    { title: "User", dataIndex: ["user", "email"], ellipsis: true },
-    { title: "Created", dataIndex: "createdAt", width: 160 },
+    { title: t("admin.columns.id"), dataIndex: "id", width: 70 },
+    { title: t("admin.columns.type"), dataIndex: "type", width: 80 },
+    { title: t("admin.columns.size"), dataIndex: "size", width: 80 },
+    { title: t("admin.columns.user"), dataIndex: ["user", "email"], ellipsis: true },
+    { title: t("admin.columns.created"), dataIndex: "createdAt", width: 160 },
     {
-      title: "Actions",
+      title: t("admin.columns.actions"),
       width: 100,
       render: (_, record) => (
-        <Button type="link" danger size="small" onClick={() => handleDelete(deleteFile, record.id as number, "File")}>
-          Delete
+        <Button type="link" danger size="small" onClick={() => handleDelete(deleteFile, record.id as number, "file")}>
+          {t("admin.actions.delete")}
         </Button>
       ),
     },
   ];
 
   const noteColumns: ColumnsType<Record<string, unknown>> = [
-    { title: "ID", dataIndex: "id", width: 70 },
-    { title: "User", dataIndex: ["user", "email"], ellipsis: true },
-    { title: "Starred", dataIndex: "isStarred", width: 80, render: (v: boolean) => (v ? "Yes" : "No") },
-    { title: "Removed", dataIndex: "isRemoved", width: 80, render: (v: boolean) => (v ? "Yes" : "No") },
-    { title: "Created", dataIndex: "createdAt", width: 160 },
+    { title: t("admin.columns.id"), dataIndex: "id", width: 70 },
+    { title: t("admin.columns.user"), dataIndex: ["user", "email"], ellipsis: true },
+    { title: t("admin.columns.starred"), dataIndex: "isStarred", width: 80, render: (v: boolean) => (v ? t("common.yes") : t("common.no")) },
+    { title: t("admin.columns.removed"), dataIndex: "isRemoved", width: 80, render: (v: boolean) => (v ? t("common.yes") : t("common.no")) },
+    { title: t("admin.columns.created"), dataIndex: "createdAt", width: 160 },
     {
-      title: "Actions",
+      title: t("admin.columns.actions"),
       width: 100,
       render: (_, record) => (
-        <Button type="link" danger size="small" onClick={() => handleDelete(deleteNote, record.id as number, "Note")}>
-          Delete
+        <Button type="link" danger size="small" onClick={() => handleDelete(deleteNote, record.id as number, "note")}>
+          {t("admin.actions.delete")}
         </Button>
       ),
     },
   ];
 
   const inviteColumns: ColumnsType<Record<string, unknown>> = [
-    { title: "ID", dataIndex: "id", width: 70 },
-    { title: "User name", dataIndex: "userName", ellipsis: true },
-    { title: "Email", dataIndex: "email", ellipsis: true },
-    { title: "Used", dataIndex: "isUsed", width: 80, render: (v: boolean) => (v ? "Yes" : "No") },
-    { title: "Created", dataIndex: "createdAt", width: 180 },
+    { title: t("admin.columns.id"), dataIndex: "id", width: 70 },
+    { title: t("admin.columns.userName"), dataIndex: "userName", ellipsis: true },
+    { title: t("admin.columns.email"), dataIndex: "email", ellipsis: true },
+    { title: t("admin.columns.used"), dataIndex: "isUsed", width: 80, render: (v: boolean) => (v ? t("common.yes") : t("common.no")) },
+    { title: t("admin.columns.created"), dataIndex: "createdAt", width: 180 },
   ];
 
   const sessionColumns: ColumnsType<Record<string, unknown>> = [
-    { title: "ID", dataIndex: "id", ellipsis: true, width: 120 },
-    { title: "User", dataIndex: ["user", "email"], ellipsis: true },
-    { title: "User agent", dataIndex: "userAgent", ellipsis: true },
-    { title: "IP", dataIndex: "ip", width: 120 },
-    { title: "Last activity", dataIndex: "lastActivity", width: 180 },
+    { title: t("admin.columns.id"), dataIndex: "id", ellipsis: true, width: 120 },
+    { title: t("admin.columns.user"), dataIndex: ["user", "email"], ellipsis: true },
+    { title: t("admin.columns.userAgent"), dataIndex: "userAgent", ellipsis: true },
+    { title: t("admin.columns.ip"), dataIndex: "ip", width: 120 },
+    { title: t("admin.columns.lastActivity"), dataIndex: "lastActivity", width: 180 },
   ];
 
   const taskColumns: ColumnsType<Record<string, unknown>> = [
-    { title: "ID", dataIndex: "id", width: 70 },
-    { title: "Status", dataIndex: "status", width: 90 },
-    { title: "Priority", dataIndex: "priority", width: 90 },
-    { title: "User", dataIndex: ["user", "email"], ellipsis: true },
-    { title: "Created", dataIndex: "createdAt", width: 160 },
+    { title: t("admin.columns.id"), dataIndex: "id", width: 70 },
+    { title: t("admin.columns.status"), dataIndex: "status", width: 90 },
+    { title: t("admin.columns.priority"), dataIndex: "priority", width: 90 },
+    { title: t("admin.columns.user"), dataIndex: ["user", "email"], ellipsis: true },
+    { title: t("admin.columns.created"), dataIndex: "createdAt", width: 160 },
     {
-      title: "Actions",
+      title: t("admin.columns.actions"),
       width: 100,
       render: (_, record) => (
-        <Button type="link" danger size="small" onClick={() => handleDelete(deleteTask, record.id as number, "Task")}>
-          Delete
+        <Button type="link" danger size="small" onClick={() => handleDelete(deleteTask, record.id as number, "task")}>
+          {t("admin.actions.delete")}
         </Button>
       ),
     },
   ];
 
   const eventColumns: ColumnsType<Record<string, unknown>> = [
-    { title: "ID", dataIndex: "id", width: 70 },
-    { title: "Start", dataIndex: "startDate", width: 160 },
-    { title: "End", dataIndex: "endDate", width: 160 },
-    { title: "User", dataIndex: ["user", "email"], ellipsis: true },
-    { title: "Created", dataIndex: "createdAt", width: 160 },
+    { title: t("admin.columns.id"), dataIndex: "id", width: 70 },
+    { title: t("admin.columns.start"), dataIndex: "startDate", width: 160 },
+    { title: t("admin.columns.end"), dataIndex: "endDate", width: 160 },
+    { title: t("admin.columns.user"), dataIndex: ["user", "email"], ellipsis: true },
+    { title: t("admin.columns.created"), dataIndex: "createdAt", width: 160 },
     {
-      title: "Actions",
+      title: t("admin.columns.actions"),
       width: 100,
       render: (_, record) => (
-        <Button type="link" danger size="small" onClick={() => handleDelete(deleteEvent, record.id as number, "Event")}>
-          Delete
+        <Button type="link" danger size="small" onClick={() => handleDelete(deleteEvent, record.id as number, "event")}>
+          {t("admin.actions.delete")}
         </Button>
       ),
     },
   ];
 
   const boardColumns: ColumnsType<Record<string, unknown>> = [
-    { title: "ID", dataIndex: "id", width: 70 },
-    { title: "User", dataIndex: ["user", "email"], ellipsis: true },
-    { title: "Created", dataIndex: "createdAt", width: 180 },
+    { title: t("admin.columns.id"), dataIndex: "id", width: 70 },
+    { title: t("admin.columns.user"), dataIndex: ["user", "email"], ellipsis: true },
+    { title: t("admin.columns.created"), dataIndex: "createdAt", width: 180 },
     {
-      title: "Actions",
+      title: t("admin.columns.actions"),
       width: 100,
       render: (_, record) => (
-        <Button type="link" danger size="small" onClick={() => handleDelete(deleteBoard, record.id as number, "Board")}>
-          Delete
+        <Button type="link" danger size="small" onClick={() => handleDelete(deleteBoard, record.id as number, "board")}>
+          {t("admin.actions.delete")}
         </Button>
       ),
     },
   ];
 
   const featureFlagColumns: ColumnsType<AdminFeatureFlagItem> = [
-    { title: "ID", dataIndex: "id", width: 70 },
-    { title: "Key", dataIndex: "key", width: 120 },
-    { title: "Name", dataIndex: "name", ellipsis: true },
-    { title: "Description", dataIndex: "description", ellipsis: true },
-    { title: "Enabled", dataIndex: "isEnabled", width: 90, render: (v: boolean) => (v ? "Yes" : "No") },
-    { title: "Overrides", dataIndex: ["_count", "enabledForUsers"], width: 90 },
+    { title: t("admin.columns.id"), dataIndex: "id", width: 70 },
+    { title: t("admin.columns.key"), dataIndex: "key", width: 120 },
+    { title: t("admin.columns.name"), dataIndex: "name", ellipsis: true },
+    { title: t("admin.columns.description"), dataIndex: "description", ellipsis: true },
+    { title: t("admin.columns.enabled"), dataIndex: "isEnabled", width: 90, render: (v: boolean) => (v ? t("common.yes") : t("common.no")) },
+    { title: t("admin.columns.overrides"), dataIndex: ["_count", "enabledForUsers"], width: 90 },
     {
-      title: "Actions",
+      title: t("admin.columns.actions"),
       width: 200,
       render: (_, record) => (
         <>
           <Button type="link" size="small" onClick={() => setOverrideModalFlag(record)}>
-            Overrides
+            {t("admin.actions.overrides")}
           </Button>
           <Button type="link" size="small" onClick={() => { setFeatureFlagModal(record); featureFlagForm.setFieldsValue({ key: record.key, name: record.name, description: record.description ?? "", isEnabled: record.isEnabled }); }}>
-            Edit
+            {t("admin.actions.edit")}
           </Button>
-          <Button type="link" danger size="small" onClick={() => handleDelete(deleteFeatureFlag, record.id, "Flag")}>
-            Delete
+          <Button type="link" danger size="small" onClick={() => handleDelete(deleteFeatureFlag, record.id, "flag")}>
+            {t("admin.actions.delete")}
           </Button>
         </>
       ),
@@ -305,18 +311,18 @@ const AdminPanel = () => {
       const values = await featureFlagForm.validateFields();
       if (featureFlagModal?.id) {
         await updateFeatureFlag({ id: featureFlagModal.id, key: values.key, name: values.name, description: values.description || null, isEnabled: values.isEnabled }).unwrap();
-        message.success("Feature flag updated");
+        message.success(t("admin.messages.featureFlagUpdated"));
       } else {
         await createFeatureFlag({ key: values.key, name: values.name, description: values.description || undefined, isEnabled: values.isEnabled }).unwrap();
-        message.success("Feature flag created");
+        message.success(t("admin.messages.featureFlagCreated"));
       }
       setFeatureFlagModal(null);
     } catch (e: any) {
       if (e?.data?.message) message.error(e.data.message);
       else if (e?.errorFields) return;
-      else message.error("Failed to save");
+      else message.error(t("admin.messages.failedToSave"));
     }
-  }, [featureFlagModal, featureFlagForm, updateFeatureFlag, createFeatureFlag]);
+  }, [featureFlagModal, featureFlagForm, updateFeatureFlag, createFeatureFlag, t]);
 
   const handleAddOverride = useCallback(async () => {
     if (!overrideModalFlag) return;
@@ -327,49 +333,47 @@ const AdminPanel = () => {
         userId: values.userId,
         isEnabled: values.isEnabled,
       }).unwrap();
-      message.success("Override set");
+      message.success(t("admin.messages.overrideSet"));
       overrideForm.resetFields();
       overrideForm.setFieldsValue({ isEnabled: true });
     } catch (e: any) {
       if (e?.data?.message) message.error(e.data.message);
       else if (e?.errorFields) return;
-      else message.error("Failed to set override");
+      else message.error(t("admin.messages.failedToSetOverride"));
     }
-  }, [overrideModalFlag, overrideForm, setFeatureFlagUser]);
+  }, [overrideModalFlag, overrideForm, setFeatureFlagUser, t]);
 
   const handleRemoveOverride = useCallback(
     async (userId: number) => {
       if (!overrideModalFlag) return;
       try {
         await removeFeatureFlagUser({ featureFlagId: overrideModalFlag.id, userId }).unwrap();
-        message.success("Override removed");
+        message.success(t("admin.messages.overrideRemoved"));
       } catch {
-        message.error("Failed to remove override");
+        message.error(t("admin.messages.failedToRemoveOverride"));
       }
     },
-    [overrideModalFlag, removeFeatureFlagUser]
+    [overrideModalFlag, removeFeatureFlagUser, t]
   );
 
   const tabItems = [
-    { key: "dashboard", label: "Dashboard", isDashboard: true },
-    { key: "users", label: "Users", children: usersData?.data ?? [], columns: userColumns, loading: usersLoading, page: usersPage, total: usersData?.total ?? 0, setPage: setUsersPage },
-    { key: "files", label: "Files", children: filesData?.data ?? [], columns: fileColumns, loading: filesLoading, page: filesPage, total: filesData?.total ?? 0, setPage: setFilesPage },
-    { key: "notes", label: "Notes", children: notesData?.data ?? [], columns: noteColumns, loading: notesLoading, page: notesPage, total: notesData?.total ?? 0, setPage: setNotesPage },
-    { key: "tasks", label: "Tasks", children: tasksData?.data ?? [], columns: taskColumns, loading: tasksLoading, page: tasksPage, total: tasksData?.total ?? 0, setPage: setTasksPage },
-    { key: "events", label: "Events", children: eventsData?.data ?? [], columns: eventColumns, loading: eventsLoading, page: eventsPage, total: eventsData?.total ?? 0, setPage: setEventsPage },
-    { key: "boards", label: "Boards", children: boardsData?.data ?? [], columns: boardColumns, loading: boardsLoading, page: boardsPage, total: boardsData?.total ?? 0, setPage: setBoardsPage },
-    { key: "invites", label: "Invites", children: invitesData?.data ?? [], columns: inviteColumns, loading: invitesLoading, page: invitesPage, total: invitesData?.total ?? 0, setPage: setInvitesPage },
-    { key: "sessions", label: "Sessions", children: sessionsData?.data ?? [], columns: sessionColumns, loading: sessionsLoading, page: sessionsPage, total: sessionsData?.total ?? 0, setPage: setSessionsPage },
-    { key: "featureFlags", label: "Feature flags", isFeatureFlags: true, children: featureFlagsData ?? [], columns: featureFlagColumns, loading: featureFlagsLoading },
+    { key: "dashboard", label: t("admin.tabs.dashboard"), isDashboard: true },
+    { key: "users", label: t("admin.tabs.users"), children: usersData?.data ?? [], columns: userColumns, loading: usersLoading, page: usersPage, total: usersData?.total ?? 0, setPage: setUsersPage },
+    { key: "files", label: t("admin.tabs.files"), children: filesData?.data ?? [], columns: fileColumns, loading: filesLoading, page: filesPage, total: filesData?.total ?? 0, setPage: setFilesPage },
+    { key: "notes", label: t("admin.tabs.notes"), children: notesData?.data ?? [], columns: noteColumns, loading: notesLoading, page: notesPage, total: notesData?.total ?? 0, setPage: setNotesPage },
+    { key: "tasks", label: t("admin.tabs.tasks"), children: tasksData?.data ?? [], columns: taskColumns, loading: tasksLoading, page: tasksPage, total: tasksData?.total ?? 0, setPage: setTasksPage },
+    { key: "events", label: t("admin.tabs.events"), children: eventsData?.data ?? [], columns: eventColumns, loading: eventsLoading, page: eventsPage, total: eventsData?.total ?? 0, setPage: setEventsPage },
+    { key: "boards", label: t("admin.tabs.boards"), children: boardsData?.data ?? [], columns: boardColumns, loading: boardsLoading, page: boardsPage, total: boardsData?.total ?? 0, setPage: setBoardsPage },
+    { key: "invites", label: t("admin.tabs.invites"), children: invitesData?.data ?? [], columns: inviteColumns, loading: invitesLoading, page: invitesPage, total: invitesData?.total ?? 0, setPage: setInvitesPage },
+    { key: "sessions", label: t("admin.tabs.sessions"), children: sessionsData?.data ?? [], columns: sessionColumns, loading: sessionsLoading, page: sessionsPage, total: sessionsData?.total ?? 0, setPage: setSessionsPage },
+    { key: "featureFlags", label: t("admin.tabs.featureFlags"), isFeatureFlags: true, children: featureFlagsData ?? [], columns: featureFlagColumns, loading: featureFlagsLoading },
   ];
 
   return (
     <ConfigProvider theme={darkTheme}>
       <div className={styles.root}>
-        <h1 className={styles.title}>Admin panel</h1>
-        <p className={styles.subtitle}>
-          Only users in <code>ADMIN_USER_IDS</code> can access this page. Manage users, files, notes, tasks, events, boards, invites, and view sessions.
-        </p>
+        <h1 className={styles.title}>{t("admin.title")}</h1>
+        <p className={styles.subtitle}><Trans i18nKey="admin.subtitle" components={[<code key="0" />]} /></p>
 
         <Tabs
           className={styles.tabs}
@@ -382,14 +386,14 @@ const AdminPanel = () => {
                 children: (
                   <div className={styles.dashboard}>
                     {statsLoading ? (
-                      <Spin size="large" />
+                      <Spinner size="large" />
                     ) : statsData ? (
                       <>
                         <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
                           <Col xs={24} sm={12} md={8}>
                             <Card size="small" className={styles.statCard}>
                               <Statistic
-                                title={<span className={styles.statTitle}>Storage used</span>}
+                                title={<span className={styles.statTitle}>{t("admin.dashboard.storageUsed")}</span>}
                                 value={sizeFormat(Number(statsData.totalStorageUsed))}
                                 valueStyle={{ color: "rgba(255,255,255,0.85)" }}
                               />
@@ -398,7 +402,7 @@ const AdminPanel = () => {
                           <Col xs={24} sm={12} md={8}>
                             <Card size="small" className={styles.statCard}>
                               <Statistic
-                                title={<span className={styles.statTitle}>Storage limit</span>}
+                                title={<span className={styles.statTitle}>{t("admin.dashboard.storageLimit")}</span>}
                                 value={sizeFormat(Number(statsData.totalStorageLimit))}
                                 valueStyle={{ color: "rgba(255,255,255,0.85)" }}
                               />
@@ -407,7 +411,7 @@ const AdminPanel = () => {
                           <Col xs={24} sm={12} md={8}>
                             <Card size="small" className={styles.statCard}>
                               <Statistic
-                                title={<span className={styles.statTitle}>Usage</span>}
+                                title={<span className={styles.statTitle}>{t("admin.dashboard.usage")}</span>}
                                 value={statsData.usagePercent}
                                 suffix="%"
                                 valueStyle={{ color: "rgba(255,255,255,0.85)" }}
@@ -417,7 +421,7 @@ const AdminPanel = () => {
                           <Col xs={24} sm={8}>
                             <Card size="small" className={styles.statCard}>
                               <Statistic
-                                title={<span className={styles.statTitle}>Users</span>}
+                                title={<span className={styles.statTitle}>{t("admin.dashboard.users")}</span>}
                                 value={statsData.usersCount}
                                 valueStyle={{ color: "rgba(255,255,255,0.85)" }}
                               />
@@ -426,7 +430,7 @@ const AdminPanel = () => {
                           <Col xs={24} sm={8}>
                             <Card size="small" className={styles.statCard}>
                               <Statistic
-                                title={<span className={styles.statTitle}>Files</span>}
+                                title={<span className={styles.statTitle}>{t("admin.dashboard.files")}</span>}
                                 value={statsData.filesCount}
                                 valueStyle={{ color: "rgba(255,255,255,0.85)" }}
                               />
@@ -435,7 +439,7 @@ const AdminPanel = () => {
                           <Col xs={24} sm={8}>
                             <Card size="small" className={styles.statCard}>
                               <Statistic
-                                title={<span className={styles.statTitle}>Notes</span>}
+                                title={<span className={styles.statTitle}>{t("admin.dashboard.notes")}</span>}
                                 value={statsData.notesCount}
                                 valueStyle={{ color: "rgba(255,255,255,0.85)" }}
                               />
@@ -444,7 +448,7 @@ const AdminPanel = () => {
                         </Row>
                         <Card
                           size="small"
-                          title={<span className={styles.cardTitle}>Active users by day (last 14 days)</span>}
+                          title={<span className={styles.cardTitle}>{t("admin.dashboard.activeUsersByDay")}</span>}
                           className={styles.statCard}
                         >
                           {statsData.activeUsersByDay?.length ? (
@@ -476,7 +480,7 @@ const AdminPanel = () => {
                                   tickSize: 0,
                                   tickPadding: 8,
                                   tickRotation: 0,
-                                  legend: "Users",
+                                  legend: t("admin.dashboard.usersAxis"),
                                   legendPosition: "middle",
                                   legendOffset: -40,
                                   truncateTickAt: 0,
@@ -520,7 +524,7 @@ const AdminPanel = () => {
                                     >
                                       <strong>{fullDate ?? indexValue}</strong>
                                       <br />
-                                      Active users: <strong>{value}</strong>
+                                      {t("admin.dashboard.activeUsersTooltip")} <strong>{value}</strong>
                                     </div>
                                   );
                                 }}
@@ -530,7 +534,7 @@ const AdminPanel = () => {
                               />
                             </div>
                           ) : (
-                            <p className={styles.chartEmpty}>No activity data</p>
+                            <p className={styles.chartEmpty}>{t("admin.dashboard.noActivityData")}</p>
                           )}
                         </Card>
                       </>
@@ -548,10 +552,10 @@ const AdminPanel = () => {
                   <div className={styles.tableWrap}>
                     <div style={{ marginBottom: 16 }}>
                       <Button type="primary" onClick={handleCreateFeatureFlag}>
-                        Create feature flag
+                        {t("admin.createFeatureFlag")}
                       </Button>
                       <p style={{ marginTop: 8, color: "rgba(255,255,255,0.65)", fontSize: 12 }}>
-                        Key must match frontend: files, notes, chats, planner, kanban, webhooks. Global &quot;Enabled&quot; = for everyone; use &quot;User overrides&quot; in DB for per-user.
+                        {t("admin.featureFlagsHint")}
                       </p>
                     </div>
                     <Table
@@ -595,29 +599,29 @@ const AdminPanel = () => {
         />
 
         <Modal
-          title="Edit user"
+          title={t("admin.modals.editUser")}
           open={!!editUserModal}
           onCancel={() => setEditUserModal(null)}
           onOk={handleSaveUser}
           confirmLoading={updateUserLoading}
           destroyOnClose
-          okText="Save"
+          okText={t("admin.actions.save")}
         >
           {editUserModal && (
             <Form form={form} layout="vertical">
-              <Form.Item name="userName" label="User name" rules={[{ required: true }]}>
+              <Form.Item name="userName" label={t("admin.columns.userName")} rules={[{ required: true }]}>
                 <Input />
               </Form.Item>
-              <Form.Item name="role" label="Role" rules={[{ required: true }]}>
+              <Form.Item name="role" label={t("admin.columns.role")} rules={[{ required: true }]}>
                 <Select options={[{ value: "USER", label: "USER" }, { value: "ADMIN", label: "ADMIN" }]} />
               </Form.Item>
-              <Form.Item name="isActivated" label="Activated" valuePropName="checked">
+              <Form.Item name="isActivated" label={t("admin.columns.activated")} valuePropName="checked">
                 <Switch />
               </Form.Item>
-              <Form.Item name="isBlocked" label="Blocked (access denied)" valuePropName="checked">
+              <Form.Item name="isBlocked" label={t("admin.modals.blockedHint")} valuePropName="checked">
                 <Switch />
               </Form.Item>
-              <Form.Item name="diskSpace" label="Disk space (bytes)">
+              <Form.Item name="diskSpace" label={t("admin.modals.diskSpace")}>
                 <InputNumber min={0} style={{ width: "100%" }} />
               </Form.Item>
             </Form>
@@ -625,26 +629,26 @@ const AdminPanel = () => {
         </Modal>
 
         <Modal
-          title={featureFlagModal?.id ? "Edit feature flag" : "Create feature flag"}
+          title={featureFlagModal?.id ? t("admin.modals.editFeatureFlag") : t("admin.modals.createFeatureFlag")}
           open={!!featureFlagModal}
           onCancel={() => setFeatureFlagModal(null)}
           onOk={handleSaveFeatureFlag}
           confirmLoading={updateFeatureFlagLoading}
           destroyOnClose
-          okText="Save"
+          okText={t("admin.actions.save")}
         >
           {featureFlagModal && (
             <Form form={featureFlagForm} layout="vertical">
-              <Form.Item name="key" label="Key (e.g. files, notes)" rules={[{ required: true }]}>
-                <Input placeholder="files" disabled={!!featureFlagModal.id} />
+              <Form.Item name="key" label={t("admin.modals.keyLabel")} rules={[{ required: true }]}>
+                <Input placeholder={t("admin.modals.keyPlaceholder")} disabled={!!featureFlagModal.id} />
               </Form.Item>
-              <Form.Item name="name" label="Name" rules={[{ required: true }]}>
-                <Input placeholder="Files" />
+              <Form.Item name="name" label={t("admin.columns.name")} rules={[{ required: true }]}>
+                <Input placeholder={t("admin.modals.namePlaceholder")} />
               </Form.Item>
-              <Form.Item name="description" label="Description">
-                <Input.TextArea rows={2} placeholder="File storage feature" />
+              <Form.Item name="description" label={t("admin.columns.description")}>
+                <Input.TextArea rows={2} placeholder={t("admin.modals.descriptionPlaceholder")} />
               </Form.Item>
-              <Form.Item name="isEnabled" label="Enabled globally" valuePropName="checked">
+              <Form.Item name="isEnabled" label={t("admin.modals.enabledGlobally")} valuePropName="checked">
                 <Switch />
               </Form.Item>
             </Form>
@@ -652,7 +656,7 @@ const AdminPanel = () => {
         </Modal>
 
         <Modal
-          title={overrideModalFlag ? `User overrides: ${overrideModalFlag.name}` : ""}
+          title={overrideModalFlag ? t("admin.modals.userOverrides", { name: overrideModalFlag.name }) : ""}
           open={!!overrideModalFlag}
           onCancel={() => { setOverrideModalFlag(null); overrideForm.resetFields(); }}
           footer={null}
@@ -662,24 +666,24 @@ const AdminPanel = () => {
           {overrideModalFlag && (
             <>
               <p style={{ marginBottom: 16, color: "rgba(255,255,255,0.65)", fontSize: 12 }}>
-                Per-user overrides: if a user is listed below, their value overrides the global &quot;Enabled&quot; for this flag.
+                {t("admin.modals.userOverridesHint")}
               </p>
               <div style={{ marginBottom: 16 }}>
                 <Form form={overrideForm} layout="inline" onFinish={handleAddOverride} initialValues={{ isEnabled: true }}>
-                  <Form.Item name="userId" label="User" rules={[{ required: true, message: "Select user" }]} style={{ minWidth: 200 }}>
+                  <Form.Item name="userId" label={t("admin.columns.user")} rules={[{ required: true, message: t("admin.modals.selectUser") }]} style={{ minWidth: 200 }}>
                     <Select
-                      placeholder="Select user"
+                      placeholder={t("admin.modals.selectUser")}
                       showSearch
                       optionFilterProp="label"
                       options={overrideUsersListData?.data?.map((u: any) => ({ value: u.id, label: u.email || u.userName || `#${u.id}` })) ?? []}
                     />
                   </Form.Item>
-                  <Form.Item name="isEnabled" label="Enabled" valuePropName="checked">
+                  <Form.Item name="isEnabled" label={t("admin.columns.enabled")} valuePropName="checked">
                     <Switch />
                   </Form.Item>
                   <Form.Item>
                     <Button type="primary" htmlType="submit" loading={setOverrideLoading}>
-                      Add override
+                      {t("admin.modals.addOverride")}
                     </Button>
                   </Form.Item>
                 </Form>
@@ -690,14 +694,14 @@ const AdminPanel = () => {
                 dataSource={overrideUsersData ?? []}
                 size="small"
                 columns={[
-                  { title: "User", key: "user", render: (_: any, r: any) => r.user?.email || r.user?.userName || `#${r.userId}` },
-                  { title: "Enabled", dataIndex: "isEnabled", width: 90, render: (v: boolean) => (v ? "Yes" : "No") },
+                  { title: t("admin.columns.user"), key: "user", render: (_: any, r: any) => r.user?.email || r.user?.userName || `#${r.userId}` },
+                  { title: t("admin.columns.enabled"), dataIndex: "isEnabled", width: 90, render: (v: boolean) => (v ? t("common.yes") : t("common.no")) },
                   {
-                    title: "Actions",
+                    title: t("admin.columns.actions"),
                     width: 90,
                     render: (_: any, r: any) => (
                       <Button type="link" danger size="small" onClick={() => handleRemoveOverride(r.userId)}>
-                        Remove
+                        {t("admin.actions.remove")}
                       </Button>
                     ),
                   },

@@ -1,11 +1,12 @@
-import { Button, Input, Select, Card, Tag, Dropdown, Space, Typography, Badge, Empty, Spin } from "antd";
-import { Plus, Trash2, Edit, MoreVertical, GripVertical, FileText, Loader2 } from "lucide-react";
+import { Button, Input, Select, Card, Tag, Dropdown, Space, Typography, Badge, Empty } from "antd";
+import { Plus, Trash2, Edit, MoreVertical, GripVertical, FileText } from "lucide-react";
 import cn from "classnames";
 import { useState } from "react";
 import styles from "./kanban.module.scss";
 import { TaskColumn, Task } from "../../../entities/task/types/tasks";
 import { useTasks } from "../hooks";
 import { useTranslation } from "react-i18next";
+import { Spinner } from "../../../shared";
 import { TaskCardModal } from "./TaskCardModal";
 
 const { Text, Title } = Typography;
@@ -83,7 +84,7 @@ const Kanban = ({ boardId }: KanbanProps) => {
     return (
       <div className={cn(styles.kanbanContainer)}>
         <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "400px" }}>
-          <Spin size="large" indicator={<Loader2 size={32} className={styles.spinningIcon} />} />
+          <Spinner size="large" />
         </div>
       </div>
     );

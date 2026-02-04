@@ -33,12 +33,10 @@
         @extend %backgroundPic;
       }
       .rightSideForm {
-        padding: 20px;
+        padding: $spacing-lg;
         width: 400px;
         height: auto;
-        border-radius: 15px;
-        background-color: white;
-        @extend %shadowTemplate;
+        @extend %cardTemplate;
         .authFormTitle {
           width: 100%;
           font-size: 23px;
@@ -50,6 +48,10 @@
       }
     }
   }
+}
+
+.linkAsButton {
+  @extend %linkAsButtonClear;
 }
 
 @media screen and (max-width: 992px) {

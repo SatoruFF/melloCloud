@@ -1,7 +1,9 @@
 import type { BaseQueryFn } from '@reduxjs/toolkit/query';
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { Variables } from '../consts/localVariables';
+import { message } from 'antd';
 import { logout } from '../../entities/user/model/slice/userSlice';
+import i18n from '../config/i18n/i18n';
+import { Variables } from '../consts/localVariables';
 
 const url = Variables.BASE_API_URL;
 
@@ -24,6 +26,10 @@ const baseQueryWithBlockedCheck: BaseQueryFn = async (args, api, extraOptions) =
       api.dispatch(logout());
       window.location.href = '/access-denied';
     }
+  }
+  if (result.error && result.error.status === 429) {
+    // is this work?
+    message.warning(i18n.t('common.tooManyRequests'));
   }
   return result;
 };

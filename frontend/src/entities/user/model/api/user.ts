@@ -1,7 +1,9 @@
 import type { BaseQueryFn, FetchArgs, FetchBaseQueryError } from '@reduxjs/toolkit/query';
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { Mutex } from 'async-mutex';
+import { message } from 'antd';
 import { Variables } from '../../../../shared';
+import i18n from '../../../../shared/config/i18n/i18n';
 import { logout, setUser, setUserLoading } from '../slice/userSlice';
 
 const mutex = new Mutex();
@@ -83,6 +85,10 @@ const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQue
       api.dispatch(logout());
       window.location.href = '/access-denied';
     }
+  }
+
+  if (result.error && result.error.status === 429) {
+    message.warning(i18n.t('common.tooManyRequests'));
   }
 
   return result;

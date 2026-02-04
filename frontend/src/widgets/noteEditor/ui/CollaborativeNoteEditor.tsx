@@ -1,9 +1,10 @@
 import React, { memo, useCallback, useEffect, type FC } from "react";
 import { Editor } from "../../editor";
-import { Spin, Avatar, Tooltip, Badge } from "antd";
+import { Avatar, Tooltip, Badge } from "antd";
 import { useTranslation } from "react-i18next";
+import { Spinner } from "../../../shared";
 import { useYjsCollaboration } from "../../../shared/lib/hooks/useYjsCollaboration";
-import { Users } from "lucide-react";
+import { Users, Maximize2, Minimize2 } from "lucide-react";
 import styles from "../styles/noteEditor.module.scss";
 import cn from "classnames";
 
@@ -19,6 +20,8 @@ export interface CollaborativeNoteEditorProps {
   onSave: (content: unknown) => void;
   autoSave?: boolean;
   autoSaveDelay?: number;
+  isFullscreen?: boolean;
+  onToggleFullscreen?: () => void;
 }
 
 const CollaborativeNoteEditor: FC<CollaborativeNoteEditorProps> = ({
@@ -33,6 +36,8 @@ const CollaborativeNoteEditor: FC<CollaborativeNoteEditorProps> = ({
   onSave,
   autoSave = true,
   autoSaveDelay = 2000,
+  isFullscreen = false,
+  onToggleFullscreen,
 }) => {
   const { t } = useTranslation();
 
@@ -63,14 +68,14 @@ const CollaborativeNoteEditor: FC<CollaborativeNoteEditorProps> = ({
   if (isLoading) {
     return (
       <div className={cn(styles.loading)}>
-        <Spin size="large" />
+        <Spinner size="large" />
         <p>{t("notes.loading")}</p>
       </div>
     );
   }
 
   return (
-    <div className={cn(styles.editorWrapper)}>
+    <div className={cn(styles.editorWrapper, { [styles.fullscreen]: isFullscreen })}>
       {/* Collaborators bar — только для существующей заметки */}
       {noteId !== "new" && (
         <div className={cn(styles.collaboratorsBar)}>
@@ -101,9 +106,10 @@ const CollaborativeNoteEditor: FC<CollaborativeNoteEditorProps> = ({
         </div>
       )}
 
-      {/* Title */}
-      <div className={cn(styles.titleContainer)}>
-        <input
+      {/* Title + Fullscreen */}
+      <div className={cn(styles.titleRow)}>
+        <div className={cn(styles.titleContainer)}>
+          <input
           type="text"
           className={cn(styles.titleInput)}
           value={title}
@@ -112,6 +118,19 @@ const CollaborativeNoteEditor: FC<CollaborativeNoteEditorProps> = ({
           placeholder={t("notes.untitled")}
           disabled={isUpdating || isCreating}
         />
+        </div>
+        {onToggleFullscreen && (
+          <Tooltip title={isFullscreen ? t("notes.exitFullscreen") : t("notes.fullscreen")}>
+            <button
+              type="button"
+              className={cn(styles.fullscreenButton)}
+              onClick={onToggleFullscreen}
+              aria-label={isFullscreen ? t("notes.exitFullscreen") : t("notes.fullscreen")}
+            >
+              {isFullscreen ? <Minimize2 size={20} /> : <Maximize2 size={20} />}
+            </button>
+          </Tooltip>
+        )}
       </div>
 
       {/* Content Editor */}
@@ -123,6 +142,7 @@ const CollaborativeNoteEditor: FC<CollaborativeNoteEditorProps> = ({
           onSave={handleSave}
           autoSave={autoSave}
           autoSaveDelay={autoSaveDelay}
+          fullscreen={isFullscreen}
         />
       </div>
     </div>

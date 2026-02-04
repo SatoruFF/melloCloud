@@ -18,7 +18,10 @@ import styles from "./styles/application.module.scss";
 
 function App() {
   const dispatch = useAppDispatch();
-  const { data, isLoading } = useAuthQuery();
+  const { data, isLoading } = useAuthQuery(undefined, {
+    refetchOnFocus: false,
+    refetchOnReconnect: false,
+  });
   const { data: flagsData } = useGetFeatureFlagsQuery(undefined, { skip: !data });
 
   useEffect(() => {

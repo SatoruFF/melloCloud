@@ -1,5 +1,5 @@
 import { Smile } from "lucide-react";
-import { Button, Checkbox, Form, Input, message, notification } from "antd";
+import { Checkbox, Form, Input, message, notification } from "antd";
 import Divider from "antd/es/divider";
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
@@ -10,7 +10,7 @@ import { setUser } from "../../../entities/user/model/slice/userSlice";
 import { ACCESS_DENIED_ROUTE, FILE_ROUTE, REGISTRATION_ROUTE } from "../../../shared/consts/routes";
 import { Variables } from "../../../shared/consts/localVariables";
 import cn from "classnames";
-import { Spinner } from "../../../shared";
+import { PrimaryButton, Spinner } from "../../../shared";
 import { TelegramButton as TelegramLoginButton } from "../../../features/telegramLoginButton";
 import styles from "../styles/auth.module.scss";
 
@@ -186,9 +186,9 @@ const Login = () => {
             {isLoading ? (
               <Spinner />
             ) : (
-              <Button onClick={handleClick} type="primary" htmlType="submit" block>
+              <PrimaryButton onClick={handleClick} type="submit" theme="primary" fullWidth>
                 {t("auth.submit")}
-              </Button>
+              </PrimaryButton>
             )}
           </div>
         </Form.Item>
@@ -200,9 +200,9 @@ const Login = () => {
 
           {/* OAuth Buttons */}
           <div className={styles.oauthButtons}>
-            <Button className={styles.oauthButton} icon={<GoogleIcon />} onClick={handleGoogleLogin} block>
+            <PrimaryButton className={styles.oauthButton} icon={<GoogleIcon />} onClick={handleGoogleLogin} fullWidth theme="clear">
               Google
-            </Button>
+            </PrimaryButton>
 
             {/* Telegram Login Widget */}
             <div className={styles.telegramButtonWrapper}>
@@ -214,18 +214,18 @@ const Login = () => {
               />
             </div>
 
-            <Button className={styles.oauthButton} icon={<YandexIcon />} onClick={handleYandexLogin} block>
+            <PrimaryButton className={styles.oauthButton} icon={<YandexIcon />} onClick={handleYandexLogin} fullWidth theme="clear">
               Yandex
-            </Button>
+            </PrimaryButton>
           </div>
         </>
       )}
 
       <Divider orientation="left">{t("auth.no-account")}</Divider>
 
-      <Button block>
-        <NavLink to={REGISTRATION_ROUTE}>{t("auth.create-profile")}</NavLink>
-      </Button>
+      <NavLink to={REGISTRATION_ROUTE} className={styles.linkAsButton}>
+        {t("auth.create-profile")}
+      </NavLink>
     </div>
   );
 };

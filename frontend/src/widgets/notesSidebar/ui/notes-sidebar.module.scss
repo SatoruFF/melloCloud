@@ -25,8 +25,26 @@
   box-sizing: border-box;
   padding-top: 15px;
 
-  .ant-menu-item {
+  /* Центрирование содержимого пункта меню по вертикали */
+  :global(.ant-menu-item) {
+    display: flex !important;
+    align-items: center !important;
+    min-height: 40px;
+    height: 40px;
     padding-inline: 12px !important;
+    line-height: 1 !important;
+  }
+
+  :global(.ant-menu-title-content) {
+    display: flex !important;
+    align-items: center !important;
+    width: 100%;
+  }
+
+  /* Обёртка Tooltip и вложенные span — по центру по вертикали */
+  :global(.ant-menu-title-content) > * {
+    display: inline-flex !important;
+    align-items: center !important;
   }
 
   /* Выбранный пункт — тёмный фон, светлый текст (перебиваем дефолт AntD) */
@@ -57,13 +75,24 @@
   }
 }
 
-/* Внутренний контейнер, чтобы не ломать layout при Tooltip */
+/* Внутренний контейнер: иконка и текст по центру кнопки */
 .menuItemInner {
-  display: flex;
+  display: inline-flex;
   align-items: center;
+  justify-content: flex-start;
   gap: 12px;
+  min-height: 100%;
+  line-height: 1;
 
-  svg {
+  /* Иконка по центру по вертикали, фиксированный размер */
+  > svg {
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+    min-width: 18px;
+    min-height: 18px;
+    display: block;
+    vertical-align: middle;
     color: inherit;
   }
 }

@@ -1,9 +1,10 @@
-import { Button, Card, Empty, Input, List, message, Spin } from "antd";
+import { Button, Card, Empty, Input, List, message } from "antd";
 import { LayoutGrid, Plus } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import cn from "classnames";
 import { useGetBoardsQuery, useCreateBoardMutation } from "../../../entities/board";
+import { AppSkeleton } from "../../../shared";
 import styles from "./kanban.module.scss";
 
 interface BoardListProps {
@@ -33,7 +34,7 @@ export const BoardList = ({ onSelectBoard }: BoardListProps) => {
   if (isLoading) {
     return (
       <div className={cn(styles.kanbanContainer, styles.boardListLoading)}>
-        <Spin size="large" />
+        <AppSkeleton />
       </div>
     );
   }

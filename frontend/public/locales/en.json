@@ -5,7 +5,8 @@
     "no": "No",
     "created": "created",
     "loading": "Loading...",
-    "saved": "Saved successfully"
+    "saved": "Saved successfully",
+    "tooManyRequests": "Too many requests. Please try again later."
   },
   "pwa": {
     "addToHomeScreen": {
@@ -167,6 +168,8 @@
     "notReady": "Not ready document",
     "saveFailed": "Save failed",
     "backToList": "Back to notes list",
+    "fullscreen": "Fullscreen",
+    "exitFullscreen": "Exit fullscreen",
     "createSuccess": "Success created",
     "today": "Today",
     "yesterday": "Yesterday",
@@ -473,6 +476,25 @@
     "cyclesBeforeLongBreak": "Cycles before long break"
   },
   "workspace": "workspaces",
+  "fileViewer": {
+    "close": "Close",
+    "audio": "Audio",
+    "video": "Video",
+    "image": "Image",
+    "preview": "Preview",
+    "pdfViewer": "PDF Viewer",
+    "previous": "Previous",
+    "next": "Next",
+    "pageOf": "Page {{current}} of {{total}}",
+    "codeViewer": "Code — {{name}}",
+    "markdownViewer": "Markdown — {{name}}",
+    "documentViewer": "Document — {{name}}",
+    "spreadsheetViewer": "Spreadsheet — {{name}}",
+    "document": "Document",
+    "failedLoadDocument": "Failed to load document",
+    "failedLoadSpreadsheet": "Failed to load spreadsheet",
+    "audioNotSupported": "Your browser does not support the audio element."
+  },
   "tabs": {
     "files": "Files",
     "settings": "Settings",
@@ -491,6 +513,110 @@
     "delete-avatar": "Delete avatar",
     "reload-page": "reload page",
     "copy-error": "Copy error"
+  },
+  "admin": {
+    "title": "Admin panel",
+    "subtitle": "Only users in <0>ADMIN_USER_IDS</0> can access this page. Manage users, files, notes, tasks, events, boards, invites, and view sessions.",
+    "tabs": {
+      "dashboard": "Dashboard",
+      "users": "Users",
+      "files": "Files",
+      "notes": "Notes",
+      "tasks": "Tasks",
+      "events": "Events",
+      "boards": "Boards",
+      "invites": "Invites",
+      "sessions": "Sessions",
+      "featureFlags": "Feature flags"
+    },
+    "columns": {
+      "id": "ID",
+      "userName": "User name",
+      "email": "Email",
+      "role": "Role",
+      "activated": "Activated",
+      "blocked": "Blocked",
+      "disk": "Disk",
+      "used": "Used",
+      "actions": "Actions",
+      "type": "Type",
+      "size": "Size",
+      "user": "User",
+      "created": "Created",
+      "starred": "Starred",
+      "removed": "Removed",
+      "userAgent": "User agent",
+      "ip": "IP",
+      "lastActivity": "Last activity",
+      "status": "Status",
+      "priority": "Priority",
+      "start": "Start",
+      "end": "End",
+      "key": "Key",
+      "name": "Name",
+      "description": "Description",
+      "enabled": "Enabled",
+      "overrides": "Overrides"
+    },
+    "actions": {
+      "edit": "Edit",
+      "delete": "Delete",
+      "overrides": "Overrides",
+      "remove": "Remove",
+      "save": "Save"
+    },
+    "dashboard": {
+      "storageUsed": "Storage used",
+      "storageLimit": "Storage limit",
+      "usage": "Usage",
+      "users": "Users",
+      "files": "Files",
+      "notes": "Notes",
+      "activeUsersByDay": "Active users by day (last 14 days)",
+      "noActivityData": "No activity data",
+      "usersAxis": "Users",
+      "activeUsersTooltip": "Active users:"
+    },
+    "modals": {
+      "editUser": "Edit user",
+      "blockedHint": "Blocked (access denied)",
+      "diskSpace": "Disk space (bytes)",
+      "editFeatureFlag": "Edit feature flag",
+      "createFeatureFlag": "Create feature flag",
+      "keyLabel": "Key (e.g. files, notes)",
+      "keyPlaceholder": "files",
+      "namePlaceholder": "Files",
+      "descriptionPlaceholder": "File storage feature",
+      "enabledGlobally": "Enabled globally",
+      "userOverrides": "User overrides: {{name}}",
+      "userOverridesHint": "Per-user overrides: if a user is listed below, their value overrides the global \"Enabled\" for this flag.",
+      "selectUser": "Select user",
+      "addOverride": "Add override"
+    },
+    "messages": {
+      "userUpdated": "User updated",
+      "failedToUpdate": "Failed to update",
+      "deleted": "{{label}} deleted",
+      "failedToDelete": "Failed to delete {{label}}",
+      "featureFlagUpdated": "Feature flag updated",
+      "featureFlagCreated": "Feature flag created",
+      "failedToSave": "Failed to save",
+      "overrideSet": "Override set",
+      "failedToSetOverride": "Failed to set override",
+      "overrideRemoved": "Override removed",
+      "failedToRemoveOverride": "Failed to remove override"
+    },
+    "entities": {
+      "user": "User",
+      "file": "File",
+      "note": "Note",
+      "task": "Task",
+      "event": "Event",
+      "board": "Board",
+      "flag": "Flag"
+    },
+    "createFeatureFlag": "Create feature flag",
+    "featureFlagsHint": "Key must match frontend: files, notes, chats, planner, kanban, webhooks. Global \"Enabled\" = for everyone; use \"User overrides\" in DB for per-user."
   },
   "sharing": {
     "publicLink": {

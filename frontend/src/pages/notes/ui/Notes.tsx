@@ -23,6 +23,7 @@ const Notes = () => {
   const [notesView, setNotesView] = useState<NotesViewFilter>("all");
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
   const [currentNoteTitle, setCurrentNoteTitle] = useState("");
+  const [isFullscreen, setIsFullscreen] = useState(false);
   const [api, contextHolder] = notification.useNotification();
 
   const {
@@ -139,6 +140,8 @@ const Notes = () => {
           toggleCollapsed={() => setCollapsed((v) => !v)}
           currentNoteId={noteId}
           onCreateNote={handleCreateNewNote}
+          isFullscreen={isFullscreen}
+          onToggleFullscreen={() => setIsFullscreen((v) => !v)}
         >
           <div className={styles.errorWrapper}>
             <h2 className={styles.errorTitle}>{t("notes.errorLoading")}</h2>
@@ -161,6 +164,8 @@ const Notes = () => {
         toggleCollapsed={() => setCollapsed((v) => !v)}
         currentNoteId={noteId}
         onCreateNote={handleCreateNewNote}
+        isFullscreen={isFullscreen}
+        onToggleFullscreen={() => setIsFullscreen((v) => !v)}
       >
         <CollaborativeNoteEditor
           key={noteId}
@@ -175,6 +180,8 @@ const Notes = () => {
           onSave={handleSave}
           autoSave={noteId !== "new"}
           autoSaveDelay={2000}
+          isFullscreen={isFullscreen}
+          onToggleFullscreen={() => setIsFullscreen((v) => !v)}
         />
       </NotesLayout>
     </>

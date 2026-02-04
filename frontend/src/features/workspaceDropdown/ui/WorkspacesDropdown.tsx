@@ -60,7 +60,7 @@ const WorkspacesDropdown = ({ viewAll, logOut, setProfile, isAdmin }: { viewAll:
       ? [
           {
             key: "admin",
-            label: <NavLink to={ADMIN_ROUTE}>Admin</NavLink>,
+            label: <NavLink to={ADMIN_ROUTE}>{t("tabs.admin-panel")}</NavLink>,
             icon: <Shield size={16} />,
           },
         ]

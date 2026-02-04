@@ -27,6 +27,8 @@ interface EditorProps {
   };
   autoSave?: boolean;
   autoSaveDelay?: number;
+  /** В полноэкранном режиме убирается рамка и скругления */
+  fullscreen?: boolean;
 }
 
 export const Editor = ({
@@ -40,6 +42,7 @@ export const Editor = ({
   toolbarProps = {},
   autoSave = true,
   autoSaveDelay = 2000,
+  fullscreen = false,
 }: EditorProps) => {
   const { t } = useTranslation();
   const [canUndo, setCanUndo] = useState(false);
@@ -273,7 +276,7 @@ export const Editor = ({
   }, [handleSave]);
 
   return (
-    <div className={cn(styles.editorWrapper, className)}>
+    <div className={cn(styles.editorWrapper, className, { [styles.fullscreen]: fullscreen })}>
       <NotesToolbar
         noteId={noteId}
         noteTitle={noteTitle}

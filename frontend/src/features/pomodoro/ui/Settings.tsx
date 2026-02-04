@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import Button from "./Button";
 
 const Settings = ({
@@ -17,6 +18,7 @@ const Settings = ({
 	setSecondsLeft,
 	timerMode,
 }) => {
+	const { t } = useTranslation();
 	const colors = {
 		default: "#F87070",
 		blue: "#70F3F8",
@@ -65,7 +67,7 @@ const Settings = ({
 						buttonText="×"
 						toggleVisibility={toggleSettingsVisibility}
 					/>
-					<h2>Settings</h2>
+					<h2>{t("pomodoro.settings")}</h2>
 					<form onSubmit={applySettings}>
 						<div className="pane__time-settings">
 							<h3>Time (Minutes)</h3>

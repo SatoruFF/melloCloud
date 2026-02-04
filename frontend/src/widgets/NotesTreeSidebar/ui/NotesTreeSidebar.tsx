@@ -1,11 +1,12 @@
 import React, { memo, type FC } from "react";
 import { useNavigate } from "react-router-dom";
-import { Layout, Input, Spin, Empty } from "antd";
+import { Layout, Input, Empty } from "antd";
 import { Search, FileText, Plus, ArrowLeft, StickyNote } from "lucide-react";
 import { useGetNotesQuery } from "../../../entities/note/model/api/noteApi";
 import { useTranslation } from "react-i18next";
 import styles from "../styles/notesTreeSidebar.module.scss";
 import cn from "classnames";
+import { AppSkeleton } from "../../../shared";
 import { NOTES_ROUTE } from "../../../shared/consts/routes";
 
 const { Sider } = Layout;
@@ -83,7 +84,7 @@ const NotesTreeSidebar: FC<NotesTreeSidebarProps> = ({ collapsed, toggleCollapse
           <div className={styles.notesList}>
             {isLoading ? (
               <div className={styles.loading}>
-                <Spin size="small" />
+                <AppSkeleton />
               </div>
             ) : filteredNotes.length === 0 ? (
               <div className={styles.empty}>
