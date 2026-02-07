@@ -1,17 +1,17 @@
-import { Smile } from "lucide-react";
 import { Checkbox, Form, Input, message, notification } from "antd";
 import Divider from "antd/es/divider";
-import { useState, useEffect } from "react";
+import cn from "classnames";
+import { Smile } from "lucide-react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { NavLink, useNavigate, useSearchParams } from "react-router-dom";
 import { useAppDispatch } from "../../../app/store/store";
 import { userApi } from "../../../entities/user/model/api/user";
 import { setUser } from "../../../entities/user/model/slice/userSlice";
-import { ACCESS_DENIED_ROUTE, FILE_ROUTE, REGISTRATION_ROUTE } from "../../../shared/consts/routes";
-import { Variables } from "../../../shared/consts/localVariables";
-import cn from "classnames";
-import { PrimaryButton, Spinner } from "../../../shared";
 import { TelegramButton as TelegramLoginButton } from "../../../features/telegramLoginButton";
+import { PrimaryButton, Spinner } from "../../../shared";
+import { Variables } from "../../../shared/consts/localVariables";
+import { ACCESS_DENIED_ROUTE, FILE_ROUTE, REGISTRATION_ROUTE } from "../../../shared/consts/routes";
 import styles from "../styles/auth.module.scss";
 
 // FIXME

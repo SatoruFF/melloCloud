@@ -3,6 +3,7 @@
 // ——— Design tokens (единая дизайн-система) ———
 $light-text-color: #ffffff;
 $dark-text-color: #1e213f;
+$secondary-text-color: #8c8c8c;
 $header-height: 10vh;
 $file-toolbar-height: 7vh;
 $main-font: "Sono", sans-serif;
@@ -12,6 +13,7 @@ $notes-sidebar-width: 280px;
 
 // Colors (brand + semantic)
 $color-primary: #007bff;
+$primary-color: $color-primary; // alias
 $color-primary-hover: #0069d9;
 $color-danger: #dc3545;
 $color-danger-hover: #c82333;
@@ -34,6 +36,7 @@ $radius-xl: 16px;
 
 // Shadows
 $shadow-sm: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
+$shadow-md: 0 4px 24px rgba(0, 0, 0, 0.08);
 $shadow-card: 0 4px 24px rgba(0, 0, 0, 0.08);
 
 $background-image:
@@ -101,6 +104,7 @@ $background-image:
   border: 1px solid $color-primary;
   text-decoration: none;
   transition: background-color 0.2s ease, color 0.2s ease;
+  box-sizing: border-box;
   &:hover {
     background-color: rgba(0, 123, 255, 0.1);
     color: $color-primary-hover;

@@ -1,17 +1,17 @@
-import { Smile } from "lucide-react";
 import { unwrapResult } from "@reduxjs/toolkit";
 import { Form, Input, message, notification } from "antd";
 import Divider from "antd/es/divider";
+import cn from "classnames";
+import { Smile } from "lucide-react";
 import { memo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAppDispatch } from "../../../app/store/store";
 import { userApi } from "../../../entities/user/model/api/user";
 import { setUser } from "../../../entities/user/model/slice/userSlice";
-import { ACTIVATION_ROUTE, LOGIN_ROUTE } from "../../../shared/consts/routes";
-import { Variables } from "../../../shared/consts/localVariables";
-import cn from "classnames";
 import { PrimaryButton, Spinner } from "../../../shared";
+import { Variables } from "../../../shared/consts/localVariables";
+import { ACTIVATION_ROUTE, LOGIN_ROUTE } from "../../../shared/consts/routes";
 import styles from "../styles/auth.module.scss";
 
 // FIXME
