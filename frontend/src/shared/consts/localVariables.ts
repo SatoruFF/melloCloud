@@ -94,7 +94,7 @@ export const ApiPaths = {
   // Sharing
   sharing: "sharing",
   sharingPermissions: "sharing/permissions",
-  sharingPublicLink: "sha/public-link",
+  sharingPublicLink: "sharing/public-link",
   sharingSharedWithMe: "sharing/shared-with-me",
   sharingSharedByMe: "sharing/shared-by-me",
   sharingCheckPermission: "sharing/check-permission",
