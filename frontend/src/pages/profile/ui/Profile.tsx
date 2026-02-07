@@ -43,8 +43,8 @@ import { Variables } from "../../../shared/consts/localVariables";
 import { sizeFormat } from "../../../shared/utils/sizeFormat";
 import styles from "./profile.module.scss";
 import { getUserSelector } from "../../../entities/user";
-import { useNavigate } from "react-router-dom";
-import { LOGIN_ROUTE } from "../../../shared/consts/routes";
+import { useNavigate, NavLink } from "react-router-dom";
+import { LOGIN_ROUTE, PRIVACY_POLICY_ROUTE, TERMS_OF_SERVICE_ROUTE } from "../../../shared/consts/routes";
 
 const { Paragraph } = Typography;
 
@@ -319,6 +319,17 @@ const Profile = () => {
             </Col>
           </Row>
         </Card>
+
+        {/* Legal Links */}
+        <div className={styles.legalLinks}>
+          <NavLink to={PRIVACY_POLICY_ROUTE} className={styles.legalLink}>
+            {t("legal.privacy.title")}
+          </NavLink>
+          <span className={styles.legalSeparator}>•</span>
+          <NavLink to={TERMS_OF_SERVICE_ROUTE} className={styles.legalLink}>
+            {t("legal.terms.title")}
+          </NavLink>
+        </div>
       </div>
 
       {/* Modals */}

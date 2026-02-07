@@ -354,6 +354,34 @@
   }
 }
 
+.legalLinks {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-sm;
+  padding: $spacing-lg 0;
+  margin-top: $spacing-md;
+}
+
+.legalLink {
+  font-size: 13px;
+  color: #94a3b8;
+  text-decoration: none;
+  transition: color 0.2s ease;
+  @extend %secondFont;
+
+  &:hover {
+    color: #60a5fa;
+    text-decoration: underline;
+  }
+}
+
+.legalSeparator {
+  color: #475569;
+  font-size: 13px;
+  user-select: none;
+}
+
 // Responsive
 @media screen and (max-width: 768px) {
   .profileWrapper {
