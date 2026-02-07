@@ -1,7 +1,7 @@
 import { Image, Modal } from "antd";
 import cn from "classnames";
 import { PrimaryButton, Spinner } from "../../../shared";
-import { Folder, FileText, FileCode, FileArchive, FileSpreadsheet, PlayCircle, File } from "lucide-react";
+import { Folder, FileText, FileCode, FileArchive, FileSpreadsheet, PlayCircle, File, Maximize2, Minimize2 } from "lucide-react";
 import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import ReactPlayer from "react-player";
@@ -178,6 +178,7 @@ const FileViewer: React.FC<FileViewerProps> = ({
   const [documentContent, setDocumentContent] = useState("");
   const [spreadsheetData, setSpreadsheetData] = useState<any[][]>([]);
   const [loading, setLoading] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
 
   const fileType = getViewerType(type, fileName);
 
@@ -336,6 +337,12 @@ const FileViewer: React.FC<FileViewerProps> = ({
   useEffect(() => {
     if (!openPreview) return;
     if (!url && fileId == null) return;
+    
+    // Show loading indicator immediately for all file types
+    if (!isImage || !url) {
+      setLoading(true);
+    }
+    
     if (isImage && url) setIsOpenImage(true);
     else if (isPlayer && url) setIsOpenPlayer(true);
     else if (isPDF && url) setIsOpenPDF(true);
@@ -348,31 +355,42 @@ const FileViewer: React.FC<FileViewerProps> = ({
 
   const closePlayer = () => {
     setIsOpenPlayer(false);
+    setIsFullscreen(false);
     onPreviewClose?.();
   };
   const closePDF = () => {
     setIsOpenPDF(false);
+    setIsFullscreen(false);
     onPreviewClose?.();
   };
   const closeCode = () => {
     setIsOpenCode(false);
+    setIsFullscreen(false);
     onPreviewClose?.();
   };
   const closeMarkdown = () => {
     setIsOpenMarkdown(false);
+    setIsFullscreen(false);
     onPreviewClose?.();
   };
   const closeDocument = () => {
     setIsOpenDocument(false);
+    setIsFullscreen(false);
     onPreviewClose?.();
   };
   const closeSpreadsheet = () => {
     setIsOpenSpreadsheet(false);
+    setIsFullscreen(false);
     onPreviewClose?.();
   };
   const closeImage = () => {
     setIsOpenImage(false);
+    setIsFullscreen(false);
     onPreviewClose?.();
+  };
+
+  const toggleFullscreen = () => {
+    setIsFullscreen(!isFullscreen);
   };
 
   const onDocumentLoadSuccess = ({ numPages }: { numPages: number }) => {
@@ -433,18 +451,39 @@ const FileViewer: React.FC<FileViewerProps> = ({
     <div className={cn(styles.allFileViewer, className)} style={style}>
       {determineViewer(fileType, url)}
 
+      {/* Global Loading Spinner */}
+      {loading && !isOpenImage && !isOpenPlayer && !isOpenPDF && !isOpenCode && !isOpenMarkdown && !isOpenDocument && !isOpenSpreadsheet && (
+        <Modal
+          open={true}
+          footer={null}
+          closable={false}
+          width={200}
+          centered
+          className={styles.loadingModal}
+        >
+          <div className={styles.loadingContent}>
+            <Spinner />
+            <p>{t("fileViewer.loading")}</p>
+          </div>
+        </Modal>
+      )}
+
       {/* Video/Audio Player Modal */}
       <Modal
         title={isAudio ? t("fileViewer.audio") : t("fileViewer.video")}
-        className={cn(styles.playerModalFileViewer)}
+        className={cn(styles.playerModalFileViewer, { [styles.fullscreenModal]: isFullscreen })}
         open={isOpenPlayer}
         onCancel={closePlayer}
         footer={[
-          <PrimaryButton key="close" theme="clear" onClick={closePlayer}>
+          <PrimaryButton key="fullscreen" theme="clear" onClick={toggleFullscreen} className={styles.modalButton}>
+            {isFullscreen ? <Minimize2 size={16} /> : <Maximize2 size={16} />}
+          </PrimaryButton>,
+          <PrimaryButton key="close" theme="clear" onClick={closePlayer} className={styles.modalButton}>
             {t("fileViewer.close")}
           </PrimaryButton>,
         ]}
-        width={isAudio ? 500 : 900}
+        width={isFullscreen ? "95vw" : (isAudio ? 500 : 900)}
+        centered
       >
         {url &&
           (isAudio ? (
@@ -455,43 +494,49 @@ const FileViewer: React.FC<FileViewerProps> = ({
               </audio>
             </div>
           ) : (
-            <ReactPlayer className={styles.mainPlayer} controls url={url} width="100%" height="500px" />
+            <ReactPlayer className={styles.mainPlayer} controls url={url} width="100%" height={isFullscreen ? "75vh" : "500px"} />
           ))}
       </Modal>
 
       {/* Image Preview Modal (double-click) */}
       <Modal
         title={fileName || t("fileViewer.image")}
-        className={cn(styles.playerModalFileViewer)}
+        className={cn(styles.imageModalFileViewer, { [styles.fullscreenModal]: isFullscreen })}
         open={isOpenImage}
         onCancel={closeImage}
         footer={[
-          <PrimaryButton key="close" theme="clear" onClick={closeImage}>
+          <PrimaryButton key="fullscreen" theme="clear" onClick={toggleFullscreen} className={styles.modalButton}>
+            {isFullscreen ? <Minimize2 size={16} /> : <Maximize2 size={16} />}
+          </PrimaryButton>,
+          <PrimaryButton key="close" theme="clear" onClick={closeImage} className={styles.modalButton}>
             {t("fileViewer.close")}
           </PrimaryButton>,
         ]}
-        width={800}
+        width={isFullscreen ? "95vw" : 800}
+        centered
       >
         {url && (
-          <img
-            src={url}
-            alt={fileName || t("fileViewer.preview")}
-            style={{ maxWidth: "100%", height: "auto", display: "block", margin: "0 auto" }}
-          />
+          <div className={styles.imagePreviewContainer}>
+            <img
+              src={url}
+              alt={fileName || t("fileViewer.preview")}
+              className={styles.imagePreview}
+            />
+          </div>
         )}
       </Modal>
 
       {/* PDF Viewer Modal */}
       <Modal
         title={t("fileViewer.pdfViewer")}
-        className={cn(styles.pdfModalFileViewer)}
+        className={cn(styles.pdfModalFileViewer, { [styles.fullscreenModal]: isFullscreen })}
         open={isOpenPDF}
         onCancel={closePDF}
         footer={[
-          <PrimaryButton key="prev" theme="clear" onClick={() => setPageNumber(Math.max(1, pageNumber - 1))} disabled={pageNumber <= 1}>
+          <PrimaryButton key="prev" theme="clear" onClick={() => setPageNumber(Math.max(1, pageNumber - 1))} disabled={pageNumber <= 1} className={styles.modalButton}>
             {t("fileViewer.previous")}
           </PrimaryButton>,
-          <span key="page" style={{ margin: "0 16px" }}>
+          <span key="page" className={styles.pageInfo}>
             {t("fileViewer.pageOf", { current: pageNumber, total: numPages })}
           </span>,
           <PrimaryButton
@@ -499,14 +544,19 @@ const FileViewer: React.FC<FileViewerProps> = ({
             theme="clear"
             onClick={() => setPageNumber(Math.min(numPages, pageNumber + 1))}
             disabled={pageNumber >= numPages}
+            className={styles.modalButton}
           >
             {t("fileViewer.next")}
           </PrimaryButton>,
-          <PrimaryButton key="close" theme="clear" onClick={closePDF}>
+          <PrimaryButton key="fullscreen" theme="clear" onClick={toggleFullscreen} className={styles.modalButton}>
+            {isFullscreen ? <Minimize2 size={16} /> : <Maximize2 size={16} />}
+          </PrimaryButton>,
+          <PrimaryButton key="close" theme="clear" onClick={closePDF} className={styles.modalButton}>
             {t("fileViewer.close")}
           </PrimaryButton>,
         ]}
-        width={900}
+        width={isFullscreen ? "95vw" : 900}
+        centered
       >
         {url && (
           <div className={cn(styles.pdfContainer)}>
@@ -520,15 +570,19 @@ const FileViewer: React.FC<FileViewerProps> = ({
       {/* Code Viewer Modal */}
       <Modal
         title={t("fileViewer.codeViewer", { name: fileName || fileType.toUpperCase() })}
-        className={cn(styles.codeModalFileViewer)}
+        className={cn(styles.codeModalFileViewer, { [styles.fullscreenModal]: isFullscreen })}
         open={isOpenCode}
         onCancel={closeCode}
         footer={[
-          <PrimaryButton key="close" theme="clear" onClick={closeCode}>
+          <PrimaryButton key="fullscreen" theme="clear" onClick={toggleFullscreen} className={styles.modalButton}>
+            {isFullscreen ? <Minimize2 size={16} /> : <Maximize2 size={16} />}
+          </PrimaryButton>,
+          <PrimaryButton key="close" theme="clear" onClick={closeCode} className={styles.modalButton}>
             {t("fileViewer.close")}
           </PrimaryButton>,
         ]}
-        width={1000}
+        width={isFullscreen ? "95vw" : 1000}
+        centered
       >
         {loading ? (
           <Spinner />
@@ -537,7 +591,7 @@ const FileViewer: React.FC<FileViewerProps> = ({
             language={CODE_TO_PRISM_LANG[fileType] ?? fileType}
             style={vscDarkPlus}
             showLineNumbers
-            customStyle={{ maxHeight: "600px" }}
+            customStyle={{ maxHeight: isFullscreen ? "75vh" : "600px" }}
           >
             {codeContent}
           </SyntaxHighlighter>
@@ -547,15 +601,19 @@ const FileViewer: React.FC<FileViewerProps> = ({
       {/* Markdown Viewer Modal */}
       <Modal
         title={t("fileViewer.markdownViewer", { name: fileName || t("fileViewer.document") })}
-        className={cn(styles.markdownModalFileViewer)}
+        className={cn(styles.markdownModalFileViewer, { [styles.fullscreenModal]: isFullscreen })}
         open={isOpenMarkdown}
         onCancel={closeMarkdown}
         footer={[
-          <PrimaryButton key="close" theme="clear" onClick={closeMarkdown}>
+          <PrimaryButton key="fullscreen" theme="clear" onClick={toggleFullscreen} className={styles.modalButton}>
+            {isFullscreen ? <Minimize2 size={16} /> : <Maximize2 size={16} />}
+          </PrimaryButton>,
+          <PrimaryButton key="close" theme="clear" onClick={closeMarkdown} className={styles.modalButton}>
             {t("fileViewer.close")}
           </PrimaryButton>,
         ]}
-        width={900}
+        width={isFullscreen ? "95vw" : 900}
+        centered
       >
         {loading ? (
           <Spinner />
@@ -569,15 +627,19 @@ const FileViewer: React.FC<FileViewerProps> = ({
       {/* Document Viewer Modal */}
       <Modal
         title={t("fileViewer.documentViewer", { name: fileName || fileType.toUpperCase() })}
-        className={cn(styles.documentModalFileViewer)}
+        className={cn(styles.documentModalFileViewer, { [styles.fullscreenModal]: isFullscreen })}
         open={isOpenDocument}
         onCancel={closeDocument}
         footer={[
-          <PrimaryButton key="close" theme="clear" onClick={closeDocument}>
+          <PrimaryButton key="fullscreen" theme="clear" onClick={toggleFullscreen} className={styles.modalButton}>
+            {isFullscreen ? <Minimize2 size={16} /> : <Maximize2 size={16} />}
+          </PrimaryButton>,
+          <PrimaryButton key="close" theme="clear" onClick={closeDocument} className={styles.modalButton}>
             {t("fileViewer.close")}
           </PrimaryButton>,
         ]}
-        width={900}
+        width={isFullscreen ? "95vw" : 900}
+        centered
       >
         {loading ? (
           <Spinner />
@@ -589,15 +651,19 @@ const FileViewer: React.FC<FileViewerProps> = ({
       {/* Spreadsheet Viewer Modal */}
       <Modal
         title={t("fileViewer.spreadsheetViewer", { name: fileName || fileType.toUpperCase() })}
-        className={cn(styles.spreadsheetModalFileViewer)}
+        className={cn(styles.spreadsheetModalFileViewer, { [styles.fullscreenModal]: isFullscreen })}
         open={isOpenSpreadsheet}
         onCancel={closeSpreadsheet}
         footer={[
-          <PrimaryButton key="close" theme="clear" onClick={closeSpreadsheet}>
+          <PrimaryButton key="fullscreen" theme="clear" onClick={toggleFullscreen} className={styles.modalButton}>
+            {isFullscreen ? <Minimize2 size={16} /> : <Maximize2 size={16} />}
+          </PrimaryButton>,
+          <PrimaryButton key="close" theme="clear" onClick={closeSpreadsheet} className={styles.modalButton}>
             {t("fileViewer.close")}
           </PrimaryButton>,
         ]}
-        width={1200}
+        width={isFullscreen ? "95vw" : 1200}
+        centered
       >
         {loading ? (
           <Spinner />
