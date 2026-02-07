@@ -404,6 +404,8 @@
         }
       },
       "card": {
+        "editTask": "Редактировать задачу",
+        "title": "Название",
         "titlePlaceholder": "Название задачи",
         "created": "Создано",
         "description": "Описание",

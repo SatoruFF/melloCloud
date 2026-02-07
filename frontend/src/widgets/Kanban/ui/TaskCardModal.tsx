@@ -1,4 +1,4 @@
-import { Modal, Input, Select, Button, Space, Typography, DatePicker } from "antd";
+import { Drawer, Input, Select, Button, Space, Typography, DatePicker } from "antd";
 import type { Dayjs } from "dayjs";
 import dayjs from "dayjs";
 import { Trash2 } from "lucide-react";
@@ -89,40 +89,63 @@ export const TaskCardModal = ({
   if (!task) return null;
 
   return (
-    <Modal
+    <Drawer
       open={open}
-      onCancel={onClose}
-      title={null}
-      footer={null}
+      onClose={onClose}
+      title={
+        <div className={styles.drawerTitle}>
+          <span>{t("planner.kanban.card.editTask")}</span>
+          <span className={styles.meta}>
+            <span
+              className={styles.priorityBadge}
+              style={{ backgroundColor: getPriorityColor(priority) }}
+            >
+              {t(`planner.kanban.tasks.priority.${priority?.toLowerCase() || "medium"}`)}
+            </span>
+            {task.createdAt && (
+              <Typography.Text type="secondary" className={styles.createdAt}>
+                {t("planner.kanban.card.created")}{" "}
+                {new Date(task.createdAt).toLocaleDateString()}
+              </Typography.Text>
+            )}
+          </span>
+        </div>
+      }
+      footer={
+        <div className={styles.footer}>
+          <Button
+            type="text"
+            danger
+            icon={<Trash2 size={16} />}
+            onClick={handleDelete}
+            loading={deleting}
+            disabled={loading}
+            className={styles.deleteBtn}
+          >
+            {t("planner.kanban.tasks.delete")}
+          </Button>
+          <Space>
+            <Button onClick={onClose}>{t("planner.kanban.actions.cancel")}</Button>
+            <Button type="primary" onClick={handleSave} loading={saving || loading}>
+              {t("planner.kanban.card.save")}
+            </Button>
+          </Space>
+        </div>
+      }
       width={520}
       destroyOnClose
-      rootClassName={styles.modalRoot}
-      classNames={{ wrapper: styles.modalWrapper }}
-      className={styles.modal}
+      className={styles.drawer}
     >
-      <div className={styles.header}>
-        <Input
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          placeholder={t("planner.kanban.card.titlePlaceholder")}
-          className={styles.titleInput}
-          bordered={false}
-        />
-        <span className={styles.meta}>
-          <span
-            className={styles.priorityBadge}
-            style={{ backgroundColor: getPriorityColor(priority) }}
-          >
-            {t(`planner.kanban.tasks.priority.${priority?.toLowerCase() || "medium"}`)}
-          </span>
-          {task.createdAt && (
-            <Typography.Text type="secondary" className={styles.createdAt}>
-              {t("planner.kanban.card.created")}{" "}
-              {new Date(task.createdAt).toLocaleDateString()}
-            </Typography.Text>
-          )}
-        </span>
-      </div>
+      <div className={styles.content}>
+        <div className={styles.section}>
+          <label className={styles.label}>{t("planner.kanban.card.title")}</label>
+          <Input
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder={t("planner.kanban.card.titlePlaceholder")}
+            className={styles.titleInput}
+          />
+        </div>
 
       <div className={styles.section}>
         <label className={styles.label}>{t("planner.kanban.card.description")}</label>
@@ -193,26 +216,7 @@ export const TaskCardModal = ({
           ))}
         </Select>
       </div>
-
-      <div className={styles.footer}>
-        <Button
-          type="text"
-          danger
-          icon={<Trash2 size={16} />}
-          onClick={handleDelete}
-          loading={deleting}
-          disabled={loading}
-          className={styles.deleteBtn}
-        >
-          {t("planner.kanban.tasks.delete")}
-        </Button>
-        <Space>
-          <Button onClick={onClose}>{t("planner.kanban.actions.cancel")}</Button>
-          <Button type="primary" onClick={handleSave} loading={saving || loading}>
-            {t("planner.kanban.card.save")}
-          </Button>
-        </Space>
       </div>
-    </Modal>
+    </Drawer>
   );
 };

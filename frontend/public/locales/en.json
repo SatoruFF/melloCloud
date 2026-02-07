@@ -406,6 +406,8 @@
         }
       },
       "card": {
+        "editTask": "Edit Task",
+        "title": "Title",
         "titlePlaceholder": "Task title",
         "created": "Created",
         "description": "Description",

@@ -1,52 +1,40 @@
 @use "../../../shared/styles/tmp.scss" as *;
 
-// Корень модалки — убираем фон, рамки и outline у всех обёрток
-.modalRoot {
-  :global(.ant-modal-wrap),
-  :global(.ant-modal),
-  :global(.ant-modal-container) {
-    background: transparent !important;
-    box-shadow: none !important;
-    border: none !important;
-    outline: none !important;
-
-    &:focus,
-    &:focus-visible {
-      outline: none !important;
-      box-shadow: none !important;
-    }
-
-    &::before,
-    &::after {
-      display: none !important;
-    }
+// Drawer стили
+.drawer {
+  :global(.ant-drawer-content-wrapper) {
+    box-shadow: -4px 0 24px rgba(0, 0, 0, 0.3);
   }
 
-  // Контейнер модалки в antd — убираем белый фон темы
-  :global(.ant-modal-container) {
+  :global(.ant-drawer-content) {
     background: #0a0a0f !important;
   }
 
-  :global(.ant-modal-content) {
+  :global(.ant-drawer-header) {
     background: #0a0a0f !important;
-    border: 1px solid rgba(255, 255, 255, 0.08) !important;
-    box-shadow: 0 24px 48px rgba(0, 0, 0, 0.5) !important;
-    border-radius: 16px !important;
-    outline: none !important;
-
-    &:focus,
-    &:focus-visible {
-      outline: none !important;
-    }
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+    padding: 16px 24px;
   }
 
-  :global(.ant-modal-body) {
+  :global(.ant-drawer-title) {
+    color: rgba(255, 255, 255, 0.95) !important;
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  :global(.ant-drawer-body) {
     background: #0a0a0f !important;
     color: rgba(255, 255, 255, 0.9);
-    padding: 24px 24px 32px !important;
+    padding: 24px !important;
   }
 
-  :global(.ant-modal-close) {
+  :global(.ant-drawer-footer) {
+    background: #0a0a0f !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+    padding: 16px 24px;
+  }
+
+  :global(.ant-drawer-close) {
     color: rgba(255, 255, 255, 0.7) !important;
 
     &:hover {
@@ -115,46 +103,16 @@
   }
 }
 
-// Обёртка контента — без фона и без рамки
-.modalWrapper {
-  background: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
-  outline: none !important;
-}
-
-.modal {
-  :global(.ant-modal-content) {
-    border: 1px solid rgba(255, 255, 255, 0.08) !important;
-    box-shadow: 0 24px 48px rgba(0, 0, 0, 0.4) !important;
-  }
-}
-
-.header {
-  margin-bottom: 20px;
-
-  .titleInput {
-    font-size: 18px;
-    font-weight: 600;
-    color: rgba(255, 255, 255, 0.95);
-    padding: 0 0 8px;
-    background: transparent !important;
-
-    &::placeholder {
-      color: rgba(255, 255, 255, 0.4);
-    }
-
-    &:focus {
-      box-shadow: none !important;
-    }
-  }
+.drawerTitle {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 
   .meta {
     display: flex;
     align-items: center;
     gap: 12px;
     flex-wrap: wrap;
-    margin-top: 8px;
   }
 
   .priorityBadge {
@@ -172,15 +130,38 @@
   }
 }
 
-.section {
-  margin-bottom: 20px;
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
 
+.section {
   .label {
     display: block;
     font-size: 12px;
     font-weight: 500;
     color: rgba(255, 255, 255, 0.6);
     margin-bottom: 6px;
+  }
+
+  .titleInput {
+    font-size: 16px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.95);
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    border-radius: 8px;
+
+    &::placeholder {
+      color: rgba(255, 255, 255, 0.4);
+    }
+
+    &:focus,
+    &:hover {
+      border-color: rgba(139, 92, 246, 0.6) !important;
+      box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.15) !important;
+    }
   }
 
   .textArea {
@@ -221,6 +202,7 @@
     border: 1px solid rgba(255, 255, 255, 0.15) !important;
     color: rgba(255, 255, 255, 0.95) !important;
     border-radius: 8px;
+    width: 100%;
 
     &::placeholder {
       color: rgba(255, 255, 255, 0.4);
@@ -253,9 +235,6 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 24px;
-  padding-top: 20px;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
 
   // Кнопка «Отмена» — тёмный фон, светлый текст (не белый на белом)
   :global(.ant-btn-default) {
