@@ -51,9 +51,21 @@
     "edit": "Edit",
     "total-space": "Total space",
     "used-space": "Used space",
+    "free-space": "Free space",
     "profile-info": "Profile info",
     "actions": "Actions",
-    "disk": "Disk space"
+    "disk": "Disk space",
+    "profile": "Profile",
+    "account-info": "Account Information",
+    "storage": "Storage",
+    "language": "Language",
+    "change-password": "Change Password",
+    "old-password": "Old password",
+    "new-password": "New password",
+    "edit-username": "Edit Username",
+    "delete-account": "Delete Account",
+    "delete-account-warning": "This action is irreversible. All your data will be permanently deleted.",
+    "delete-account-confirm": "Are you sure you want to delete your account? This action cannot be undone."
   },
   "auth": {
     "authorization": "authorization",
@@ -300,7 +312,14 @@
   "messages": {
     "messages-input-placeholder": "write message...",
     "start-new-chat": "Open a new dialog by selecting a user or starting typing @username",
-    "no-messages": "No messages"
+    "no-messages": "No messages",
+    "avatar-uploaded": "Avatar uploaded successfully",
+    "avatar-upload-failed": "Avatar upload failed",
+    "avatar-not-found": "Avatar not found",
+    "avatar-deleted": "Avatar deleted successfully",
+    "error-occurred": "An error occurred",
+    "feature-coming-soon": "This feature is coming soon",
+    "language-changed": "Language changed successfully"
   },
   "notifications": {
     "title": "Notifications",
@@ -512,7 +531,11 @@
     "upload-avatar": "Upload avatar",
     "delete-avatar": "Delete avatar",
     "reload-page": "reload page",
-    "copy-error": "Copy error"
+    "copy-error": "Copy error",
+    "edit": "Edit",
+    "change": "Change",
+    "delete": "Delete",
+    "delete-account": "Delete Account"
   },
   "admin": {
     "title": "Admin panel",

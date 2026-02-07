@@ -51,9 +51,21 @@
     "edit": "Редактировать",
     "total-space": "Общий размер",
     "used-space": "Использованный размер",
+    "free-space": "Свободное место",
     "profile-info": "Информация профиля",
     "actions": "Действия",
-    "disk": "Дисковое пространство"
+    "disk": "Дисковое пространство",
+    "profile": "Профиль",
+    "account-info": "Информация об аккаунте",
+    "storage": "Хранилище",
+    "language": "Язык",
+    "change-password": "Сменить пароль",
+    "old-password": "Старый пароль",
+    "new-password": "Новый пароль",
+    "edit-username": "Изменить имя пользователя",
+    "delete-account": "Удалить аккаунт",
+    "delete-account-warning": "Это действие необратимо. Все ваши данные будут безвозвратно удалены.",
+    "delete-account-confirm": "Вы уверены, что хотите удалить свой аккаунт? Это действие нельзя отменить."
   },
   "auth": {
     "authorization": "Войти",
@@ -298,7 +310,14 @@
   "messages": {
     "messages-input-placeholder": "Написать сообщение...",
     "start-new-chat": "Начните новый диалог, выбрав пользователя или начав ввод с @username",
-    "no-messages": "Сообщений нет"
+    "no-messages": "Сообщений нет",
+    "avatar-uploaded": "Аватар успешно загружен",
+    "avatar-upload-failed": "Не удалось загрузить аватар",
+    "avatar-not-found": "Аватар не найден",
+    "avatar-deleted": "Аватар успешно удалён",
+    "error-occurred": "Произошла ошибка",
+    "feature-coming-soon": "Эта функция скоро появится",
+    "language-changed": "Язык успешно изменён"
   },
   "notifications": {
     "title": "Уведомления",
@@ -510,7 +529,11 @@
     "upload-avatar": "Загрузить аватар",
     "delete-avatar": "Удалить аватар",
     "reload-page": "Обновить страницу",
-    "copy-error": "Скопировать ошибку"
+    "copy-error": "Скопировать ошибку",
+    "edit": "Изменить",
+    "change": "Изменить",
+    "delete": "Удалить",
+    "delete-account": "Удалить аккаунт"
   },
   "admin": {
     "title": "Панель администратора",
