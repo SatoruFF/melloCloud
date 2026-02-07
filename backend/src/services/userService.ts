@@ -4,7 +4,7 @@ import { UserDto } from "../dtos/user-dto.js";
 import { FileService } from "./fileService.js";
 import { MailService } from "./mailService.js";
 import { SessionService } from "./sessionService.js";
-import bcrypt from "bcryptjs";
+import { hashPassword, comparePassword } from "../utils/argon2.js";
 import _ from "lodash";
 import createError from "http-errors";
 import { generateJwt } from "../utils/generateJwt.js";
@@ -37,10 +37,10 @@ class UserServiceClass {
       }
 
       let { accessToken: activationToken } = generateJwt(email);
-      const hashPassword = await bcrypt.hash(password, 5);
+      const hashedPassword = await hashPassword(password);
 
       const invite = await trx.invite.create({
-        data: { userName, email, password: hashPassword, activationToken },
+        data: { userName, email, password: hashedPassword, activationToken },
       });
 
       activationToken = `${CLIENT_URL}/activate?token=${activationToken}`;
@@ -117,9 +117,56 @@ class UserServiceClass {
         throw createError(400, `This account uses OAuth. Please login with ${user.oauthProvider}`);
       }
 
-      const isPassValid = bcrypt.compareSync(password, user.password);
+      // Account lockout: check if account is temporarily locked
+      if (user.lockedUntil && new Date(user.lockedUntil) > new Date()) {
+        const minutesLeft = Math.ceil((new Date(user.lockedUntil).getTime() - Date.now()) / 60000);
+        throw createError(
+          429,
+          `Account is temporarily locked due to multiple failed login attempts. Try again in ${minutesLeft} minute${minutesLeft > 1 ? "s" : ""}.`
+        );
+      }
+
+      // Password verification using Argon2id
+      const isPassValid = await comparePassword(password, user.password);
+
       if (!isPassValid) {
-        throw createError(400, `Incorrect login or password`);
+        // Увеличиваем счётчик неудачных попыток
+        const newAttempts = (user.failedLoginAttempts || 0) + 1;
+        const MAX_ATTEMPTS = 5; // Максимум 5 попыток
+        const LOCKOUT_MINUTES = 15; // Блокировка на 15 минут
+
+        if (newAttempts >= MAX_ATTEMPTS) {
+          // Блокируем аккаунт
+          await trx.user.update({
+            where: { id: user.id },
+            data: {
+              failedLoginAttempts: newAttempts,
+              lockedUntil: new Date(Date.now() + LOCKOUT_MINUTES * 60 * 1000),
+            },
+          });
+          throw createError(
+            429,
+            `Too many failed login attempts. Account locked for ${LOCKOUT_MINUTES} minutes.`
+          );
+        } else {
+          // Увеличиваем счётчик
+          await trx.user.update({
+            where: { id: user.id },
+            data: { failedLoginAttempts: newAttempts },
+          });
+          throw createError(
+            400,
+            `Incorrect login or password. ${MAX_ATTEMPTS - newAttempts} attempt${MAX_ATTEMPTS - newAttempts > 1 ? "s" : ""} remaining.`
+          );
+        }
+      }
+
+      // Successful login - reset failed attempts counter
+      if (user.failedLoginAttempts > 0 || user.lockedUntil) {
+        await trx.user.update({
+          where: { id: user.id },
+          data: { failedLoginAttempts: 0, lockedUntil: null },
+        });
       }
 
       if (user.isBlocked) {
@@ -402,17 +449,17 @@ class UserServiceClass {
     if (!user || !user.password) {
       throw createError(400, "Cannot change password for this account");
     }
-    const valid = bcrypt.compareSync(currentPassword, user.password);
+    const valid = await comparePassword(currentPassword, user.password);
     if (!valid) {
       throw createError(400, "Current password is incorrect");
     }
     if (!newPassword || newPassword.length < 6) {
       throw createError(400, "New password must be at least 6 characters");
     }
-    const hashPassword = await bcrypt.hash(newPassword, 5);
+    const hashedPassword = await hashPassword(newPassword);
     await prisma.user.update({
       where: { id: userId },
-      data: { password: hashPassword },
+      data: { password: hashedPassword },
     });
     return { success: true };
   }
@@ -423,7 +470,7 @@ class UserServiceClass {
     if (!user || !user.password) {
       throw createError(400, "Cannot delete this account");
     }
-    const valid = bcrypt.compareSync(password, user.password);
+    const valid = await comparePassword(password, user.password);
     if (!valid) {
       throw createError(400, "Password is incorrect");
     }

@@ -21,6 +21,8 @@ import {
   WELCOME_ROUTE,
   NOTES_DETAIL_ROUTE,
   SHARED_PUBLIC_ROUTE,
+  PRIVACY_POLICY_ROUTE,
+  TERMS_OF_SERVICE_ROUTE,
 } from '../../consts/routes';
 
 import type { UserRolesType } from '../../../entities/user/model/types/user';
@@ -37,6 +39,8 @@ const Pomodoro = lazy(() => import('../../../pages/pomodoro/ui/PomodoroTimer'));
 const Chats = lazy(() => import('../../../pages/chats/ui/Chats'));
 const Notes = lazy(() => import('../../../pages/notes/ui/Notes'));
 const Modules = lazy(() => import('../../../pages/modules/ui/ModulesPage'));
+const PrivacyPolicy = lazy(() => import('../../../pages/privacyPolicy/ui/PrivacyPolicy'));
+const TermsOfService = lazy(() => import('../../../pages/termsOfService/ui/TermsOfService'));
 
 // Planner
 const PlannerLayout = lazy(() => import('../../../pages/planner/ui/Planner'));
@@ -88,6 +92,8 @@ const publicRoutes: IRoute[] = createRoutes([
   { path: ACTIVATION_ROUTE, element: Activate },
   { path: SHARED_PUBLIC_ROUTE, element: PublicShared },
   { path: ACCESS_DENIED_ROUTE, element: AccessDenied },
+  { path: PRIVACY_POLICY_ROUTE, element: PrivacyPolicy },
+  { path: TERMS_OF_SERVICE_ROUTE, element: TermsOfService },
   { path: NOT_FOUND, element: NotFoundPage },
 ]);
 

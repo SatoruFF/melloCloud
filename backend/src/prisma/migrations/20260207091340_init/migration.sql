@@ -29,6 +29,8 @@ CREATE TABLE "User" (
     "role" TEXT NOT NULL DEFAULT 'USER',
     "isActivated" BOOLEAN NOT NULL DEFAULT false,
     "isBlocked" BOOLEAN NOT NULL DEFAULT false,
+    "failedLoginAttempts" INTEGER NOT NULL DEFAULT 0,
+    "lockedUntil" TIMESTAMP(3),
     "oauthProvider" TEXT,
     "oauthId" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,

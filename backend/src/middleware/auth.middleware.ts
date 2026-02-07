@@ -1,4 +1,5 @@
 import { Context, Next } from 'hono';
+import { getCookie } from 'hono/cookie';
 import jwt from 'jsonwebtoken';
 import ApiContext from '../models/context';
 import { ACCESS_SECRET_KEY, prisma } from '../configs/config.js';
@@ -13,8 +14,13 @@ export const authMiddleware = async (c: Context, next: Next) => {
   }
 
   try {
-    const authHeader = c.req.header('authorization');
-    const token = authHeader?.split(' ')[1];
+    // Приоритет: 1) httpOnly cookie (безопаснее), 2) Authorization header (обратная совместимость)
+    let token = getCookie(c, 'accessToken');
+    
+    if (!token) {
+      const authHeader = c.req.header('authorization');
+      token = authHeader?.split(' ')[1];
+    }
 
     if (!token) {
       return c.json({ message: 'Auth error with token' }, 401);

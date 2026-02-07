@@ -1,0 +1,113 @@
+@use "../../../shared/styles/tmp.scss" as *;
+
+.wrapper {
+  width: 100%;
+  min-height: calc(100vh - $header-height);
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  padding: $spacing-xl $spacing-md;
+  box-sizing: border-box;
+}
+
+.container {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.card {
+  border-radius: $radius-lg;
+  box-shadow: $shadow-md;
+  padding: $spacing-xl;
+  background-color: #ffffff;
+
+  :global(.ant-card-body) {
+    padding: $spacing-xl;
+  }
+}
+
+.title {
+  font-size: 36px;
+  font-weight: 700;
+  color: $dark-text-color;
+  margin: 0 0 $spacing-sm 0;
+  @extend %mainFont;
+}
+
+.updateDate {
+  font-size: 14px;
+  color: $secondary-text-color;
+  margin: 0 0 $spacing-xl 0;
+  @extend %secondFont;
+}
+
+.section {
+  margin-bottom: $spacing-xl;
+
+  h2 {
+    font-size: 24px;
+    font-weight: 600;
+    color: $dark-text-color;
+    margin: 0 0 $spacing-md 0;
+    @extend %mainFont;
+  }
+
+  p {
+    font-size: 15px;
+    line-height: 1.6;
+    color: $dark-text-color;
+    margin: 0 0 $spacing-md 0;
+    @extend %secondFont;
+  }
+
+  ul {
+    margin: 0 0 $spacing-md 0;
+    padding-left: $spacing-xl;
+
+    li {
+      font-size: 15px;
+      line-height: 1.8;
+      color: $dark-text-color;
+      margin-bottom: $spacing-sm;
+      @extend %secondFont;
+
+      strong {
+        color: $color-primary;
+      }
+    }
+  }
+
+  a {
+    color: $color-primary;
+    text-decoration: none;
+    transition: color 0.2s ease;
+
+    &:hover {
+      color: $color-primary-hover;
+      text-decoration: underline;
+    }
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .wrapper {
+    padding: $spacing-md $spacing-sm;
+  }
+
+  .card {
+    padding: $spacing-md;
+  }
+
+  .title {
+    font-size: 28px;
+  }
+
+  .section {
+    h2 {
+      font-size: 20px;
+    }
+
+    p, ul li {
+      font-size: 14px;
+    }
+  }
+}

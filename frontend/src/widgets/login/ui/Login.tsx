@@ -11,7 +11,7 @@ import { setUser } from "../../../entities/user/model/slice/userSlice";
 import { TelegramButton as TelegramLoginButton } from "../../../features/telegramLoginButton";
 import { PrimaryButton, Spinner } from "../../../shared";
 import { Variables } from "../../../shared/consts/localVariables";
-import { ACCESS_DENIED_ROUTE, FILE_ROUTE, REGISTRATION_ROUTE } from "../../../shared/consts/routes";
+import { ACCESS_DENIED_ROUTE, FILE_ROUTE, REGISTRATION_ROUTE, PRIVACY_POLICY_ROUTE, TERMS_OF_SERVICE_ROUTE } from "../../../shared/consts/routes";
 import styles from "../styles/auth.module.scss";
 
 // FIXME
@@ -221,11 +221,21 @@ const Login = () => {
         </>
       )}
 
-      <Divider orientation="left">{t("auth.no-account")}</Divider>
+      <Divider>{t("auth.no-account")}</Divider>
 
       <NavLink to={REGISTRATION_ROUTE} className={styles.linkAsButton}>
         {t("auth.create-profile")}
       </NavLink>
+
+      <div className={styles.legalLinks}>
+        <NavLink to={PRIVACY_POLICY_ROUTE} className={styles.legalLink}>
+          {t("legal.privacy.title")}
+        </NavLink>
+        <span className={styles.legalSeparator}>•</span>
+        <NavLink to={TERMS_OF_SERVICE_ROUTE} className={styles.legalLink}>
+          {t("legal.terms.title")}
+        </NavLink>
+      </div>
     </div>
   );
 };

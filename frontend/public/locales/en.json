@@ -65,7 +65,9 @@
     "edit-username": "Edit Username",
     "delete-account": "Delete Account",
     "delete-account-warning": "This action is irreversible. All your data will be permanently deleted.",
-    "delete-account-confirm": "Are you sure you want to delete your account? This action cannot be undone."
+    "delete-account-confirm": "Are you sure you want to delete your account? This action cannot be undone.",
+    "password-required": "Password is required",
+    "account-deleted": "Your account has been successfully deleted"
   },
   "auth": {
     "authorization": "authorization",
@@ -703,6 +705,37 @@
       "accessRevokeFailed": "Failed to revoke permission",
       "permissionUpdated": "Permission level updated",
       "permissionUpdateFailed": "Failed to update permission"
+    }
+  },
+  "legal": {
+    "lastUpdated": "Last Updated",
+    "privacy": {
+      "title": "Privacy Policy",
+      "intro": {"title": "Introduction", "content": "Mello Cloud is committed to protecting your privacy. This Privacy Policy explains how we collect, use, and safeguard your personal information."},
+      "dataCollection": {"title": "Information We Collect", "intro": "We collect the following types of information:", "account": "Account Information", "accountDesc": "Email, username, password (encrypted)", "files": "User Content", "filesDesc": "Files, notes, messages you upload", "usage": "Usage Data", "usageDesc": "IP address, browser type, access times", "technical": "Technical Data", "technicalDesc": "Cookies, device information"},
+      "dataUsage": {"title": "How We Use Your Data", "service": "To provide and maintain our service", "improvement": "To improve and personalize user experience", "communication": "To communicate with you about updates", "security": "To ensure security and prevent fraud"},
+      "dataProtection": {"title": "Data Security", "content": "We implement industry-standard security measures:", "encryption": "End-to-end encryption for files and messages", "passwords": "Passwords hashed with scrypt algorithm", "access": "Strict access controls and authentication", "monitoring": "Regular security audits and monitoring"},
+      "yourRights": {"title": "Your Rights (GDPR)", "intro": "Under GDPR, you have the following rights:", "access": "Right to Access", "accessDesc": "Request a copy of your data", "rectification": "Right to Rectification", "rectificationDesc": "Correct inaccurate data", "erasure": "Right to Erasure", "erasureDesc": "Delete your account and data", "portability": "Right to Data Portability", "portabilityDesc": "Export your data", "objection": "Right to Object", "objectionDesc": "Object to data processing"},
+      "cookies": {"title": "Cookies", "content": "We use essential cookies for authentication and httpOnly cookies to protect your session from XSS attacks."},
+      "thirdParty": {"title": "Third-Party Services", "content": "We use the following third-party services:", "telegram": "For OAuth authentication", "storage": "For secure file storage (Yandex Cloud, ImageKit)"},
+      "dataRetention": {"title": "Data Retention", "content": "We retain your data as long as your account is active. You can delete your account at any time from your profile settings."},
+      "changes": {"title": "Changes to Privacy Policy", "content": "We may update this policy from time to time. We will notify you of significant changes via email."},
+      "contact": {"title": "Contact Us", "content": "If you have questions about this Privacy Policy, please contact us"}
+    },
+    "terms": {
+      "title": "Terms of Service",
+      "acceptance": {"title": "Acceptance of Terms", "content": "By accessing and using Mello Cloud, you accept and agree to be bound by these Terms of Service."},
+      "description": {"title": "Service Description", "content": "Mello Cloud is a cloud storage and collaboration platform that allows you to store files, create notes, chat with others, and manage tasks."},
+      "account": {"title": "User Accounts", "responsibility": "You are responsible for maintaining the security of your account", "accuracy": "You must provide accurate and complete information", "security": "You must keep your password secure and confidential", "unauthorized": "Notify us immediately of any unauthorized access"},
+      "usage": {"title": "Acceptable Use", "intro": "You agree NOT to:", "illegal": "Use the service for any illegal purposes", "harmful": "Upload malware, viruses, or harmful content", "infringe": "Infringe on intellectual property rights", "spam": "Send spam or unsolicited messages", "interfere": "Interfere with or disrupt the service", "impersonate": "Impersonate others or misrepresent your identity"},
+      "content": {"title": "User Content", "ownership": "You retain ownership of all content you upload. By uploading content, you grant us a license to store and display it.", "responsibility": "You are solely responsible for your content and ensuring you have the right to upload it."},
+      "storage": {"title": "Storage Limits", "limits": "Storage limits are based on your account plan. We reserve the right to enforce storage quotas.", "backup": "We recommend maintaining backups of important data. We are not liable for data loss."},
+      "termination": {"title": "Termination", "right": "We reserve the right to suspend or terminate accounts that violate these Terms.", "effect": "Upon termination, your right to use the service ceases immediately."},
+      "disclaimer": {"title": "Disclaimer of Warranties", "content": "The service is provided \"AS IS\" without warranties of any kind. We do not guarantee uninterrupted or error-free service."},
+      "limitation": {"title": "Limitation of Liability", "content": "We shall not be liable for any indirect, incidental, or consequential damages arising from your use of the service."},
+      "changes": {"title": "Changes to Terms", "content": "We may modify these Terms at any time. Continued use of the service constitutes acceptance of modified Terms."},
+      "governing": {"title": "Governing Law", "content": "These Terms are governed by the laws of your jurisdiction. Any disputes will be resolved in accordance with applicable laws."},
+      "contact": {"title": "Contact", "content": "For questions about these Terms, please contact us"}
     }
   }
 }

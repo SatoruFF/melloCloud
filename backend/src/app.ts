@@ -32,12 +32,24 @@ app.use(
 // ========================================
 // MIDDLEWARE
 // ========================================
+// CORS: Разрешаем только CLIENT_URL в production
+const CLIENT_URL = process.env.CLIENT_URL || "http://localhost:5173";
+const isDevelopment = process.env.NODE_ENV !== "production";
+
 app.use(
   "*",
   cors({
-    origin: "*", // В проде укажи конкретные домены!
+    origin: (origin) => {
+      // В development разрешаем все localhost порты
+      if (isDevelopment && origin?.includes("localhost")) {
+        return origin;
+      }
+      // В production только указанный CLIENT_URL
+      return origin === CLIENT_URL ? origin : false;
+    },
     allowMethods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE", "OPTIONS"],
     credentials: true,
+    maxAge: 86400, // 24 hours
   }),
 );
 

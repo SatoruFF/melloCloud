@@ -21,3 +21,7 @@ export const MODULES_ROUTE: string = '/modules';
 export const MODULES_POMODORO: string = '/modules/pomodoro';
 export const ADMIN_ROUTE: string = '/admin';
 export const ACCESS_DENIED_ROUTE: string = '/access-denied';
+
+// Legal routes
+export const PRIVACY_POLICY_ROUTE: string = '/privacy-policy';
+export const TERMS_OF_SERVICE_ROUTE: string = '/terms-of-service';

@@ -35,18 +35,22 @@ import { useState } from "react";
 
 import { useAppDispatch, useAppSelector } from "../../../app/store/store";
 import { useDeleteAvatarMutation } from "../../../entities/file/model/api/fileApi";
-import { deleteAvatar, setAvatar } from "../../../entities/user/model/slice/userSlice";
+import { useDeleteAccountMutation } from "../../../entities/user/model/api/user";
+import { deleteAvatar, setAvatar, logout } from "../../../entities/user/model/slice/userSlice";
 import { Spinner } from "../../../shared";
 import avatarIcon from "../../../shared/assets/avatar-icon.png";
 import { Variables } from "../../../shared/consts/localVariables";
 import { sizeFormat } from "../../../shared/utils/sizeFormat";
 import styles from "./profile.module.scss";
 import { getUserSelector } from "../../../entities/user";
+import { useNavigate } from "react-router-dom";
+import { LOGIN_ROUTE } from "../../../shared/consts/routes";
 
 const { Paragraph } = Typography;
 
 const Profile = () => {
   const { t, i18n } = useTranslation();
+  const navigate = useNavigate();
   const user = useAppSelector(getUserSelector);
   const totalSpace = sizeFormat(user.diskSpace);
   const usedSize = sizeFormat(user.usedSpace);
@@ -56,6 +60,7 @@ const Profile = () => {
   const token = localStorage.getItem("token");
   const avatar = user.avatar ? user.avatar : avatarIcon;
   const [removeAvatar, { isLoading: rmAvatarLoad }] = useDeleteAvatarMutation();
+  const [deleteAccountMutation, { isLoading: isDeleting }] = useDeleteAccountMutation();
 
   // Modal states
   const [isEditNameOpen, setIsEditNameOpen] = useState(false);
@@ -64,6 +69,7 @@ const Profile = () => {
   const [newUserName, setNewUserName] = useState(user.userName);
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
+  const [deletePassword, setDeletePassword] = useState("");
 
   const props: UploadProps = {
     name: "file",
@@ -122,10 +128,24 @@ const Profile = () => {
     setIsChangePasswordOpen(false);
   };
 
-  const handleDeleteAccount = () => {
-    // TODO: API call to delete account
-    message.warning(t("messages.feature-coming-soon"));
-    setIsDeleteAccountOpen(false);
+  const handleDeleteAccount = async () => {
+    if (!deletePassword) {
+      message.error(t("user.password-required"));
+      return;
+    }
+    
+    try {
+      await deleteAccountMutation({ password: deletePassword }).unwrap();
+      message.success(t("user.account-deleted"));
+      
+      // Очищаем данные и перенаправляем на логин
+      dispatch(logout());
+      localStorage.removeItem("token");
+      setIsDeleteAccountOpen(false);
+      navigate(LOGIN_ROUTE);
+    } catch (error: any) {
+      message.error(error?.data?.message || t("messages.error-occurred"));
+    }
   };
 
   const handleLanguageChange = (lang: string) => {
@@ -338,11 +358,21 @@ const Profile = () => {
         title={t("user.delete-account")}
         open={isDeleteAccountOpen}
         onOk={handleDeleteAccount}
-        onCancel={() => setIsDeleteAccountOpen(false)}
+        onCancel={() => {
+          setIsDeleteAccountOpen(false);
+          setDeletePassword("");
+        }}
         okText={t("buttons.delete")}
-        okButtonProps={{ danger: true }}
+        okButtonProps={{ danger: true, loading: isDeleting }}
+        cancelButtonProps={{ disabled: isDeleting }}
       >
-        <p>{t("user.delete-account-confirm")}</p>
+        <p style={{ marginBottom: 16 }}>{t("user.delete-account-confirm")}</p>
+        <Input.Password
+          value={deletePassword}
+          onChange={(e) => setDeletePassword(e.target.value)}
+          placeholder={t("auth.password")}
+          disabled={isDeleting}
+        />
       </Modal>
     </div>
   );

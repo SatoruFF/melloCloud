@@ -11,7 +11,7 @@ import { userApi } from "../../../entities/user/model/api/user";
 import { setUser } from "../../../entities/user/model/slice/userSlice";
 import { PrimaryButton, Spinner } from "../../../shared";
 import { Variables } from "../../../shared/consts/localVariables";
-import { ACTIVATION_ROUTE, LOGIN_ROUTE } from "../../../shared/consts/routes";
+import { ACTIVATION_ROUTE, LOGIN_ROUTE, PRIVACY_POLICY_ROUTE, TERMS_OF_SERVICE_ROUTE } from "../../../shared/consts/routes";
 import styles from "../styles/auth.module.scss";
 
 // FIXME
@@ -184,10 +184,20 @@ const Register = () => {
         </>
       )}
 
-      <Divider orientation="left">{t("auth.have-account")}</Divider>
+      <Divider>{t("auth.have-account")}</Divider>
       <NavLink to={LOGIN_ROUTE} className={styles.linkAsButton}>
         {t("auth.authorization")}
       </NavLink>
+
+      <div className={styles.legalLinks}>
+        <NavLink to={PRIVACY_POLICY_ROUTE} className={styles.legalLink}>
+          {t("legal.privacy.title")}
+        </NavLink>
+        <span className={styles.legalSeparator}>•</span>
+        <NavLink to={TERMS_OF_SERVICE_ROUTE} className={styles.legalLink}>
+          {t("legal.terms.title")}
+        </NavLink>
+      </div>
     </div>
   );
 };

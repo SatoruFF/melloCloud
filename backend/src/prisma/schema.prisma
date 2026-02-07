@@ -27,6 +27,11 @@ model User {
   /** Заблокирован администратором — не может войти и использовать систему */
   isBlocked    Boolean      @default(false)
 
+  /** Account lockout: количество неудачных попыток входа */
+  failedLoginAttempts Int       @default(0)
+  /** Account lockout: дата до которой аккаунт заблокирован (null = не заблокирован) */
+  lockedUntil         DateTime?
+
   oauthProvider String?
   oauthId       String?
   

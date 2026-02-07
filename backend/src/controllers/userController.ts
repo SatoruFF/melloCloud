@@ -33,15 +33,26 @@ class UserControllerClass {
 
       const userData = await UserService.login(email, password, { userAgent, ip });
 
-      // maxAge в секундах
-      setCookie(c, "refreshToken", userData.refreshToken, {
-        maxAge: 30 * 24 * 60 * 60,
+      // Устанавливаем accessToken в httpOnly cookie (защита от XSS)
+      setCookie(c, "accessToken", userData.accessToken, {
+        maxAge: 60 * 60, // 1 час
         httpOnly: true,
         secure: isProduction,
         sameSite: "Strict",
+        path: "/",
       });
 
-      return c.json(userData);
+      // Устанавливаем refreshToken в httpOnly cookie
+      setCookie(c, "refreshToken", userData.refreshToken, {
+        maxAge: 30 * 24 * 60 * 60, // 30 дней
+        httpOnly: true,
+        secure: isProduction,
+        sameSite: "Strict",
+        path: "/",
+      });
+
+      // Возвращаем данные БЕЗ токенов (они уже в cookies)
+      return c.json(_.omit(userData, ["accessToken", "refreshToken"]));
     } catch (error: any) {
       logger.error(error.message, error);
       if (error.statusCode === 403 && error.message === "USER_BLOCKED") {
@@ -123,14 +134,26 @@ class UserControllerClass {
 
       const userData = await UserService.refresh(refreshToken);
 
-      setCookie(c, "refreshToken", userData.refreshToken, {
-        maxAge: 30 * 24 * 60 * 60,
+      // Обновляем accessToken cookie
+      setCookie(c, "accessToken", userData.accessToken, {
+        maxAge: 60 * 60, // 1 час
         httpOnly: true,
         secure: isProduction,
         sameSite: "Strict",
+        path: "/",
       });
 
-      return c.json(userData);
+      // Обновляем refreshToken cookie
+      setCookie(c, "refreshToken", userData.refreshToken, {
+        maxAge: 30 * 24 * 60 * 60, // 30 дней
+        httpOnly: true,
+        secure: isProduction,
+        sameSite: "Strict",
+        path: "/",
+      });
+
+      // Возвращаем данные БЕЗ токенов
+      return c.json(_.omit(userData, ["accessToken", "refreshToken"]));
     } catch (error: any) {
       logger.error(error.message, error);
       return c.json({ message: error.message }, error.statusCode || 500);
@@ -146,7 +169,9 @@ class UserControllerClass {
 
       const loggedOutUser = await UserService.logout(id, refreshToken);
 
-      deleteCookie(c, "refreshToken");
+      // Удаляем оба cookie
+      deleteCookie(c, "accessToken", { path: "/" });
+      deleteCookie(c, "refreshToken", { path: "/" });
 
       return c.json(
         {
@@ -168,7 +193,9 @@ class UserControllerClass {
 
       const loggedOutUser = await UserService.logoutAll(id);
 
-      deleteCookie(c, "refreshToken");
+      // Удаляем оба cookie
+      deleteCookie(c, "accessToken", { path: "/" });
+      deleteCookie(c, "refreshToken", { path: "/" });
 
       return c.json(
         {

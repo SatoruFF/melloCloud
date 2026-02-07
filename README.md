@@ -1,59 +1,101 @@
 # MelloCloud
 
-Your lightweight, cross-platform personal workspace for cloud, chat, files, and tasks — all in one app.
+A personal workspace application that combines cloud storage, real-time chat, file management, and collaborative note-taking.
 
-## Overview
+## Tech Stack
 
-MelloCloud is a personal workspace application that unifies cloud storage, chat, file management, and task tracking in a single, easy-to-use platform. It is designed to be lightweight and cross-platform, making it accessible and efficient on any device.
+### Frontend
+- React 18 with TypeScript
+- Redux Toolkit with RTK Query for state management
+- Vite build tool
+- Ant Design component library
+- SCSS modules for styling
+- React Router v6
+- i18next for internationalization (EN/RU)
 
-## Frontend
+### Backend
+- Hono.js web framework
+- Prisma ORM with PostgreSQL
+- JWT authentication with httpOnly cookies
+- Argon2id password hashing
+- WebSocket support for real-time features
+- AWS S3 for file storage
+- Rate limiting and security headers
 
-- React with TypeScript
-- React Router for navigation
-- Vite for fast development
-- Redux Toolkit with RTK Query for state management and data fetching
-- Sass (SCSS) for styling
-- Ant Design UI library
+### Security
+- Argon2id password hashing (OWASP recommended)
+- httpOnly cookies for JWT tokens
+- Account lockout after failed login attempts
+- CORS configuration for production
+- Message encryption (AES-GCM)
+- GDPR compliance with account deletion
+- See SECURITY.md for details
 
-## Backend
+## Setup
 
-- Node.js with Express framework
-- JWT for authentication
-- Swagger for API documentation
-- Prisma ORM (migrated from Sequelize)
-- PostgreSQL database
-- File storage migrated from local to AWS S3
+### Requirements
+- Node.js 18+
+- PostgreSQL 14+
+- AWS S3 account (for file storage)
+
+### Backend Setup
+
+1. Navigate to backend directory:
+```bash
+cd backend
+```
+
+2. Install dependencies:
+```bash
+npm install
+```
+
+3. Configure environment variables by copying `.env.example` to `.env` and filling in required values.
+
+4. Generate secure secret keys:
+```bash
+node scripts/generateSecrets.js
+```
+
+5. Run database migrations:
+```bash
+npx prisma migrate dev
+```
+
+6. Start development server:
+```bash
+npm run dev
+```
+
+### Frontend Setup
+
+1. Navigate to frontend directory:
+```bash
+cd frontend
+```
+
+2. Install dependencies:
+```bash
+npm install
+```
+
+3. Configure environment variables in `.env` (set `VITE_API_URL` and other required values).
+
+4. Start development server:
+```bash
+npm run dev
+```
 
 ## Deployment
 
-- Hosted on Yandex (migrated from render)
+The application is currently hosted on Yandex Cloud infrastructure.
 
-## Getting Started
+## Documentation
 
-### Frontend
+- `SECURITY.md` - Security implementation details and best practices
+- `backend/MIGRATION_ARGON2.md` - Password hashing migration guide
+- API documentation available at `/api-docs` when backend is running
 
-```bash
-cd client
-npm install
-npm run dev
-```
+## License
 
-### Backend
-
-1. Create a PostgreSQL database
-2. Configure environment variables in `.env`
-3. Install dependencies and start the server
-
-```bash
-cd server
-npm install
-npm run dev
-```
-
-## TODO
-
-- Add more detailed documentation
-- Improve testing coverage
-- Enhance CI/CD pipeline
-- Enhance UI/UX design
-- Swagger for API documentation
+Private project
