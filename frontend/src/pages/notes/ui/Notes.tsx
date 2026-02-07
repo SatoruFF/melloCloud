@@ -9,7 +9,7 @@ import {
   useUpdateNoteMutation,
 } from "../../../entities/note/model/api/noteApi";
 import type { NotesViewFilter } from "../../../entities/note/model/api/noteApi";
-import { notification, Button } from "antd";
+import { message, Button } from "antd";
 import { useTranslation } from "react-i18next";
 import { NotesSidebar } from "../../../widgets/notesSidebar";
 
@@ -24,7 +24,6 @@ const Notes = () => {
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
   const [currentNoteTitle, setCurrentNoteTitle] = useState("");
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const [api, contextHolder] = notification.useNotification();
 
   const {
     data: note,
@@ -54,32 +53,20 @@ const Notes = () => {
             content,
             title: currentNoteTitle,
           }).unwrap();
-          api.success({
-            message: t("notes.saveSuccess"),
-            placement: "topRight",
-            duration: 3,
-          });
+          message.success(t("notes.saveSuccess"), 1.5);
         } else if (noteId === "new") {
           const result = await createNote({
             title: currentNoteTitle || t("notes.untitled"),
             content,
           }).unwrap();
-          api.success({
-            message: t("notes.createSuccess"),
-            placement: "topRight",
-            duration: 3,
-          });
+          message.success(t("notes.createSuccess"), 1.5);
           navigate(`/notes/${result.id}`, { replace: true });
         }
       } catch (_) {
-        api.error({
-          message: t("notes.saveFailed"),
-          placement: "topRight",
-          duration: 4,
-        });
+        message.error(t("notes.saveFailed"), 3);
       }
     },
-    [noteId, currentNoteTitle, updateNote, createNote, navigate, t, api],
+    [noteId, currentNoteTitle, updateNote, createNote, navigate, t],
   );
 
   const handleTitleChange = useCallback((newTitle: string) => {
@@ -108,7 +95,6 @@ const Notes = () => {
   if (!noteId) {
     return (
       <>
-        {contextHolder}
         <div className={styles.notesListLayout}>
           <NotesSidebar
             collapsed={collapsed}
@@ -134,7 +120,6 @@ const Notes = () => {
   if (error) {
     return (
       <>
-        {contextHolder}
         <NotesLayout
           collapsed={collapsed}
           toggleCollapsed={() => setCollapsed((v) => !v)}
@@ -158,7 +143,6 @@ const Notes = () => {
   // Render editor (for both new and existing notes)
   return (
     <>
-      {contextHolder}
       <NotesLayout
         collapsed={collapsed}
         toggleCollapsed={() => setCollapsed((v) => !v)}
