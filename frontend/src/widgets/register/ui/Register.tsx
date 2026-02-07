@@ -11,6 +11,7 @@ import { userApi } from "../../../entities/user/model/api/user";
 import { setUser } from "../../../entities/user/model/slice/userSlice";
 import { PrimaryButton, Spinner } from "../../../shared";
 import { Variables } from "../../../shared/consts/localVariables";
+import { registerSchema } from "../../../shared/schemas/authSchemas";
 import { ACTIVATION_ROUTE, LOGIN_ROUTE, PRIVACY_POLICY_ROUTE, TERMS_OF_SERVICE_ROUTE } from "../../../shared/consts/routes";
 import styles from "../styles/auth.module.scss";
 
@@ -52,6 +53,7 @@ const YandexIcon = () => (
 
 const Register = () => {
   const { t } = useTranslation();
+  const [form] = Form.useForm();
   const [messageApi, errContextHolder] = message.useMessage();
   const [userName, setUserName] = useState("");
   const [email, setEmail] = useState("");
@@ -63,15 +65,22 @@ const Register = () => {
   const [regUser, { isLoading }] = userApi.useRegistrationMutation();
 
   const handleCreate = async () => {
-    try {
-      if (email === "" || password === "" || userName === "") {
-        return messageApi.error("Error: some fields are empty");
-      }
+    const payload = { userName, email, password };
+    const result = registerSchema.safeParse(payload);
+    if (!result.success) {
+      const fieldErrors = result.error.errors.map((err) => ({
+        name: err.path[0] as string,
+        errors: [err.message.startsWith("auth.") ? t(err.message) : err.message],
+      }));
+      form.setFields(fieldErrors);
+      return;
+    }
 
+    try {
       const inviteData = await regUser({
-        userName,
-        email,
-        password,
+        userName: result.data.userName,
+        email: result.data.email,
+        password: result.data.password,
       });
 
       unwrapResult(inviteData);
@@ -107,33 +116,38 @@ const Register = () => {
     <div className={cn(styles.rightSideForm)}>
       {errContextHolder}
       <div className={cn(styles.authFormTitle)}>{t("auth.registration")}</div>
-      <Form layout="vertical">
-        <Form.Item
-          label={t("auth.nickname")}
-          name="firstName"
-          rules={[{ required: true, message: t("auth.nickname-warning") }]}
-        >
+      <Form form={form} layout="vertical">
+        <Form.Item label={t("auth.nickname")} name="userName">
           <Input
             value={userName}
-            onChange={(e) => setUserName(e.target.value)}
+            onChange={(e) => {
+              setUserName(e.target.value);
+              form.setFields([{ name: "userName", errors: [] }]);
+            }}
             placeholder={t("auth.nickname-placeholder")}
           />
         </Form.Item>
 
-        <Form.Item label={t("auth.email")} name="email" rules={[{ required: true, message: t("auth.email-warning") }]}>
-          <Input value={email} onChange={(e) => setEmail(e.target.value)} placeholder={t("auth.email-placeholder")} />
+        <Form.Item label={t("auth.email")} name="email">
+          <Input
+            value={email}
+            onChange={(e) => {
+              setEmail(e.target.value);
+              form.setFields([{ name: "email", errors: [] }]);
+            }}
+            placeholder={t("auth.email-placeholder")}
+          />
         </Form.Item>
 
-        <Form.Item
-          label={t("auth.password")}
-          name="password"
-          rules={[{ required: true, message: "Please input your password!" }]}
-        >
+        <Form.Item label={t("auth.password")} name="password">
           <Input
             value={password}
             type="password"
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="please input your password here..."
+            onChange={(e) => {
+              setPassword(e.target.value);
+              form.setFields([{ name: "password", errors: [] }]);
+            }}
+            placeholder={t("auth.password-placeholder")}
           />
         </Form.Item>
       </Form>

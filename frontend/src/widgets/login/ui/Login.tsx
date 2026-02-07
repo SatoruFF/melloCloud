@@ -11,6 +11,7 @@ import { setUser } from "../../../entities/user/model/slice/userSlice";
 import { TelegramButton as TelegramLoginButton } from "../../../features/telegramLoginButton";
 import { PrimaryButton, Spinner } from "../../../shared";
 import { Variables } from "../../../shared/consts/localVariables";
+import { loginSchema } from "../../../shared/schemas/authSchemas";
 import { ACCESS_DENIED_ROUTE, FILE_ROUTE, REGISTRATION_ROUTE, PRIVACY_POLICY_ROUTE, TERMS_OF_SERVICE_ROUTE } from "../../../shared/consts/routes";
 import styles from "../styles/auth.module.scss";
 
@@ -48,6 +49,7 @@ const YandexIcon = () => (
 
 const Login = () => {
   const { t } = useTranslation();
+  const [form] = Form.useForm();
   const [messageApi, errContextHolder] = message.useMessage();
   const [searchParams] = useSearchParams();
   const [email, setEmail] = useState("");
@@ -80,36 +82,43 @@ const Login = () => {
         .then((userData) => {
           dispatch(setUser(userData));
           notification.success({
-            message: "Success",
-            description: "You have successfully logged in",
+            message: t("auth.login-success-message"),
+            description: t("auth.login-success-description"),
             placement: "topLeft",
             icon: <Smile size={20} style={{ color: "#52c41a" }} />,
           });
           navigate(FILE_ROUTE);
         })
         .catch(() => {
-          messageApi.error("Failed to get user data");
+          messageApi.error(t("auth.login-failed-user-data"));
         });
     }
   }, [searchParams, dispatch, navigate, messageApi]);
 
   const handleClick = async () => {
-    try {
-      if (email === "" || password === "") {
-        return messageApi.error("Error: some fields are empty");
-      }
+    const payload = { email, password };
+    const result = loginSchema.safeParse(payload);
+    if (!result.success) {
+      const fieldErrors = result.error.errors.map((err) => ({
+        name: err.path[0] as string,
+        errors: [err.message.startsWith("auth.") ? t(err.message) : err.message],
+      }));
+      form.setFields(fieldErrors);
+      return;
+    }
 
+    try {
       const user: any = await setLogin({
-        email,
-        password,
+        email: result.data.email,
+        password: result.data.password,
       }).unwrap();
 
       const userData = user.data ? user.data : user;
       dispatch(setUser(userData as any));
 
       notification.open({
-        message: "Success log in",
-        description: `User with email: ${email} has logged in`,
+        message: t("auth.login-success-message"),
+        description: t("auth.login-success-with-email", { email }),
         placement: "topLeft",
         icon: <Smile size={20} style={{ color: "#52c41a" }} />,
       });
@@ -159,20 +168,26 @@ const Login = () => {
       {errContextHolder}
       <div className={cn(styles.authFormTitle)}>{t("auth.authorization")}</div>
 
-      <Form layout="vertical">
-        <Form.Item label={t("auth.email")} name="email" rules={[{ required: true, message: t("auth.email-warning") }]}>
-          <Input value={email} onChange={(e) => setEmail(e.target.value)} placeholder={t("auth.email-placeholder")} />
+      <Form form={form} layout="vertical">
+        <Form.Item label={t("auth.email")} name="email">
+          <Input
+            value={email}
+            onChange={(e) => {
+              setEmail(e.target.value);
+              form.setFields([{ name: "email", errors: [] }]);
+            }}
+            placeholder={t("auth.email-placeholder")}
+          />
         </Form.Item>
 
-        <Form.Item
-          label={t("auth.password")}
-          name="password"
-          rules={[{ required: true, message: t("auth.password-warning") }]}
-        >
+        <Form.Item label={t("auth.password")} name="password">
           <Input
             type="password"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={(e) => {
+              setPassword(e.target.value);
+              form.setFields([{ name: "password", errors: [] }]);
+            }}
             placeholder={t("auth.password-placeholder")}
           />
         </Form.Item>
