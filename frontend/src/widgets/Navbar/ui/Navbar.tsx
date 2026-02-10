@@ -84,6 +84,7 @@ const MyNavbar: React.FC = () => {
           aria-label={t("home-anchor.title")}
         >
           <p className={cn(styles.applicationName)}>{t("application-name")}</p>
+          {!isAuth && <span className={cn(styles.tagline)}>{t("navbar.tagline")}</span>}
         </div>
       </div>
 
@@ -143,13 +144,20 @@ const MyNavbar: React.FC = () => {
         </div>
       ) : (
         <div className={cn(styles.navItems)}>
+          {!isTabletOrMobile && (
+            <div className={cn(styles.navItem)}>
+              <NavLink to={WELCOME_ROUTE} className={cn(styles.navLink, styles.links)}>
+                {t("navbar.home")}
+              </NavLink>
+            </div>
+          )}
           <div className={cn(styles.navItem)}>
             <NavLink to={LOGIN_ROUTE} className={cn(styles.navLinkButton, styles.links)}>
               {t("auth.authorization")}
             </NavLink>
           </div>
           <div className={cn(styles.navItem)}>
-            <NavLink to={REGISTRATION_ROUTE} className={cn(styles.navLinkButton, styles.links)}>
+            <NavLink to={REGISTRATION_ROUTE} className={cn(styles.navLinkButtonPrimary, styles.links)}>
               {t("auth.registration")}
             </NavLink>
           </div>
@@ -163,38 +171,35 @@ const MyNavbar: React.FC = () => {
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ duration: 1 }}
+                transition={{ duration: 0.3 }}
                 className={cn(styles.burgerItem)}
+                onClick={() => setBurger(false)}
               >
-                <Divider>
-                  <NavLink to={WELCOME_ROUTE} className={cn(styles.links)}>
-                    {t("navbar.home")}
-                  </NavLink>
-                </Divider>
+                <NavLink to={WELCOME_ROUTE} className={cn(styles.links)}>
+                  {t("navbar.home")}
+                </NavLink>
               </motion.div>
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ duration: 1 }}
+                transition={{ duration: 0.3 }}
                 className={cn(styles.burgerItem)}
+                onClick={() => setBurger(false)}
               >
-                <Divider>
-                  <NavLink to={LOGIN_ROUTE} className={cn(styles.links)}>
-                    {t("auth.authorization")}
-                  </NavLink>
-                </Divider>
+                <NavLink to={LOGIN_ROUTE} className={cn(styles.links)}>
+                  {t("auth.authorization")}
+                </NavLink>
               </motion.div>
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ duration: 1 }}
+                transition={{ duration: 0.3 }}
                 className={cn(styles.burgerItem)}
+                onClick={() => setBurger(false)}
               >
-                <Divider>
-                  <NavLink to={REGISTRATION_ROUTE} className={cn(styles.links)}>
-                    {t("auth.registration")}
-                  </NavLink>
-                </Divider>
+                <NavLink to={REGISTRATION_ROUTE} className={cn(styles.links)}>
+                  {t("auth.registration")}
+                </NavLink>
               </motion.div>
             </Drawer>
           </div>

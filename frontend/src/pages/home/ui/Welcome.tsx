@@ -1,8 +1,9 @@
 import { Anchor, Button, message } from "antd";
 import cn from "classnames";
-import { LazyMotion, domAnimation, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { Monitor, Smartphone } from "lucide-react";
+import { NavLink } from "react-router-dom";
 
 import storageIcon from "../../../shared/assets/cloud-data.png";
 import desktopIcon from "../../../shared/assets/desktop.png";
@@ -13,8 +14,8 @@ import telegramLogo from "../../../shared/assets/telegram.png";
 import twitterLogo from "../../../shared/assets/twitter.png";
 
 import ParticleEffect from "../../../shared/ui/particleEffect/ParticleEffect";
+import { LOGIN_ROUTE } from "../../../shared/consts/routes";
 import styles from "./welcome.module.scss";
-// import { useEffect } from 'react';
 
 const Welcome = () => {
   const { t } = useTranslation();
@@ -83,9 +84,11 @@ const Welcome = () => {
           <div className={styles.heroLeft}>
             <h1 className={styles.heroTitle}>{t("home.primary-name")}</h1>
             <p className={styles.heroSubtitle}>{t("home.about-product")}</p>
-            <Button type="primary" size="large" className={styles.heroCTA}>
-              {t("home.get-started")}
-            </Button>
+            <NavLink to={LOGIN_ROUTE}>
+              <Button type="primary" size="large" className={styles.heroCTA}>
+                {t("home.get-started")}
+              </Button>
+            </NavLink>
           </div>
           <div className={styles.heroRight}>
             <motion.img
@@ -109,7 +112,11 @@ const Welcome = () => {
             <div className={cn(styles.moreCard)}>
               <Monitor size={80} color="#ffffffcc" />
               <div className={cn(styles.moreDescription)}>{t("desktop")}</div>
-              <Button type="primary" ghost onClick={() => alert("coming soon...")}>
+              <Button
+                type="primary"
+                ghost
+                onClick={() => message.info(t("messages.feature-coming-soon"))}
+              >
                 {t("home.download")}
               </Button>
             </div>
@@ -117,7 +124,11 @@ const Welcome = () => {
             <div className={cn(styles.moreCard)}>
               <Smartphone size={80} color="#ffffffcc" />
               <div className={cn(styles.moreDescription)}>{t("mobile")}</div>
-              <Button type="primary" ghost onClick={() => alert("coming soon...")}>
+              <Button
+                type="primary"
+                ghost
+                onClick={() => message.info(t("messages.feature-coming-soon"))}
+              >
                 {t("home.download")}
               </Button>
             </div>

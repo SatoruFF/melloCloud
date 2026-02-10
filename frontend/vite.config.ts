@@ -9,8 +9,12 @@ import { posix } from "path";
 
 const tmpPath = posix.join("/src/shared/styles/tmp.scss");
 
+// For Electron: relative base so assets load from file://
+const isElectron = process.env.BUILD_ELECTRON === "1";
+
 // https://vitejs.dev/config/
 export default defineConfig({
+  base: isElectron ? "./" : "/",
   plugins: [
     react(),
     visualizer({

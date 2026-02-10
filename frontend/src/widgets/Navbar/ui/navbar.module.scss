@@ -21,6 +21,21 @@
     color: black;
   }
 
+  .navLink {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 12px;
+    border-radius: $radius-sm;
+    font-family: $second-font;
+    color: rgba(255, 255, 255, 0.9);
+    text-decoration: none;
+    transition: color 0.2s ease, background-color 0.2s ease;
+    &:hover {
+      color: #fff;
+      background-color: rgba(255, 255, 255, 0.08);
+    }
+  }
+
   .navLinkButton {
     display: inline-flex;
     align-items: center;
@@ -40,6 +55,33 @@
     }
   }
 
+  .navLinkButtonPrimary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 18px;
+    border-radius: $radius-sm;
+    font-family: $second-font;
+    font-weight: 500;
+    color: #fff;
+    background: $color-primary;
+    border: none;
+    text-decoration: none;
+    transition: background-color 0.2s ease, transform 0.15s ease;
+    &:hover {
+      background: $color-primary-hover;
+      color: #fff;
+      transform: translateY(-1px);
+    }
+  }
+
+  .mainLogo {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+  }
+
   .applicationName {
     font-size: 1.75rem;
     font-weight: 700;
@@ -54,6 +96,15 @@
 
   .applicationName:hover {
     transform: scale(1.05);
+  }
+
+  .tagline {
+    font-size: 0.75rem;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.65);
+    letter-spacing: 0.04em;
+    margin-left: 50px;
+    @extend %mainFont;
   }
 
   @keyframes fadeInSlide {
@@ -197,8 +248,9 @@
         display: none;
       }
 
-      .naBurger {
-        display: block;
+      .navBurger {
+        display: flex;
+        align-items: center;
       }
     }
 
