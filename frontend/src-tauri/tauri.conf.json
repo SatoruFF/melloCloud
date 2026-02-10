@@ -1,0 +1,20 @@
+{
+  "productName": "Mello",
+  "version": "0.1.0",
+  "identifier": "cloud.mello.app",
+  "build": {
+    "frontendDist": "../dist",
+    "devUrl": "http://localhost:5173",
+    "beforeDevCommand": "pnpm run dev",
+    "beforeBuildCommand": "pnpm run build:tauri"
+  },
+  "app": {
+    "windows": [{ "label": "main", "title": "Mello", "width": 1280, "height": 800 }],
+    "security": { "csp": null }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "icon": []
+  }
+}

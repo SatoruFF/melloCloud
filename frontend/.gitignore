@@ -32,3 +32,6 @@ dev-dist
 /dev-dist
 
 analyse.html
+
+# Tauri / Rust
+src-tauri/target

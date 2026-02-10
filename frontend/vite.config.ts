@@ -9,12 +9,13 @@ import { posix } from "path";
 
 const tmpPath = posix.join("/src/shared/styles/tmp.scss");
 
-// For Electron: relative base so assets load from file://
-const isElectron = process.env.BUILD_ELECTRON === "1";
+// For desktop (Tauri/Electron): relative base so assets load from file://
+const isDesktop =
+  process.env.BUILD_ELECTRON === "1" || process.env.BUILD_TAURI === "1";
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  base: isElectron ? "./" : "/",
+  base: isDesktop ? "./" : "/",
   plugins: [
     react(),
     visualizer({
@@ -56,9 +57,14 @@ export default defineConfig({
     alias: [{ find: "@", replacement: "/src" }],
   },
   server: {
+    port: 5173,
+    strictPort: true,
     fs: {
       allow: [".."], // Разрешаем доступ к корневой папке ( для доступа к переводам например )
     },
+  },
+  watch: {
+    ignored: ["**/src-tauri/**"],
   },
   css: {
     preprocessorOptions: {

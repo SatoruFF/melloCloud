@@ -1,0 +1,16 @@
+[package]
+name = "mello"
+version = "0.1.0"
+description = "Mello desktop"
+edition = "2021"
+rust-version = "1.70"
+
+[lib]
+name = "mello_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
