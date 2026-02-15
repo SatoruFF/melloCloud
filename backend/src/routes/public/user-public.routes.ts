@@ -1,4 +1,5 @@
 import { Hono } from 'hono';
+import { setCookie } from 'hono/cookie';
 import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
 import passport from '../../configs/oAuth';
@@ -50,7 +51,7 @@ router.get('/google', async (c) => {
 
 router.get('/google/callback', async (c) => {
   try {
-    const user = c.get('user'); // Из Passport middleware
+    const user = (c as { get: (k: string) => unknown }).get('user') as { id: number };
     const { accessToken, refreshToken } = generateJwt(user.id);
 
     const userAgent = c.req.header('user-agent') || 'Unknown';
@@ -65,8 +66,7 @@ router.get('/google/callback', async (c) => {
       },
     });
 
-    // Set cookie
-    c.cookie('refreshToken', refreshToken, {
+    setCookie(c, 'refreshToken', refreshToken, {
       maxAge: 30 * 24 * 60 * 60,
       httpOnly: true,
       secure: isProduction,
@@ -93,7 +93,7 @@ router.get('/yandex', async (c) => {
 
 router.get('/yandex/callback', async (c) => {
   try {
-    const user = c.get('user');
+    const user = (c as { get: (k: string) => unknown }).get('user') as { id: number };
     const { accessToken, refreshToken } = generateJwt(user.id);
 
     const userAgent = c.req.header('user-agent') || 'Unknown';
@@ -108,7 +108,7 @@ router.get('/yandex/callback', async (c) => {
       },
     });
 
-    c.cookie('refreshToken', refreshToken, {
+    setCookie(c, 'refreshToken', refreshToken, {
       maxAge: 30 * 24 * 60 * 60,
       httpOnly: true,
       secure: isProduction,

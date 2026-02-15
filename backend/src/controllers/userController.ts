@@ -34,7 +34,7 @@ class UserControllerClass {
       const userData = await UserService.login(email, password, { userAgent, ip });
 
       // Устанавливаем accessToken в httpOnly cookie (защита от XSS)
-      setCookie(c, "accessToken", userData.accessToken, {
+      setCookie(c, "accessToken", userData.token, {
         maxAge: 60 * 60, // 1 час
         httpOnly: true,
         secure: isProduction,
@@ -52,7 +52,7 @@ class UserControllerClass {
       });
 
       // Возвращаем данные БЕЗ токенов (они уже в cookies)
-      return c.json(_.omit(userData, ["accessToken", "refreshToken"]));
+      return c.json(_.omit(userData, ["token", "refreshToken"]));
     } catch (error: any) {
       logger.error(error.message, error);
       if (error.statusCode === 403 && error.message === "USER_BLOCKED") {
@@ -120,7 +120,7 @@ class UserControllerClass {
         sameSite: "Strict",
       });
 
-      return c.json(userData);
+      return c.json(_.omit(userData, ["token", "refreshToken"]));
     } catch (error: any) {
       logger.error(error.message, error);
       return c.json({ message: error.message }, error.statusCode || 500);
@@ -135,7 +135,7 @@ class UserControllerClass {
       const userData = await UserService.refresh(refreshToken);
 
       // Обновляем accessToken cookie
-      setCookie(c, "accessToken", userData.accessToken, {
+      setCookie(c, "accessToken", userData.token, {
         maxAge: 60 * 60, // 1 час
         httpOnly: true,
         secure: isProduction,
@@ -153,7 +153,7 @@ class UserControllerClass {
       });
 
       // Возвращаем данные БЕЗ токенов
-      return c.json(_.omit(userData, ["accessToken", "refreshToken"]));
+      return c.json(_.omit(userData, ["token", "refreshToken"]));
     } catch (error: any) {
       logger.error(error.message, error);
       return c.json({ message: error.message }, error.statusCode || 500);

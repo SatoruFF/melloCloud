@@ -1,4 +1,5 @@
 import type { Context } from "hono";
+import type { WebhookEvent, WebhookMethod } from "@prisma/client";
 import createError from "http-errors";
 import { logger } from "../configs/logger.js";
 import { WebhookService } from "../services/webhookService.js";
@@ -112,10 +113,10 @@ class WebhookControllerClass {
           name,
           description,
           url,
-          method: method || "POST",
-          events,
-          filters: filters || null,
-          headers: headers || null,
+          method: (method || "POST") as WebhookMethod,
+          events: events as WebhookEvent[],
+          filters: (filters ?? null) as object | null,
+          headers: (headers ?? null) as object | null,
           retryCount: retryCount || 3,
           retryDelay: retryDelay || 60,
           status: "ACTIVE",

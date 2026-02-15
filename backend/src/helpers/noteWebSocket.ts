@@ -1,3 +1,4 @@
+import type { Prisma } from "@prisma/client";
 import { WebSocketServer, WebSocket } from "ws";
 import jwt from "jsonwebtoken";
 import { logger } from "../configs/logger.js";
@@ -302,7 +303,10 @@ async function handleSelectionUpdate(
     await prisma.noteCollaborator.updateMany({
       where: { noteId, userId },
       data: {
-        selection: from !== undefined && to !== undefined ? { from, to } : undefined,
+        selection:
+          from !== undefined && to !== undefined
+            ? ({ from, to } as Prisma.InputJsonValue)
+            : undefined,
         lastActivity: new Date(),
       },
     });

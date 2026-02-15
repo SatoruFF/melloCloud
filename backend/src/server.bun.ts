@@ -48,25 +48,23 @@ const server = http.createServer(async (req, res) => {
   try {
     const hasBody = req.method !== "GET" && req.method !== "HEAD";
     const body = hasBody ? await readBody(req) : null;
-    const response = await app.fetch(
-      new RequestCtor(`http://localhost${req.url}`, {
-        method: req.method,
-        headers: headersToRecord(req.headers),
-        ...(body && body.length > 0 && { body }),
-      })
-    );
+    const request = new RequestCtor(`http://localhost${req.url}`, {
+      method: req.method,
+      headers: headersToRecord(req.headers),
+      ...(body && body.length > 0 && { body }),
+    }) as any;
+    const response = await app.fetch(request);
     res.writeHead(response.status, Object.fromEntries(response.headers));
     if (response.body) {
-      response.body.pipeTo(
-        new WritableStreamCtor({
-          write(chunk) {
-            res.write(chunk);
-          },
-          close() {
-            res.end();
-          },
-        })
-      );
+      const writable = new WritableStreamCtor({
+        write(chunk: unknown) {
+          res.write(chunk);
+        },
+        close() {
+          res.end();
+        },
+      }) as any;
+      response.body.pipeTo(writable);
     } else {
       res.end();
     }

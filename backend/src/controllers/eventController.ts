@@ -141,6 +141,11 @@ class EventsControllerClass {
         throw createError(400, "Attendees must be an array");
       }
 
+      const attendeeIds =
+        attendees !== undefined && Array.isArray(attendees)
+          ? (attendees as number[])
+          : undefined;
+
       const event = await EventsService.createEvent(apiContext, userId, {
         title,
         description,
@@ -151,7 +156,7 @@ class EventsControllerClass {
         endDate: end,
         allDay,
         taskId,
-        attendees,
+        attendees: attendeeIds,
       });
 
       return c.json(serializeBigInt(event), 201);

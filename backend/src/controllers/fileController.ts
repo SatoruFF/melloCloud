@@ -123,10 +123,10 @@ class FileControllerClass {
       const searchParams = {
         storageGuid: user?.storageGuid,
         sort,
-        limit,
-        offset,
+        limit: limit != null ? Number(limit) : undefined,
+        offset: offset != null ? Number(offset) : undefined,
         search,
-        parentId,
+        parentId: parentId ?? undefined,
         userId,
       };
 
@@ -167,7 +167,7 @@ class FileControllerClass {
   async uploadFile(c: Context) {
     try {
       const body = await c.req.parseBody();
-      const file = body.file as File | undefined;
+      const file = body.file as { name?: string; type?: string; size?: number; arrayBuffer(): Promise<ArrayBuffer> } | undefined;
       const parentId = body.parent as string | undefined;
       const userId = (c.get("user") as { id?: number } | undefined)?.id ?? c.get("userId");
 
@@ -179,7 +179,13 @@ class FileControllerClass {
         throw createError(400, "File is required");
       }
 
-      const savedFile = await FileService.uploadFile(file, userId, parentId);
+      const fileForService = {
+        name: file.name ?? "upload",
+        type: file.type ?? "application/octet-stream",
+        size: file.size ?? 0,
+        arrayBuffer: () => file.arrayBuffer(),
+      };
+      const savedFile = await FileService.uploadFile(fileForService, userId, parentId);
 
       return c.json(savedFile);
     } catch (error: any) {
@@ -287,7 +293,7 @@ class FileControllerClass {
   async uploadAvatar(c: Context) {
     try {
       const body = await c.req.parseBody();
-      const file = body.file as File | undefined;
+      const file = body.file as { arrayBuffer(): Promise<ArrayBuffer> } | undefined;
       const userId = (c.get("user") as { id?: number } | undefined)?.id ?? c.get("userId");
 
       if (!userId) {

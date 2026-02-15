@@ -39,13 +39,9 @@ const isDevelopment = process.env.NODE_ENV !== "production";
 app.use(
   "*",
   cors({
-    origin: (origin) => {
-      // В development разрешаем все localhost порты
-      if (isDevelopment && origin?.includes("localhost")) {
-        return origin;
-      }
-      // В production только указанный CLIENT_URL
-      return origin === CLIENT_URL ? origin : false;
+    origin: (origin: string): string | undefined => {
+      if (isDevelopment && origin?.includes("localhost")) return origin;
+      return origin === CLIENT_URL ? origin : undefined;
     },
     allowMethods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE", "OPTIONS"],
     credentials: true,

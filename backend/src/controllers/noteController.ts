@@ -74,7 +74,7 @@ class NotesControllerClass {
       const note = await NotesService.createNote(apiContext, userId, {
         title,
         content,
-        tags,
+        tags: tags !== undefined && Array.isArray(tags) ? (tags as string[]) : undefined,
       });
 
       return c.json(serializeBigInt(note), 201);
@@ -123,7 +123,7 @@ class NotesControllerClass {
         content,
         isStarred,
         isRemoved,
-        tags,
+        tags: tags !== undefined && Array.isArray(tags) ? (tags as string[]) : undefined,
       });
 
       return c.json(serializeBigInt(note));

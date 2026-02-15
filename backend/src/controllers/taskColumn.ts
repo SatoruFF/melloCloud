@@ -116,19 +116,26 @@ class ColumnControllerClass {
   // Reorder columns
   async reorder(c: Context) {
     try {
-      const body = await c.req.json<{ columnOrders: Array<{ id: number; order: number }> }>();
-      const { columnOrders } = body; // Array of { id, order }
+      const body = await c.req.json<{
+        columnOrders: Array<{ id: number; order: number }>;
+        boardId: number;
+      }>();
+      const { columnOrders, boardId } = body;
       const userId = (c.get("user") as { id?: number } | undefined)?.id ?? c.get("userId");
 
       if (!userId) {
         throw createError(401, "User not found");
       }
 
+      if (!boardId) {
+        throw createError(400, "boardId is required");
+      }
+
       if (!columnOrders || !Array.isArray(columnOrders)) {
         throw createError(400, "Invalid column orders data");
       }
 
-      const columns = await ColumnService.reorderColumns(userId, columnOrders);
+      const columns = await ColumnService.reorderColumns(userId, columnOrders, boardId);
 
       return c.json(columns);
     } catch (error: any) {

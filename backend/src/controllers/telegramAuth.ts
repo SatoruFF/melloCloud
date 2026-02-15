@@ -1,5 +1,6 @@
 import crypto from "crypto";
 import type { Context } from "hono";
+import { setCookie } from "hono/cookie";
 import { CLIENT_URL, isProduction, prisma, TELEGRAM_BOT_TOKEN } from "../configs/config.js";
 import { v4 as uuidv4 } from "uuid";
 import { generateJwt } from "../utils/generateJwt.js";
@@ -139,8 +140,7 @@ export async function handleTelegramAuth(c: Context) {
       },
     });
 
-    // Устанавливаем cookie
-    c.cookie("refreshToken", refreshToken, {
+    setCookie(c, "refreshToken", refreshToken, {
       maxAge: 30 * 24 * 60 * 60,
       httpOnly: true,
       secure: isProduction,

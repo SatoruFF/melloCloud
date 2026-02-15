@@ -17,7 +17,8 @@ sharingRouter.get("/public/:token", async (c) => {
   } catch (error: unknown) {
     const err = error as { statusCode?: number; message?: string };
     logger.error(err.message ?? String(error), error);
-    return c.json({ message: err.message ?? "Error" }, err.statusCode ?? 500);
+    const status = err.statusCode && err.statusCode >= 100 && err.statusCode < 600 ? err.statusCode : 500;
+    return c.json({ message: err.message ?? "Error" }, status as 400 | 401 | 403 | 404 | 500);
   }
 });
 
@@ -33,7 +34,8 @@ sharingRouter.get("/:token", async (c) => {
   } catch (error: unknown) {
     const err = error as { statusCode?: number; message?: string };
     logger.error(err.message ?? String(error), error);
-    return c.json({ message: err.message ?? "Error" }, err.statusCode ?? 500);
+    const status = err.statusCode && err.statusCode >= 100 && err.statusCode < 600 ? err.statusCode : 500;
+    return c.json({ message: err.message ?? "Error" }, status as 400 | 401 | 403 | 404 | 500);
   }
 });
 
@@ -46,7 +48,8 @@ sharingRouter.get("/:token/download", async (c) => {
     }
     const { file, s3object } = await SharingService.downloadPublicFile(token);
     const body = s3object.Body as Buffer | Uint8Array | undefined;
-    return c.newResponse(body ?? new Uint8Array(0), {
+    const data = body instanceof Buffer ? body : body ?? new Uint8Array(0);
+    return c.newResponse(data as any, {
       status: 200,
       headers: {
         "Content-Disposition": `attachment; filename="${file.name}"`,
@@ -57,7 +60,8 @@ sharingRouter.get("/:token/download", async (c) => {
   } catch (error: unknown) {
     const err = error as { statusCode?: number; message?: string };
     logger.error(err.message ?? String(error), error);
-    return c.json({ message: err.message ?? "Error" }, err.statusCode ?? 500);
+    const status = err.statusCode && err.statusCode >= 100 && err.statusCode < 600 ? err.statusCode : 500;
+    return c.json({ message: err.message ?? "Error" }, status as 400 | 401 | 403 | 404 | 500);
   }
 });
 

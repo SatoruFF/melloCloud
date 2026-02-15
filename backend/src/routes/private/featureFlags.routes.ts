@@ -5,8 +5,9 @@ const router = new Hono();
 
 /** Флаги для текущего пользователя (глобальный isEnabled + per-user overrides). */
 router.get("/", async (c) => {
-  const userId = (c.get("user") as { id?: number } | undefined)?.id ?? c.get("userId");
-  if (!userId) {
+  const user = (c as { get: (k: string) => unknown }).get("user") as { id?: number } | undefined;
+  const userId = user?.id ?? ((c as { get: (k: string) => unknown }).get("userId") as number | undefined);
+  if (userId == null || typeof userId !== "number") {
     return c.json({ message: "Unauthorized" }, 401);
   }
   const flags = await getFlagsForUser(userId);
