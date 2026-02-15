@@ -6,6 +6,5 @@
     "dev:backend": "pnpm --filter server dev",
     "dev:frontend": "pnpm --filter client dev",
     "build": "pnpm -r run build"
-  },
-  "version": "0.0.1"
+  }
 }
