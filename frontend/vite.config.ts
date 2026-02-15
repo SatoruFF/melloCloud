@@ -28,6 +28,9 @@ export default defineConfig({
     svgr(),
     VitePWA({
       registerType: "autoUpdate",
+      workbox: {
+        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5 MiB (default 2 MiB; main chunk is ~4 MB)
+      },
       manifest: {
         name: "Mello",
         short_name: "Mello",
