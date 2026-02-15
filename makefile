@@ -2,28 +2,29 @@ setup:
 	./setup.sh
 
 up:
-	docker-compose up -d --build
+	@test -f .env || (touch .env && echo "Created empty .env — add variables (e.g. cp backend/.env .env)")
+	docker compose up -d --build
 
 down:
-	docker-compose down
+	docker compose down
 
 restart:
-	docker-compose down && docker-compose up -d --build
+	docker compose down && docker compose up -d --build
 
 logs:
-	docker-compose logs -f
+	docker compose logs -f
 
 clean:
 	docker system prune -af --volumes
 
 rebuild:
-	docker-compose build --no-cache
+	docker compose build --no-cache
 
 restart-caddy:
-	docker-compose restart web_server
+	docker compose restart web_server
 
 rebuild-caddy:
-	docker-compose build web_server && docker-compose up -d web_server
+	docker compose build web_server && docker compose up -d web_server
 
 clean-space:
 	@echo "🔍 Cleaning up caches and temporary files..."
