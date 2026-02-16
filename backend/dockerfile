@@ -9,8 +9,8 @@ COPY package.json ./
 COPY pnpm-lock.yaml* package-lock.json* ./
 COPY src/prisma ./src/prisma
 
-# Install dependencies with Bun
-RUN bun install
+# Install dependencies (skip postinstall: migrate deploy needs DATABASE_URL at runtime)
+RUN bun install --ignore-scripts
 
 COPY . .
 
