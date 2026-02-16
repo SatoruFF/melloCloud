@@ -1,19 +1,19 @@
 import { Hono } from 'hono';
-import { privateMiddlewares } from '../../middleware/base.middleware';
-import userRouter from './user.routes';
-import fileRouter from './file.routes';
-import chatsRouter from './chat.routes';
-import messagesRouter from './message.routes';
-import taskRouter from './task.routes';
-import taskColumn from './column.routes';
-import boardRouter from './board.routes';
-import noteRouter from './note.routes';
-import eventRouter from './events.routes';
-import webhookRouter from './webhook.routes';
-import notificationRouter from './notification.routes';
-import sharingRouter from './sharing.hono.routes';
-import adminRouter from './admin.routes';
-import featureFlagsRouter from './featureFlags.routes';
+import { privateMiddlewares } from "../../middleware/base.middleware.js";
+import userRouter from "./user.routes.js";
+import fileRouter from "./file.routes.js";
+import chatsRouter from "./chat.routes.js";
+import messagesRouter from "./message.routes.js";
+import taskRouter from "./task.routes.js";
+import taskColumn from "./column.routes.js";
+import boardRouter from "./board.routes.js";
+import noteRouter from "./note.routes.js";
+import eventRouter from "./events.routes.js";
+import webhookRouter from "./webhook.routes.js";
+import notificationRouter from "./notification.routes.js";
+import sharingRouter from "./sharing.hono.routes.js";
+import adminRouter from "./admin.routes.js";
+import featureFlagsRouter from "./featureFlags.routes.js";
 
 const privateRouter = new Hono();
 

@@ -1,5 +1,5 @@
 import { Hono } from 'hono';
-import { TaskController } from '../../controllers/taskController';
+import { TaskController } from "../../controllers/taskController.js";
 
 const router = new Hono();
 

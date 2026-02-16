@@ -3,6 +3,7 @@ import { visualizer } from "rollup-plugin-visualizer";
 import react from "@vitejs/plugin-react";
 import svgr from "vite-plugin-svgr";
 import { VitePWA } from "vite-plugin-pwa";
+import obfuscator from "vite-plugin-javascript-obfuscator";
 import { posix } from "path";
 
 // const mode = process.env.MODE || 'development';
@@ -14,7 +15,7 @@ const isDesktop =
   process.env.BUILD_ELECTRON === "1" || process.env.BUILD_TAURI === "1";
 
 // https://vitejs.dev/config/
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   base: isDesktop ? "./" : "/",
   plugins: [
     react(),
@@ -55,7 +56,37 @@ export default defineConfig({
         enabled: true,
       },
     }),
-  ],
+    // Обфускация только для production-сборки (увеличивает размер и время сборки)
+    mode === "production" &&
+      (obfuscator({
+        apply: "build",
+        exclude: [/node_modules/, /\.css$/],
+        options: {
+          compact: true,
+          controlFlowFlattening: false,
+          deadCodeInjection: false,
+          debugProtection: false,
+          disableConsoleOutput: false,
+          identifierNamesGenerator: "hexadecimal",
+          log: false,
+          numbersToExpressions: false,
+          renameGlobals: false,
+          selfDefending: false,
+          simplify: true,
+          splitStrings: false,
+          stringArray: true,
+          stringArrayCallsTransform: false,
+          stringArrayEncoding: [],
+          stringArrayIndexShift: true,
+          stringArrayRotate: true,
+          stringArrayShuffle: true,
+          stringArrayWrappersCount: 0,
+          stringArrayWrappersType: "variable",
+          stringArrayThreshold: 0.75,
+          unicodeEscapeSequence: false,
+        },
+      }) as PluginOption),
+  ].filter(Boolean) as PluginOption[],
   resolve: {
     alias: [{ find: "@", replacement: "/src" }],
   },
@@ -82,4 +113,4 @@ export default defineConfig({
     API_URL: JSON.stringify("http://localhost:8000"),
     SHELL: JSON.stringify("frontend"),
   },
-});
+}));

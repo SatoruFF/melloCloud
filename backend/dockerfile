@@ -1,45 +1,22 @@
-FROM node:22-slim
+FROM oven/bun:1-alpine
 
-# Установка OpenSSL (для исправления проблем с Prisma https://github.com/prisma/prisma/discussions/22519)
-RUN apt-get update && apt-get install -y openssl
+# OpenSSL required by Prisma
+RUN apk add --no-cache openssl
 
-# Установка рабочей директории
 WORKDIR /app
 
-# Копируем файлы зависимостей
-COPY pnpm-lock.yaml ./
 COPY package.json ./
+COPY pnpm-lock.yaml* package-lock.json* ./
 COPY src/prisma ./src/prisma
 
-# Устанавливаем зависимости и пересобираем нативные модули
-RUN npm install --legacy-peer-deps --ignore-scripts
+# Install dependencies with Bun
+RUN bun install
 
-# Копируем все файлы проекта в контейнер
 COPY . .
 
-# Генерация Prisma Client для нужной платформы
-RUN npx prisma generate
+RUN bunx prisma generate
 
-# Выполняем сборку
-RUN npm run build
-
-# Открываем порты
 EXPOSE 1337
 
-# Миграции выполняем при запуске контейнера, когда .env уже доступен
-CMD ["sh", "-c", "npx prisma migrate deploy && npm run start"]
-
-
-# Установка Bun
-# RUN apt-get install -y curl unzip
-# RUN curl -fsSL https://bun.sh/install | bash
-# ENV BUN_INSTALL="/root/.bun"
-# ENV PATH="$BUN_INSTALL/bin:$PATH"
-
-# Команда для запуска через bun
-# CMD ["npm", "run", "start"]
-
-# Устанавливаем зависимости через Bun
-# RUN bun install --frozen-lockfile
-
-# RUN rm -rf node_modules
+# Run migrations and start app (Bun runs TS without a separate build)
+CMD ["sh", "-c", "bunx prisma migrate deploy && bun run src/server.bun.ts"]

@@ -2,13 +2,13 @@ import cluster from "cluster";
 import { cpus } from "os";
 import { serve } from "@hono/node-server";
 
-import app from "./app";
-import { getWebSocketConnection } from "./configs/webSocket";
-import { setupWebSocketServer } from "./helpers/setupWebSocket";
-// import { setupNoteWebSocket } from "./helpers/noteWebSocket"; // Старая система коллаборации - заменена на Yjs
-import { setupYjsWebSocket } from "./helpers/yjsWebSocket";
-import { PORT, WORKERS_COUNT } from "./configs/config";
-import { logger as customLogger } from "./configs/logger";
+import app from "./app.js";
+import { getWebSocketConnection } from "./configs/webSocket.js";
+import { setupWebSocketServer } from "./helpers/setupWebSocket.js";
+// import { setupNoteWebSocket } from "./helpers/noteWebSocket.js"; // Старая система коллаборации - заменена на Yjs
+import { setupYjsWebSocket } from "./helpers/yjsWebSocket.js";
+import { PORT, WORKERS_COUNT } from "./configs/config.js";
+import { logger as customLogger } from "./configs/logger.js";
 
 const numCPU = cpus().length;
 

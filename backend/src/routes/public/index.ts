@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
-import { publicMiddlewares } from '../../middleware/base.middleware';
-import userRouter from './user-public.routes';
-import sharingRouter from "./sharing-public.routes";
+import { publicMiddlewares } from "../../middleware/base.middleware.js";
+import userRouter from "./user-public.routes.js";
+import sharingRouter from "./sharing-public.routes.js";
 
 const publicRouter = new Hono();
 

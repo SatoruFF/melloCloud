@@ -1,6 +1,6 @@
 import { Context, Next } from 'hono';
 import { getConnInfo } from '@hono/node-server/conninfo';
-import { logger } from '../configs/logger';
+import { logger } from "./logger.js";
 
 // Simple in-memory rate limiter
 const requests = new Map<string, { count: number; resetTime: number }>();

@@ -3,9 +3,9 @@ import { cors } from "hono/cors";
 import { logger } from "hono/logger";
 import { secureHeaders } from "hono/secure-headers";
 import { compress } from "hono/compress";
-import { rateLimiter } from "./configs/rateLimiter";
-import v1Router from "./routes/index";
-import { logger as customLogger } from "./configs/logger";
+import { rateLimiter } from "./configs/rateLimiter.js";
+import v1Router from "./routes/index.js";
+import { logger as customLogger } from "./configs/logger.js";
 import "dotenv/config";
 
 const app = new Hono();

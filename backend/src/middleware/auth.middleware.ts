@@ -1,7 +1,7 @@
 import { Context, Next } from 'hono';
 import { getCookie } from 'hono/cookie';
 import jwt from 'jsonwebtoken';
-import ApiContext from '../models/context';
+import ApiContext from "../models/context.js";
 import { ACCESS_SECRET_KEY, prisma } from '../configs/config.js';
 
 const BLOCKED_MESSAGE =

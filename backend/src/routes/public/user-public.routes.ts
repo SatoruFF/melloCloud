@@ -2,11 +2,11 @@ import { Hono } from 'hono';
 import { setCookie } from 'hono/cookie';
 import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
-import passport from '../../configs/oAuth';
-import { CLIENT_URL, isProduction, prisma } from '../../configs/config';
-import { UserController } from '../../controllers/userController';
-import { generateJwt } from '../../utils/generateJwt';
-import { handleTelegramAuth } from '../../controllers/telegramAuth';
+import passport from "../../configs/oAuth.js";
+import { CLIENT_URL, isProduction, prisma } from "../../configs/config.js";
+import { UserController } from "../../controllers/userController.js";
+import { generateJwt } from "../../utils/generateJwt.js";
+import { handleTelegramAuth } from "../../controllers/telegramAuth.js";
 
 const router = new Hono();
 

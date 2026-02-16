@@ -1,13 +1,13 @@
 import "dotenv/config";
 import http from "http";
 import type { IncomingHttpHeaders } from "http";
-import app from "./app";
-import { PORT } from "./configs/config";
-import { logger as customLogger } from "./configs/logger";
-import { getWebSocketConnection } from "./configs/webSocket";
-import { setupWebSocketServer } from "./helpers/setupWebSocket";
-// import { setupNoteWebSocket } from "./helpers/noteWebSocket"; // Старая система коллаборации - заменена на Yjs
-import { setupYjsWebSocket } from "./helpers/yjsWebSocket";
+import app from "./app.js";
+import { PORT } from "./configs/config.js";
+import { logger as customLogger } from "./configs/logger.js";
+import { getWebSocketConnection } from "./configs/webSocket.js";
+import { setupWebSocketServer } from "./helpers/setupWebSocket.js";
+// import { setupNoteWebSocket } from "./helpers/noteWebSocket.js"; // Старая система коллаборации - заменена на Yjs
+import { setupYjsWebSocket } from "./helpers/yjsWebSocket.js";
 
 const port = Number(PORT) || 3000;
 

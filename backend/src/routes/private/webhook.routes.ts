@@ -1,5 +1,5 @@
 import { Hono } from "hono";
-import { WebhookController } from "../../controllers/webhookController";
+import { WebhookController } from "../../controllers/webhookController.js";
 
 const router = new Hono();
 
