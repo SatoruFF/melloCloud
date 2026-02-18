@@ -25,6 +25,7 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.685.0",
     "@hono/node-server": "^1.19.9",
+    "@hono/swagger-ui": "^0.5.3",
     "@hono/zod-validator": "^0.7.6",
     "@node-rs/argon2": "^2.0.2",
     "@prisma/client": "^6.11.1",

@@ -3,8 +3,10 @@ import { cors } from "hono/cors";
 import { logger } from "hono/logger";
 import { secureHeaders } from "hono/secure-headers";
 import { compress } from "hono/compress";
+import { swaggerUI } from "@hono/swagger-ui";
 import { rateLimiter } from "./configs/rateLimiter.js";
 import v1Router from "./routes/index.js";
+import { openApiDoc } from "./openapi.js";
 import { logger as customLogger } from "./configs/logger.js";
 import "dotenv/config";
 
@@ -18,8 +20,8 @@ app.use(
   secureHeaders({
     contentSecurityPolicy: {
       defaultSrc: ["'self'"],
-      scriptSrc: ["'self'", "'unsafe-inline'"],
-      styleSrc: ["'self'", "'unsafe-inline'"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net"],
       imgSrc: ["'self'", "data:", "https:"],
     },
     xFrameOptions: "DENY",
@@ -68,6 +70,10 @@ app.route("/v1", v1Router);
 app.get("/", (c) => {
   return c.text("i am alive ;)");
 });
+
+// OpenAPI spec (JSON) and Swagger UI for all API routes
+app.get("/api-docs/openapi.json", (c) => c.json(openApiDoc));
+app.get("/api-docs", swaggerUI({ url: "/api-docs/openapi.json" }));
 
 // ========================================
 // ERROR HANDLER
