@@ -1,9 +1,10 @@
-name: Build and Deploy
+name: Build and Push Images
 
 on:
   push:
     tags:
       - "*"
+
 # on:
 #   push:
 #     branches:
@@ -65,29 +66,16 @@ jobs:
           tags: ${{ steps.meta-backend.outputs.tags }}
           labels: ${{ steps.meta-backend.outputs.labels }}
 
-  deploy:
-    needs: build-and-push
-    runs-on: ubuntu-latest
-    steps:
-      - name: Deploy to server
-        env:
-          SERVER_USER: ${{ secrets.SERVER_USER }}
-          SSHPASS: ${{ secrets.SERVER_PASSWORD }}
-          SERVER_IP: ${{ secrets.SERVER_IP }}
+      - name: Notify Telegram on Success
+        if: success()
         run: |
-          sshpass -e ssh -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP bash -c "
-          echo ✅ SSH connection successful &&
-          cd /home/satoru/melloCloud &&
-          # echo ✅ Fixing repository permissions &&
-          # sudo chown -R \$(whoami):\$(whoami) .git &&
-          # sudo chmod -R 755 .git &&
-          echo ✅ Pulling from GitHub &&
-          git pull &&
-          echo ✅ Pulling new Docker images &&
-          docker-compose pull &&
-          echo ✅ Restarting services with new images &&
-          docker-compose up -d &&
-          echo ✅ Cleaning up old images &&
-          docker image prune -f &&
-          echo ✅ Deployment completed successfully
-          "
+          curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
+            -d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} \
+            -d text="✅ Images built successfully!%0A🏷 Tag: ${{ github.ref_name }}%0A⏳ Watchtower will deploy in ~5 minutes"
+
+      - name: Notify Telegram on Failure
+        if: failure()
+        run: |
+          curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
+            -d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} \
+            -d text="❌ Image build failed!%0A🏷 Tag: ${{ github.ref_name }}%0A📋 Logs: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"

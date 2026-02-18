@@ -58,22 +58,22 @@ services:
       - portainer_data:/data
     restart: unless-stopped
 
-  # Watchtower for automatic updates
-  # watchtower:
-  #   container_name: watchtower
-  #   image: containrrr/watchtower:latest
-  #   volumes:
-  #     - /var/run/docker.sock:/var/run/docker.sock
-  #     - /root/.docker/config.json:/config.json
-  #   environment:
-  #     - WATCHTOWER_CLEANUP=true
-  #     - WATCHTOWER_POLL_INTERVAL=300 # check every 5 minutes
-  #     - WATCHTOWER_ROLLING_RESTART=true
-  #     - WATCHTOWER_INCLUDE_STOPPED=true
-  #     - WATCHTOWER_REVIVE_STOPPED=false
-  #   restart: unless-stopped
-  #   networks:
-  #     - prod
+  Watchtower for automatic updates
+  watchtower:
+    container_name: watchtower
+    image: containrrr/watchtower:latest
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /root/.docker/config.json:/config.json:ro
+    environment:
+      - WATCHTOWER_CLEANUP=true
+      - WATCHTOWER_POLL_INTERVAL=300 # check every 5 minutes
+      - WATCHTOWER_ROLLING_RESTART=true
+      - WATCHTOWER_INCLUDE_STOPPED=true
+      - WATCHTOWER_REVIVE_STOPPED=false
+    restart: unless-stopped
+    networks:
+      - prod
 
 volumes:
   portainer_data:
