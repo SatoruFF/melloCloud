@@ -58,7 +58,7 @@ services:
       - portainer_data:/data
     restart: unless-stopped
 
-  Watchtower for automatic updates
+  # Watchtower for automatic updates
   watchtower:
     container_name: watchtower
     image: containrrr/watchtower:latest
