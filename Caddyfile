@@ -18,12 +18,11 @@ mellocloud.net, www.mellocloud.net {
 		respond "User-agent: *\nAllow: /" 200
 	}
 
-	# Proxy Portainer interface at /portainer
-	handle_path /portainer* {
-		reverse_proxy portainer:9000 {
-			# health_uri /api/system/status
-			# health_interval 30s
-			# health_timeout 10s
+	# Proxy Arcane UI at /arcane (Docker management + auto-updates)
+	handle_path /arcane* {
+		reverse_proxy arcane:3552 {
+			header_up Connection {>Connection}
+			header_up Upgrade {>Upgrade}
 		}
 	}
 
@@ -70,22 +69,20 @@ api.mellocloud.net {
 	}
 }
 
-# Portainer subdomain
-portainer.mellocloud.net {
+# Arcane subdomain (Docker management + auto-updates)
+arcane.mellocloud.net {
 	encode gzip
 	log
 
 	header {
 		-Server
 		X-Content-Type-Options nosniff
-		X-Frame-Options DENY
+		X-Frame-Options "*"
 	}
 
-	reverse_proxy portainer:9000 {
-		# Portainer health check
-		# health_uri /api/system/status
-		# health_interval 30s
-		# health_timeout 10s
+	reverse_proxy arcane:3552 {
+		header_up Connection {>Connection}
+		header_up Upgrade {>Upgrade}
 	}
 }
 
@@ -106,6 +103,6 @@ ws.mellocloud.net {
 }
 
 # Redirect HTTP to HTTPS
-http://mellocloud.net, http://www.mellocloud.net, http://api.mellocloud.net, http://portainer.mellocloud.net, http://ws.mellocloud.net {
+http://mellocloud.net, http://www.mellocloud.net, http://api.mellocloud.net, http://arcane.mellocloud.net, http://ws.mellocloud.net {
 	redir https://{host}{uri}
 }

@@ -1,5 +1,6 @@
 networks:
   prod:
+
 services:
   web_server:
     image: caddy:latest
@@ -14,10 +15,12 @@ services:
     depends_on:
       - backend
       - frontend
-      - portainer
+      - arcane
     networks:
       - prod
     restart: unless-stopped
+    labels:
+      - com.getarcaneapp.arcane.updater=true
 
   backend:
     container_name: mello-backend
@@ -32,6 +35,8 @@ services:
       - "host.docker.internal:host-gateway"
       - "backend:172.18.0.4"
     restart: unless-stopped
+    labels:
+      - com.getarcaneapp.arcane.updater=true
 
   frontend:
     container_name: mello-frontend
@@ -45,37 +50,30 @@ services:
     ports:
       - "5173:5173"
     restart: unless-stopped
+    labels:
+      - com.getarcaneapp.arcane.updater=true
 
-  portainer:
-    container_name: mello-portainer
-    image: portainer/portainer-ce:latest
-    networks:
-      - prod
-    ports:
-      - "9000:9000"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - portainer_data:/data
-    restart: unless-stopped
-
-  # Watchtower for automatic updates
-  watchtower:
-    container_name: watchtower
-    image: containrrr/watchtower:latest
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - /root/.docker/config.json:/config.json:ro
+  # Arcane: Docker management + auto-updates (replaces Portainer + Watchtower)
+  # Requires in .env: ENCRYPTION_KEY, JWT_SECRET (run: docker run --rm ghcr.io/getarcaneapp/arcane:latest /app/arcane generate secret)
+  arcane:
+    container_name: mello-arcane
+    image: ghcr.io/getarcaneapp/arcane:latest
+    env_file:
+      - ./.env
     environment:
-      - WATCHTOWER_CLEANUP=true
-      - WATCHTOWER_POLL_INTERVAL=300 # check every 5 minutes
-      - WATCHTOWER_ROLLING_RESTART=true
-      - WATCHTOWER_INCLUDE_STOPPED=true
-      - WATCHTOWER_REVIVE_STOPPED=false
+      - APP_URL=${ARCANE_APP_URL:-https://arcane.mellocloud.net}
+      - PUID=0
+      - PGID=0
+    ports:
+      - "3552:3552"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - arcane_data:/app/data
     restart: unless-stopped
     networks:
       - prod
 
 volumes:
-  portainer_data:
+  arcane_data:
   caddy_data:
   caddy_config:

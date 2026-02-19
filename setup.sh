@@ -79,4 +79,12 @@ if [ $? -ne 0 ]; then
   exit 1
 fi
 
+echo ""
+echo "=== Arcane (Docker management + auto-updates) ==="
+echo "Before first 'docker compose up', generate Arcane secrets:"
+echo "  docker run --rm ghcr.io/getarcaneapp/arcane:latest /app/arcane generate secret"
+echo "Add output to .env, plus: ARCANE_APP_URL=https://arcane.mellocloud.net"
+echo "In Arcane UI: Registry Credentials -> ghcr.io (GitHub PAT); enable Auto Updates (~5 min)."
+echo ""
+
 echo "All components have been successfully installed!"

@@ -1,14 +1,14 @@
 name: Build and Push Images
 
-# on:
-#   push:
-#     tags:
-#       - "*"
-
 on:
   push:
-    branches:
-      - "**"
+    tags:
+      - "*"
+
+# on:
+#   push:
+#     branches:
+#       - "**"
 
 env:
   REGISTRY: ghcr.io
@@ -71,7 +71,7 @@ jobs:
         run: |
           curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
             -d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} \
-            -d text="✅ Images built successfully!%0A🏷 Tag: ${{ github.ref_name }}%0A⏳ Watchtower will deploy in ~5 minutes"
+            -d text="✅ Images built successfully!%0A🏷 Tag: ${{ github.ref_name }}%0A⏳ Arcane will deploy in ~5 minutes"
 
       - name: Notify Telegram on Failure
         if: failure()

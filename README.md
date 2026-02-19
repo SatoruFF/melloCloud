@@ -90,6 +90,21 @@ npm run dev
 
 The application is currently hosted on Yandex Cloud infrastructure.
 
+### Production (Arcane + Docker Compose)
+
+Uses [Arcane](https://getarcane.app) for Docker management and auto-updates (replaces Portainer + Watchtower).
+
+1. Add DNS record: `arcane.mellocloud.net` → server IP
+2. Generate Arcane secrets and add to `.env`:
+   ```bash
+   docker run --rm ghcr.io/getarcaneapp/arcane:latest /app/arcane generate secret
+   ```
+3. Add to `.env`: `ENCRYPTION_KEY`, `JWT_SECRET`, `ARCANE_APP_URL=https://arcane.mellocloud.net`
+4. Run `docker compose up -d`
+5. Access Arcane at https://arcane.mellocloud.net (or /arcane path). Default login: `arcane` / `arcane-admin`
+6. In Arcane: Registry Credentials → add ghcr.io (GitHub PAT) for private images
+7. Enable Auto Updates in project/environment settings (~5 min poll)
+
 ## Documentation
 
 - `SECURITY.md` - Security implementation details and best practices
