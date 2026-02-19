@@ -55,6 +55,7 @@ services:
 
   # Arcane: Docker management + auto-updates (replaces Portainer + Watchtower)
   # Requires in .env: ENCRYPTION_KEY, JWT_SECRET (run: docker run --rm ghcr.io/getarcaneapp/arcane:latest /app/arcane generate secret)
+  # Override DATABASE_URL so Arcane uses its built-in SQLite (your .env has DATABASE_URL for backend → host.docker.internal)
   arcane:
     container_name: mello-arcane
     image: ghcr.io/getarcaneapp/arcane:latest
@@ -64,6 +65,7 @@ services:
       - APP_URL=${ARCANE_APP_URL:-https://arcane.mellocloud.net}
       - PUID=0
       - PGID=0
+      - DATABASE_URL=file:/app/data/arcane.db?_pragma=journal_mode(WAL)&_pragma=busy_timeout(2500)&_txlock=immediate
     ports:
       - "3552:3552"
     volumes:
