@@ -66,6 +66,7 @@ services:
       - PUID=0
       - PGID=0
       - LISTEN=0.0.0.0
+      - PORT=3552
       - DATABASE_URL=file:/app/data/arcane.db?_pragma=journal_mode(WAL)&_pragma=busy_timeout(2500)&_txlock=immediate
     ports:
       - "3552:3552"
