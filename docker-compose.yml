@@ -65,6 +65,7 @@ services:
       - APP_URL=${ARCANE_APP_URL:-https://arcane.mellocloud.net}
       - PUID=0
       - PGID=0
+      - LISTEN=0.0.0.0
       - DATABASE_URL=file:/app/data/arcane.db?_pragma=journal_mode(WAL)&_pragma=busy_timeout(2500)&_txlock=immediate
     ports:
       - "3552:3552"
