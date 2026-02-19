@@ -19,9 +19,7 @@ mellocloud.net, www.mellocloud.net {
 	}
 
 	# Proxy Arcane UI at /arcane (Docker management + auto-updates)
-	@arcane path_prefix /arcane
-	handle @arcane {
-		uri strip_prefix /arcane
+	handle_path /arcane* {
 		reverse_proxy arcane:3552 {
 			header_up Connection {>Connection}
 			header_up Upgrade {>Upgrade}
