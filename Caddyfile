@@ -20,10 +20,10 @@ mellocloud.net, www.mellocloud.net {
 
 	# Proxy Arcane UI at /arcane (Docker management + auto-updates)
 	handle_path /arcane* {
-		reverse_proxy arcane:3552 {
-			header_up Connection {>Connection}
-			header_up Upgrade {>Upgrade}
-		}
+    	reverse_proxy arcane:3552 {
+        	header_up Connection {>Connection}
+        	header_up Upgrade {>Upgrade}
+    	}
 	}
 
 	# Proxy API requests to backend
@@ -71,19 +71,16 @@ api.mellocloud.net {
 
 # Arcane subdomain (Docker management + auto-updates)
 arcane.mellocloud.net {
-	encode gzip
-	log
+    encode gzip
+    log
 
-	header {
-		-Server
-		X-Content-Type-Options nosniff
-		X-Frame-Options "*"
-	}
+    header {
+        -Server
+        X-Content-Type-Options nosniff
+        X-Frame-Options "*"
+    }
 
-	reverse_proxy arcane:3552 {
-		header_up Connection {>Connection}
-		header_up Upgrade {>Upgrade}
-	}
+    reverse_proxy arcane:3552
 }
 
 # WebSocket subdomain
