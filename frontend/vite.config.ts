@@ -57,10 +57,11 @@ export default defineConfig(({ mode }) => ({
       },
     }),
     // Обфускация только для production-сборки (увеличивает размер и время сборки)
+    // Не обфусцируем главный бандл (index-*.js) — в нём вызовы import() для lazy-роутов, обфускатор ломает пути
     mode === "production" &&
       (obfuscator({
         apply: "build",
-        exclude: [/node_modules/, /\.css$/],
+        exclude: [/node_modules/, /\.css$/, /\/index-[A-Za-z0-9]+\.js$/],
         options: {
           compact: true,
           controlFlowFlattening: false,

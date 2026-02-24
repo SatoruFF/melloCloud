@@ -12,7 +12,7 @@
     "skipLibCheck": true,
     "noImplicitAny": false,
     "noEmitOnError": false, // ?
-    "moduleResolution": "node",
+    "moduleResolution": "Node16",
     // "bun-types" is the important part
     "types": [
       //"bun-types"
