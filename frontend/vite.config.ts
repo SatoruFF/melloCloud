@@ -5,6 +5,7 @@ import svgr from "vite-plugin-svgr";
 import { VitePWA } from "vite-plugin-pwa";
 import obfuscator from "vite-plugin-javascript-obfuscator";
 import { posix } from "path";
+import { fileURLToPath, URL } from "node:url";
 
 // const mode = process.env.MODE || 'development';
 
@@ -58,38 +59,40 @@ export default defineConfig(({ mode }) => ({
     }),
     // Обфускация только для production-сборки (увеличивает размер и время сборки)
     // Не обфусцируем главный бандл (index-*.js) — в нём вызовы import() для lazy-роутов, обфускатор ломает пути
-    mode === "production" &&
-      (obfuscator({
-        apply: "build",
-        exclude: [/node_modules/, /\.css$/, /\/index-[A-Za-z0-9]+\.js$/],
-        options: {
-          compact: true,
-          controlFlowFlattening: false,
-          deadCodeInjection: false,
-          debugProtection: false,
-          disableConsoleOutput: false,
-          identifierNamesGenerator: "hexadecimal",
-          log: false,
-          numbersToExpressions: false,
-          renameGlobals: false,
-          selfDefending: false,
-          simplify: true,
-          splitStrings: false,
-          stringArray: true,
-          stringArrayCallsTransform: false,
-          stringArrayEncoding: [],
-          stringArrayIndexShift: true,
-          stringArrayRotate: true,
-          stringArrayShuffle: true,
-          stringArrayWrappersCount: 0,
-          stringArrayWrappersType: "variable",
-          stringArrayThreshold: 0.75,
-          unicodeEscapeSequence: false,
-        },
-      }) as PluginOption),
+    // mode === "production" &&
+    //   (obfuscator({
+    //     apply: "build",
+    //     exclude: [/node_modules/, /\.css$/, /\/index-[A-Za-z0-9]+\.js$/],
+    //     options: {
+    //       compact: true,
+    //       controlFlowFlattening: false,
+    //       deadCodeInjection: false,
+    //       debugProtection: false,
+    //       disableConsoleOutput: false,
+    //       identifierNamesGenerator: "hexadecimal",
+    //       log: false,
+    //       numbersToExpressions: false,
+    //       renameGlobals: false,
+    //       selfDefending: false,
+    //       simplify: true,
+    //       splitStrings: false,
+    //       stringArray: true,
+    //       stringArrayCallsTransform: false,
+    //       stringArrayEncoding: [],
+    //       stringArrayIndexShift: true,
+    //       stringArrayRotate: true,
+    //       stringArrayShuffle: true,
+    //       stringArrayWrappersCount: 0,
+    //       stringArrayWrappersType: "variable",
+    //       stringArrayThreshold: 0.75,
+    //       unicodeEscapeSequence: false,
+    //     },
+    //   }) as PluginOption),
   ].filter(Boolean) as PluginOption[],
   resolve: {
-    alias: [{ find: "@", replacement: "/src" }],
+    alias: {
+      "@": fileURLToPath(new URL("./src", import.meta.url)),
+    },
   },
   server: {
     port: 5173,

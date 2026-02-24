@@ -18,6 +18,9 @@
     "eslint.enable": false,
     "editor.codeActionsOnSave": {
       "source.organizeImports.biome": "explicit"
+    },
+    "[typescript]": {
+      "editor.defaultFormatter": "vscode.typescript-language-features"
     }
   },
   "extensions": {
