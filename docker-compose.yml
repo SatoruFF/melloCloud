@@ -29,8 +29,8 @@ services:
       - ./.env
     networks:
       - prod
-    volumes:
-      - ./backend/src:/app/src
+    # volumes:
+      # - ./backend/src:/app/src
     extra_hosts:
       - "host.docker.internal:host-gateway"
       - "backend:172.18.0.4"
