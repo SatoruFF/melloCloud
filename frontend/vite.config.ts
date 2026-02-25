@@ -3,7 +3,7 @@ import { visualizer } from "rollup-plugin-visualizer";
 import react from "@vitejs/plugin-react";
 import svgr from "vite-plugin-svgr";
 import { VitePWA } from "vite-plugin-pwa";
-import obfuscator from "vite-plugin-javascript-obfuscator";
+// import obfuscator from "vite-plugin-javascript-obfuscator";
 import { posix } from "path";
 import { fileURLToPath, URL } from "node:url";
 

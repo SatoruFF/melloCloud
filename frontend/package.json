@@ -70,6 +70,7 @@
     "axios": "^1.13.5",
     "classnames": "^2.5.1",
     "config": "^3.3.12",
+    "dayjs": "^1.11.19",
     "framer-motion": "^12.5.0",
     "i18next": "^24.2.3",
     "i18next-browser-languagedetector": "^8.0.4",
