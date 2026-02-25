@@ -10,13 +10,9 @@ import multiMonthPlugin from "@fullcalendar/multimonth";
 import * as Dialog from "@radix-ui/react-dialog";
 import { Calendar as CalendarIcon, Clock, MapPin, Users, Tag, X, Trash2, Plus, Share2 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
-import { message, Drawer, DatePicker } from "antd";
-import luxonGenerateConfig from "@rc-component/picker/generate/luxon";
-import type { DateTime } from "luxon";
-import { DateTime as LuxonDateTime } from "luxon";
+import { message, Drawer } from "antd";
 import { useTranslation } from "react-i18next";
 
-const LuxonDatePicker = DatePicker.generatePicker<DateTime>(luxonGenerateConfig);
 import styles from "./calendar.module.scss";
 import {
   useGetEventsQuery,
@@ -339,45 +335,40 @@ export default function Calendar() {
 
   const defaultStartTime = "09:00";
   const defaultEndTime = "10:00";
-  const startPickerValue = (() => {
-    if (formData.allDay && formData.startDate) {
-      const d = LuxonDateTime.fromFormat(formData.startDate, "yyyy-MM-dd");
-      return d.invalid ? null : d;
-    }
-    if (formData.startDate) {
-      const s = formData.startTime || defaultStartTime;
-      const d = LuxonDateTime.fromISO(`${formData.startDate}T${s}`);
-      return d.invalid ? null : d;
-    }
-    return null;
-  })();
-  const endPickerValue = (() => {
-    if (formData.allDay && formData.endDate) {
-      const d = LuxonDateTime.fromFormat(formData.endDate, "yyyy-MM-dd");
-      return d.invalid ? null : d;
-    }
-    if (formData.endDate) {
-      const s = formData.endTime || defaultEndTime;
-      const d = LuxonDateTime.fromISO(`${formData.endDate}T${s}`);
-      return d.invalid ? null : d;
-    }
-    return null;
-  })();
 
-  const handleStartChange = (date: DateTime | null) => {
-    if (!date || date.invalid) return;
+  const handleStartChange = (value: string) => {
+    if (!value) return;
+
+    if (formData.allDay) {
+      setFormData((prev) => ({ ...prev, startDate: value }));
+      return;
+    }
+
+    const [date, time] = value.split("T");
+    if (!date || !time) return;
+
     setFormData((prev) => ({
       ...prev,
-      startDate: date.toFormat("yyyy-MM-dd"),
-      ...(prev.allDay ? {} : { startTime: date.toFormat("HH:mm") }),
+      startDate: date,
+      startTime: time.slice(0, 5),
     }));
   };
-  const handleEndChange = (date: DateTime | null) => {
-    if (!date || date.invalid) return;
+
+  const handleEndChange = (value: string) => {
+    if (!value) return;
+
+    if (formData.allDay) {
+      setFormData((prev) => ({ ...prev, endDate: value }));
+      return;
+    }
+
+    const [date, time] = value.split("T");
+    if (!date || !time) return;
+
     setFormData((prev) => ({
       ...prev,
-      endDate: date.toFormat("yyyy-MM-dd"),
-      ...(prev.allDay ? {} : { endTime: date.toFormat("HH:mm") }),
+      endDate: date,
+      endTime: time.slice(0, 5),
     }));
   };
 
@@ -537,30 +528,28 @@ export default function Calendar() {
                   <div className={styles.formRow}>
                     <div className={styles.formGroup}>
                       <label className={styles.detailLabel}>{t("planner.events.form.startDate")}</label>
-                      <LuxonDatePicker
-                        value={startPickerValue?.invalid ? null : startPickerValue}
-                        onChange={handleStartChange}
-                        className={styles.datePicker}
-                        popupClassName={styles.datePickerDropdown}
-                        allowClear={false}
-                        format={formData.allDay ? "dd.MM.yyyy" : "dd.MM.yyyy HH:mm"}
-                        showTime={
-                          !formData.allDay ? { format: "HH:mm" } : false
+                      <input
+                        type={formData.allDay ? "date" : "datetime-local"}
+                        className={styles.formInput}
+                        value={
+                          formData.allDay
+                            ? formData.startDate
+                            : `${formData.startDate}T${formData.startTime || defaultStartTime}`
                         }
+                        onChange={(e) => handleStartChange(e.target.value)}
                       />
                     </div>
                     <div className={styles.formGroup}>
                       <label className={styles.detailLabel}>{t("planner.events.form.endDate")}</label>
-                      <LuxonDatePicker
-                        value={endPickerValue?.invalid ? null : endPickerValue}
-                        onChange={handleEndChange}
-                        className={styles.datePicker}
-                        popupClassName={styles.datePickerDropdown}
-                        allowClear={false}
-                        format={formData.allDay ? "dd.MM.yyyy" : "dd.MM.yyyy HH:mm"}
-                        showTime={
-                          !formData.allDay ? { format: "HH:mm" } : false
+                      <input
+                        type={formData.allDay ? "date" : "datetime-local"}
+                        className={styles.formInput}
+                        value={
+                          formData.allDay
+                            ? formData.endDate
+                            : `${formData.endDate}T${formData.endTime || defaultEndTime}`
                         }
+                        onChange={(e) => handleEndChange(e.target.value)}
                       />
                     </div>
                   </div>
@@ -775,30 +764,28 @@ export default function Calendar() {
                 <div className={styles.formRow}>
                   <div className={styles.formGroup}>
                     <label className={styles.formLabel}>{t("planner.events.form.startDate")}</label>
-                    <LuxonDatePicker
-                      value={startPickerValue?.invalid ? null : startPickerValue}
-                      onChange={handleStartChange}
-                      className={styles.datePicker}
-                      popupClassName={styles.datePickerDropdown}
-                      allowClear={false}
-                      format={formData.allDay ? "dd.MM.yyyy" : "dd.MM.yyyy HH:mm"}
-                      showTime={
-                        !formData.allDay ? { format: "HH:mm" } : false
+                    <input
+                      type={formData.allDay ? "date" : "datetime-local"}
+                      className={styles.formInput}
+                      value={
+                        formData.allDay
+                          ? formData.startDate
+                          : `${formData.startDate}T${formData.startTime || defaultStartTime}`
                       }
+                      onChange={(e) => handleStartChange(e.target.value)}
                     />
                   </div>
                   <div className={styles.formGroup}>
                     <label className={styles.formLabel}>{t("planner.events.form.endDate")}</label>
-                    <LuxonDatePicker
-                      value={endPickerValue?.invalid ? null : endPickerValue}
-                      onChange={handleEndChange}
-                      className={styles.datePicker}
-                      popupClassName={styles.datePickerDropdown}
-                      allowClear={false}
-                      format={formData.allDay ? "dd.MM.yyyy" : "dd.MM.yyyy HH:mm"}
-                      showTime={
-                        !formData.allDay ? { format: "HH:mm" } : false
+                    <input
+                      type={formData.allDay ? "date" : "datetime-local"}
+                      className={styles.formInput}
+                      value={
+                        formData.allDay
+                          ? formData.endDate
+                          : `${formData.endDate}T${formData.endTime || defaultEndTime}`
                       }
+                      onChange={(e) => handleEndChange(e.target.value)}
                     />
                   </div>
                 </div>
