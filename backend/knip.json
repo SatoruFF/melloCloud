@@ -1,0 +1,16 @@
+{
+  "$schema": "https://unpkg.com/knip@latest/schema.json",
+  "entry": [
+    "src/server.node.ts",
+    "src/server.bun.ts",
+    "src/app.ts",
+    "src/openapi.ts",
+    "scripts/**/*.js",
+    "jest.config.ts"
+  ],
+  "project": [
+    "src/**/*.{ts,js}",
+    "scripts/**/*.js",
+    "*.{ts,js}"
+  ]
+}

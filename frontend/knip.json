@@ -1,0 +1,22 @@
+{
+  "$schema": "https://unpkg.com/knip@latest/schema.json",
+  "entry": [
+    "src/main.tsx",
+    "vite.config.ts",
+    "vitest.config.ts",
+    "cypress.config.ts",
+    "jest.config.ts",
+    "stylelint.config.ts",
+    ".storybook/main.ts",
+    "scripts/**/*.ts"
+  ],
+  "project": [
+    "src/**/*.{ts,tsx}",
+    "scripts/**/*.ts",
+    "*.{ts,js}"
+  ],
+  "ignore": [
+    "src-tauri/**",
+    "tests/**"
+  ]
+}
