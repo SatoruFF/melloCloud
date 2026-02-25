@@ -5,6 +5,9 @@
     "dev": "pnpm --parallel -r run dev",
     "dev:backend": "pnpm --filter server dev",
     "dev:frontend": "pnpm --filter client dev",
-    "build": "pnpm -r run build"
+    "build": "pnpm -r run build",
+    "knip": "pnpm run knip:frontend && pnpm run knip:backend",
+    "knip:frontend": "pnpm --dir frontend dlx knip --config knip.json",
+    "knip:backend": "pnpm --dir backend dlx knip --config knip.json"
   }
 }
