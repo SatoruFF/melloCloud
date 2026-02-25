@@ -1,19 +1,20 @@
-import { Button } from "antd";
-// import { REGISTRATION_ROUTE } from 'path';
-import type { FC } from "react";
-import { type LinkProps, NavLink } from "react-router-dom";
+import { Button } from 'antd';
+import type { FC } from 'react';
+import { NavLink } from 'react-router-dom';
 
-interface ILink extends LinkProps {
-	route: string;
-	title: string;
+interface ILink {
+  route: string;
+  title: string;
 }
 
-const NavLinkComponent: FC<ILink> = ({}) => {
-	return (
-		<Button ghost>
-			<NavLink to={REGISTRATION_ROUTE}>registration</NavLink>
-		</Button>
-	);
+const NavLinkComponent: FC<ILink> = ({ route, title }) => {
+  return (
+    <Button ghost>
+      <NavLink to={route}>
+        {title}
+      </NavLink>
+    </Button>
+  );
 };
 
 export default NavLinkComponent;

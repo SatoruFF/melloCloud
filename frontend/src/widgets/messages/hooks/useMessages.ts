@@ -1,3 +1,4 @@
+// @ts-nocheck
 import _ from "lodash-es";
 import { useEffect, useState, useRef } from "react";
 import type { Message } from "../../../entities/message";

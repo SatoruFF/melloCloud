@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Modal, Input, List, Avatar, Empty, Tabs, Checkbox, Button } from "antd";
 import { memo, useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";

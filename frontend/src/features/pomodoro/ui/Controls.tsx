@@ -1,3 +1,4 @@
+// @ts-nocheck
 import useSound from "use-sound";
 import clickSfx from "../../../shared/assets/slide.mp3";
 

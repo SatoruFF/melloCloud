@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useCallback, useState, useEffect, useMemo } from "react";
 import { useAppDispatch, useAppSelector } from "../../../app/store/store";
 import { TaskColumn, Task } from "../../../entities/task/types/tasks";

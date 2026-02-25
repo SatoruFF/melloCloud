@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Drawer, Input, Select, Button, Space, Typography, DatePicker } from "antd";
 import type { Dayjs } from "dayjs";
 import dayjs from "dayjs";

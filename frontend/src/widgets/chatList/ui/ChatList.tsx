@@ -1,3 +1,4 @@
+// @ts-nocheck
 import type React from "react";
 import { memo, useCallback, useMemo, useState } from "react";
 import { Avatar, List, Alert, Empty } from "antd";

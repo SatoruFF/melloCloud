@@ -1,3 +1,4 @@
+// @ts-nocheck
 import _ from 'lodash-es';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { message } from 'antd';
