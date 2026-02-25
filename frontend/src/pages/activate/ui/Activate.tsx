@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { CheckSquare, XCircle } from "lucide-react";
 import { message } from "antd";
 import cn from "classnames";

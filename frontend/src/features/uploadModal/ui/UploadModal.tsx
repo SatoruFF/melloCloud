@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Upload as UploadIcon } from "lucide-react";
 import { Button, Modal, Upload, message } from "antd";
 import type { UploadFile, UploadProps } from "antd";

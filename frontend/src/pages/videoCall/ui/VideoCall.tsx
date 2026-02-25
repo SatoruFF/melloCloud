@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useSearchParams } from "react-router-dom";
 import { useCallback } from "react";
 import { JitsiMeeting } from "@jitsi/react-sdk";

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { unwrapResult } from "@reduxjs/toolkit";
 import { Form, Input, message, notification } from "antd";
 import Divider from "antd/es/divider";

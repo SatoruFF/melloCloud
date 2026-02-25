@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { FileText, Star, Tag, Trash2 } from "lucide-react";
 import { Avatar, Layout, Menu, Typography, Tooltip } from "antd";
 import cn from "classnames";

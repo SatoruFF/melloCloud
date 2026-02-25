@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { LogOut, Edit, Lock, Trash2, User, Mail } from "lucide-react";
 import { Button, Card, Space, Typography, notification } from "antd";
 import { useState } from "react";

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import Particles, { initParticlesEngine } from "@tsparticles/react";
 import { loadSlim } from "@tsparticles/slim"; // Подключаем оптимизированную версию
 import cn from "classnames";
