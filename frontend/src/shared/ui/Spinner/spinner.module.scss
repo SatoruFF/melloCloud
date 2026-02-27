@@ -1,5 +1,52 @@
-.fullscreenWrapper {
-  height: 90vh; // FIXME ! need calculate
-  width: 100%;
-  @extend %centerTemplate;
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.spinnerContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.icon {
+  animation: spin 0.9s linear infinite;
+  color: #3b82f6;
+}
+
+.text {
+  font-size: 14px;
+  color: #6b7280;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+}
+
+.fullscreenOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  backdrop-filter: blur(6px);
+  background: rgba(255, 255, 255, 0.6);
+
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }

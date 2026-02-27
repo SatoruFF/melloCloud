@@ -51,8 +51,10 @@ class UserControllerClass {
         path: "/",
       });
 
-      // Возвращаем данные БЕЗ токенов (они уже в cookies)
-      return c.json(_.omit(userData, ["token", "refreshToken"]));
+      // Возвращаем пользователя + accessToken (SPA его читает),
+      // но refreshToken остаётся только в httpOnly cookie
+      const { refreshToken, ...safeUserData } = userData as any;
+      return c.json(safeUserData);
     } catch (error: any) {
       logger.error(error.message, error);
       if (error.statusCode === 403 && error.message === "USER_BLOCKED") {
@@ -120,7 +122,9 @@ class UserControllerClass {
         sameSite: "Strict",
       });
 
-      return c.json(_.omit(userData, ["token", "refreshToken"]));
+      // Отдаём пользователя + accessToken (для SPA), refreshToken только в cookie
+      const { refreshToken, ...safeUserData } = userData as any;
+      return c.json(safeUserData);
     } catch (error: any) {
       logger.error(error.message, error);
       return c.json({ message: error.message }, error.statusCode || 500);
@@ -130,9 +134,9 @@ class UserControllerClass {
   // Обновление access токена по refresh
   async refresh(c: Context) {
     try {
-      const refreshToken = getCookie(c, "refreshToken");
+      const refreshTokenCookie = getCookie(c, "refreshToken");
 
-      const userData = await UserService.refresh(refreshToken);
+      const userData = await UserService.refresh(refreshTokenCookie);
 
       // Обновляем accessToken cookie
       setCookie(c, "accessToken", userData.token, {
@@ -152,8 +156,9 @@ class UserControllerClass {
         path: "/",
       });
 
-      // Возвращаем данные БЕЗ токенов
-      return c.json(_.omit(userData, ["token", "refreshToken"]));
+      // SPA получает новый accessToken, а refreshToken остаётся только в cookie
+      const { refreshToken, ...safeUserData } = userData as any;
+      return c.json(safeUserData);
     } catch (error: any) {
       logger.error(error.message, error);
       return c.json({ message: error.message }, error.statusCode || 500);

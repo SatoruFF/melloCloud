@@ -28,10 +28,10 @@ interface Session {
   lastActivity: string;
 }
 
-// Base query with parameters to auth with access token
 const baseQuery = fetchBaseQuery({
   baseUrl: Variables.BASE_API_URL,
-  // credentials: "include", // Important: for working with cookies?
+  // Отправляем httpOnly cookies (accessToken / refreshToken) вместе с запросами
+  credentials: "include",
   prepareHeaders: headers => {
     const token = localStorage.getItem('token');
     if (token) {
