@@ -5,7 +5,6 @@ import { FileService } from "./fileService.js";
 import { MailService } from "./mailService.js";
 import { SessionService } from "./sessionService.js";
 import { hashPassword, comparePassword } from "../utils/argon2.js";
-import _ from "lodash";
 import createError from "http-errors";
 import { generateJwt } from "../utils/generateJwt.js";
 import { validateAccessToken, validateRefreshToken } from "../utils/validateJwt.js";
@@ -20,8 +19,6 @@ interface ILoginMetadata {
   userAgent?: string;
   ip?: string;
 }
-
-const invitePrivateProps = ["activationToken", "password"];
 
 class UserServiceClass {
   async createInvite({ userName, email, password }: IUserData): Promise<any> {
@@ -46,7 +43,8 @@ class UserServiceClass {
       activationToken = `${CLIENT_URL}/activate?token=${activationToken}`;
       await MailService.sendActivationMail(email, { ...invite, activationToken });
 
-      return _.omit(invite, invitePrivateProps);
+      const { activationToken: _at, password: _pw, ...safeInvite } = invite as Record<string, unknown>;
+      return safeInvite;
     });
   }
 
