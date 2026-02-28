@@ -18,9 +18,9 @@ mellocloud.net, www.mellocloud.net {
 		respond "User-agent: *\nAllow: /" 200
 	}
 
-	# Proxy Arcane UI at /arcane (Docker management + auto-updates)
-	handle_path /arcane* {
-    	reverse_proxy arcane:3552 {
+	# Proxy Dockhand UI at /dockhand (Docker management)
+	handle_path /dockhand* {
+    	reverse_proxy dockhand:3000 {
         	header_up Connection {>Connection}
         	header_up Upgrade {>Upgrade}
     	}
@@ -69,8 +69,8 @@ api.mellocloud.net {
 	}
 }
 
-# Arcane subdomain (Docker management + auto-updates)
-arcane.mellocloud.net {
+# Dockhand subdomain (Docker management)
+dockhand.mellocloud.net {
     encode gzip
     log
 
@@ -80,7 +80,7 @@ arcane.mellocloud.net {
         X-Frame-Options "*"
     }
 
-    reverse_proxy arcane:3552
+    reverse_proxy dockhand:3000
 }
 
 # WebSocket subdomain
@@ -100,6 +100,6 @@ ws.mellocloud.net {
 }
 
 # Redirect HTTP to HTTPS
-http://mellocloud.net, http://www.mellocloud.net, http://api.mellocloud.net, http://arcane.mellocloud.net, http://ws.mellocloud.net {
+http://mellocloud.net, http://www.mellocloud.net, http://api.mellocloud.net, http://dockhand.mellocloud.net, http://ws.mellocloud.net {
 	redir https://{host}{uri}
 }

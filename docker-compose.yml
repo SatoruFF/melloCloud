@@ -15,7 +15,7 @@ services:
     depends_on:
       - backend
       - frontend
-      - arcane
+      - dockhand
     networks:
       - prod
     restart: unless-stopped
@@ -53,31 +53,23 @@ services:
     labels:
       - com.getarcaneapp.arcane.updater=true
 
-  # Arcane: Docker management + auto-updates (replaces Portainer + Watchtower)
-  # Requires in .env: ENCRYPTION_KEY, JWT_SECRET (run: docker run --rm ghcr.io/getarcaneapp/arcane:latest /app/arcane generate secret)
-  # Override DATABASE_URL so Arcane uses its built-in SQLite (your .env has DATABASE_URL for backend → host.docker.internal)
-  arcane:
-    container_name: mello-arcane
-    image: ghcr.io/getarcaneapp/arcane:latest
-    env_file:
-      - ./.env
-    environment:
-      - APP_URL=${ARCANE_APP_URL:-https://arcane.mellocloud.net}
-      - PUID=0
-      - PGID=0
-      - LISTEN=0.0.0.0
-      - PORT=3552
-      - DATABASE_URL=file:/app/data/arcane.db?_pragma=journal_mode(WAL)&_pragma=busy_timeout(2500)&_txlock=immediate
+  # Dockhand: Docker management UI (Git integration, vulnerability scanning, multi-environment)
+  # Free for homelabs, enterprise-ready
+  dockhand:
+    container_name: mello-dockhand
+    image: fnsys/dockhand:latest
+    restart: unless-stopped
     ports:
-      - "3552:3552"
+      - "3000:3000"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - arcane_data:/app/data
-    restart: unless-stopped
+      - dockhand_data:/app/data
     networks:
       - prod
+    labels:
+      - com.getarcaneapp.arcane.updater=true
 
 volumes:
-  arcane_data:
+  dockhand_data:
   caddy_data:
   caddy_config:
