@@ -34,16 +34,22 @@ app.use(
 // ========================================
 // MIDDLEWARE
 // ========================================
-// CORS: Разрешаем только CLIENT_URL в production
+// CORS: разрешаем CLIENT_URL / FRONTEND_URL + localhost в dev
 const CLIENT_URL = process.env.CLIENT_URL || "http://localhost:5173";
+const FRONTEND_URL = process.env.FRONTEND_URL || CLIENT_URL;
 const isDevelopment = process.env.NODE_ENV !== "production";
+
+const allowedOrigins = new Set(
+  [CLIENT_URL, FRONTEND_URL].filter(Boolean),
+);
 
 app.use(
   "*",
   cors({
     origin: (origin: string): string | undefined => {
-      if (isDevelopment && origin?.includes("localhost")) return origin;
-      return origin === CLIENT_URL ? origin : undefined;
+      if (!origin) return undefined;
+      if (isDevelopment && origin.includes("localhost")) return origin;
+      return allowedOrigins.has(origin) ? origin : undefined;
     },
     allowMethods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE", "OPTIONS"],
     credentials: true,
@@ -66,9 +72,14 @@ app.use("*", rateLimiter);
 app.route("/api/v1", v1Router);
 app.route("/v1", v1Router);
 
-// Health check
+// Health check — возвращает статус и версию сборки
 app.get("/", (c) => {
-  return c.text("i am alive ;)");
+  return c.json({
+    status: "alive",
+    version: process.env.BUILD_VERSION || "unknown",
+    buildSha: process.env.BUILD_SHA || "unknown",
+    buildDate: process.env.BUILD_DATE || "unknown",
+  });
 });
 
 // OpenAPI spec (JSON) and Swagger UI for all API routes

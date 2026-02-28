@@ -18,5 +18,11 @@ RUN bunx prisma generate
 
 EXPOSE 1337
 
+# Версия сборки — передаётся как build arg, сохраняется как ENV для runtime
+ARG BUILD_SHA=unknown
+ARG BUILD_DATE=unknown
+ENV BUILD_SHA=${BUILD_SHA}
+ENV BUILD_DATE=${BUILD_DATE}
+
 # Run migrations and start app (Bun runs TS without a separate build)
 CMD ["sh", "-c", "bunx prisma migrate deploy && bun run src/server.bun.ts"]

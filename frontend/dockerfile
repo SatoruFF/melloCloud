@@ -9,6 +9,12 @@ RUN npm install --legacy-peer-deps
 
 COPY . .
 
+# Версия сборки — передаётся как build arg и становится Vite env var
+ARG BUILD_SHA=unknown
+ARG BUILD_DATE=unknown
+ENV VITE_BUILD_SHA=${BUILD_SHA}
+ENV VITE_BUILD_DATE=${BUILD_DATE}
+
 ENV NODE_OPTIONS=--max-old-space-size=4096
 RUN npm run build
 

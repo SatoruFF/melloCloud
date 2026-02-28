@@ -116,5 +116,8 @@ export default defineConfig(({ mode }) => ({
     NODE_ENV: JSON.stringify("development"),
     API_URL: JSON.stringify("http://localhost:8000"),
     SHELL: JSON.stringify("frontend"),
+    // Версия сборки — задаётся через VITE_BUILD_SHA / VITE_BUILD_DATE env vars (см. frontend/dockerfile)
+    __BUILD_SHA__: JSON.stringify(process.env.VITE_BUILD_SHA || "dev"),
+    __BUILD_DATE__: JSON.stringify(process.env.VITE_BUILD_DATE || new Date().toISOString()),
   },
 }));
