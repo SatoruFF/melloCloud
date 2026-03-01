@@ -15,7 +15,7 @@ services:
     depends_on:
       - backend
       - frontend
-      - dockhand
+      - portainer
     networks:
       - prod
     restart: unless-stopped
@@ -53,23 +53,23 @@ services:
     labels:
       - com.getarcaneapp.arcane.updater=true
 
-  # Dockhand: Docker management UI (Git integration, vulnerability scanning, multi-environment)
-  # Free for homelabs, enterprise-ready
-  dockhand:
-    container_name: mello-dockhand
-    image: fnsys/dockhand:latest
+  # Portainer: Docker management UI (comprehensive container/image/volume management)
+  # Community Edition - free and open source
+  portainer:
+    container_name: mello-portainer
+    image: portainer/portainer-ce:latest
     restart: unless-stopped
     ports:
-      - "3000:3000"
+      - "9000:9000"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - dockhand_data:/app/data
+      - portainer_data:/data
     networks:
       - prod
     labels:
       - com.getarcaneapp.arcane.updater=true
 
 volumes:
-  dockhand_data:
+  portainer_data:
   caddy_data:
   caddy_config:

@@ -18,9 +18,9 @@ mellocloud.net, www.mellocloud.net {
 		respond "User-agent: *\nAllow: /" 200
 	}
 
-	# Proxy Dockhand UI at /dockhand (Docker management)
-	handle_path /dockhand* {
-    	reverse_proxy dockhand:3000 {
+	# Proxy Portainer UI at /portainer (Docker management)
+	handle_path /portainer* {
+    	reverse_proxy portainer:9000 {
         	header_up Connection {>Connection}
         	header_up Upgrade {>Upgrade}
     	}
@@ -69,8 +69,8 @@ api.mellocloud.net {
 	}
 }
 
-# Dockhand subdomain (Docker management)
-dockhand.mellocloud.net {
+# Portainer subdomain (Docker management)
+portainer.mellocloud.net {
     encode gzip
     log
 
@@ -80,7 +80,7 @@ dockhand.mellocloud.net {
         X-Frame-Options "*"
     }
 
-    reverse_proxy dockhand:3000
+    reverse_proxy portainer:9000
 }
 
 # WebSocket subdomain
@@ -100,6 +100,6 @@ ws.mellocloud.net {
 }
 
 # Redirect HTTP to HTTPS
-http://mellocloud.net, http://www.mellocloud.net, http://api.mellocloud.net, http://dockhand.mellocloud.net, http://ws.mellocloud.net {
+http://mellocloud.net, http://www.mellocloud.net, http://api.mellocloud.net, http://portainer.mellocloud.net, http://ws.mellocloud.net {
 	redir https://{host}{uri}
 }
