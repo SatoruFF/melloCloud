@@ -3,8 +3,8 @@ import { Breadcrumb, Button, Input, Modal, Select } from "antd";
 import cn from "classnames";
 import { memo } from "react";
 import { useTranslation } from "react-i18next";
-import UploadModal from "../../../features/uploadModal/ui/UploadModal";
-import { Search, Spinner } from "../../../shared";
+import { UploadModal } from "@/features/uploadModal";
+import { Search, Spinner } from "@/shared";
 import { useFiles } from "../../../pages/files/lib/hooks/useFiles";
 import styles from "./file-toolbar.module.scss";
 

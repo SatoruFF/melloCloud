@@ -4,7 +4,7 @@ import { addQueryParams } from '../../../../shared/lib/url/addQueryParams/addQue
 import { generateParams } from '../../../../shared/lib/url/generateParams/generateParams';
 import { queryParamsSync } from '../../../../shared/consts/queryParamsSync';
 import { ApiPaths } from '../../../../shared';
-import { CreateWebhookRequest, IWebhook, WebhookExecution } from '../../types/webhook';
+import { CreateWebhookRequest, IWebhook, WebhookExecution, ScheduledWebhook } from '../../types/webhook';
 
 export const webhookApi = rtkApi.injectEndpoints({
   endpoints: builder => ({
@@ -70,7 +70,7 @@ export const webhookApi = rtkApi.injectEndpoints({
     }),
 
     // Get scheduled webhooks
-    getScheduledWebhooks: builder.query<any[], void>({
+    getScheduledWebhooks: builder.query<ScheduledWebhook[], void>({
       query: () => `${ApiPaths.webhooks}/scheduled`,
     }),
 

@@ -50,8 +50,9 @@ if (cluster.isPrimary) {
       setupYjsWebSocket(wssYjsNotes);
 
       customLogger.info(`⚡️[server]: 🚀 Node server is running at: ${port}`);
-    } catch (e: any) {
-      customLogger.error(e.message);
+    } catch (e: unknown) {
+      const error = e instanceof Error ? e : new Error(String(e));
+      customLogger.error(error.message);
     }
   };
 

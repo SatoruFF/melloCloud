@@ -1,8 +1,9 @@
 import createError from "http-errors";
 import _ from "lodash";
 import type { Prisma } from "@prisma/client";
+import { File as PrismaFile } from "@prisma/client";
 import { FETCH_LIMIT, prisma, s3, S3_BUCKET_NAME } from "../configs/config.js";
-import type { IFile, ISearchParams } from "./../types/File";
+import type { IFile, ISearchParams } from "./../types/File.js";
 import { NotificationService } from "./notificationService.js";
 
 interface CreateDirResponse {
@@ -13,12 +14,16 @@ interface DeleteFileResponse {
   message: string;
 }
 
+interface S3DeleteObject {
+  Key: string;
+}
+
 interface IS3 {
   Bucket: string | undefined;
-  Body?: any;
+  Body?: string | Buffer;
   Key?: string;
   Prefix?: string;
-  Delete?: any;
+  Delete?: { Objects: S3DeleteObject[] };
 }
 
 type ExtendedFile = IFile & { storageGuid: string };
@@ -43,7 +48,7 @@ class FileServiceClass {
       Key: folderPath,
     };
 
-    await s3.putObject(params as any).promise();
+    await s3.putObject(params as unknown as AWS.S3.PutObjectRequest).promise();
 
     const newDirUrl = await s3.getSignedUrl("getObject", getParams);
 
@@ -62,7 +67,7 @@ class FileServiceClass {
         Prefix: filePath,
       };
 
-      const { Contents }: any = await s3.listObjectsV2(params as any).promise();
+      const { Contents = [] } = (await s3.listObjectsV2(params as unknown as AWS.S3.ListObjectsV2Request).promise()) as AWS.S3.ListObjectsV2Output;
 
       if (Contents.length === 0) {
         return { message: "Folder was deleted" };
@@ -74,20 +79,22 @@ class FileServiceClass {
       };
 
       Contents.forEach(({ Key }) => {
-        deleteParams.Delete.Objects.push({ Key });
+        if (deleteParams.Delete && Key) {
+          deleteParams.Delete.Objects.push({ Key });
+        }
       });
 
       // remove all inner files in directory
-      await s3.deleteObjects(deleteParams as any).promise();
+      await s3.deleteObjects(deleteParams as unknown as AWS.S3.DeleteObjectsRequest).promise();
 
-      if (Contents.IsTruncated) {
-        await this.deleteBucketFile(file);
+      if ((Contents as Array<{ Key?: string }> & { IsTruncated?: boolean }).IsTruncated) {
+        await this.deleteBucketFile(file as unknown as ExtendedFile);
       } else {
         await s3
           .deleteObject({
             Bucket: S3_BUCKET_NAME,
             Key: filePath,
-          } as any)
+          } as unknown as AWS.S3.DeleteObjectRequest)
           .promise();
       }
 
@@ -102,7 +109,7 @@ class FileServiceClass {
         Key: filePath,
       };
 
-      await s3.deleteObject(params as any).promise();
+      await s3.deleteObject(params as unknown as AWS.S3.DeleteObjectRequest).promise();
 
       return { message: "File was deleted" };
     }
@@ -172,7 +179,7 @@ class FileServiceClass {
     userId: number,
     parentId?: string
   ) {
-    const user: any = await prisma.user.findUnique({
+    const user = await prisma.user.findUnique({
       where: { id: userId },
       select: { storageGuid: true, usedSpace: true, diskSpace: true },
     });
@@ -206,7 +213,7 @@ class FileServiceClass {
       Key: s3Key,
       Body: buffer,
     };
-    await s3.putObject(params as any).promise();
+    await s3.putObject(params as unknown as AWS.S3.PutObjectRequest).promise();
 
     const dbPath = folderPath || "";
     const created = await prisma.file.create({
@@ -235,19 +242,29 @@ class FileServiceClass {
         text: file.name,
         link: "/files",
       });
-    } catch (_err) {
+    } catch (_err: unknown) {
       // non-blocking
     }
 
     return created;
   }
 
-  private async enrichFilesWithSharingInfo(files: any[]) {
-    if (files.length === 0) return files;
-  
+  private async enrichFilesWithSharingInfo(
+    files: PrismaFile[]
+  ): Promise<
+    Array<
+      PrismaFile & { isShared: boolean; publicToken: string | undefined | null }
+    >
+  > {
+    if (files.length === 0) {
+      return files as Array<
+        PrismaFile & { isShared: boolean; publicToken: string | undefined | null }
+      >;
+    }
+
     // Получаем все ID файлов
     const fileIds = files.map(f => f.id);
-  
+
     // Получаем все публичные ссылки для этих файлов за один запрос
     const publicLinks = await prisma.permission.findMany({
       where: {
@@ -260,12 +277,12 @@ class FileServiceClass {
         publicToken: true,
       },
     });
-  
+
     // Создаем Map для быстрого доступа
     const publicLinksMap = new Map(
       publicLinks.map(link => [link.resourceId, link.publicToken])
     );
-  
+
     // Добавляем информацию о sharing к каждому файлу
     return files.map(file => ({
       ...file,
@@ -274,10 +291,14 @@ class FileServiceClass {
     }));
   }
 
-  async downloadFile(queryId, userId, storageGuid) {
-    const file: any = await prisma.file.findFirst({
+  async downloadFile(queryId: unknown, userId: number, storageGuid: string) {
+    const file = await prisma.file.findFirst({
       where: { id: Number(queryId), userId },
     });
+
+    if (!file) {
+      throw createError(404, "File not found");
+    }
 
     let filePath = `${String(storageGuid)}/${file.path}/${file.name}`;
 
@@ -287,15 +308,15 @@ class FileServiceClass {
       .getObject({
         Bucket: S3_BUCKET_NAME,
         Key: `${filePath}`,
-      })
-      .promise();
+      } as unknown as AWS.S3.GetObjectRequest)
+      .promise() as AWS.S3.GetObjectOutput;
 
     return { file, s3object };
   }
 
   /** Возвращает подписанный URL для превью файла (короткий срок действия). */
   async getFilePreviewUrl(fileId: number, userId: number): Promise<string> {
-    const file: any = await prisma.file.findFirst({
+    const file = await prisma.file.findFirst({
       where: { id: fileId, userId },
     });
     if (!file) {
@@ -304,7 +325,7 @@ class FileServiceClass {
     if (file.type === "dir") {
       throw createError(400, "Preview is not available for directories");
     }
-    const user: any = await prisma.user.findUnique({
+    const user = await prisma.user.findUnique({
       where: { id: userId },
       select: { storageGuid: true },
     });
@@ -320,19 +341,23 @@ class FileServiceClass {
     const signedUrl = await s3.getSignedUrlPromise("getObject", {
       ...getParams,
       Expires: 3600,
-    } as any);
+    } as unknown as AWS.S3.GetObjectRequest);
     return signedUrl;
   }
 
-  async deleteFile(fileId, userId) {
+  async deleteFile(fileId: unknown, userId: number) {
     return prisma.$transaction(async (trx) => {
       if (_.isNaN(fileId)) {
         throw createError(400, "Invalid file ID");
       }
 
-      const file: any = await trx.file.findFirst({
-        where: { id: fileId, userId },
+      const file = await trx.file.findFirst({
+        where: { id: Number(fileId), userId },
       });
+
+      if (!file) {
+        throw createError(400, "File not found");
+      }
 
       // directory have a content?
       const existInnerContent = await trx.file.findMany({
@@ -346,19 +371,19 @@ class FileServiceClass {
         );
       }
 
-      if (!file) {
-        throw createError(400, "File not found");
-      }
+      await this.deleteBucketFile(file as unknown as ExtendedFile);
 
-      await this.deleteBucketFile(file);
+      await trx.file.delete({ where: { id: Number(fileId) } });
 
-      await trx.file.delete({ where: { id: fileId } });
-
-      const user: any = await trx.user.findFirst({
+      const user = await trx.user.findFirst({
         where: { id: userId },
       });
 
-      user.usedSpace = user.usedSpace - BigInt(file.size);
+      if (!user) {
+        throw createError(400, "User not found");
+      }
+
+      user.usedSpace = user.usedSpace - BigInt(file.size ?? 0);
 
       await trx.user.update({
         where: {

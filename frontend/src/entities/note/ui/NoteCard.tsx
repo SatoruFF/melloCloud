@@ -4,13 +4,14 @@ import { Popconfirm } from "antd";
 import { Star, Trash2, RotateCcw } from "lucide-react";
 import cn from "classnames";
 import { useTranslation } from "react-i18next";
+import { BlockNoteContent } from "../../../types/content";
 import styles from "./noteCard.module.scss";
 
 interface NoteCardProps {
   note: {
     id: number | string;
     title: string;
-    content: any;
+    content: BlockNoteContent;
     updatedAt: string;
     isStarred?: boolean;
     isRemoved?: boolean;
@@ -25,13 +26,13 @@ interface NoteCardProps {
   onDeletePermanently?: (id: number) => void;
 }
 
-const extractTextContent = (content: any): string => {
+const extractTextContent = (content: BlockNoteContent): string => {
   if (!content) return "";
   if (typeof content === "string") return content;
 
   if (Array.isArray(content)) {
     return content
-      .map((block) => {
+      .map((block: any) => {
         if (typeof block === "string") return block;
         if (block.content) {
           if (typeof block.content === "string") return block.content;

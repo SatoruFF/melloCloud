@@ -2,19 +2,20 @@ import React, { memo, type FC } from "react";
 import { Editor } from "../../editor";
 import { useTranslation } from "react-i18next";
 import { Spinner } from "../../../shared";
+import { BlockNoteContent } from "../../../types/content";
 import styles from "../styles/noteEditor.module.scss";
 import cn from "classnames";
 
 interface NoteEditorProps {
   noteId: string;
   title: string;
-  content: any;
+  content: BlockNoteContent;
   isLoading?: boolean;
   isUpdating?: boolean;
   isCreating?: boolean;
   onTitleBlur: () => void;
   onTitleChange: (title: string) => void;
-  onSave: (content: any) => void;
+  onSave: (content: BlockNoteContent) => void | Promise<void>;
   autoSave?: boolean;
   autoSaveDelay?: number;
 }

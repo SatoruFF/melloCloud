@@ -9,7 +9,7 @@ export const startWebhookCron = () => {
     try {
       logger.info("Running scheduled webhooks check...");
       await WebhookService.executeScheduledWebhooks({ prisma });
-    } catch (error: any) {
+    } catch (error: unknown) {
       logger.error("Webhook cron error:", error);
     }
   });

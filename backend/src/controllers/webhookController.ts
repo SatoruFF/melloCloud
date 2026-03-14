@@ -2,6 +2,7 @@ import type { Context } from "hono";
 import type { WebhookEvent, WebhookMethod } from "@prisma/client";
 import createError from "http-errors";
 import { logger } from "../configs/logger.js";
+import { getErrorMessage, getErrorStatusCode } from "../types/errors.js";
 import { WebhookService } from "../services/webhookService.js";
 import { serializeBigInt } from "../helpers/serializeBigInt.js";
 import ApiContext from "../models/context.js";
@@ -29,9 +30,11 @@ class WebhookControllerClass {
       });
 
       return c.json(serializeBigInt(webhooks));
-    } catch (error: any) {
-      logger.error(error.message, error);
-      return c.json({ message: error.message }, error.statusCode || 500);
+    } catch (error: unknown) {
+      const message = getErrorMessage(error);
+      const statusCode = getErrorStatusCode(error);
+      logger.error(message, error);
+      return c.json({ message }, statusCode);
     }
   }
 
@@ -69,9 +72,11 @@ class WebhookControllerClass {
       }
 
       return c.json(serializeBigInt(webhook));
-    } catch (error: any) {
-      logger.error(error.message, error);
-      return c.json({ message: error.message }, error.statusCode || 500);
+    } catch (error: unknown) {
+      const message = getErrorMessage(error);
+      const statusCode = getErrorStatusCode(error);
+      logger.error(message, error);
+      return c.json({ message }, statusCode);
     }
   }
 
@@ -124,9 +129,11 @@ class WebhookControllerClass {
       });
 
       return c.json(serializeBigInt(webhook), 201);
-    } catch (error: any) {
-      logger.error(error.message, error);
-      return c.json({ message: error.message }, error.statusCode || 500);
+    } catch (error: unknown) {
+      const message = getErrorMessage(error);
+      const statusCode = getErrorStatusCode(error);
+      logger.error(message, error);
+      return c.json({ message }, statusCode);
     }
   }
 
@@ -175,7 +182,18 @@ class WebhookControllerClass {
         }
       }
 
-      const updateData: any = {};
+      const updateData: {
+        name?: string;
+        description?: string;
+        url?: string;
+        method?: string;
+        events?: string[];
+        filters?: unknown;
+        headers?: unknown;
+        retryCount?: number;
+        retryDelay?: number;
+        status?: string;
+      } = {};
       if (name !== undefined) updateData.name = name;
       if (description !== undefined) updateData.description = description;
       if (url !== undefined) updateData.url = url;
@@ -193,9 +211,11 @@ class WebhookControllerClass {
       });
 
       return c.json(serializeBigInt(webhook));
-    } catch (error: any) {
-      logger.error(error.message, error);
-      return c.json({ message: error.message }, error.statusCode || 500);
+    } catch (error: unknown) {
+      const message = getErrorMessage(error);
+      const statusCode = getErrorStatusCode(error);
+      logger.error(message, error);
+      return c.json({ message }, statusCode);
     }
   }
 
@@ -226,9 +246,11 @@ class WebhookControllerClass {
       });
 
       return c.json({ message: "Webhook deleted successfully" });
-    } catch (error: any) {
-      logger.error(error.message, error);
-      return c.json({ message: error.message }, error.statusCode || 500);
+    } catch (error: unknown) {
+      const message = getErrorMessage(error);
+      const statusCode = getErrorStatusCode(error);
+      logger.error(message, error);
+      return c.json({ message }, statusCode);
     }
   }
 
@@ -267,9 +289,11 @@ class WebhookControllerClass {
       });
 
       return c.json({ message: "Test webhook triggered successfully" });
-    } catch (error: any) {
-      logger.error(error.message, error);
-      return c.json({ message: error.message }, error.statusCode || 500);
+    } catch (error: unknown) {
+      const message = getErrorMessage(error);
+      const statusCode = getErrorStatusCode(error);
+      logger.error(message, error);
+      return c.json({ message }, statusCode);
     }
   }
 
@@ -321,9 +345,11 @@ class WebhookControllerClass {
           offset,
         }),
       );
-    } catch (error: any) {
-      logger.error(error.message, error);
-      return c.json({ message: error.message }, error.statusCode || 500);
+    } catch (error: unknown) {
+      const message = getErrorMessage(error);
+      const statusCode = getErrorStatusCode(error);
+      logger.error(message, error);
+      return c.json({ message }, statusCode);
     }
   }
 
@@ -356,9 +382,11 @@ class WebhookControllerClass {
       });
 
       return c.json(serializeBigInt(scheduled));
-    } catch (error: any) {
-      logger.error(error.message, error);
-      return c.json({ message: error.message }, error.statusCode || 500);
+    } catch (error: unknown) {
+      const message = getErrorMessage(error);
+      const statusCode = getErrorStatusCode(error);
+      logger.error(message, error);
+      return c.json({ message }, statusCode);
     }
   }
 
@@ -439,9 +467,11 @@ class WebhookControllerClass {
       ];
 
       return c.json(events);
-    } catch (error: any) {
-      logger.error(error.message, error);
-      return c.json({ message: error.message }, error.statusCode || 500);
+    } catch (error: unknown) {
+      const message = getErrorMessage(error);
+      const statusCode = getErrorStatusCode(error);
+      logger.error(message, error);
+      return c.json({ message }, statusCode);
     }
   }
 }

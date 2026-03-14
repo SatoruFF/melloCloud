@@ -1,28 +1,18 @@
-// @ts-nocheck
 import React, { useCallback, useState, useEffect, useMemo } from "react";
 import { useAppDispatch, useAppSelector } from "../../../app/store/store";
 import { TaskColumn, Task } from "../../../entities/task/types/tasks";
 import { gothicColors } from "../variables/gothicColors";
 import { getUserSelector } from "../../../entities/user";
 import { message } from "antd";
+import { getErrorMessage } from "../../../types/api";
 
-// Import API hooks
+// Import API hooks and actions
 import {
   useGetKanbanDataQuery,
   useCreateTaskMutation,
   useUpdateTaskMutation,
   useDeleteTaskMutation,
   useMoveTaskMutation,
-} from "../../../entities/task/model/api/taskApi";
-
-import {
-  useCreateColumnMutation,
-  useUpdateColumnMutation,
-  useDeleteColumnMutation,
-} from "../../../entities/taskColumn/model/api/taskColumnApi";
-
-// Import slice actions
-import {
   setTasks,
   addTask as addTaskAction,
   updateTask as updateTaskAction,
@@ -33,9 +23,12 @@ import {
   clearDragState,
   setLoading as setTaskLoading,
   setError as setTaskError,
-} from "../../../entities/task/model/slice/taskSlice";
+} from "../../../entities/task";
 
 import {
+  useCreateColumnMutation,
+  useUpdateColumnMutation,
+  useDeleteColumnMutation,
   setColumns,
   addColumn as addColumnAction,
   updateColumn as updateColumnAction,
@@ -44,7 +37,7 @@ import {
   setEditingColumn,
   setLoading as setColumnLoading,
   setError as setColumnError,
-} from "../../../entities/taskColumn/model/slice/taskColumn";
+} from "../../../entities/taskColumn";
 
 // Утилитарные функции для преобразования дат
 const serializeDates = <T extends Record<string, any>>(obj: T): T => {
@@ -149,7 +142,35 @@ export const useTasks = (options: UseTasksOptions) => {
     if (kanbanData) {
       try {
         // Transform backend data to frontend format с правильной сериализацией дат
-        const transformedColumns: TaskColumn[] = kanbanData.map((col: any) =>
+        interface KanbanColumn {
+          id: number;
+          title: string;
+          color: string;
+          order: number;
+          userId: number;
+          createdAt: string;
+          updatedAt: string;
+          tasks?: KanbanTask[];
+        }
+
+        interface KanbanTask {
+          id: number;
+          title: string;
+          content: string;
+          description?: string;
+          category?: string;
+          tag?: string;
+          priority: string;
+          status: string;
+          isDone: boolean;
+          dueDate?: string | null;
+          columnId?: number;
+          userId: number;
+          createdAt?: string;
+          updatedAt?: string;
+        }
+
+        const transformedColumns: TaskColumn[] = kanbanData.map((col: KanbanColumn) =>
           serializeDates({
             id: col.id,
             title: col.title,
@@ -162,8 +183,8 @@ export const useTasks = (options: UseTasksOptions) => {
           })
         );
 
-        const allTasks: Task[] = kanbanData.flatMap((col: any) =>
-          (col.tasks || []).map((task: any) =>
+        const allTasks: Task[] = kanbanData.flatMap((col: KanbanColumn) =>
+          (col.tasks || []).map((task: KanbanTask) =>
             serializeDates({
               id: task.id,
               title: task.title,
@@ -190,7 +211,7 @@ export const useTasks = (options: UseTasksOptions) => {
         if (transformedColumns.length > 0 && !newTaskColumn) {
           setNewTaskColumn(transformedColumns[0].id.toString());
         }
-      } catch (err) {
+      } catch (err: unknown) {
         console.error("Error processing kanban data:", err);
         dispatch(setTaskError("Failed to process kanban data"));
       }
@@ -215,10 +236,12 @@ export const useTasks = (options: UseTasksOptions) => {
       dispatch(addTaskAction(serializedTask));
       setNewTaskText("");
       message.success("Task created successfully");
-    } catch (err: any) {
-      const errorMsg = err?.data?.message || "Failed to create task";
-      dispatch(setTaskError(errorMsg));
-      message.error(errorMsg);
+    } catch (err: unknown) {
+      const apiError = err as Record<string, unknown>;
+      const errorMsg = apiError?.data && typeof apiError.data === 'object' ? (apiError.data as Record<string, unknown>).message : getErrorMessage(err);
+      const finalMsg = typeof errorMsg === 'string' ? errorMsg : "Failed to create task";
+      dispatch(setTaskError(finalMsg));
+      message.error(finalMsg);
     }
   }, [newTaskText, newTaskColumn, createTaskMutation, dispatch]);
 
@@ -228,10 +251,12 @@ export const useTasks = (options: UseTasksOptions) => {
         await deleteTaskMutation(taskId).unwrap();
         dispatch(deleteTaskAction(taskId));
         message.success("Task deleted successfully");
-      } catch (err: any) {
-        const errorMsg = err?.data?.message || "Failed to delete task";
-        dispatch(setTaskError(errorMsg));
-        message.error(errorMsg);
+      } catch (err: unknown) {
+        const apiError = err as Record<string, unknown>;
+        const errorMsg = apiError?.data && typeof apiError.data === 'object' ? (apiError.data as Record<string, unknown>).message : getErrorMessage(err);
+        const finalMsg = typeof errorMsg === 'string' ? errorMsg : "Failed to delete task";
+        dispatch(setTaskError(finalMsg));
+        message.error(finalMsg);
       }
     },
     [deleteTaskMutation, dispatch]
@@ -250,10 +275,12 @@ export const useTasks = (options: UseTasksOptions) => {
         const serializedTask = serializeDates(updatedTask);
         dispatch(updateTaskAction({ id: taskId, updates: serializedTask }));
         message.success("Task updated successfully");
-      } catch (err: any) {
-        const errorMsg = err?.data?.message || "Failed to update task";
-        dispatch(setTaskError(errorMsg));
-        message.error(errorMsg);
+      } catch (err: unknown) {
+        const apiError = err as Record<string, unknown>;
+        const errorMsg = apiError?.data && typeof apiError.data === 'object' ? (apiError.data as Record<string, unknown>).message : getErrorMessage(err);
+        const finalMsg = typeof errorMsg === 'string' ? errorMsg : "Failed to update task";
+        dispatch(setTaskError(finalMsg));
+        message.error(finalMsg);
       }
     },
     [updateTaskMutation, dispatch]
@@ -283,10 +310,12 @@ export const useTasks = (options: UseTasksOptions) => {
       }
 
       message.success("Column created successfully");
-    } catch (err: any) {
-      const errorMsg = err?.data?.message || "Failed to create column";
-      dispatch(setColumnError(errorMsg));
-      message.error(errorMsg);
+    } catch (err: unknown) {
+      const apiError = err as Record<string, unknown>;
+      const errorMsg = apiError?.data && typeof apiError.data === 'object' ? (apiError.data as Record<string, unknown>).message : getErrorMessage(err);
+      const finalMsg = typeof errorMsg === 'string' ? errorMsg : "Failed to create column";
+      dispatch(setColumnError(finalMsg));
+      message.error(finalMsg);
     }
   }, [newColumnTitle, columns.length, createColumnMutation, dispatch, boardId]);
 
@@ -308,10 +337,12 @@ export const useTasks = (options: UseTasksOptions) => {
         }
 
         message.success("Column deleted successfully");
-      } catch (err: any) {
-        const errorMsg = err?.data?.message || "Failed to delete column";
-        dispatch(setColumnError(errorMsg));
-        message.error(errorMsg);
+      } catch (err: unknown) {
+        const apiError = err as Record<string, unknown>;
+        const errorMsg = apiError?.data && typeof apiError.data === 'object' ? (apiError.data as Record<string, unknown>).message : getErrorMessage(err);
+        const finalMsg = typeof errorMsg === 'string' ? errorMsg : "Failed to delete column";
+        dispatch(setColumnError(finalMsg));
+        message.error(finalMsg);
       }
     },
     [columns, newTaskColumn, deleteColumnMutation, dispatch]
@@ -334,10 +365,12 @@ export const useTasks = (options: UseTasksOptions) => {
         dispatch(setEditingColumn(null));
         setEditColumnTitle("");
         message.success("Column updated successfully");
-      } catch (err: any) {
-        const errorMsg = err?.data?.message || "Failed to update column";
-        dispatch(setColumnError(errorMsg));
-        message.error(errorMsg);
+      } catch (err: unknown) {
+        const apiError = err as Record<string, unknown>;
+        const errorMsg = apiError?.data && typeof apiError.data === 'object' ? (apiError.data as Record<string, unknown>).message : getErrorMessage(err);
+        const finalMsg = typeof errorMsg === 'string' ? errorMsg : "Failed to update column";
+        dispatch(setColumnError(finalMsg));
+        message.error(finalMsg);
       }
     },
     [updateColumnMutation, dispatch]
@@ -385,10 +418,12 @@ export const useTasks = (options: UseTasksOptions) => {
 
         dispatch(clearDragState());
         message.success("Task moved successfully");
-      } catch (err: any) {
-        const errorMsg = err?.data?.message || "Failed to move task";
-        dispatch(setTaskError(errorMsg));
-        message.error(errorMsg);
+      } catch (err: unknown) {
+        const apiError = err as Record<string, unknown>;
+        const errorMsg = apiError?.data && typeof apiError.data === 'object' ? (apiError.data as Record<string, unknown>).message : getErrorMessage(err);
+        const finalMsg = typeof errorMsg === 'string' ? errorMsg : "Failed to move task";
+        dispatch(setTaskError(finalMsg));
+        message.error(finalMsg);
       }
     },
     [draggedTask, moveTaskMutation, dispatch]

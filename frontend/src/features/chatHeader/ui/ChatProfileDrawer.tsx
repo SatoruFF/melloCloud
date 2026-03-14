@@ -2,8 +2,7 @@ import { Drawer } from "antd";
 import { UserIcon, Users, FileText, Image, Link2, UserPlus } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
-import { getCurrentChat } from "../../../entities/chat";
-import type { Chat } from "../../../entities/chat/model/api/chatApi";
+import { getCurrentChat, type Chat } from "../../../entities/chat";
 import styles from "./chat-profile-drawer.module.scss";
 
 interface ChatProfileDrawerProps {

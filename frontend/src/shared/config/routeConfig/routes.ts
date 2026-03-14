@@ -25,7 +25,7 @@ import {
   TERMS_OF_SERVICE_ROUTE,
 } from '../../consts/routes';
 
-import type { UserRolesType } from '../../../entities/user/model/types/user';
+import type { UserRolesType } from '@/entities/user';
 import { NotFoundPage } from '../../../pages/notFoundPage';
 import { PublicShared } from '../../../pages/publicShared';
 import AdminPanel from '../../../pages/adminPanel';

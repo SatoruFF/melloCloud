@@ -7,6 +7,7 @@ import { logger } from "../configs/logger.js";
 import { ChatService } from "../services/chatService.js";
 import { serializeBigInt } from "../helpers/serializeBigInt.js";
 import ApiContext from "../models/context.js";
+import { getErrorMessage, getErrorStatusCode } from "../types/errors.js";
 
 class ChatControllerClass {
   async getUserChats(c: Context) {
@@ -23,13 +24,14 @@ class ChatControllerClass {
       const chats = await ChatService.getUserChats(apiContext, userId);
 
       return c.json(serializeBigInt(chats));
-    } catch (error: any) {
-      logger.error(error.message, error);
+    } catch (error: unknown) {
+      const message = getErrorMessage(error);
+      logger.error(message, error);
       return c.json(
         {
-          message: error.message,
+          message,
         },
-        error.statusCode || 500,
+        getErrorStatusCode(error),
       );
     }
   }
@@ -67,11 +69,12 @@ class ChatControllerClass {
         updatedAt: chat.updatedAt,
       };
       return c.json(serializeBigInt(response), 201);
-    } catch (error: any) {
-      logger.error(error.message, error);
+    } catch (error: unknown) {
+      const message = getErrorMessage(error);
+      logger.error(message, error);
       return c.json(
-        { message: error.message },
-        error.statusCode || 500
+        { message },
+        getErrorStatusCode(error)
       );
     }
   }

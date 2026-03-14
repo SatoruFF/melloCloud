@@ -1,6 +1,6 @@
-// @ts-nocheck
 import React, { useState, useRef, useEffect } from "react";
 import FullCalendar from "@fullcalendar/react";
+import { getErrorMessage } from "../../../types/api";
 import type { EventClickArg, DateSelectArg } from "@fullcalendar/core";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
@@ -28,8 +28,15 @@ import {
   removeEvent as removeEventFromStore,
 } from "../../../entities/event";
 import { getUserSelector } from "../../../entities/user";
-import { ShareModal } from "../../../features/sharing/ui/ShareModal/ShareModal";
+import { ShareModal } from "../../../features/sharing";
 import { ResourceType } from "../../../entities/sharing";
+
+interface Attendee {
+  user?: {
+    userName?: string;
+    email?: string;
+  };
+}
 
 interface EventData {
   id: string;
@@ -38,7 +45,7 @@ interface EventData {
   end: Date;
   description?: string;
   location?: string;
-  attendees?: any[];
+  attendees?: Attendee[];
   color?: string;
   category?: string;
   allDay?: boolean;
@@ -180,8 +187,10 @@ export default function Calendar() {
       setIsFormOpen(false);
       resetForm();
       refetch();
-    } catch (error: any) {
-      message.error(error?.data?.message || t("planner.events.errors.createFailed"));
+    } catch (error: unknown) {
+      const apiError = error as Record<string, unknown>;
+      const errorMsg = apiError?.data && typeof apiError.data === 'object' ? (apiError.data as Record<string, unknown>).message : getErrorMessage(error);
+      message.error(typeof errorMsg === 'string' ? errorMsg : t("planner.events.errors.createFailed"));
     }
   };
 
@@ -252,8 +261,10 @@ export default function Calendar() {
           allDay: result.allDay ?? false,
         });
       }
-    } catch (error: any) {
-      message.error(error?.data?.message || t("planner.events.errors.updateFailed"));
+    } catch (error: unknown) {
+      const apiError = error as Record<string, unknown>;
+      const errorMsg = apiError?.data && typeof apiError.data === 'object' ? (apiError.data as Record<string, unknown>).message : getErrorMessage(error);
+      message.error(typeof errorMsg === 'string' ? errorMsg : t("planner.events.errors.updateFailed"));
     }
   };
 
@@ -266,8 +277,10 @@ export default function Calendar() {
       message.success(t("planner.events.messages.deleted"));
       setSelectedEvent(null);
       refetch();
-    } catch (error: any) {
-      message.error(error?.data?.message || t("planner.events.errors.deleteFailed"));
+    } catch (error: unknown) {
+      const apiError = error as Record<string, unknown>;
+      const errorMsg = apiError?.data && typeof apiError.data === 'object' ? (apiError.data as Record<string, unknown>).message : getErrorMessage(error);
+      message.error(typeof errorMsg === 'string' ? errorMsg : t("planner.events.errors.deleteFailed"));
     }
   };
 
@@ -322,7 +335,7 @@ export default function Calendar() {
     setIsFormOpen(true);
   };
 
-  const handleFormChange = (field: keyof EventFormData, value: any) => {
+  const handleFormChange = (field: keyof EventFormData, value: unknown) => {
     setFormData((prev) => {
       const next = { ...prev, [field]: value };
       if (field === "allDay" && value === false) {
@@ -596,7 +609,7 @@ export default function Calendar() {
                       <div className={styles.detailContent}>
                         <span className={styles.detailLabel}>{t("planner.events.fields.attendees")}</span>
                         <div className={styles.attendeesList}>
-                          {selectedEvent.attendees.map((attendee: any, idx: number) => (
+                          {selectedEvent.attendees.map((attendee: Attendee, idx: number) => (
                             <span key={idx} className={styles.attendeeBadge}>
                               {attendee.user?.userName ||
                                 attendee.user?.email ||

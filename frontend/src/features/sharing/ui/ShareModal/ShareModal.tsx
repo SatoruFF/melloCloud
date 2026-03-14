@@ -3,6 +3,7 @@ import { Modal, Input, Select, Button, List, Avatar, Tag, message, Tooltip, Spac
 import { User, Link, Trash2, Copy, Clock } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import cn from "classnames";
+import { getErrorMessage } from "../../../../types/api";
 import {
   useGetResourcePermissionsQuery,
   useShareResourceMutation,
@@ -73,8 +74,10 @@ export const ShareModal: React.FC<ShareModalProps> = ({
 
       message.success(t("sharing.messages.shareSuccess", { email }));
       setEmail("");
-    } catch (error: any) {
-      message.error(error?.data?.message || t("sharing.messages.shareFailed"));
+    } catch (error: unknown) {
+      const apiError = error as Record<string, unknown>;
+      const errorMsg = apiError?.data && typeof apiError.data === 'object' ? (apiError.data as Record<string, unknown>).message : getErrorMessage(error);
+      message.error(typeof errorMsg === 'string' ? errorMsg : t("sharing.messages.shareFailed"));
     }
   };
 
@@ -88,8 +91,10 @@ export const ShareModal: React.FC<ShareModalProps> = ({
 
       await navigator.clipboard.writeText(url);
       message.success(t("sharing.messages.publicLinkCreated"));
-    } catch (error: any) {
-      message.error(error?.data?.message || t("sharing.messages.publicLinkCreateFailed"));
+    } catch (error: unknown) {
+      const apiError = error as Record<string, unknown>;
+      const errorMsg = apiError?.data && typeof apiError.data === 'object' ? (apiError.data as Record<string, unknown>).message : getErrorMessage(error);
+      message.error(typeof errorMsg === 'string' ? errorMsg : t("sharing.messages.publicLinkCreateFailed"));
     }
   };
 
@@ -97,8 +102,10 @@ export const ShareModal: React.FC<ShareModalProps> = ({
     try {
       await deletePublicLink({ resourceType, resourceId }).unwrap();
       message.success(t("sharing.messages.publicLinkDeleted"));
-    } catch (error: any) {
-      message.error(error?.data?.message || t("sharing.messages.publicLinkDeleteFailed"));
+    } catch (error: unknown) {
+      const apiError = error as Record<string, unknown>;
+      const errorMsg = apiError?.data && typeof apiError.data === 'object' ? (apiError.data as Record<string, unknown>).message : getErrorMessage(error);
+      message.error(typeof errorMsg === 'string' ? errorMsg : t("sharing.messages.publicLinkDeleteFailed"));
     }
   };
 
@@ -114,8 +121,10 @@ export const ShareModal: React.FC<ShareModalProps> = ({
     try {
       await revokePermission(permissionId).unwrap();
       message.success(t("sharing.messages.accessRevoked", { userName: userName ? ` ${t("for")} ${userName}` : "" }));
-    } catch (error: any) {
-      message.error(error?.data?.message || t("sharing.messages.accessRevokeFailed"));
+    } catch (error: unknown) {
+      const apiError = error as Record<string, unknown>;
+      const errorMsg = apiError?.data && typeof apiError.data === 'object' ? (apiError.data as Record<string, unknown>).message : getErrorMessage(error);
+      message.error(typeof errorMsg === 'string' ? errorMsg : t("sharing.messages.accessRevokeFailed"));
     }
   };
 
@@ -123,8 +132,10 @@ export const ShareModal: React.FC<ShareModalProps> = ({
     try {
       await updatePermission({ permissionId, permissionLevel: level }).unwrap();
       message.success(t("sharing.messages.permissionUpdated"));
-    } catch (error: any) {
-      message.error(error?.data?.message || t("sharing.messages.permissionUpdateFailed"));
+    } catch (error: unknown) {
+      const apiError = error as Record<string, unknown>;
+      const errorMsg = apiError?.data && typeof apiError.data === 'object' ? (apiError.data as Record<string, unknown>).message : getErrorMessage(error);
+      message.error(typeof errorMsg === 'string' ? errorMsg : t("sharing.messages.permissionUpdateFailed"));
     }
   };
 

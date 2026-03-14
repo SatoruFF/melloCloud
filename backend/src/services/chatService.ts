@@ -4,6 +4,7 @@ import { UserDto } from "../dtos/user-dto.js";
 import _ from "lodash";
 import "dotenv/config.js";
 import { deserializeMessage, serializeMessage } from "../helpers/messageSerializer.js";
+import { ChatUser, User } from "@prisma/client";
 
 class ChatServiceClass {
   async getUserChats(context, userId: number) {
@@ -43,8 +44,8 @@ class ChatServiceClass {
         const lastMessage = chat.messages[0];
         const isGroup = chat.isGroup;
         // FIXME: any
-        const uniqueUsers = _.uniqBy(chat.users, "userId") as any[];
-        const isSelfChat = uniqueUsers.length === 1 && (uniqueUsers[0] as any)?.userId == userId;
+        const uniqueUsers = _.uniqBy(chat.users, "userId") as (ChatUser & { user: User })[];
+        const isSelfChat = uniqueUsers.length === 1 && uniqueUsers[0]?.userId == userId;
 
         let receiver = null;
         if (isGroup) {
@@ -79,7 +80,7 @@ class ChatServiceClass {
     );
   }
 
-  async findPrivateChat(prisma, userA: number, userB: number) {
+  async findPrivateChat(prisma: typeof import("../configs/config.js").prisma, userA: number, userB: number) {
     const chat = await prisma.chat.findFirst({
       where: {
         isGroup: false,
@@ -111,7 +112,7 @@ class ChatServiceClass {
     return null;
   }
 
-  async getOrCreatePrivateChat(prisma, { senderId, receiverId, text }) {
+  async getOrCreatePrivateChat(prisma: typeof import("../configs/config.js").prisma, { senderId, receiverId, text }: { senderId: number; receiverId: number; text: string }) {
     const existingChat = await this.findPrivateChat(prisma, senderId, receiverId);
 
     if (existingChat) {

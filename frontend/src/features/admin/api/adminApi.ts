@@ -17,6 +17,8 @@ interface AdminUsersResponse {
     diskSpace: string;
     usedSpace: string;
     createdAt: string;
+    subscriptionPlan: string;
+    subscriptionExpiresAt: string | null;
   }>;
   total: number;
   page: number;
@@ -151,7 +153,16 @@ export const adminApi = rtkApi.injectEndpoints({
     }),
     updateAdminUser: build.mutation<
       Record<string, unknown>,
-      { id: number; userName?: string; role?: string; isActivated?: boolean; isBlocked?: boolean; diskSpace?: number }
+      {
+        id: number;
+        userName?: string;
+        role?: string;
+        isActivated?: boolean;
+        isBlocked?: boolean;
+        diskSpace?: number;
+        subscriptionPlan?: string;
+        subscriptionExpiresAt?: string | null;
+      }
     >({
       query: ({ id, ...body }) => ({
         url: `${ApiPaths.adminUsers}/${id}`,

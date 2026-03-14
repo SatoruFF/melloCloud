@@ -1,5 +1,7 @@
 export type UserRolesType = 'ADMIN' | 'USER';
 
+export type SubscriptionPlan = 'FREE' | 'PRO' | 'ENTERPRISE';
+
 export interface IUser {
   id: number;
   userName: string | null;
@@ -15,6 +17,8 @@ export interface IUser {
   oauthId?: string | null;
   createdAt?: string;
   updatedAt?: string;
+  subscriptionPlan?: SubscriptionPlan;
+  subscriptionExpiresAt?: string | null;
 }
 
 export interface UserSchema {
@@ -23,6 +27,23 @@ export interface UserSchema {
   isAuth: boolean;
   isUserLoading: boolean;
 }
+
+/** Returns effective plan: if paid plan is expired, returns 'FREE' */
+export const getEffectivePlan = (user: IUser | null | undefined): SubscriptionPlan => {
+  if (!user) return 'FREE';
+  const plan = user.subscriptionPlan ?? 'FREE';
+  if (plan === 'FREE') return 'FREE';
+  if (user.subscriptionExpiresAt) {
+    const expiry = new Date(user.subscriptionExpiresAt);
+    if (expiry < new Date()) return 'FREE';
+  }
+  return plan as SubscriptionPlan;
+};
+
+export const canUseVideoCall = (user: IUser | null | undefined): boolean => {
+  const plan = getEffectivePlan(user);
+  return plan === 'PRO' || plan === 'ENTERPRISE';
+};
 
 // TODO: future
 export enum ResourceType {

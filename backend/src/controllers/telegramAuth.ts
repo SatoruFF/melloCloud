@@ -5,6 +5,7 @@ import { CLIENT_URL, isProduction, prisma, TELEGRAM_BOT_TOKEN } from "../configs
 import { v4 as uuidv4 } from "uuid";
 import { generateJwt } from "../utils/generateJwt.js";
 import { FileService } from "../services/fileService.js";
+import { getErrorMessage } from "../types/errors.js";
 
 /**
  * Telegram Login Widget использует другой подход чем OAuth2
@@ -149,10 +150,11 @@ export async function handleTelegramAuth(c: Context) {
 
     // Редиректим на фронтенд с токеном
     return c.redirect(`${CLIENT_URL}?token=${accessToken}`);
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const message = getErrorMessage(error);
     console.error("Telegram auth error:", error);
     return c.redirect(
-      `${CLIENT_URL}/login?error=${encodeURIComponent(error.message || "Telegram auth failed")}`,
+      `${CLIENT_URL}/login?error=${encodeURIComponent(message || "Telegram auth failed")}`,
     );
   }
 }

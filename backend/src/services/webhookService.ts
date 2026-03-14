@@ -1,20 +1,27 @@
 import axios from "axios";
 import createError from "http-errors";
+import type { Prisma } from "@prisma/client";
+import { Webhook, ScheduledWebhook, WebhookExecution, WebhookEvent } from "@prisma/client";
 import { logger } from "../configs/logger.js";
+import { getErrorMessage } from "../types/errors.js";
 
 interface TriggerWebhookParams {
-  event: string;
+  event: WebhookEvent;
   resourceType: string;
   resourceId: number;
-  data: any;
+  data: unknown;
   userId: number;
+}
+
+interface WebhookContext {
+  prisma: Prisma.TransactionClient;
 }
 
 class WebhookServiceClass {
   /**
    * Триггерит все подходящие webhooks для события
    */
-  async triggerWebhooks(context: any, params: TriggerWebhookParams) {
+  async triggerWebhooks(context: WebhookContext, params: TriggerWebhookParams) {
     const { event, resourceType, resourceId, data, userId } = params;
 
     // Находим все активные webhooks для этого пользователя и события
@@ -50,14 +57,25 @@ class WebhookServiceClass {
   /**
    * Выполняет конкретный webhook
    */
-  async executeWebhook(context: any, webhook: any, event: string, payload: any) {
+  async executeWebhook(
+    context: WebhookContext,
+    webhook: Webhook,
+    event: string,
+    payload: Record<string, unknown>
+  ) {
     const startTime = Date.now();
     let attempt = 0;
     let success = false;
-    let lastError = null;
+    let lastError: Error | null = null;
 
     // Применяем фильтры если есть
-    if (webhook.filters && !this.matchesFilters(payload.data, webhook.filters)) {
+    if (
+      webhook.filters &&
+      !this.matchesFilters(
+        payload.data as Record<string, unknown> | null,
+        webhook.filters as Record<string, unknown> | null
+      )
+    ) {
       logger.info(`Webhook ${webhook.id} skipped due to filters`);
       return;
     }
@@ -68,10 +86,10 @@ class WebhookServiceClass {
 
       try {
         const response = await axios({
-          method: webhook.method,
+          method: webhook.method as string,
           url: webhook.url,
           data: payload,
-          headers: webhook.headers || {},
+          headers: (webhook.headers as Record<string, string> | null) || {},
           timeout: 30000,
         });
 
@@ -80,10 +98,10 @@ class WebhookServiceClass {
         // Сохраняем успешное выполнение
         await this.saveExecution(context, {
           webhookId: webhook.id,
-          event,
-          payload,
+          event: event as unknown as WebhookEvent,
+          payload: payload as Prisma.InputJsonValue,
           statusCode: response.status,
-          response: response.data,
+          response: response.data as Prisma.InputJsonValue,
           duration: Date.now() - startTime,
           attempt,
           success: true,
@@ -99,9 +117,9 @@ class WebhookServiceClass {
         });
 
         logger.info(`Webhook ${webhook.id} executed successfully (attempt ${attempt})`);
-      } catch (error: any) {
-        lastError = error;
-        logger.error(`Webhook ${webhook.id} failed (attempt ${attempt}):`, error.message);
+      } catch (error: unknown) {
+        lastError = error instanceof Error ? error : new Error(getErrorMessage(error));
+        logger.error(`Webhook ${webhook.id} failed (attempt ${attempt}):`, getErrorMessage(error));
 
         // Если не последняя попытка - ждём перед retry
         if (attempt < webhook.retryCount) {
@@ -112,11 +130,17 @@ class WebhookServiceClass {
 
     // Если все попытки провалились
     if (!success && lastError) {
+      const statusCode = lastError instanceof Error && 'response' in lastError
+        ? (lastError as Record<string, unknown>).response && typeof (lastError as Record<string, unknown>).response === 'object'
+          ? ((lastError as Record<string, unknown>).response as Record<string, unknown>).status ?? null
+          : null
+        : null;
+
       await this.saveExecution(context, {
         webhookId: webhook.id,
-        event,
-        payload,
-        statusCode: lastError.response?.status || null,
+        event: event as unknown as WebhookEvent,
+        payload: payload as Prisma.InputJsonValue,
+        statusCode: statusCode as number | null,
         error: lastError.message,
         duration: Date.now() - startTime,
         attempt,
@@ -149,18 +173,46 @@ class WebhookServiceClass {
   /**
    * Сохраняет результат выполнения
    */
-  private async saveExecution(context: any, data: any) {
+  private async saveExecution(
+    context: WebhookContext,
+    data: {
+      webhookId: number;
+      event: WebhookEvent;
+      payload: Prisma.InputJsonValue;
+      statusCode?: number | null;
+      response?: Prisma.InputJsonValue;
+      error?: string | null;
+      duration?: number;
+      attempt: number;
+      success: boolean;
+    }
+  ) {
+    const { webhookId, ...rest } = data;
     await context.prisma.webhookExecution.create({
-      data,
+      data: {
+        ...rest,
+        webhook: { connect: { id: webhookId } },
+      },
     });
   }
 
   /**
    * Проверяет совпадение с фильтрами
    */
-  private matchesFilters(data: any, filters: any): boolean {
+  private matchesFilters(
+    data: Record<string, unknown> | unknown,
+    filters: Record<string, unknown> | null
+  ): boolean {
+    if (!filters || typeof filters !== 'object') {
+      return true;
+    }
+
+    if (typeof data !== 'object' || data === null) {
+      return false;
+    }
+
     for (const [key, value] of Object.entries(filters)) {
-      if (data[key] !== value) {
+      if ((data as Record<string, unknown>)[key] !== value) {
         return false;
       }
     }
@@ -178,18 +230,24 @@ class WebhookServiceClass {
    * Создаёт отложенный webhook (для напоминаний)
    */
   async scheduleWebhook(
-    context: any,
+    context: WebhookContext,
     params: {
       webhookId: number;
       resourceType: string;
       resourceId: number;
       scheduledFor: Date;
       event: string;
-      payload: any;
+      payload: Record<string, unknown>;
     }
-  ) {
+  ): Promise<ScheduledWebhook> {
+    const { webhookId, ...rest } = params;
     return await context.prisma.scheduledWebhook.create({
-      data: params,
+      data: {
+        ...rest,
+        event: params.event as unknown as WebhookEvent,
+        payload: params.payload as Prisma.InputJsonValue,
+        webhook: { connect: { id: webhookId } },
+      },
     });
   }
 
@@ -197,7 +255,7 @@ class WebhookServiceClass {
    * Выполняет все запланированные webhooks
    * (вызывается по cron каждую минуту)
    */
-  async executeScheduledWebhooks(context: any) {
+  async executeScheduledWebhooks(context: WebhookContext): Promise<void> {
     const now = new Date();
 
     // Находим все невыполненные webhooks которые пора запустить
@@ -217,7 +275,16 @@ class WebhookServiceClass {
 
     for (const item of scheduled) {
       try {
-        await this.executeWebhook(context, item.webhook, item.event, item.payload);
+        const payload = typeof item.payload === 'object' && item.payload !== null
+          ? (item.payload as Record<string, unknown>)
+          : {};
+
+        await this.executeWebhook(
+          context,
+          item.webhook,
+          item.event,
+          payload
+        );
 
         // Помечаем как выполненный
         await context.prisma.scheduledWebhook.update({
@@ -227,8 +294,8 @@ class WebhookServiceClass {
             executedAt: new Date(),
           },
         });
-      } catch (error: any) {
-        logger.error(`Failed to execute scheduled webhook ${item.id}:`, error);
+      } catch (error: unknown) {
+        logger.error(`Failed to execute scheduled webhook ${item.id}:`, getErrorMessage(error));
       }
     }
   }
@@ -237,13 +304,13 @@ class WebhookServiceClass {
    * Создаёт webhooks для напоминаний о событии
    */
   async createEventReminders(
-    context: any,
+    context: WebhookContext,
     params: {
       userId: number;
       eventId: number;
-      eventData: any;
+      eventData: Record<string, unknown>;
     }
-  ) {
+  ): Promise<void> {
     const { userId, eventId, eventData } = params;
 
     // Находим все webhooks пользователя с reminder событиями
@@ -258,7 +325,7 @@ class WebhookServiceClass {
       },
     });
 
-    const eventStart = new Date(eventData.startDate);
+    const eventStart = new Date(eventData.startDate as string);
 
     for (const webhook of webhooks) {
       // Напоминание за 1 час

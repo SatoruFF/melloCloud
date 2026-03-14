@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 // redux
 import { unwrapResult } from "@reduxjs/toolkit";
 import { useAppDispatch, useAppSelector } from "../../../app/store";
+import { getErrorMessage } from "../../../types/api";
 
 // antd
 import { Button, Popconfirm, Tooltip, message } from "antd";
@@ -77,8 +78,9 @@ const File: React.FC<FileProps> = ({ file }) => {
       const response: any = await downloadFile({ file });
       unwrapResult(response);
       messageApi.success(t("files.download-success"));
-    } catch (error: any) {
-      const errorMsg = error?.data?.message || error?.message || t("files.download-failed");
+    } catch (error: unknown) {
+      const errorMsg = error instanceof Object && 'data' in error ? (error as any).data?.message :
+                       error instanceof Error ? error.message : getErrorMessage(error) || t("files.download-failed");
       messageApi.error(errorMsg);
     }
   };
@@ -89,8 +91,9 @@ const File: React.FC<FileProps> = ({ file }) => {
       unwrapResult(response);
       dispatch(setFiles(response.data));
       messageApi.success(t("files.deleted"));
-    } catch (error: any) {
-      const errorMsg = error?.data?.message || error?.message || t("files.delete-failed");
+    } catch (error: unknown) {
+      const errorMsg = error instanceof Object && 'data' in error ? (error as any).data?.message :
+                       error instanceof Error ? error.message : getErrorMessage(error) || t("files.delete-failed");
       messageApi.error(errorMsg);
     }
   };
@@ -112,8 +115,9 @@ const File: React.FC<FileProps> = ({ file }) => {
         const { url } = await getFilePreviewUrl(file.id).unwrap();
         setPreviewUrl(url);
         setPreviewOpen(true);
-      } catch (err: any) {
-        messageApi.error(err?.data?.message || t("files.preview-failed") || "Preview failed");
+      } catch (err: unknown) {
+        const errorMsg = err instanceof Object && 'data' in err ? (err as any).data?.message : getErrorMessage(err) || t("files.preview-failed") || "Preview failed";
+        messageApi.error(errorMsg);
       }
     }
   };

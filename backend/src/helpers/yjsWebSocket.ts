@@ -323,7 +323,7 @@ export function setupYjsWebSocket(wss: WebSocketServer) {
               );
 
               // Обработка изменений документа - транслировать всем кроме отправителя
-              const updateHandler = (update: Uint8Array, origin: any) => {
+              const updateHandler = (update: Uint8Array, origin: unknown) => {
                 if (origin !== client) {
                   // Обновление от другого клиента, транслируем
                   broadcastYjsToRoom(noteId, update, userId);

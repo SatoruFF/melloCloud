@@ -11,6 +11,8 @@ export interface IUserModel {
   isAdmin?: boolean;
   token: string;
   refreshToken: string;
+  subscriptionPlan?: string;
+  subscriptionExpiresAt?: Date | string | null;
 }
 
 export class UserDto {
@@ -19,20 +21,25 @@ export class UserDto {
     userName: string;
     email: string;
     storageGuid?: string;
-    diskSpace: any;
-    usedSpace: any;
+    diskSpace: string | number | bigint;
+    usedSpace: string | number | bigint;
     avatar: string;
     role: string;
     isActivated: boolean;
     isAdmin: boolean;
+    subscriptionPlan: string;
+    subscriptionExpiresAt: string | null;
   };
 
   token: string;
   refreshToken: string;
 
   constructor(model: IUserModel) {
-    const { id, userName, email, diskSpace, usedSpace, avatar, role, isActivated, isAdmin, token, refreshToken } =
-      model;
+    const {
+      id, userName, email, diskSpace, usedSpace, avatar, role,
+      isActivated, isAdmin, token, refreshToken,
+      subscriptionPlan, subscriptionExpiresAt,
+    } = model;
     this.user = {
       id,
       userName,
@@ -43,6 +50,12 @@ export class UserDto {
       role: role || "USER",
       isActivated: isActivated ?? false,
       isAdmin: isAdmin ?? false,
+      subscriptionPlan: subscriptionPlan || "FREE",
+      subscriptionExpiresAt: subscriptionExpiresAt
+        ? (subscriptionExpiresAt instanceof Date
+            ? subscriptionExpiresAt.toISOString()
+            : String(subscriptionExpiresAt))
+        : null,
     };
     this.token = token;
     this.refreshToken = refreshToken;

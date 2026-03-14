@@ -3,13 +3,12 @@ import { BrowserRouter } from "react-router-dom";
 import cn from "classnames";
 import { AppRouter } from "./providers/router";
 
-import { useAuthQuery } from "../entities/user";
-import { setUser } from "../entities/user";
-import { Spinner } from "../shared";
-import { setFeatureFlags } from "../shared/lib/features/setGetFeatures";
-import { useGetFeatureFlagsQuery } from "../shared/api/featureFlagsApi";
-import { Navbar as MyNavbar } from "../widgets/Navbar";
-import { AddToHomeScreenBanner } from "../features/addToHomeScreen";
+import { useAuthQuery, setUser } from "@/entities/user";
+import { Spinner } from "@/shared";
+import { setFeatureFlags } from "@/shared/lib/features";
+import { useGetFeatureFlagsQuery } from "@/shared/api/featureFlagsApi";
+import { Navbar as MyNavbar } from "@/widgets/Navbar";
+import { AddToHomeScreenBanner } from "@/features/addToHomeScreen";
 import { ErrorBoundary } from "./providers/ErrorBoundary";
 import { useAppDispatch } from "./store/store";
 

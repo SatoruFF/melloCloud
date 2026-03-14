@@ -1,7 +1,7 @@
 import type { BaseQueryFn } from '@reduxjs/toolkit/query';
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { message } from 'antd';
-import { logout } from '../../entities/user/model/slice/userSlice';
+import { logout } from '@/entities/user';
 import i18n from '../config/i18n/i18n';
 import { Variables } from '../consts/localVariables';
 

@@ -1,15 +1,16 @@
 import { ApiPaths, rtkApi } from '../../../../shared';
 import { generateParams } from '../../../../shared';
+import { CalendarEvent } from '../types/event';
 
 export const eventApi = rtkApi.injectEndpoints({
   endpoints: builder => ({
     // GET all user events
-    getEvents: builder.query<any, void>({
+    getEvents: builder.query<CalendarEvent[], void>({
       query: () => ApiPaths.events,
     }),
 
     // GET events by date range
-    getEventsByDateRange: builder.query<any, { startDate: string; endDate: string }>({
+    getEventsByDateRange: builder.query<CalendarEvent[], { startDate: string; endDate: string }>({
       query: ({ startDate, endDate }) => {
         const params = generateParams({ startDate, endDate });
         return ApiPaths.eventsRange + params;
@@ -17,7 +18,7 @@ export const eventApi = rtkApi.injectEndpoints({
     }),
 
     // SEARCH events
-    searchEvents: builder.query<any, string>({
+    searchEvents: builder.query<CalendarEvent[], string>({
       query: query => {
         const params = generateParams({ query });
         return ApiPaths.eventsSearch + params;
@@ -25,13 +26,13 @@ export const eventApi = rtkApi.injectEndpoints({
     }),
 
     // GET single event
-    getEvent: builder.query<any, number | string>({
+    getEvent: builder.query<CalendarEvent, number | string>({
       query: eventId => ApiPaths.events + '/' + eventId,
     }),
 
     // CREATE event
     createEvent: builder.mutation<
-      any,
+      CalendarEvent,
       {
         title: string;
         description?: string;
@@ -54,7 +55,7 @@ export const eventApi = rtkApi.injectEndpoints({
 
     // UPDATE event
     updateEvent: builder.mutation<
-      any,
+      CalendarEvent,
       {
         eventId: number | string;
         title?: string;
@@ -75,7 +76,7 @@ export const eventApi = rtkApi.injectEndpoints({
     }),
 
     // DELETE event
-    deleteEvent: builder.mutation<any, number | string>({
+    deleteEvent: builder.mutation<{ success: boolean }, number | string>({
       query: eventId => ({
         url: `${ApiPaths.events}/${eventId}`,
         method: 'DELETE',
@@ -83,7 +84,7 @@ export const eventApi = rtkApi.injectEndpoints({
     }),
 
     // ADD attendee
-    addAttendee: builder.mutation<any, { eventId: number | string; attendeeId: number }>({
+    addAttendee: builder.mutation<CalendarEvent, { eventId: number | string; attendeeId: number }>({
       query: ({ eventId, attendeeId }) => ({
         url: `${ApiPaths.events}/${eventId}/attendees`,
         method: 'POST',
@@ -92,7 +93,7 @@ export const eventApi = rtkApi.injectEndpoints({
     }),
 
     // REMOVE attendee
-    removeAttendee: builder.mutation<any, { eventId: number | string; attendeeUserId: number }>({
+    removeAttendee: builder.mutation<CalendarEvent, { eventId: number | string; attendeeUserId: number }>({
       query: ({ eventId, attendeeUserId }) => ({
         url: `${ApiPaths.events}/${eventId}/attendees/${attendeeUserId}`,
         method: 'DELETE',
@@ -100,7 +101,7 @@ export const eventApi = rtkApi.injectEndpoints({
     }),
 
     // UPDATE attendee status (self)
-    updateAttendeeStatus: builder.mutation<any, { eventId: number | string; status: string }>({
+    updateAttendeeStatus: builder.mutation<CalendarEvent, { eventId: number | string; status: string }>({
       query: ({ eventId, status }) => ({
         url: `${ApiPaths.events}/${eventId}/attendees/status`,
         method: 'PUT',

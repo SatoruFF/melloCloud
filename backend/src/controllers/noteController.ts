@@ -4,6 +4,7 @@ import { logger } from "../configs/logger.js";
 import { NotesService } from "../services/noteService.js";
 import { serializeBigInt } from "../helpers/serializeBigInt.js";
 import ApiContext from "../models/context.js";
+import { getErrorMessage, getErrorStatusCode } from "../types/errors.js";
 
 class NotesControllerClass {
   async getUserNotes(c: Context) {
@@ -20,9 +21,10 @@ class NotesControllerClass {
 
       const notes = await NotesService.getUserNotes(apiContext, userId, { view, tag });
       return c.json(serializeBigInt(notes));
-    } catch (error: any) {
-      logger.error(error.message, error);
-      return c.json({ message: error.message }, error.statusCode || 500);
+    } catch (error: unknown) {
+      const message = getErrorMessage(error);
+      logger.error(message, error);
+      return c.json({ message }, getErrorStatusCode(error));
     }
   }
 
@@ -42,9 +44,10 @@ class NotesControllerClass {
 
       const note = await NotesService.getNote(apiContext, noteId, userId);
       return c.json(serializeBigInt(note));
-    } catch (error: any) {
-      logger.error(error.message, error);
-      return c.json({ message: error.message }, error.statusCode || 500);
+    } catch (error: unknown) {
+      const message = getErrorMessage(error);
+      logger.error(message, error);
+      return c.json({ message }, getErrorStatusCode(error));
     }
   }
 
@@ -78,9 +81,10 @@ class NotesControllerClass {
       });
 
       return c.json(serializeBigInt(note), 201);
-    } catch (error: any) {
-      logger.error(error.message, error);
-      return c.json({ message: error.message }, error.statusCode || 500);
+    } catch (error: unknown) {
+      const message = getErrorMessage(error);
+      logger.error(message, error);
+      return c.json({ message }, getErrorStatusCode(error));
     }
   }
 
@@ -127,9 +131,10 @@ class NotesControllerClass {
       });
 
       return c.json(serializeBigInt(note));
-    } catch (error: any) {
-      logger.error(error.message, error);
-      return c.json({ message: error.message }, error.statusCode || 500);
+    } catch (error: unknown) {
+      const message = getErrorMessage(error);
+      logger.error(message, error);
+      return c.json({ message }, getErrorStatusCode(error));
     }
   }
 
@@ -149,9 +154,10 @@ class NotesControllerClass {
 
       const result = await NotesService.deleteNote(apiContext, noteId, userId);
       return c.json(result);
-    } catch (error: any) {
-      logger.error(error.message, error);
-      return c.json({ message: error.message }, error.statusCode || 500);
+    } catch (error: unknown) {
+      const message = getErrorMessage(error);
+      logger.error(message, error);
+      return c.json({ message }, getErrorStatusCode(error));
     }
   }
 
@@ -171,9 +177,10 @@ class NotesControllerClass {
 
       const notes = await NotesService.searchNotes(apiContext, userId, query);
       return c.json(serializeBigInt(notes));
-    } catch (error: any) {
-      logger.error(error.message, error);
-      return c.json({ message: error.message }, error.statusCode || 500);
+    } catch (error: unknown) {
+      const message = getErrorMessage(error);
+      logger.error(message, error);
+      return c.json({ message }, getErrorStatusCode(error));
     }
   }
 }

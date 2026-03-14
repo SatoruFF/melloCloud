@@ -3,6 +3,9 @@ import { useSearchParams } from "react-router-dom";
 import { useCallback } from "react";
 import { JitsiMeeting } from "@jitsi/react-sdk";
 import { useTranslation } from "react-i18next";
+import { useSelector } from "react-redux";
+import { getUserSelector } from "../../../entities/user";
+import { canUseVideoCall } from "../../../entities/user/model/types/user";
 import styles from "./video-call.module.scss";
 
 const JITSI_DOMAIN = "meet.jit.si";
@@ -12,10 +15,23 @@ const VideoCall = () => {
   const [searchParams] = useSearchParams();
   const room = searchParams.get("room");
   const displayName = searchParams.get("displayName") || t("chats.videoCall.guest");
+  const currentUser = useSelector(getUserSelector);
 
   const handleReadyToClose = useCallback(() => {
     window.close();
   }, []);
+
+  // Subscription guard: video calls require PRO or ENTERPRISE plan
+  if (!canUseVideoCall(currentUser)) {
+    return (
+      <div className={styles.wrapper}>
+        <div className={styles.error}>
+          <p>{t("subscription.videoCallLocked")}</p>
+          <p className={styles.hint}>{t("subscription.videoCallLockedHint")}</p>
+        </div>
+      </div>
+    );
+  }
 
   if (!room || !room.trim()) {
     return (

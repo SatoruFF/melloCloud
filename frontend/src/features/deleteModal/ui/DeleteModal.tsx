@@ -3,8 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 
 import { useAppDispatch } from "../../../app/store/store";
-import { useDeleteAccountMutation } from "../../../entities/user";
-import { logout } from "../../../entities/user/model/slice/userSlice";
+import { useDeleteAccountMutation, logout } from "../../../entities/user";
 import { WELCOME_ROUTE } from "../../../shared/consts/routes";
 
 const DeleteModal = ({ status, def }: { status: boolean; def: (v: boolean) => void }) => {

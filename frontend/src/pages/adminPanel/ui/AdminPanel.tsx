@@ -1,8 +1,10 @@
-import { ConfigProvider, Table, Tabs, Button, message, Modal, Form, Input, Select, Switch, InputNumber, Card, Statistic, Row, Col } from "antd";
+import { ConfigProvider, Table, Tabs, Button, message, Modal, Form, Input, Select, Switch, InputNumber, Card, Statistic, Row, Col, DatePicker, Tag } from "antd";
+import dayjs from "dayjs";
 import type { ColumnsType } from "antd/es/table";
 import { useState, useCallback } from "react";
 import { useTranslation, Trans } from "react-i18next";
 import { ResponsiveBar } from "@nivo/bar";
+import { getErrorMessage } from "../../../types/api";
 import {
   useGetAdminUsersQuery,
   useUpdateAdminUserMutation,
@@ -27,7 +29,7 @@ import {
   useSetAdminFeatureFlagUserMutation,
   useRemoveAdminFeatureFlagUserMutation,
   type AdminFeatureFlagItem,
-} from "../../../features/admin/api/adminApi";
+} from "../../../features/admin";
 import { sizeFormat, Spinner } from "../../../shared";
 import styles from "./admin-panel.module.scss";
 
@@ -67,7 +69,7 @@ const AdminPanel = () => {
   const [tasksPage, setTasksPage] = useState(1);
   const [eventsPage, setEventsPage] = useState(1);
   const [boardsPage, setBoardsPage] = useState(1);
-  const [editUserModal, setEditUserModal] = useState<{ id: number; userName: string | null; email: string; role: string; isActivated: boolean; isBlocked: boolean; diskSpace: string } | null>(null);
+  const [editUserModal, setEditUserModal] = useState<{ id: number; userName: string | null; email: string; role: string; isActivated: boolean; isBlocked: boolean; diskSpace: string; subscriptionPlan: string; subscriptionExpiresAt: string | null } | null>(null);
   const [featureFlagModal, setFeatureFlagModal] = useState<AdminFeatureFlagItem | null>(null);
   const [featureFlagForm] = Form.useForm();
   const [overrideModalFlag, setOverrideModalFlag] = useState<AdminFeatureFlagItem | null>(null);
@@ -106,7 +108,7 @@ const AdminPanel = () => {
 
   const [form] = Form.useForm();
 
-  const handleEditUser = useCallback((record: { id: number; userName: string | null; email: string; role: string; isActivated: boolean; isBlocked: boolean; diskSpace: string }) => {
+  const handleEditUser = useCallback((record: { id: number; userName: string | null; email: string; role: string; isActivated: boolean; isBlocked: boolean; diskSpace: string; subscriptionPlan: string; subscriptionExpiresAt: string | null }) => {
     setEditUserModal(record);
     form.setFieldsValue({
       userName: record.userName ?? "",
@@ -114,6 +116,8 @@ const AdminPanel = () => {
       isActivated: record.isActivated,
       isBlocked: record.isBlocked ?? false,
       diskSpace: Number(record.diskSpace) || 0,
+      subscriptionPlan: record.subscriptionPlan ?? "FREE",
+      subscriptionExpiresAt: record.subscriptionExpiresAt ? dayjs(record.subscriptionExpiresAt) : null,
     });
   }, [form]);
 
@@ -128,13 +132,27 @@ const AdminPanel = () => {
         isActivated: values.isActivated,
         isBlocked: values.isBlocked,
         diskSpace: values.diskSpace,
+        subscriptionPlan: values.subscriptionPlan,
+        subscriptionExpiresAt: values.subscriptionExpiresAt
+          ? (values.subscriptionExpiresAt as typeof dayjs.prototype).toISOString()
+          : null,
       }).unwrap();
       message.success(t("admin.messages.userUpdated"));
       setEditUserModal(null);
-    } catch (e: any) {
-      if (e?.data?.message) message.error(e.data.message);
-      else if (e?.errorFields) return;
-      else message.error(t("admin.messages.failedToUpdate"));
+    } catch (error: unknown) {
+      const apiError = error as Record<string, unknown>;
+      if (apiError?.data && typeof apiError.data === 'object' && 'message' in apiError.data) {
+        const dataMessage = (apiError.data as Record<string, unknown>).message;
+        if (typeof dataMessage === 'string') {
+          message.error(dataMessage);
+        } else {
+          message.error(t("admin.messages.failedToUpdate"));
+        }
+      } else if (apiError?.errorFields) {
+        return;
+      } else {
+        message.error(t("admin.messages.failedToUpdate"));
+      }
     }
   }, [editUserModal, form, updateUser, t]);
 
@@ -142,10 +160,10 @@ const AdminPanel = () => {
   type AdminEntityKey = keyof typeof entityKeys;
 
   const handleDelete = useCallback(
-    async (mutation: (id: number) => any, id: number, entityKey: AdminEntityKey) => {
+    async (mutation: (id: number) => Promise<unknown>, id: number, entityKey: AdminEntityKey) => {
       const label = t(`admin.entities.${entityKey}`);
       try {
-        await mutation(id).unwrap();
+        await mutation(id);
         message.success(t("admin.messages.deleted", { label }));
       } catch {
         message.error(t("admin.messages.failedToDelete", { label }));
@@ -153,6 +171,8 @@ const AdminPanel = () => {
     },
     [t]
   );
+
+  const subscriptionPlanColor: Record<string, string> = { FREE: "default", PRO: "blue", ENTERPRISE: "gold" };
 
   const userColumns: ColumnsType<Record<string, unknown>> = [
     { title: t("admin.columns.id"), dataIndex: "id", width: 70 },
@@ -163,6 +183,19 @@ const AdminPanel = () => {
     { title: t("admin.columns.blocked"), dataIndex: "isBlocked", width: 80, render: (v: boolean) => (v ? t("common.yes") : t("common.no")) },
     { title: t("admin.columns.disk"), dataIndex: "diskSpace", width: 90 },
     { title: t("admin.columns.used"), dataIndex: "usedSpace", width: 90 },
+    {
+      title: t("admin.columns.subscription"),
+      dataIndex: "subscriptionPlan",
+      width: 110,
+      render: (plan: string, record: Record<string, unknown>) => {
+        const expired = record.subscriptionExpiresAt && new Date(record.subscriptionExpiresAt as string) < new Date();
+        return (
+          <Tag color={expired ? "default" : subscriptionPlanColor[plan] ?? "default"}>
+            {expired ? `${plan} (${t("subscription.expired")})` : (plan ?? "FREE")}
+          </Tag>
+        );
+      },
+    },
     {
       title: t("admin.columns.actions"),
       width: 100,
@@ -317,10 +350,20 @@ const AdminPanel = () => {
         message.success(t("admin.messages.featureFlagCreated"));
       }
       setFeatureFlagModal(null);
-    } catch (e: any) {
-      if (e?.data?.message) message.error(e.data.message);
-      else if (e?.errorFields) return;
-      else message.error(t("admin.messages.failedToSave"));
+    } catch (error: unknown) {
+      const apiError = error as Record<string, unknown>;
+      if (apiError?.data && typeof apiError.data === 'object' && 'message' in apiError.data) {
+        const dataMessage = (apiError.data as Record<string, unknown>).message;
+        if (typeof dataMessage === 'string') {
+          message.error(dataMessage);
+        } else {
+          message.error(t("admin.messages.failedToSave"));
+        }
+      } else if (apiError?.errorFields) {
+        return;
+      } else {
+        message.error(t("admin.messages.failedToSave"));
+      }
     }
   }, [featureFlagModal, featureFlagForm, updateFeatureFlag, createFeatureFlag, t]);
 
@@ -336,10 +379,20 @@ const AdminPanel = () => {
       message.success(t("admin.messages.overrideSet"));
       overrideForm.resetFields();
       overrideForm.setFieldsValue({ isEnabled: true });
-    } catch (e: any) {
-      if (e?.data?.message) message.error(e.data.message);
-      else if (e?.errorFields) return;
-      else message.error(t("admin.messages.failedToSetOverride"));
+    } catch (error: unknown) {
+      const apiError = error as Record<string, unknown>;
+      if (apiError?.data && typeof apiError.data === 'object' && 'message' in apiError.data) {
+        const dataMessage = (apiError.data as Record<string, unknown>).message;
+        if (typeof dataMessage === 'string') {
+          message.error(dataMessage);
+        } else {
+          message.error(t("admin.messages.failedToSetOverride"));
+        }
+      } else if (apiError?.errorFields) {
+        return;
+      } else {
+        message.error(t("admin.messages.failedToSetOverride"));
+      }
     }
   }, [overrideModalFlag, overrideForm, setFeatureFlagUser, t]);
 
@@ -378,7 +431,7 @@ const AdminPanel = () => {
         <Tabs
           className={styles.tabs}
           defaultActiveKey="dashboard"
-          items={tabItems.map((item: any) => {
+          items={tabItems.map((item: Record<string, unknown>) => {
             if (item.isDashboard) {
               return {
                 key: item.key,
@@ -624,6 +677,23 @@ const AdminPanel = () => {
               <Form.Item name="diskSpace" label={t("admin.modals.diskSpace")}>
                 <InputNumber min={0} style={{ width: "100%" }} />
               </Form.Item>
+              <Form.Item name="subscriptionPlan" label={t("admin.modals.subscriptionPlan")} rules={[{ required: true }]}>
+                <Select
+                  options={[
+                    { value: "FREE", label: "FREE" },
+                    { value: "PRO", label: "PRO" },
+                    { value: "ENTERPRISE", label: "ENTERPRISE" },
+                  ]}
+                />
+              </Form.Item>
+              <Form.Item name="subscriptionExpiresAt" label={t("admin.modals.subscriptionExpiry")}>
+                <DatePicker
+                  showTime
+                  style={{ width: "100%" }}
+                  placeholder={t("admin.modals.subscriptionExpiryPlaceholder")}
+                  allowClear
+                />
+              </Form.Item>
             </Form>
           )}
         </Modal>
@@ -675,7 +745,7 @@ const AdminPanel = () => {
                       placeholder={t("admin.modals.selectUser")}
                       showSearch
                       optionFilterProp="label"
-                      options={overrideUsersListData?.data?.map((u: any) => ({ value: u.id, label: u.email || u.userName || `#${u.id}` })) ?? []}
+                      options={overrideUsersListData?.data?.map((u: Record<string, unknown>) => ({ value: (u.id as number), label: (u.email as string) || (u.userName as string) || `#${u.id}` })) ?? []}
                     />
                   </Form.Item>
                   <Form.Item name="isEnabled" label={t("admin.columns.enabled")} valuePropName="checked">
@@ -694,13 +764,13 @@ const AdminPanel = () => {
                 dataSource={overrideUsersData ?? []}
                 size="small"
                 columns={[
-                  { title: t("admin.columns.user"), key: "user", render: (_: any, r: any) => r.user?.email || r.user?.userName || `#${r.userId}` },
+                  { title: t("admin.columns.user"), key: "user", render: (_: unknown, r: Record<string, unknown>) => (r.user as Record<string, unknown>)?.email || (r.user as Record<string, unknown>)?.userName || `#${r.userId}` },
                   { title: t("admin.columns.enabled"), dataIndex: "isEnabled", width: 90, render: (v: boolean) => (v ? t("common.yes") : t("common.no")) },
                   {
                     title: t("admin.columns.actions"),
                     width: 90,
-                    render: (_: any, r: any) => (
-                      <Button type="link" danger size="small" onClick={() => handleRemoveOverride(r.userId)}>
+                    render: (_: unknown, r: Record<string, unknown>) => (
+                      <Button type="link" danger size="small" onClick={() => handleRemoveOverride(r.userId as number)}>
                         {t("admin.actions.remove")}
                       </Button>
                     ),

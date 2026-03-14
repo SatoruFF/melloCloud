@@ -49,14 +49,14 @@ sharingRouter.get("/:token/download", async (c) => {
     const { file, s3object } = await SharingService.downloadPublicFile(token);
     const body = s3object.Body as Buffer | Uint8Array | undefined;
     const data = body instanceof Buffer ? body : body ?? new Uint8Array(0);
-    return c.newResponse(data as any, {
+    return c.newResponse(data, {
       status: 200,
       headers: {
         "Content-Disposition": `attachment; filename="${file.name}"`,
         "Content-Type": file.type || "application/octet-stream",
         "Content-Length": String(s3object.ContentLength ?? 0),
       },
-    });
+    }) as Response;
   } catch (error: unknown) {
     const err = error as { statusCode?: number; message?: string };
     logger.error(err.message ?? String(error), error);

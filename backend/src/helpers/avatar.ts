@@ -1,21 +1,20 @@
-// @ts-nocheck
-// FIXME: remove this in future
 // base
 import { imagekit, prisma } from '../configs/config.js';
 
 import createError from 'http-errors';
 import _ from 'lodash';
 import { createReadStream } from 'streamifier';
+import type { ReadStream } from 'streamifier';
 // utils
 import { v4 as uuidv4 } from 'uuid';
 
 class AvatarClass {
-  async uploadAvatar(fileBuffer, userId) {
+  async uploadAvatar(fileBuffer: Buffer, userId: number): Promise<string | undefined> {
     const fileStream = createReadStream(fileBuffer);
 
     const avatarName = uuidv4() + '.png';
 
-    const user: any = await prisma.user.findFirst({
+    const user = await prisma.user.findFirst({
       where: { id: userId },
     });
 
@@ -56,8 +55,8 @@ class AvatarClass {
     return user.avatar;
   }
 
-  async deleteAvatar(userId) {
-    const user: any = await prisma.user.findFirst({
+  async deleteAvatar(userId: number) {
+    const user = await prisma.user.findFirst({
       where: { id: userId },
     });
 
@@ -65,7 +64,7 @@ class AvatarClass {
       throw createError(404, 'avatar not found');
     }
 
-    const fileList: any = await imagekit.listFiles();
+    const fileList = await imagekit.listFiles();
 
     const file = _.isArray(fileList) && fileList.find(file => file.url === user.avatar);
 

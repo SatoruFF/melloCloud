@@ -5,6 +5,7 @@ import createError from "http-errors";
 import { logger } from "../configs/logger.js";
 
 import { ColumnService } from "../services/columnService.js";
+import { getErrorMessage, getErrorStatusCode } from "../types/errors.js";
 
 class ColumnControllerClass {
   async create(c: Context) {
@@ -21,9 +22,11 @@ class ColumnControllerClass {
         boardId,
       });
       return c.json(column);
-    } catch (error: any) {
-      logger.error(error.message, error);
-      return c.json({ message: error.message }, error.statusCode || 500);
+    } catch (error: unknown) {
+      const message = getErrorMessage(error);
+      const statusCode = getErrorStatusCode(error);
+      logger.error(message, error);
+      return c.json({ message }, statusCode);
     }
   }
 
@@ -36,9 +39,11 @@ class ColumnControllerClass {
         ? await ColumnService.getByBoardId(Number(boardId), userId)
         : await ColumnService.getAll(userId);
       return c.json(columns);
-    } catch (error: any) {
-      logger.error(error.message, error);
-      return c.json({ message: error.message }, error.statusCode || 500);
+    } catch (error: unknown) {
+      const message = getErrorMessage(error);
+      const statusCode = getErrorStatusCode(error);
+      logger.error(message, error);
+      return c.json({ message }, statusCode);
     }
   }
 
@@ -59,9 +64,11 @@ class ColumnControllerClass {
       if (!column) throw createError(404, "Column not found");
 
       return c.json(column);
-    } catch (error: any) {
-      logger.error(error.message, error);
-      return c.json({ message: error.message }, error.statusCode || 500);
+    } catch (error: unknown) {
+      const message = getErrorMessage(error);
+      const statusCode = getErrorStatusCode(error);
+      logger.error(message, error);
+      return c.json({ message }, statusCode);
     }
   }
 
@@ -86,9 +93,11 @@ class ColumnControllerClass {
       });
 
       return c.json(column);
-    } catch (error: any) {
-      logger.error(error.message, error);
-      return c.json({ message: error.message }, error.statusCode || 500);
+    } catch (error: unknown) {
+      const message = getErrorMessage(error);
+      const statusCode = getErrorStatusCode(error);
+      logger.error(message, error);
+      return c.json({ message }, statusCode);
     }
   }
 
@@ -107,9 +116,11 @@ class ColumnControllerClass {
       await ColumnService.delete(Number(id), userId);
 
       return c.json({ message: "Column successfully deleted" }, 200);
-    } catch (error: any) {
-      logger.error(error.message, error);
-      return c.json({ message: error.message }, error.statusCode || 500);
+    } catch (error: unknown) {
+      const message = getErrorMessage(error);
+      const statusCode = getErrorStatusCode(error);
+      logger.error(message, error);
+      return c.json({ message }, statusCode);
     }
   }
 
@@ -138,9 +149,11 @@ class ColumnControllerClass {
       const columns = await ColumnService.reorderColumns(userId, columnOrders, boardId);
 
       return c.json(columns);
-    } catch (error: any) {
-      logger.error(error.message, error);
-      return c.json({ message: error.message }, error.statusCode || 500);
+    } catch (error: unknown) {
+      const message = getErrorMessage(error);
+      const statusCode = getErrorStatusCode(error);
+      logger.error(message, error);
+      return c.json({ message }, statusCode);
     }
   }
 
@@ -162,9 +175,11 @@ class ColumnControllerClass {
       const task = await ColumnService.moveTask(Number(taskId), Number(columnId), userId);
 
       return c.json(task);
-    } catch (error: any) {
-      logger.error(error.message, error);
-      return c.json({ message: error.message }, error.statusCode || 500);
+    } catch (error: unknown) {
+      const message = getErrorMessage(error);
+      const statusCode = getErrorStatusCode(error);
+      logger.error(message, error);
+      return c.json({ message }, statusCode);
     }
   }
 
@@ -176,9 +191,11 @@ class ColumnControllerClass {
       if (!boardId) throw createError(400, "boardId query is required");
       const stats = await ColumnService.getColumnStats(userId, Number(boardId));
       return c.json(stats);
-    } catch (error: any) {
-      logger.error(error.message, error);
-      return c.json({ message: error.message }, error.statusCode || 500);
+    } catch (error: unknown) {
+      const message = getErrorMessage(error);
+      const statusCode = getErrorStatusCode(error);
+      logger.error(message, error);
+      return c.json({ message }, statusCode);
     }
   }
 }

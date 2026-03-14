@@ -1,17 +1,18 @@
 import { omitBy, pick } from 'lodash-es';
 import { ApiPaths, rtkApi } from '../../../../shared';
 import { addQueryParams, generateParams, queryParamsSync } from '../../../../shared';
+import { IFile } from '../types/file';
 
 export const fileApi = rtkApi.injectEndpoints({
   endpoints: builder => ({
-    createDir: builder.mutation<any, any>({
+    createDir: builder.mutation<IFile, { name: string; parentId?: string }>({
       query: body => ({
         url: ApiPaths.file,
         method: 'POST',
         body,
       }),
     }),
-    downloadFile: builder.mutation<any, any>({
+    downloadFile: builder.mutation<void, { file: IFile }>({
       query: ({ file }) => ({
         url: `${ApiPaths.fileDownload}?id=${file.id}`,
         method: 'POST',
@@ -27,19 +28,19 @@ export const fileApi = rtkApi.injectEndpoints({
         cache: 'no-cache',
       }),
     }),
-    deleteFile: builder.mutation<any, any>({
+    deleteFile: builder.mutation<{ success: boolean }, { file: IFile }>({
       query: ({ file }) => ({
         url: `${ApiPaths.fileDelete}?id=${file.id}`,
         method: 'DELETE',
       }),
     }),
-    deleteAvatar: builder.mutation<any, void>({
+    deleteAvatar: builder.mutation<{ success: boolean }, void>({
       query: () => ({
         url: ApiPaths.fileAvatar,
         method: 'DELETE',
       }),
     }),
-    getFiles: builder.query<any, any>({
+    getFiles: builder.query<IFile[], Record<string, string>>({
       query: (params: Record<string, string>) => {
         // sanitize params
         const sanitizedParams = {

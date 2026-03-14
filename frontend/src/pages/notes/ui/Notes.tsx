@@ -7,11 +7,12 @@ import {
   useGetNoteQuery,
   useCreateNoteMutation,
   useUpdateNoteMutation,
-} from "../../../entities/note/model/api/noteApi";
-import type { NotesViewFilter } from "../../../entities/note/model/api/noteApi";
+  type NotesViewFilter,
+} from "../../../entities/note";
 import { message, Button } from "antd";
 import { useTranslation } from "react-i18next";
 import { NotesSidebar } from "../../../widgets/notesSidebar";
+import { BlockNoteContent } from "../../../types/content";
 
 import styles from "./notes.module.scss";
 
@@ -45,7 +46,7 @@ const Notes = () => {
   }, [note, noteId]);
 
   const handleSave = useCallback(
-    async (content: any) => {
+    async (content: BlockNoteContent) => {
       try {
         if (noteId && noteId !== "new") {
           await updateNote({
@@ -62,7 +63,8 @@ const Notes = () => {
           message.success(t("notes.createSuccess"), 1.5);
           navigate(`/notes/${result.id}`, { replace: true });
         }
-      } catch (_) {
+      } catch (error: unknown) {
+        console.error("Save error:", error);
         message.error(t("notes.saveFailed"), 3);
       }
     },
@@ -81,7 +83,7 @@ const Notes = () => {
           title: currentNoteTitle,
           content: note.content,
         }).unwrap();
-      } catch (error) {
+      } catch (error: unknown) {
         console.error("Title update error:", error);
       }
     }

@@ -106,6 +106,9 @@
     "account-deleted": "Аккаунт успешно удалён",
     "delete-account-confirm": "Введите пароль для подтверждения удаления аккаунта. Действие необратимо.",
     "logout-description": "Вы успешно вышли из аккаунта",
+    "agree-terms-prefix": "Я согласен с",
+    "agree-terms-and": "и",
+    "agree-terms-required": "Вы должны согласиться с Условиями обслуживания и Политикой конфиденциальности",
     "activate": {
       "invalidToken": "Некорректный токен",
       "errorWithAccount": "Ошибка при активации аккаунта: {{message}}",
@@ -591,7 +594,8 @@
       "name": "Название",
       "description": "Описание",
       "enabled": "Включено",
-      "overrides": "Переопределения"
+      "overrides": "Переопределения",
+      "subscription": "Тариф"
     },
     "actions": {
       "edit": "Изменить",
@@ -626,7 +630,10 @@
       "userOverrides": "Переопределения пользователей: {{name}}",
       "userOverridesHint": "Переопределения по пользователям: если пользователь указан ниже, его значение перекрывает глобальное «Включено» для этого флага.",
       "selectUser": "Выберите пользователя",
-      "addOverride": "Добавить переопределение"
+      "addOverride": "Добавить переопределение",
+      "subscriptionPlan": "Тарифный план",
+      "subscriptionExpiry": "Дата окончания плана",
+      "subscriptionExpiryPlaceholder": "Оставьте пустым — бессрочно"
     },
     "messages": {
       "userUpdated": "Пользователь обновлён",
@@ -652,6 +659,14 @@
     },
     "createFeatureFlag": "Создать флаг функции",
     "featureFlagsHint": "Ключ должен совпадать с фронтендом: files, notes, chats, planner, kanban, webhooks. Глобальное «Включено» — для всех; для отдельных пользователей используйте «Переопределения пользователей» в БД."
+  },
+  "subscription": {
+    "free": "Бесплатно",
+    "pro": "Pro",
+    "enterprise": "Enterprise",
+    "expired": "истёк",
+    "videoCallLocked": "Видеозвонки доступны на тарифах PRO и ENTERPRISE.",
+    "videoCallLockedHint": "Обратитесь к администратору для повышения тарифа."
   },
   "sharing": {
     "publicLink": {

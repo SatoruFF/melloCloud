@@ -4,6 +4,7 @@ import { logger } from "../configs/logger.js";
 import { EventsService } from "../services/eventService.js";
 import { serializeBigInt } from "../helpers/serializeBigInt.js";
 import ApiContext from "../models/context.js";
+import { getErrorMessage, getErrorStatusCode } from "../types/errors.js";
 
 class EventsControllerClass {
   async getUserEvents(c: Context) {
@@ -16,9 +17,10 @@ class EventsControllerClass {
 
       const events = await EventsService.getUserEvents(apiContext, userId);
       return c.json(serializeBigInt(events));
-    } catch (error: any) {
-      logger.error(error.message, error);
-      return c.json({ message: error.message }, error.statusCode || 500);
+    } catch (error: unknown) {
+      const message = getErrorMessage(error);
+      logger.error(message, error);
+      return c.json({ message }, getErrorStatusCode(error));
     }
   }
 
@@ -44,9 +46,10 @@ class EventsControllerClass {
       );
 
       return c.json(serializeBigInt(events));
-    } catch (error: any) {
-      logger.error(error.message, error);
-      return c.json({ message: error.message }, error.statusCode || 500);
+    } catch (error: unknown) {
+      const message = getErrorMessage(error);
+      logger.error(message, error);
+      return c.json({ message }, getErrorStatusCode(error));
     }
   }
 
@@ -66,9 +69,10 @@ class EventsControllerClass {
 
       const events = await EventsService.searchEvents(apiContext, userId, query);
       return c.json(serializeBigInt(events));
-    } catch (error: any) {
-      logger.error(error.message, error);
-      return c.json({ message: error.message }, error.statusCode || 500);
+    } catch (error: unknown) {
+      const message = getErrorMessage(error);
+      logger.error(message, error);
+      return c.json({ message }, getErrorStatusCode(error));
     }
   }
 
@@ -88,9 +92,10 @@ class EventsControllerClass {
 
       const event = await EventsService.getEvent(apiContext, eventId, userId);
       return c.json(serializeBigInt(event));
-    } catch (error: any) {
-      logger.error(error.message, error);
-      return c.json({ message: error.message }, error.statusCode || 500);
+    } catch (error: unknown) {
+      const message = getErrorMessage(error);
+      logger.error(message, error);
+      return c.json({ message }, getErrorStatusCode(error));
     }
   }
 
@@ -160,9 +165,10 @@ class EventsControllerClass {
       });
 
       return c.json(serializeBigInt(event), 201);
-    } catch (error: any) {
-      logger.error(error.message, error);
-      return c.json({ message: error.message }, error.statusCode || 500);
+    } catch (error: unknown) {
+      const message = getErrorMessage(error);
+      logger.error(message, error);
+      return c.json({ message }, getErrorStatusCode(error));
     }
   }
 
@@ -216,9 +222,10 @@ class EventsControllerClass {
       });
 
       return c.json(serializeBigInt(event));
-    } catch (error: any) {
-      logger.error(error.message, error);
-      return c.json({ message: error.message }, error.statusCode || 500);
+    } catch (error: unknown) {
+      const message = getErrorMessage(error);
+      logger.error(message, error);
+      return c.json({ message }, getErrorStatusCode(error));
     }
   }
 
@@ -238,9 +245,10 @@ class EventsControllerClass {
 
       const result = await EventsService.deleteEvent(apiContext, eventId, userId);
       return c.json(result);
-    } catch (error: any) {
-      logger.error(error.message, error);
-      return c.json({ message: error.message }, error.statusCode || 500);
+    } catch (error: unknown) {
+      const message = getErrorMessage(error);
+      logger.error(message, error);
+      return c.json({ message }, getErrorStatusCode(error));
     }
   }
 
@@ -268,9 +276,10 @@ class EventsControllerClass {
       const result = await EventsService.addAttendee(apiContext, eventId, userId, attendeeId);
 
       return c.json(serializeBigInt(result), 201);
-    } catch (error: any) {
-      logger.error(error.message, error);
-      return c.json({ message: error.message }, error.statusCode || 500);
+    } catch (error: unknown) {
+      const message = getErrorMessage(error);
+      logger.error(message, error);
+      return c.json({ message }, getErrorStatusCode(error));
     }
   }
 
@@ -295,9 +304,10 @@ class EventsControllerClass {
       const result = await EventsService.removeAttendee(apiContext, eventId, userId, attendeeUserId);
 
       return c.json(result);
-    } catch (error: any) {
-      logger.error(error.message, error);
-      return c.json({ message: error.message }, error.statusCode || 500);
+    } catch (error: unknown) {
+      const message = getErrorMessage(error);
+      logger.error(message, error);
+      return c.json({ message }, getErrorStatusCode(error));
     }
   }
 
@@ -329,9 +339,10 @@ class EventsControllerClass {
       const result = await EventsService.updateAttendeeStatus(apiContext, eventId, userId, status);
 
       return c.json(serializeBigInt(result));
-    } catch (error: any) {
-      logger.error(error.message, error);
-      return c.json({ message: error.message }, error.statusCode || 500);
+    } catch (error: unknown) {
+      const message = getErrorMessage(error);
+      logger.error(message, error);
+      return c.json({ message }, getErrorStatusCode(error));
     }
   }
 }

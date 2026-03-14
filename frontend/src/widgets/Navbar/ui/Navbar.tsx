@@ -8,8 +8,8 @@ import { useMediaQuery } from "react-responsive";
 import { NavLink, useNavigate } from "react-router-dom";
 
 import { useAppDispatch, useAppSelector } from "../../../app/store/store";
-import { logout } from "../../../entities/user/model/slice/userSlice";
-import WorkspacesDropdown from "../../../features/workspaceDropdown/ui/WorkspacesDropdown";
+import { logout } from "../../../entities/user";
+import WorkspacesDropdown from "../../../features/workspaceDropdown";
 // import avatarIcon from "../../../shared/assets/avatar-icon.png";
 import {
   FILE_ROUTE,

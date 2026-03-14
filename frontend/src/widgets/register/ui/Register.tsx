@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { unwrapResult } from "@reduxjs/toolkit";
-import { Form, Input, message, notification } from "antd";
+import { Form, Input, message, notification, Checkbox } from "antd";
 import Divider from "antd/es/divider";
 import cn from "classnames";
 import { Smile } from "lucide-react";
@@ -59,6 +59,7 @@ const Register = () => {
   const [userName, setUserName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [agreeTerms, setAgreeTerms] = useState(false);
 
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
@@ -66,6 +67,14 @@ const Register = () => {
   const [regUser, { isLoading }] = userApi.useRegistrationMutation();
 
   const handleCreate = async () => {
+    if (!agreeTerms) {
+      messageApi.open({
+        type: "error",
+        content: t("auth.agree-terms-required"),
+      });
+      return;
+    }
+
     const payload = { userName, email, password };
     const result = registerSchema.safeParse(payload);
     if (!result.success) {
@@ -151,12 +160,34 @@ const Register = () => {
             placeholder={t("auth.password-placeholder")}
           />
         </Form.Item>
+
+        <Form.Item>
+          <Checkbox
+            checked={agreeTerms}
+            onChange={(e) => setAgreeTerms(e.target.checked)}
+          >
+            <span>{t("auth.agree-terms-prefix")}</span>{" "}
+            <NavLink to={TERMS_OF_SERVICE_ROUTE} target="_blank" className={styles.legalLink}>
+              {t("legal.terms.title")}
+            </NavLink>
+            <span> {t("auth.agree-terms-and")} </span>
+            <NavLink to={PRIVACY_POLICY_ROUTE} target="_blank" className={styles.legalLink}>
+              {t("legal.privacy.title")}
+            </NavLink>
+          </Checkbox>
+        </Form.Item>
       </Form>
       <div>
         {isLoading ? (
           <Spinner />
         ) : (
-          <PrimaryButton onClick={handleCreate} type="submit" theme="primary" fullWidth>
+          <PrimaryButton
+            onClick={handleCreate}
+            type="submit"
+            theme="primary"
+            fullWidth
+            disabled={!agreeTerms}
+          >
             {t("auth.submit")}
           </PrimaryButton>
         )}

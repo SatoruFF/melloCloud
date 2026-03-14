@@ -5,13 +5,12 @@ import { message } from 'antd';
 import { useCallback, useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../../../app/store/store';
-import { useCreateDirMutation, useGetFilesQuery } from '../../../../entities/file/model/api/fileApi';
 import {
+  useCreateDirMutation,
+  useGetFilesQuery,
   getFilesLimitSelector,
   getFilesOffsetSelector,
   getFilesSelector,
-} from '../../../../entities/file/model/selectors/getFiles';
-import {
   addFiles,
   addNewFile,
   popToPath,
@@ -22,7 +21,7 @@ import {
   setLoading,
   setOffset,
   setView,
-} from '../../../../entities/file/model/slice/fileSlice';
+} from '../../../../entities/file';
 
 export const useFiles = () => {
   const dispatch = useAppDispatch();

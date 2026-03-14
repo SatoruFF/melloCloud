@@ -8,6 +8,7 @@ import { hashPassword, comparePassword } from "../utils/argon2.js";
 import createError from "http-errors";
 import { generateJwt } from "../utils/generateJwt.js";
 import { validateAccessToken, validateRefreshToken } from "../utils/validateJwt.js";
+import { User, Invite } from "@prisma/client";
 
 interface IUserData {
   email: string;
@@ -20,8 +21,14 @@ interface ILoginMetadata {
   ip?: string;
 }
 
+interface JwtPayload {
+  payload: string;
+  iat?: number;
+  exp?: number;
+}
+
 class UserServiceClass {
-  async createInvite({ userName, email, password }: IUserData): Promise<any> {
+  async createInvite({ userName, email, password }: IUserData): Promise<Omit<Invite, 'activationToken' | 'password'>> {
     return prisma.$transaction(async (trx) => {
       const candidate = await trx.user.findUnique({ where: { email } });
       if (candidate) {
@@ -44,7 +51,7 @@ class UserServiceClass {
       await MailService.sendActivationMail(email, { ...invite, activationToken });
 
       const { activationToken: _at, password: _pw, ...safeInvite } = invite as Record<string, unknown>;
-      return safeInvite;
+      return safeInvite as Omit<Invite, 'activationToken' | 'password'>;
     });
   }
 
@@ -96,6 +103,8 @@ class UserServiceClass {
         role: user.role,
         token: accessToken,
         refreshToken,
+        subscriptionPlan: user.subscriptionPlan,
+        subscriptionExpiresAt: user.subscriptionExpiresAt,
       });
 
       return userDto;
@@ -104,7 +113,7 @@ class UserServiceClass {
 
   async login(email: string, password: string, metadata?: ILoginMetadata) {
     return prisma.$transaction(async (trx) => {
-      const user: any = await trx.user.findUnique({ where: { email } });
+      const user: User | null = await trx.user.findUnique({ where: { email } });
 
       if (!user) {
         throw createError(400, `User with email: ${email} not found`);
@@ -215,6 +224,8 @@ class UserServiceClass {
         role: user.role,
         token: accessToken,
         refreshToken,
+        subscriptionPlan: user.subscriptionPlan,
+        subscriptionExpiresAt: user.subscriptionExpiresAt,
       });
 
       return userDto;
@@ -226,7 +237,7 @@ class UserServiceClass {
       throw createError(401, "Invalid token");
     }
 
-    const user: any = await prisma.user.findUnique({ where: { id } });
+    const user: User | null = await prisma.user.findUnique({ where: { id } });
 
     if (!user) {
       throw createError(401, "Invalid token");
@@ -253,12 +264,14 @@ class UserServiceClass {
       isAdmin: getAdminUserIds().includes(user.id),
       token: accessToken,
       refreshToken,
+      subscriptionPlan: user.subscriptionPlan,
+      subscriptionExpiresAt: user.subscriptionExpiresAt,
     });
   }
 
   async activate(activationToken: string, metadata?: ILoginMetadata) {
     return prisma.$transaction(async (trx) => {
-      const { payload: emailFromInvite } = (validateAccessToken(activationToken) as any) || {};
+      const { payload: emailFromInvite } = (validateAccessToken(activationToken) as JwtPayload) || {};
 
       if (!emailFromInvite) {
         throw createError(401, "Auth error, may be token is expired");
@@ -308,7 +321,7 @@ class UserServiceClass {
 
     return prisma.$transaction(async (trx) => {
       // Проверяем валидность токена
-      const decoded: any = validateRefreshToken(refreshToken);
+      const decoded: JwtPayload | undefined = validateRefreshToken(refreshToken) as JwtPayload | undefined;
       const userId = decoded?.payload;
 
       if (!userId) {
@@ -350,6 +363,8 @@ class UserServiceClass {
         role: user.role,
         token: accessToken,
         refreshToken: newToken,
+        subscriptionPlan: user.subscriptionPlan,
+        subscriptionExpiresAt: user.subscriptionExpiresAt,
       });
     });
   }
@@ -404,7 +419,7 @@ class UserServiceClass {
     });
   }
 
-  async search(context: any, query: string) {
+  async search(context: { prisma: typeof prisma }, query: string) {
     return await context.prisma.user.findMany({
       where: {
         userName: { contains: query, mode: "insensitive" },
@@ -434,7 +449,7 @@ class UserServiceClass {
     };
   }
 
-  async getById(context: any, id: number) {
+  async getById(context: { prisma: typeof prisma }, id: number) {
     return await context.prisma.user.findFirst({
       where: { id: { equals: id } },
       select: { id: true, userName: true },

@@ -34,6 +34,11 @@ model User {
 
   oauthProvider String?
   oauthId       String?
+
+  /** Subscription plan: FREE | PRO | ENTERPRISE */
+  subscriptionPlan      String    @default("FREE")
+  /** When the paid plan expires. null = never expires (lifetime) */
+  subscriptionExpiresAt DateTime?
   
   userConfigs  UserConfig[]
   createdAt    DateTime     @default(now())

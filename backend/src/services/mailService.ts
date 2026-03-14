@@ -1,8 +1,6 @@
-// @ts-nocheck
-// FIXME: remove this in future
 import _ from 'lodash';
 
-import nodemailer from 'nodemailer';
+import nodemailer, { Transporter } from 'nodemailer';
 
 import {
   SERVICE_NAME,
@@ -12,9 +10,14 @@ import {
   SMTP_USER,
 } from '../configs/config.js';
 import { getTemplate } from '../utils/getTemplate.js';
+import { Invite } from '@prisma/client';
+
+interface ActivationMailData extends Invite {
+  activationToken: string;
+}
 
 class MailServiceClass {
-  transport: any;
+  transport: Transporter;
 
   constructor() {
     this.transport = nodemailer.createTransport({
@@ -28,7 +31,7 @@ class MailServiceClass {
     });
   }
 
-  async sendActivationMail(to: string, userData: any) {
+  async sendActivationMail(to: string, userData: ActivationMailData) {
     await this.transport.sendMail({
       from: SMTP_USER,
       to,

@@ -1,6 +1,7 @@
 import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import { Strategy as YandexStrategy } from "passport-yandex";
+import type { User } from "@prisma/client";
 import {
   API_URL,
   GOOGLE_CLIENT_ID,
@@ -89,7 +90,19 @@ if (YANDEX_CLIENT_ID && YANDEX_CLIENT_SECRET) {
         clientSecret: YANDEX_CLIENT_SECRET,
         callbackURL: `${API_URL}/auth/yandex/callback`,
       },
-      async (accessToken: string, refreshToken: string, profile: any, done: any) => {
+      async (
+        accessToken: string,
+        refreshToken: string,
+        profile: {
+          id: string;
+          display_name?: string;
+          login?: string;
+          default_email?: string;
+          emails?: Array<{ value: string }>;
+          default_avatar_id?: string;
+        },
+        done: (err: Error | null, user?: User) => void
+      ) => {
         try {
           const email = profile.emails?.[0]?.value || profile.default_email;
           if (!email) {

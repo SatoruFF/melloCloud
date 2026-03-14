@@ -1,7 +1,8 @@
 import { FRONTEND_URL, prisma, s3, S3_BUCKET_NAME } from "../configs/config.js";
 import createError from "http-errors";
-import { ResourceType, PermissionLevel, ShareActivityType } from "@prisma/client";
+import { ResourceType, PermissionLevel, ShareActivityType, Permission, Note, Task, CalendarEvent, File, TaskColumn, KanbanBoard } from "@prisma/client";
 import crypto from "crypto";
+import { PrismaClient } from "@prisma/client";
 
 interface ShareResourceData {
   resourceType: ResourceType;
@@ -420,7 +421,7 @@ class SharingServiceClass {
     resourceType: ResourceType,
     resourceId: number,
     userId: number,
-    trx?: any
+    trx?: Omit<PrismaClient, '$connect' | '$disconnect' | '$on' | '$transaction' | '$use'>
   ): Promise<boolean> {
     const prismaClient = trx || prisma;
 
@@ -468,7 +469,7 @@ class SharingServiceClass {
   }
 
   // Helper: Fetch resources
-  private async fetchResources(permissions: any[]) {
+  private async fetchResources(permissions: Permission[]) {
     const resourcesByType: Record<string, number[]> = {};
 
     permissions.forEach((p) => {
@@ -478,7 +479,7 @@ class SharingServiceClass {
       resourcesByType[p.resourceType].push(p.resourceId);
     });
 
-    const results = [];
+    const results: Array<Record<string, unknown>> = [];
 
     for (const [type, ids] of Object.entries(resourcesByType)) {
       const resources = await this.fetchResourcesByType(type as ResourceType, ids);
@@ -516,8 +517,8 @@ class SharingServiceClass {
   }
 
   private async fetchSingleResource(resourceType: ResourceType, resourceId: number) {
-    let resource: any = null;
-    
+    let resource: Note | Task | CalendarEvent | File | TaskColumn | KanbanBoard | null = null;
+
     switch (resourceType) {
       case ResourceType.NOTE:
         resource = await prisma.note.findUnique({ where: { id: resourceId } });
@@ -541,14 +542,14 @@ class SharingServiceClass {
       default:
         return null;
     }
-  
+
     if (resource) {
       return {
         ...resource,
         resourceType,
       };
     }
-  
+
     return null;
   }
 
@@ -573,7 +574,7 @@ class SharingServiceClass {
     }
 
     // Get file info
-    const file: any = await prisma.file.findUnique({
+    const file = await prisma.file.findUnique({
       where: { id: permission.resourceId },
       include: {
         user: {

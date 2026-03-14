@@ -9,6 +9,23 @@ export interface GetNotesParams {
   tag?: string;
 }
 
+// BlockNote content type - represents the editor's block structure
+export type BlockNoteContent = any;
+
+export interface CreateNotePayload {
+  title: string;
+  content: BlockNoteContent;
+}
+
+export interface UpdateNotePayload {
+  noteId: string;
+  title?: string;
+  content?: BlockNoteContent;
+  isStarred?: boolean;
+  isRemoved?: boolean;
+  tags?: string[];
+}
+
 export const notesApi = rtkApi.injectEndpoints({
   endpoints: builder => ({
     // Get notes with optional filter: view (all | starred | trash), tag
@@ -39,13 +56,7 @@ export const notesApi = rtkApi.injectEndpoints({
     }),
 
     // Create new note
-    createNote: builder.mutation<
-      Note,
-      {
-        title: string;
-        content: any;
-      }
-    >({
+    createNote: builder.mutation<Note, CreateNotePayload>({
       query: body => ({
         url: ApiPaths.notes,
         method: 'POST',
@@ -55,17 +66,7 @@ export const notesApi = rtkApi.injectEndpoints({
     }),
 
     // Update note (title, content, isStarred, isRemoved, tags)
-    updateNote: builder.mutation<
-      Note,
-      {
-        noteId: string;
-        title?: string;
-        content?: any;
-        isStarred?: boolean;
-        isRemoved?: boolean;
-        tags?: string[];
-      }
-    >({
+    updateNote: builder.mutation<Note, UpdateNotePayload>({
       query: ({ noteId, ...body }) => ({
         url: `${ApiPaths.notes}/${noteId}`,
         method: 'PUT',

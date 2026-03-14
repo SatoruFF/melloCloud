@@ -106,6 +106,9 @@
     "account-deleted": "Account deleted successfully",
     "delete-account-confirm": "Type your password to confirm account deletion. This action cannot be undone.",
     "logout-description": "You successfully logout from account",
+    "agree-terms-prefix": "I have read and agree with",
+    "agree-terms-and": "and",
+    "agree-terms-required": "You must agree to the Terms of Service and Privacy Policy",
     "activate": {
       "invalidToken": "Invalid token",
       "errorWithAccount": "Error with activate account: {{message}}",
@@ -593,7 +596,8 @@
       "name": "Name",
       "description": "Description",
       "enabled": "Enabled",
-      "overrides": "Overrides"
+      "overrides": "Overrides",
+      "subscription": "Plan"
     },
     "actions": {
       "edit": "Edit",
@@ -628,7 +632,10 @@
       "userOverrides": "User overrides: {{name}}",
       "userOverridesHint": "Per-user overrides: if a user is listed below, their value overrides the global \"Enabled\" for this flag.",
       "selectUser": "Select user",
-      "addOverride": "Add override"
+      "addOverride": "Add override",
+      "subscriptionPlan": "Subscription plan",
+      "subscriptionExpiry": "Plan expiry date",
+      "subscriptionExpiryPlaceholder": "Leave empty — never expires"
     },
     "messages": {
       "userUpdated": "User updated",
@@ -654,6 +661,14 @@
     },
     "createFeatureFlag": "Create feature flag",
     "featureFlagsHint": "Key must match frontend: files, notes, chats, planner, kanban, webhooks. Global \"Enabled\" = for everyone; use \"User overrides\" in DB for per-user."
+  },
+  "subscription": {
+    "free": "Free",
+    "pro": "Pro",
+    "enterprise": "Enterprise",
+    "expired": "expired",
+    "videoCallLocked": "Video calls are available on PRO and ENTERPRISE plans.",
+    "videoCallLockedHint": "Contact the administrator to upgrade your subscription."
   },
   "sharing": {
     "publicLink": {

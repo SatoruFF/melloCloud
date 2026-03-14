@@ -1,4 +1,3 @@
-// @ts-nocheck
 import type { BaseQueryFn, FetchArgs, FetchBaseQueryError } from '@reduxjs/toolkit/query';
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { Mutex } from 'async-mutex';
@@ -6,6 +5,7 @@ import { message } from 'antd';
 import { Variables } from '../../../../shared';
 import i18n from '../../../../shared/config/i18n/i18n';
 import { logout, setUser, setUserLoading } from '../slice/userSlice';
+import { IUser } from '../types/user';
 
 const mutex = new Mutex();
 
@@ -64,7 +64,7 @@ const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQue
         );
 
         if (refreshResult.data) {
-          api.dispatch(setUser(refreshResult.data as any));
+          api.dispatch(setUser(refreshResult.data as IUser));
           // Retry the initial query
           result = await baseQuery(args, api, extraOptions);
         } else {
@@ -81,8 +81,8 @@ const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQue
   }
 
   if (result.error && result.error.status === 403) {
-    const data = (result.error as any)?.data;
-    if (data?.code === 'USER_BLOCKED') {
+    const data = (result.error as FetchBaseQueryError)?.data;
+    if ((data as any)?.code === 'USER_BLOCKED') {
       api.dispatch(logout());
       window.location.href = '/access-denied';
     }
@@ -101,7 +101,7 @@ export const userApi = createApi({
   baseQuery: baseQueryWithReauth,
   endpoints: builder => ({
     // Authentication endpoints
-    registration: builder.mutation<any, RegisterRequest>({
+    registration: builder.mutation<IUser, RegisterRequest>({
       query: body => ({
         url: Variables.Auth_Register,
         method: 'POST',
@@ -109,7 +109,7 @@ export const userApi = createApi({
       }),
     }),
 
-    login: builder.mutation<any, LoginRequest>({
+    login: builder.mutation<IUser, LoginRequest>({
       query: body => ({
         url: Variables.Auth_Login,
         method: 'POST',
@@ -118,19 +118,19 @@ export const userApi = createApi({
       invalidatesTags: ['Sessions'],
     }),
 
-    activateUser: builder.mutation<any, string>({
+    activateUser: builder.mutation<IUser, string>({
       query: token => ({
         url: `${Variables.Auth_Activate}?token=${token}`,
         method: 'GET',
       }),
     }),
 
-    auth: builder.query<any, void>({
+    auth: builder.query<IUser, void>({
       query: () => Variables.User_Auth,
       providesTags: ['User'],
     }),
 
-    logout: builder.mutation<any, void>({
+    logout: builder.mutation<{ success: boolean }, void>({
       query: () => ({
         url: Variables.User_Logout,
         method: 'POST',
@@ -141,7 +141,7 @@ export const userApi = createApi({
     // Session management endpoints
 
     // Logout from all devices
-    logoutAll: builder.mutation<any, void>({
+    logoutAll: builder.mutation<{ success: boolean }, void>({
       query: () => ({
         url: Variables.User_LogoutAll,
         method: 'POST',
@@ -156,7 +156,7 @@ export const userApi = createApi({
     }),
 
     // Delete specific session
-    deleteSession: builder.mutation<any, string>({
+    deleteSession: builder.mutation<{ success: boolean }, string>({
       query: sessionId => ({
         url: `${Variables.User_Sessions}/${sessionId}`,
         method: 'DELETE',
@@ -165,7 +165,7 @@ export const userApi = createApi({
     }),
 
     // User profile endpoints
-    changeInfo: builder.mutation<any, { userName?: string }>({
+    changeInfo: builder.mutation<IUser, { userName?: string }>({
       query: body => ({
         url: Variables.User_ChangeInfo,
         method: 'PATCH',
@@ -192,7 +192,7 @@ export const userApi = createApi({
       }),
     }),
 
-    searchUsers: builder.query<any[], string>({
+    searchUsers: builder.query<IUser[], string>({
       query: query => `${Variables.User_Search}?query=${query}`,
     }),
   }),

@@ -2,19 +2,20 @@ import { useEffect, useRef, useState } from "react";
 import * as Y from "yjs";
 import { YjsWebSocketProvider } from "../yjs/YjsWebSocketProvider";
 import { Variables } from "../../consts/localVariables";
+import { BlockNoteContent } from "../../../types/content";
 
 export interface UseYjsCollaborationOptions {
   noteId: string;
-  initialContent?: any;
-  onContentUpdate?: (content: any) => void;
+  initialContent?: BlockNoteContent;
+  onContentUpdate?: (content: BlockNoteContent) => void;
 }
 
 export function useYjsCollaboration({ noteId, initialContent, onContentUpdate }: UseYjsCollaborationOptions) {
   const [isConnected, setIsConnected] = useState(false);
-  const [collaborators, setCollaborators] = useState<any[]>([]);
+  const [collaborators, setCollaborators] = useState<Record<string, unknown>[]>([]);
   const docRef = useRef<Y.Doc | null>(null);
   const providerRef = useRef<YjsWebSocketProvider | null>(null);
-  const yArrayRef = useRef<Y.Array<any> | null>(null);
+  const yArrayRef = useRef<Y.Array<BlockNoteContent> | null>(null);
 
   useEffect(() => {
     if (!noteId || noteId === "new") return;
@@ -64,8 +65,9 @@ export function useYjsCollaboration({ noteId, initialContent, onContentUpdate }:
   }, [noteId, initialContent, onContentUpdate]);
 
   // Функция для обновления контента из BlockNote -> Yjs
-  const updateContent = (content: any[]) => {
+  const updateContent = (content: BlockNoteContent) => {
     if (!yArrayRef.current) return;
+    if (typeof content === 'string' || !Array.isArray(content)) return;
 
     const currentContent = yArrayRef.current.toArray();
     const contentStr = JSON.stringify(content);

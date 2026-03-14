@@ -1,4 +1,3 @@
-// @ts-nocheck
 import "@blocknote/core/fonts/inter.css";
 import { BlockNoteView } from "@blocknote/mantine";
 import "@blocknote/mantine/style.css";
@@ -8,6 +7,7 @@ import { useTranslation } from "react-i18next";
 import { message, Modal, Select, Input, Button } from "antd";
 import cn from "classnames";
 import { NotesToolbar } from "../../NotesToolbar";
+import { BlockNoteContent } from "../../../types/content";
 import styles from "./editor.module.scss";
 import "./editor.scss";
 
@@ -17,9 +17,9 @@ const LIBRE_TRANSLATE_URL = "https://libretranslate.com/translate";
 interface EditorProps {
   noteId?: string;
   noteTitle?: string;
-  initialContent?: any;
-  onSave?: (content: any) => void;
-  onContentChange?: (content: any) => void;
+  initialContent?: BlockNoteContent;
+  onSave?: (content: BlockNoteContent) => void | Promise<void>;
+  onContentChange?: (content: BlockNoteContent) => void;
   readOnly?: boolean;
   className?: string;
   toolbarProps?: {
@@ -49,7 +49,7 @@ export const Editor = ({
   const [canUndo, setCanUndo] = useState(false);
   const [canRedo, setCanRedo] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
-  const [lastSavedContent, setLastSavedContent] = useState<any>(initialContent);
+  const [lastSavedContent, setLastSavedContent] = useState<BlockNoteContent>(initialContent);
   const [editorTheme, setEditorTheme] = useState<"light" | "dark">(() => {
     try {
       const saved = localStorage.getItem(NOTES_THEME_KEY);
@@ -152,11 +152,12 @@ export const Editor = ({
     }
   }, [editor, toolbarProps, t]);
 
-  const blocksToMarkdown = (blocks: any[]): string => {
+  const blocksToMarkdown = (blocks: BlockNoteContent): string => {
+    if (typeof blocks === 'string') return blocks;
     if (!Array.isArray(blocks)) return "";
 
     return blocks
-      .map((block) => {
+      .map((block: any) => {
         const content = Array.isArray(block.content)
           ? block.content.map((item: any) => item.text || "").join("")
           : block.content || "";
@@ -217,6 +218,7 @@ export const Editor = ({
   const getDocumentPlainText = useCallback((): string => {
     if (!editor) return "";
     const doc = editor.document;
+    if (typeof doc === 'string') return doc;
     if (!Array.isArray(doc)) return "";
     return doc
       .map((block: any) => {

@@ -1,12 +1,13 @@
-import type { Response, NextFunction } from "express";
+import type { Request, Response, NextFunction } from "express";
 import createError from "http-errors";
 import { logger } from "../configs/logger.js";
+import { getErrorMessage, getErrorStatusCode } from "../types/errors.js";
 import { SharingService } from "../services/sharingService.js";
 import { ResourceType, PermissionLevel } from "@prisma/client";
 
 class SharingControllerClass {
   // Share resource with user
-  async shareResource(req: any, res: Response, next: NextFunction) {
+  async shareResource(req: Request, res: Response, next: NextFunction) {
     try {
       const { resourceType, resourceId, email, userId, permissionLevel, expiresAt } = req.body;
       const grantedBy = req.user?.id;
@@ -34,16 +35,18 @@ class SharingControllerClass {
       });
 
       return res.json(permission);
-    } catch (error: any) {
-      logger.error(error.message, error);
-      return res.status(error.statusCode || 500).send({
-        message: error.message,
+    } catch (error: unknown) {
+      const message = getErrorMessage(error);
+      const statusCode = getErrorStatusCode(error);
+      logger.error(message, error);
+      return res.status(statusCode).send({
+        message,
       });
     }
   }
 
   // Get permissions for a resource
-  async getResourcePermissions(req: any, res: Response) {
+  async getResourcePermissions(req: Request, res: Response) {
     try {
       const { resourceType, resourceId } = req.params;
       const userId = req.user?.id;
@@ -63,16 +66,18 @@ class SharingControllerClass {
       );
 
       return res.json(permissions);
-    } catch (error: any) {
-      logger.error(error.message, error);
-      return res.status(error.statusCode || 500).send({
-        message: error.message,
+    } catch (error: unknown) {
+      const message = getErrorMessage(error);
+      const statusCode = getErrorStatusCode(error);
+      logger.error(message, error);
+      return res.status(statusCode).send({
+        message,
       });
     }
   }
 
   // Update permission level
-  async updatePermission(req: any, res: Response) {
+  async updatePermission(req: Request, res: Response) {
     try {
       const { permissionId } = req.params;
       const { permissionLevel } = req.body;
@@ -93,16 +98,18 @@ class SharingControllerClass {
       );
 
       return res.json(permission);
-    } catch (error: any) {
-      logger.error(error.message, error);
-      return res.status(error.statusCode || 500).send({
-        message: error.message,
+    } catch (error: unknown) {
+      const message = getErrorMessage(error);
+      const statusCode = getErrorStatusCode(error);
+      logger.error(message, error);
+      return res.status(statusCode).send({
+        message,
       });
     }
   }
 
   // Revoke permission
-  async revokePermission(req: any, res: Response) {
+  async revokePermission(req: Request, res: Response) {
     try {
       const { permissionId } = req.params;
       const userId = req.user?.id;
@@ -118,16 +125,18 @@ class SharingControllerClass {
       await SharingService.revokePermission(Number(permissionId), userId);
 
       return res.status(200).json({ message: "Permission revoked successfully" });
-    } catch (error: any) {
-      logger.error(error.message, error);
-      return res.status(error.statusCode || 500).send({
-        message: error.message,
+    } catch (error: unknown) {
+      const message = getErrorMessage(error);
+      const statusCode = getErrorStatusCode(error);
+      logger.error(message, error);
+      return res.status(statusCode).send({
+        message,
       });
     }
   }
 
   // Create public link
-  async createPublicLink(req: any, res: Response) {
+  async createPublicLink(req: Request, res: Response) {
     try {
       const { resourceType, resourceId, permissionLevel } = req.body;
       const userId = req.user?.id;
@@ -148,16 +157,18 @@ class SharingControllerClass {
       );
 
       return res.json({ token, url });
-    } catch (error: any) {
-      logger.error(error.message, error);
-      return res.status(error.statusCode || 500).send({
-        message: error.message,
+    } catch (error: unknown) {
+      const message = getErrorMessage(error);
+      const statusCode = getErrorStatusCode(error);
+      logger.error(message, error);
+      return res.status(statusCode).send({
+        message,
       });
     }
   }
 
   // Delete public link
-  async deletePublicLink(req: any, res: Response) {
+  async deletePublicLink(req: Request, res: Response) {
     try {
       const { resourceType, resourceId } = req.params;
       const userId = req.user?.id;
@@ -177,16 +188,18 @@ class SharingControllerClass {
       );
 
       return res.status(200).json({ message: "Public link deleted successfully" });
-    } catch (error: any) {
-      logger.error(error.message, error);
-      return res.status(error.statusCode || 500).send({
-        message: error.message,
+    } catch (error: unknown) {
+      const message = getErrorMessage(error);
+      const statusCode = getErrorStatusCode(error);
+      logger.error(message, error);
+      return res.status(statusCode).send({
+        message,
       });
     }
   }
 
   // Get shared with me
-  async getSharedWithMe(req: any, res: Response) {
+  async getSharedWithMe(req: Request, res: Response) {
     try {
       const { type } = req.query;
       const userId = req.user?.id;
@@ -201,16 +214,18 @@ class SharingControllerClass {
       );
 
       return res.json(resources);
-    } catch (error: any) {
-      logger.error(error.message, error);
-      return res.status(error.statusCode || 500).send({
-        message: error.message,
+    } catch (error: unknown) {
+      const message = getErrorMessage(error);
+      const statusCode = getErrorStatusCode(error);
+      logger.error(message, error);
+      return res.status(statusCode).send({
+        message,
       });
     }
   }
 
   // Get shared by me
-  async getSharedByMe(req: any, res: Response) {
+  async getSharedByMe(req: Request, res: Response) {
     try {
       const { type } = req.query;
       const userId = req.user?.id;
@@ -225,16 +240,18 @@ class SharingControllerClass {
       );
 
       return res.json(resources);
-    } catch (error: any) {
-      logger.error(error.message, error);
-      return res.status(error.statusCode || 500).send({
-        message: error.message,
+    } catch (error: unknown) {
+      const message = getErrorMessage(error);
+      const statusCode = getErrorStatusCode(error);
+      logger.error(message, error);
+      return res.status(statusCode).send({
+        message,
       });
     }
   }
 
   // Check user permission
-  async checkPermission(req: any, res: Response) {
+  async checkPermission(req: Request, res: Response) {
     try {
       const { resourceType, resourceId } = req.params;
       const userId = req.user?.id;
@@ -254,16 +271,18 @@ class SharingControllerClass {
       );
 
       return res.json(permission);
-    } catch (error: any) {
-      logger.error(error.message, error);
-      return res.status(error.statusCode || 500).send({
-        message: error.message,
+    } catch (error: unknown) {
+      const message = getErrorMessage(error);
+      const statusCode = getErrorStatusCode(error);
+      logger.error(message, error);
+      return res.status(statusCode).send({
+        message,
       });
     }
   }
 
   // Access public resource
-  async accessPublicResource(req: any, res: Response) {
+  async accessPublicResource(req: Request, res: Response) {
     try {
       const { token } = req.params;
 
@@ -274,16 +293,18 @@ class SharingControllerClass {
       const resource = await SharingService.accessPublicResource(token);
 
       return res.json(resource);
-    } catch (error: any) {
-      logger.error(error.message, error);
-      return res.status(error.statusCode || 500).send({
-        message: error.message,
+    } catch (error: unknown) {
+      const message = getErrorMessage(error);
+      const statusCode = getErrorStatusCode(error);
+      logger.error(message, error);
+      return res.status(statusCode).send({
+        message,
       });
     }
   }
 
   // Get sharing activity
-  async getSharingActivity(req: any, res: Response) {
+  async getSharingActivity(req: Request, res: Response) {
     try {
       const { resourceType, resourceId } = req.params;
       const userId = req.user?.id;
@@ -303,16 +324,18 @@ class SharingControllerClass {
       );
 
       return res.json(activities);
-    } catch (error: any) {
-      logger.error(error.message, error);
-      return res.status(error.statusCode || 500).send({
-        message: error.message,
+    } catch (error: unknown) {
+      const message = getErrorMessage(error);
+      const statusCode = getErrorStatusCode(error);
+      logger.error(message, error);
+      return res.status(statusCode).send({
+        message,
       });
     }
   }
 
   // Download public file
-  async downloadPublicFile(req: any, res: Response) {
+  async downloadPublicFile(req: Request, res: Response) {
     try {
       const { token } = req.params;
 
@@ -330,10 +353,12 @@ class SharingControllerClass {
 
       // ✅ Send S3 buffer
       res.send(s3object.Body);
-    } catch (error: any) {
-      logger.error(error.message, error);
-      return res.status(error.statusCode || 500).send({
-        message: error.message,
+    } catch (error: unknown) {
+      const message = getErrorMessage(error);
+      const statusCode = getErrorStatusCode(error);
+      logger.error(message, error);
+      return res.status(statusCode).send({
+        message,
       });
     }
   }

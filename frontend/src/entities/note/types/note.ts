@@ -1,7 +1,9 @@
+import { BlockNoteContent } from "../../../types/content";
+
 export interface Note {
   id: string;
   title: string;
-  content: any; // BlockNote content
+  content: BlockNoteContent;
   createdAt: string;
   updatedAt: string;
   userId: number;

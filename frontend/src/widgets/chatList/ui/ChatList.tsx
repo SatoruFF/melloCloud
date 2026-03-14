@@ -7,13 +7,10 @@ import { Star } from "lucide-react";
 
 import styles from "./chat-list.module.scss";
 import { AppSkeleton, Search } from "../../../shared";
-import { useGetChatsQuery } from "../../../entities/chat/model/api/chatApi";
-import { useSearchUsersQuery } from "../../../entities/user/model/api/user";
+import { useGetChatsQuery, setCurrentChat, getCurrentChat } from "../../../entities/chat";
+import { useSearchUsersQuery, getUserSelector } from "../../../entities/user";
 import { NewChatButton, NewChatModal } from "../../../features/startNewChat";
 import { useAppDispatch, useAppSelector } from "../../../app/store/store";
-import { setCurrentChat } from "../../../entities/chat/model/slice/chatSlice";
-import { getCurrentChat } from "../../../entities/chat/model/selector/getChats";
-import { getUserSelector } from "../../../entities/user";
 import { useTranslation } from "react-i18next";
 
 const ChatList: React.FC = () => {

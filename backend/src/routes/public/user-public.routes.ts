@@ -74,8 +74,9 @@ router.get('/google/callback', async (c) => {
     });
 
     return c.redirect(`${CLIENT_URL}?token=${accessToken}`);
-  } catch (error: any) {
-    return c.redirect(`${CLIENT_URL}/login?error=${encodeURIComponent(error.message)}`);
+  } catch (error: unknown) {
+    const err = error instanceof Error ? error.message : String(error);
+    return c.redirect(`${CLIENT_URL}/login?error=${encodeURIComponent(err)}`);
   }
 });
 
@@ -116,8 +117,9 @@ router.get('/yandex/callback', async (c) => {
     });
 
     return c.redirect(`${CLIENT_URL}?token=${accessToken}`);
-  } catch (error: any) {
-    return c.redirect(`${CLIENT_URL}/login?error=${encodeURIComponent(error.message)}`);
+  } catch (error: unknown) {
+    const err = error instanceof Error ? error.message : String(error);
+    return c.redirect(`${CLIENT_URL}/login?error=${encodeURIComponent(err)}`);
   }
 });
 

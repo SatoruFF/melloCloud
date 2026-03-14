@@ -59,8 +59,9 @@ export const authMiddleware = async (c: Context, next: Next) => {
     c.set('userId', id); // Для быстрого доступа
 
     await next();
-  } catch (e: any) {
-    return c.json({ message: 'Auth error', error: e.message }, 401);
+  } catch (e: unknown) {
+    const error = e instanceof Error ? e : new Error(String(e));
+    return c.json({ message: 'Auth error', error: error.message }, 401);
   }
 };
 

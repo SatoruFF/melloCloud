@@ -7,9 +7,7 @@ import { useState, useCallback } from "react";
 
 import { useAppSelector } from "../../../app/store/store";
 import { useAppDispatch } from "../../../app/store/store";
-import { addNewFile, setFiles } from "../../../entities/file/model/slice/fileSlice";
-import { getFilesSelector } from "../../../entities/file/model/selectors/getFiles";
-import { useDeleteFileMutation } from "../../../entities/file/model/api/fileApi";
+import { addNewFile, setFiles, getFilesSelector, useDeleteFileMutation } from "../../../entities/file";
 import { Variables } from "../../../shared/consts/localVariables";
 
 import cn from "classnames";

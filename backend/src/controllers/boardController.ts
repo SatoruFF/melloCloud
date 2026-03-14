@@ -2,6 +2,7 @@ import type { Context } from "hono";
 import createError from "http-errors";
 import { logger } from "../configs/logger.js";
 import { BoardService } from "../services/boardService.js";
+import { getErrorMessage, getErrorStatusCode } from "../types/errors.js";
 
 function getUserId(c: Context): number {
   const user = c.get("user") as { id?: number } | undefined;
@@ -23,9 +24,11 @@ class BoardControllerClass {
       }
       const board = await BoardService.create({ title: title.trim(), userId });
       return c.json(board);
-    } catch (error: any) {
-      logger.error(error.message, error);
-      return c.json({ message: error.message }, error.statusCode || 500);
+    } catch (error: unknown) {
+      const message = getErrorMessage(error);
+      const statusCode = getErrorStatusCode(error);
+      logger.error(message, error);
+      return c.json({ message }, statusCode);
     }
   }
 
@@ -34,9 +37,11 @@ class BoardControllerClass {
       const userId = getUserId(c);
       const boards = await BoardService.getAll(userId);
       return c.json(boards);
-    } catch (error: any) {
-      logger.error(error.message, error);
-      return c.json({ message: error.message }, error.statusCode || 500);
+    } catch (error: unknown) {
+      const message = getErrorMessage(error);
+      const statusCode = getErrorStatusCode(error);
+      logger.error(message, error);
+      return c.json({ message }, statusCode);
     }
   }
 
@@ -47,9 +52,11 @@ class BoardControllerClass {
       const userId = getUserId(c);
       const board = await BoardService.getById(Number(id), userId);
       return c.json(board);
-    } catch (error: any) {
-      logger.error(error.message, error);
-      return c.json({ message: error.message }, error.statusCode || 500);
+    } catch (error: unknown) {
+      const message = getErrorMessage(error);
+      const statusCode = getErrorStatusCode(error);
+      logger.error(message, error);
+      return c.json({ message }, statusCode);
     }
   }
 
@@ -61,9 +68,11 @@ class BoardControllerClass {
       const userId = getUserId(c);
       const board = await BoardService.update(Number(id), userId, body);
       return c.json(board);
-    } catch (error: any) {
-      logger.error(error.message, error);
-      return c.json({ message: error.message }, error.statusCode || 500);
+    } catch (error: unknown) {
+      const message = getErrorMessage(error);
+      const statusCode = getErrorStatusCode(error);
+      logger.error(message, error);
+      return c.json({ message }, statusCode);
     }
   }
 
@@ -74,9 +83,11 @@ class BoardControllerClass {
       const userId = getUserId(c);
       const result = await BoardService.delete(Number(id), userId);
       return c.json(result, 200);
-    } catch (error: any) {
-      logger.error(error.message, error);
-      return c.json({ message: error.message }, error.statusCode || 500);
+    } catch (error: unknown) {
+      const message = getErrorMessage(error);
+      const statusCode = getErrorStatusCode(error);
+      logger.error(message, error);
+      return c.json({ message }, statusCode);
     }
   }
 }

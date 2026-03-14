@@ -6,6 +6,8 @@ import { isProduction } from "../configs/config.js";
 import { logger } from "../configs/logger.js";
 import { UserService } from "../services/userService.js";
 import ApiContext from "../models/context.js";
+import { getErrorMessage, getErrorStatusCode } from "../types/errors.js";
+import type { UserDto } from "../dtos/user-dto.js";
 
 class UserControllerClass {
   // Регистрация пользователя
@@ -16,9 +18,11 @@ class UserControllerClass {
 
       const invite = await UserService.createInvite({ userName, email, password });
       return c.json(invite);
-    } catch (error: any) {
-      logger.error(error.message, error);
-      return c.json({ message: error.message }, error.statusCode || 500);
+    } catch (error: unknown) {
+      const message = getErrorMessage(error);
+      const statusCode = getErrorStatusCode(error);
+      logger.error(message, error);
+      return c.json({ message }, statusCode);
     }
   }
 
@@ -53,11 +57,13 @@ class UserControllerClass {
 
       // Возвращаем пользователя + accessToken (SPA его читает),
       // но refreshToken остаётся только в httpOnly cookie
-      const { refreshToken, ...safeUserData } = userData as any;
+      const { refreshToken, ...safeUserData } = userData;
       return c.json(safeUserData);
-    } catch (error: any) {
-      logger.error(error.message, error);
-      if (error.statusCode === 403 && error.message === "USER_BLOCKED") {
+    } catch (error: unknown) {
+      const message = getErrorMessage(error);
+      const statusCode = getErrorStatusCode(error);
+      logger.error(message, error);
+      if (statusCode === 403 && message === "USER_BLOCKED") {
         return c.json(
           {
             message:
@@ -67,7 +73,7 @@ class UserControllerClass {
           403
         );
       }
-      return c.json({ message: error.message }, error.statusCode || 500);
+      return c.json({ message }, statusCode);
     }
   }
 
@@ -83,9 +89,11 @@ class UserControllerClass {
 
       const userData = await UserService.auth(id);
       return c.json(userData);
-    } catch (error: any) {
-      logger.error(error.message, error);
-      if (error.statusCode === 403 && error.message === "USER_BLOCKED") {
+    } catch (error: unknown) {
+      const message = getErrorMessage(error);
+      const statusCode = getErrorStatusCode(error);
+      logger.error(message, error);
+      if (statusCode === 403 && message === "USER_BLOCKED") {
         return c.json(
           {
             message:
@@ -95,7 +103,7 @@ class UserControllerClass {
           403
         );
       }
-      return c.json({ message: error.message }, error.statusCode || 500);
+      return c.json({ message }, statusCode);
     }
   }
 
@@ -123,11 +131,13 @@ class UserControllerClass {
       });
 
       // Отдаём пользователя + accessToken (для SPA), refreshToken только в cookie
-      const { refreshToken, ...safeUserData } = userData as any;
+      const { refreshToken, ...safeUserData } = userData;
       return c.json(safeUserData);
-    } catch (error: any) {
-      logger.error(error.message, error);
-      return c.json({ message: error.message }, error.statusCode || 500);
+    } catch (error: unknown) {
+      const message = getErrorMessage(error);
+      const statusCode = getErrorStatusCode(error);
+      logger.error(message, error);
+      return c.json({ message }, statusCode);
     }
   }
 
@@ -157,11 +167,13 @@ class UserControllerClass {
       });
 
       // SPA получает новый accessToken, а refreshToken остаётся только в cookie
-      const { refreshToken, ...safeUserData } = userData as any;
+      const { refreshToken, ...safeUserData } = userData;
       return c.json(safeUserData);
-    } catch (error: any) {
-      logger.error(error.message, error);
-      return c.json({ message: error.message }, error.statusCode || 500);
+    } catch (error: unknown) {
+      const message = getErrorMessage(error);
+      const statusCode = getErrorStatusCode(error);
+      logger.error(message, error);
+      return c.json({ message }, statusCode);
     }
   }
 
@@ -184,9 +196,11 @@ class UserControllerClass {
         },
         200,
       );
-    } catch (error: any) {
-      logger.error(error.message, error);
-      return c.json({ message: error.message }, error.statusCode || 500);
+    } catch (error: unknown) {
+      const message = getErrorMessage(error);
+      const statusCode = getErrorStatusCode(error);
+      logger.error(message, error);
+      return c.json({ message }, statusCode);
     }
   }
 
@@ -208,9 +222,11 @@ class UserControllerClass {
         },
         200,
       );
-    } catch (error: any) {
-      logger.error(error.message, error);
-      return c.json({ message: error.message }, error.statusCode || 500);
+    } catch (error: unknown) {
+      const message = getErrorMessage(error);
+      const statusCode = getErrorStatusCode(error);
+      logger.error(message, error);
+      return c.json({ message }, statusCode);
     }
   }
 
@@ -222,9 +238,11 @@ class UserControllerClass {
 
       const sessions = await UserService.getSessions(id);
       return c.json(sessions);
-    } catch (error: any) {
-      logger.error(error.message, error);
-      return c.json({ message: error.message }, error.statusCode || 500);
+    } catch (error: unknown) {
+      const message = getErrorMessage(error);
+      const statusCode = getErrorStatusCode(error);
+      logger.error(message, error);
+      return c.json({ message }, statusCode);
     }
   }
 
@@ -237,9 +255,11 @@ class UserControllerClass {
 
       await UserService.deleteSession(id, sessionId);
       return c.json({ message: "Session deleted successfully" });
-    } catch (error: any) {
-      logger.error(error.message, error);
-      return c.json({ message: error.message }, error.statusCode || 500);
+    } catch (error: unknown) {
+      const message = getErrorMessage(error);
+      const statusCode = getErrorStatusCode(error);
+      logger.error(message, error);
+      return c.json({ message }, statusCode);
     }
   }
 
@@ -254,9 +274,11 @@ class UserControllerClass {
       const apiContext = (c.get("context") as ApiContext | undefined) ?? null;
       const users = await UserService.search(apiContext, query);
       return c.json(users);
-    } catch (error: any) {
-      logger.error(error.message, error);
-      return c.json({ message: error.message }, error.statusCode || 500);
+    } catch (error: unknown) {
+      const message = getErrorMessage(error);
+      const statusCode = getErrorStatusCode(error);
+      logger.error(message, error);
+      return c.json({ message }, statusCode);
     }
   }
 
@@ -275,9 +297,11 @@ class UserControllerClass {
       }
 
       return c.json(user);
-    } catch (error: any) {
-      logger.error(error.message, error);
-      return c.json({ message: error.message }, error.statusCode || 500);
+    } catch (error: unknown) {
+      const message = getErrorMessage(error);
+      const statusCode = getErrorStatusCode(error);
+      logger.error(message, error);
+      return c.json({ message }, statusCode);
     }
   }
 
@@ -288,9 +312,11 @@ class UserControllerClass {
       const body = await c.req.json<{ userName?: string }>();
       const updated = await UserService.updateUserInfo(userId, body);
       return c.json(updated);
-    } catch (error: any) {
-      logger.error(error.message, error);
-      return c.json({ message: error.message }, error.statusCode || 500);
+    } catch (error: unknown) {
+      const message = getErrorMessage(error);
+      const statusCode = getErrorStatusCode(error);
+      logger.error(message, error);
+      return c.json({ message }, statusCode);
     }
   }
 
@@ -301,9 +327,11 @@ class UserControllerClass {
       const body = await c.req.json<{ currentPassword: string; newPassword: string }>();
       const result = await UserService.changePassword(userId, body.currentPassword, body.newPassword);
       return c.json(result);
-    } catch (error: any) {
-      logger.error(error.message, error);
-      return c.json({ message: error.message }, error.statusCode || 500);
+    } catch (error: unknown) {
+      const message = getErrorMessage(error);
+      const statusCode = getErrorStatusCode(error);
+      logger.error(message, error);
+      return c.json({ message }, statusCode);
     }
   }
 
@@ -314,9 +342,11 @@ class UserControllerClass {
       const body = await c.req.json<{ password: string }>();
       const result = await UserService.deleteAccount(userId, body.password);
       return c.json(result);
-    } catch (error: any) {
-      logger.error(error.message, error);
-      return c.json({ message: error.message }, error.statusCode || 500);
+    } catch (error: unknown) {
+      const message = getErrorMessage(error);
+      const statusCode = getErrorStatusCode(error);
+      logger.error(message, error);
+      return c.json({ message }, statusCode);
     }
   }
 }

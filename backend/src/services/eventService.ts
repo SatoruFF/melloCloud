@@ -1,10 +1,12 @@
 import createError from "http-errors";
 import { ResourceType, PermissionLevel } from "@prisma/client";
+import type { CalendarEvent } from "@prisma/client";
+import ApiContext from "../models/context.js";
 import { WebhookService } from "./webhookService.js";
 import { SharingService } from "./sharingService.js";
 
 class EventsServiceClass {
-  private async getSharedEventIds(context: any, userId: number): Promise<number[]> {
+  private async getSharedEventIds(context: ApiContext, userId: number): Promise<number[]> {
     const permissions = await context.prisma.permission.findMany({
       where: {
         resourceType: ResourceType.EVENT,
@@ -19,7 +21,7 @@ class EventsServiceClass {
   //
   // GET ALL USER EVENTS
   //
-  async getUserEvents(context: any, userId: number) {
+  async getUserEvents(context: ApiContext, userId: number) {
     const sharedIds = await this.getSharedEventIds(context, userId);
 
     const events = await context.prisma.calendarEvent.findMany({
@@ -73,7 +75,7 @@ class EventsServiceClass {
   // GET EVENTS BY DATE RANGE
   //
   async getEventsByDateRange(
-    context: any,
+    context: ApiContext,
     userId: number,
     startDate: Date,
     endDate: Date
@@ -142,7 +144,7 @@ class EventsServiceClass {
   //
   // SEARCH EVENTS
   //
-  async searchEvents(context: any, userId: number, query: string) {
+  async searchEvents(context: ApiContext, userId: number, query: string) {
     const sharedIds = await this.getSharedEventIds(context, userId);
 
     const events = await context.prisma.calendarEvent.findMany({
@@ -225,7 +227,7 @@ class EventsServiceClass {
   //
   // GET SINGLE EVENT
   //
-  async getEvent(context: any, eventId: string, userId: number) {
+  async getEvent(context: ApiContext, eventId: string, userId: number) {
     let event = await context.prisma.calendarEvent.findFirst({
       where: {
         id: +eventId,
@@ -329,7 +331,7 @@ class EventsServiceClass {
   // CREATE EVENT
   //
   async createEvent(
-    context: any,
+    context: ApiContext,
     userId: number,
     data: {
       title: string;
@@ -462,7 +464,7 @@ class EventsServiceClass {
   // UPDATE EVENT
   //
   async updateEvent(
-    context: any,
+    context: ApiContext,
     eventId: string,
     userId: number,
     data: {
@@ -501,7 +503,7 @@ class EventsServiceClass {
     }
 
     // Формируем данные для обновления
-    const updateData: any = {
+    const updateData: Partial<Omit<CalendarEvent, 'id' | 'userId' | 'taskId' | 'createdAt'>> & { updatedAt: Date } = {
       updatedAt: new Date(),
     };
 
@@ -591,7 +593,7 @@ class EventsServiceClass {
   //
   // DELETE EVENT
   //
-  async deleteEvent(context: any, eventId: string, userId: number) {
+  async deleteEvent(context: ApiContext, eventId: string, userId: number) {
     const existingEvent = await context.prisma.calendarEvent.findFirst({
       where: { id: +eventId },
     });
@@ -645,7 +647,7 @@ class EventsServiceClass {
   // ADD ATTENDEE
   //
   async addAttendee(
-    context: any,
+    context: ApiContext,
     eventId: string,
     userId: number,
     attendeeId: number
@@ -711,7 +713,7 @@ class EventsServiceClass {
   // REMOVE ATTENDEE
   //
   async removeAttendee(
-    context: any,
+    context: ApiContext,
     eventId: string,
     userId: number,
     attendeeUserId: string
@@ -747,7 +749,7 @@ class EventsServiceClass {
   // UPDATE ATTENDEE STATUS (сам участник обновляет свой статус)
   //
   async updateAttendeeStatus(
-    context: any,
+    context: ApiContext,
     eventId: string,
     userId: number,
     status: string

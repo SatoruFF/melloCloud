@@ -6,11 +6,12 @@ import { prisma } from "../configs/config.js";
 import { Avatar } from "../helpers/avatar.js";
 import { FileService } from "../services/fileService.js";
 
-import { PassThrough } from "stream";
+import { PassThrough, Readable } from "stream";
 import createError from "http-errors";
 // Utils
 import _ from "lodash";
 import { logger } from "../configs/logger.js";
+import { getErrorMessage, getErrorStatusCode } from "../types/errors.js";
 import "dotenv/config.js";
 
 const getUserById = async (userId: number) => {
@@ -95,9 +96,11 @@ class FileControllerClass {
       });
 
       return c.json(updatedFile);
-    } catch (error: any) {
-      logger.error(error.message, error);
-      return c.json({ message: error.message }, error.statusCode || 500);
+    } catch (error: unknown) {
+      const message = getErrorMessage(error);
+      const statusCode = getErrorStatusCode(error);
+      logger.error(message, error);
+      return c.json({ message }, statusCode);
     }
   }
 
@@ -133,9 +136,11 @@ class FileControllerClass {
       const files = await FileService.getFiles(searchParams);
 
       return c.json(files);
-    } catch (error: any) {
-      logger.error(error.message, error);
-      return c.json({ message: error.message }, error.statusCode || 500);
+    } catch (error: unknown) {
+      const message = getErrorMessage(error);
+      const statusCode = getErrorStatusCode(error);
+      logger.error(message, error);
+      return c.json({ message }, statusCode);
     }
   }
 
@@ -154,9 +159,11 @@ class FileControllerClass {
       }
       const url = await FileService.getFilePreviewUrl(fileId, userId);
       return c.json({ url });
-    } catch (error: any) {
-      logger.error(error.message, error);
-      return c.json({ message: error.message }, error.statusCode || 500);
+    } catch (error: unknown) {
+      const message = getErrorMessage(error);
+      const statusCode = getErrorStatusCode(error);
+      logger.error(message, error);
+      return c.json({ message }, statusCode);
     }
   }
 
@@ -188,9 +195,11 @@ class FileControllerClass {
       const savedFile = await FileService.uploadFile(fileForService, userId, parentId);
 
       return c.json(savedFile);
-    } catch (error: any) {
-      logger.error(error.message, error);
-      return c.json({ message: error.message }, error.statusCode || 500);
+    } catch (error: unknown) {
+      const message = getErrorMessage(error);
+      const statusCode = getErrorStatusCode(error);
+      logger.error(message, error);
+      return c.json({ message }, statusCode);
     }
   }
 
@@ -215,18 +224,21 @@ class FileControllerClass {
       const { s3object, file } = await FileService.downloadFile(queryId, userId, user.storageGuid);
 
       const stream = new PassThrough();
-      stream.end(s3object.Body as any);
+      const body = s3object.Body as Readable;
+      body.pipe(stream);
 
-      return c.newResponse(stream as any, {
+      return c.newResponse(stream, {
         status: 200,
         headers: {
           "Content-Disposition": `attachment; filename=${file.name}`,
           "Content-Type": file.type,
         },
       });
-    } catch (error: any) {
-      logger.error(error.message, error);
-      return c.json({ message: error.message }, error.statusCode || 500);
+    } catch (error: unknown) {
+      const message = getErrorMessage(error);
+      const statusCode = getErrorStatusCode(error);
+      logger.error(message, error);
+      return c.json({ message }, statusCode);
     }
   }
 
@@ -246,17 +258,20 @@ class FileControllerClass {
       const user = await getUserById(userId);
       const { s3object, file } = await FileService.downloadFile(fileId, userId, user.storageGuid);
       const stream = new PassThrough();
-      stream.end(s3object.Body as any);
-      return c.newResponse(stream as any, {
+      const body = s3object.Body as Readable;
+      body.pipe(stream);
+      return c.newResponse(stream, {
         status: 200,
         headers: {
           "Content-Disposition": `inline; filename="${file.name}"`,
           "Content-Type": file.type || "application/octet-stream",
         },
       });
-    } catch (error: any) {
-      logger.error(error.message, error);
-      return c.json({ message: error.message }, error.statusCode || 500);
+    } catch (error: unknown) {
+      const message = getErrorMessage(error);
+      const statusCode = getErrorStatusCode(error);
+      logger.error(message, error);
+      return c.json({ message }, statusCode);
     }
   }
 
@@ -281,9 +296,11 @@ class FileControllerClass {
       const allFiles = await FileService.deleteFile(fileId, userId);
 
       return c.json(allFiles);
-    } catch (error: any) {
-      logger.error(error.message, error);
-      return c.json({ message: error.message }, error.statusCode || 500);
+    } catch (error: unknown) {
+      const message = getErrorMessage(error);
+      const statusCode = getErrorStatusCode(error);
+      logger.error(message, error);
+      return c.json({ message }, statusCode);
     }
   }
 
@@ -310,9 +327,11 @@ class FileControllerClass {
       const avatarUrl = await Avatar.uploadAvatar(fileBuffer, userId);
 
       return c.json(avatarUrl);
-    } catch (error: any) {
-      logger.error(error.message, error);
-      return c.json({ message: error.message }, error.statusCode || 500);
+    } catch (error: unknown) {
+      const message = getErrorMessage(error);
+      const statusCode = getErrorStatusCode(error);
+      logger.error(message, error);
+      return c.json({ message }, statusCode);
     }
   }
 
@@ -330,9 +349,11 @@ class FileControllerClass {
       const user = await Avatar.deleteAvatar(userId);
 
       return c.json(user);
-    } catch (error: any) {
-      logger.error(error.message, error);
-      return c.json({ message: error.message }, error.statusCode || 500);
+    } catch (error: unknown) {
+      const message = getErrorMessage(error);
+      const statusCode = getErrorStatusCode(error);
+      logger.error(message, error);
+      return c.json({ message }, statusCode);
     }
   }
 }

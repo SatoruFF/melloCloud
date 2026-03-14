@@ -6,8 +6,8 @@ import type { MenuProps } from "antd";
 import { Share2, Save, Download, Printer, MoreHorizontal, Undo, Redo, Sun, Moon, Languages } from "lucide-react";
 import cn from "classnames";
 import styles from "./notes-toolbar.module.scss";
-import { ShareModal } from "../../../features/sharing/ui/ShareModal/ShareModal";
-import { ResourceType } from "../../../entities/sharing";
+import { ShareModal } from "@/features/sharing";
+import { ResourceType } from "@/entities/sharing";
 
 interface NotesToolbarProps {
   noteId?: string;

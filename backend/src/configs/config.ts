@@ -83,7 +83,7 @@ AWS.config.update({
   secretAccessKey: YK_SECRET,
 });
 
-export const s3: any = new AWS.S3({
+export const s3 = new AWS.S3({
   endpoint: 'https://storage.yandexcloud.net',
 });
 

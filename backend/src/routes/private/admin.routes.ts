@@ -33,6 +33,8 @@ adminRouter.get("/users", zValidator("query", paginationSchema), async (c) => {
         diskSpace: true,
         usedSpace: true,
         createdAt: true,
+        subscriptionPlan: true,
+        subscriptionExpiresAt: true,
       },
     }),
     prisma.user.count(),
@@ -42,6 +44,7 @@ adminRouter.get("/users", zValidator("query", paginationSchema), async (c) => {
       ...u,
       diskSpace: u.diskSpace.toString(),
       usedSpace: u.usedSpace.toString(),
+      subscriptionExpiresAt: u.subscriptionExpiresAt ? u.subscriptionExpiresAt.toISOString() : null,
     })),
     total,
     page,
@@ -66,6 +69,8 @@ adminRouter.get("/users/:id", async (c) => {
       storageGuid: true,
       createdAt: true,
       updatedAt: true,
+      subscriptionPlan: true,
+      subscriptionExpiresAt: true,
     },
   });
   if (!user) return c.json({ message: "User not found" }, 404);
@@ -73,6 +78,7 @@ adminRouter.get("/users/:id", async (c) => {
     ...user,
     diskSpace: user.diskSpace.toString(),
     usedSpace: user.usedSpace.toString(),
+    subscriptionExpiresAt: user.subscriptionExpiresAt ? user.subscriptionExpiresAt.toISOString() : null,
   });
 });
 
@@ -82,6 +88,8 @@ const updateUserSchema = z.object({
   isActivated: z.boolean().optional(),
   isBlocked: z.boolean().optional(),
   diskSpace: z.coerce.number().min(0).optional(),
+  subscriptionPlan: z.enum(["FREE", "PRO", "ENTERPRISE"]).optional(),
+  subscriptionExpiresAt: z.string().datetime({ offset: true }).nullable().optional(),
 });
 
 adminRouter.patch("/users/:id", zValidator("json", updateUserSchema), async (c) => {
@@ -94,15 +102,24 @@ adminRouter.patch("/users/:id", zValidator("json", updateUserSchema), async (c) 
   if (body.isActivated !== undefined) updateData.isActivated = body.isActivated;
   if (body.isBlocked !== undefined) updateData.isBlocked = body.isBlocked;
   if (body.diskSpace !== undefined) updateData.diskSpace = BigInt(body.diskSpace);
+  if (body.subscriptionPlan !== undefined) updateData.subscriptionPlan = body.subscriptionPlan;
+  if (body.subscriptionExpiresAt !== undefined) {
+    updateData.subscriptionExpiresAt = body.subscriptionExpiresAt ? new Date(body.subscriptionExpiresAt) : null;
+  }
   const user = await prisma.user.update({
     where: { id },
     data: updateData,
-    select: { id: true, userName: true, email: true, role: true, isActivated: true, isBlocked: true, diskSpace: true, usedSpace: true },
+    select: {
+      id: true, userName: true, email: true, role: true,
+      isActivated: true, isBlocked: true, diskSpace: true, usedSpace: true,
+      subscriptionPlan: true, subscriptionExpiresAt: true,
+    },
   });
   return c.json({
     ...user,
     diskSpace: user.diskSpace.toString(),
     usedSpace: user.usedSpace.toString(),
+    subscriptionExpiresAt: user.subscriptionExpiresAt ? user.subscriptionExpiresAt.toISOString() : null,
   });
 });
 

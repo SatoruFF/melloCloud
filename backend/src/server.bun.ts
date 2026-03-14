@@ -52,7 +52,7 @@ const server = http.createServer(async (req, res) => {
       method: req.method,
       headers: headersToRecord(req.headers),
       ...(body && body.length > 0 && { body }),
-    }) as any;
+    }) as Request;
     const response = await app.fetch(request);
     res.writeHead(response.status, Object.fromEntries(response.headers));
     if (response.body) {
@@ -63,7 +63,7 @@ const server = http.createServer(async (req, res) => {
         close() {
           res.end();
         },
-      }) as any;
+      }) as WritableStream<Uint8Array>;
       response.body.pipeTo(writable);
     } else {
       res.end();

@@ -1,19 +1,19 @@
-// @ts-nocheck
-import { 
-  PieChart, 
-  User, 
-  Mail, 
-  Shield, 
-  Calendar, 
-  HardDrive, 
-  Settings, 
-  Globe, 
+import {
+  PieChart,
+  User,
+  Mail,
+  Shield,
+  Calendar,
+  HardDrive,
+  Settings,
+  Globe,
   Trash2,
   Edit3,
   Key,
   FileText
 } from "lucide-react";
 import { unwrapResult } from "@reduxjs/toolkit";
+import { getErrorMessage } from "../../../types/api";
 import { 
   Button, 
   Card, 
@@ -35,15 +35,13 @@ import { useTranslation } from "react-i18next";
 import { useState } from "react";
 
 import { useAppDispatch, useAppSelector } from "../../../app/store/store";
-import { useDeleteAvatarMutation } from "../../../entities/file/model/api/fileApi";
-import { useDeleteAccountMutation } from "../../../entities/user/model/api/user";
-import { deleteAvatar, setAvatar, logout } from "../../../entities/user/model/slice/userSlice";
+import { useDeleteAvatarMutation } from "../../../entities/file";
+import { useDeleteAccountMutation, deleteAvatar, setAvatar, logout, getUserSelector } from "../../../entities/user";
 import { Spinner } from "../../../shared";
 import avatarIcon from "../../../shared/assets/avatar-icon.png";
 import { Variables } from "../../../shared/consts/localVariables";
 import { sizeFormat } from "../../../shared/utils/sizeFormat";
 import styles from "./profile.module.scss";
-import { getUserSelector } from "../../../entities/user";
 import { useNavigate, NavLink } from "react-router-dom";
 import { LOGIN_ROUTE, PRIVACY_POLICY_ROUTE, TERMS_OF_SERVICE_ROUTE } from "../../../shared/consts/routes";
 
@@ -144,8 +142,9 @@ const Profile = () => {
       localStorage.removeItem("token");
       setIsDeleteAccountOpen(false);
       navigate(LOGIN_ROUTE);
-    } catch (error: any) {
-      message.error(error?.data?.message || t("messages.error-occurred"));
+    } catch (error: unknown) {
+      const errorMsg = error instanceof Object && 'data' in error ? (error as any).data?.message : getErrorMessage(error);
+      message.error(errorMsg || t("messages.error-occurred"));
     }
   };
 

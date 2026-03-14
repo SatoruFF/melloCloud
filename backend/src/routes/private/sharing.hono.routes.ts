@@ -1,5 +1,5 @@
 import type { Context } from "hono";
-import createError from "http-errors";
+import createError, { HttpError } from "http-errors";
 import { Hono } from "hono";
 import { ResourceType, PermissionLevel } from "@prisma/client";
 import { logger } from "../../configs/logger.js";
@@ -43,9 +43,11 @@ router.post("/", async (c) => {
       grantedBy,
     });
     return c.json(permission);
-  } catch (error: any) {
-    logger.error(error.message, error);
-    return c.json({ message: error.message }, error.statusCode || 500);
+  } catch (error: unknown) {
+    const err = error instanceof HttpError ? error : error instanceof Error ? error : new Error(String(error));
+    const statusCode = error instanceof HttpError ? error.statusCode : 500;
+    logger.error(err.message, error);
+    return c.json({ message: err.message }, statusCode);
   }
 });
 
@@ -63,9 +65,11 @@ router.get("/permissions/:resourceType/:resourceId", async (c) => {
       userId
     );
     return c.json(permissions);
-  } catch (error: any) {
-    logger.error(error.message, error);
-    return c.json({ message: error.message }, error.statusCode || 500);
+  } catch (error: unknown) {
+    const err = error instanceof HttpError ? error : error instanceof Error ? error : new Error(String(error));
+    const statusCode = error instanceof HttpError ? error.statusCode : 500;
+    logger.error(err.message, error);
+    return c.json({ message: err.message }, statusCode);
   }
 });
 
@@ -83,9 +87,11 @@ router.patch("/permissions/:permissionId", async (c) => {
       userId
     );
     return c.json(permission);
-  } catch (error: any) {
-    logger.error(error.message, error);
-    return c.json({ message: error.message }, error.statusCode || 500);
+  } catch (error: unknown) {
+    const err = error instanceof HttpError ? error : error instanceof Error ? error : new Error(String(error));
+    const statusCode = error instanceof HttpError ? error.statusCode : 500;
+    logger.error(err.message, error);
+    return c.json({ message: err.message }, statusCode);
   }
 });
 
@@ -98,9 +104,11 @@ router.delete("/permissions/:permissionId", async (c) => {
     }
     await SharingService.revokePermission(Number(permissionId), userId);
     return c.json({ message: "Permission revoked successfully" }, 200);
-  } catch (error: any) {
-    logger.error(error.message, error);
-    return c.json({ message: error.message }, error.statusCode || 500);
+  } catch (error: unknown) {
+    const err = error instanceof HttpError ? error : error instanceof Error ? error : new Error(String(error));
+    const statusCode = error instanceof HttpError ? error.statusCode : 500;
+    logger.error(err.message, error);
+    return c.json({ message: err.message }, statusCode);
   }
 });
 
@@ -122,9 +130,11 @@ router.post("/public-link", async (c) => {
       userId
     );
     return c.json({ token, url });
-  } catch (error: any) {
-    logger.error(error.message, error);
-    return c.json({ message: error.message }, error.statusCode || 500);
+  } catch (error: unknown) {
+    const err = error instanceof HttpError ? error : error instanceof Error ? error : new Error(String(error));
+    const statusCode = error instanceof HttpError ? error.statusCode : 500;
+    logger.error(err.message, error);
+    return c.json({ message: err.message }, statusCode);
   }
 });
 
@@ -142,9 +152,11 @@ router.delete("/public-link/:resourceType/:resourceId", async (c) => {
       userId
     );
     return c.json({ message: "Public link deleted successfully" }, 200);
-  } catch (error: any) {
-    logger.error(error.message, error);
-    return c.json({ message: error.message }, error.statusCode || 500);
+  } catch (error: unknown) {
+    const err = error instanceof HttpError ? error : error instanceof Error ? error : new Error(String(error));
+    const statusCode = error instanceof HttpError ? error.statusCode : 500;
+    logger.error(err.message, error);
+    return c.json({ message: err.message }, statusCode);
   }
 });
 
@@ -157,9 +169,11 @@ router.get("/shared-with-me", async (c) => {
       type as ResourceType | undefined
     );
     return c.json(resources);
-  } catch (error: any) {
-    logger.error(error.message, error);
-    return c.json({ message: error.message }, error.statusCode || 500);
+  } catch (error: unknown) {
+    const err = error instanceof HttpError ? error : error instanceof Error ? error : new Error(String(error));
+    const statusCode = error instanceof HttpError ? error.statusCode : 500;
+    logger.error(err.message, error);
+    return c.json({ message: err.message }, statusCode);
   }
 });
 
@@ -172,9 +186,11 @@ router.get("/shared-by-me", async (c) => {
       type as ResourceType | undefined
     );
     return c.json(resources);
-  } catch (error: any) {
-    logger.error(error.message, error);
-    return c.json({ message: error.message }, error.statusCode || 500);
+  } catch (error: unknown) {
+    const err = error instanceof HttpError ? error : error instanceof Error ? error : new Error(String(error));
+    const statusCode = error instanceof HttpError ? error.statusCode : 500;
+    logger.error(err.message, error);
+    return c.json({ message: err.message }, statusCode);
   }
 });
 
@@ -192,9 +208,11 @@ router.get("/check-permission/:resourceType/:resourceId", async (c) => {
       Number(resourceId)
     );
     return c.json(permission);
-  } catch (error: any) {
-    logger.error(error.message, error);
-    return c.json({ message: error.message }, error.statusCode || 500);
+  } catch (error: unknown) {
+    const err = error instanceof HttpError ? error : error instanceof Error ? error : new Error(String(error));
+    const statusCode = error instanceof HttpError ? error.statusCode : 500;
+    logger.error(err.message, error);
+    return c.json({ message: err.message }, statusCode);
   }
 });
 
@@ -212,9 +230,11 @@ router.get("/activity/:resourceType/:resourceId", async (c) => {
       userId
     );
     return c.json(activities);
-  } catch (error: any) {
-    logger.error(error.message, error);
-    return c.json({ message: error.message }, error.statusCode || 500);
+  } catch (error: unknown) {
+    const err = error instanceof HttpError ? error : error instanceof Error ? error : new Error(String(error));
+    const statusCode = error instanceof HttpError ? error.statusCode : 500;
+    logger.error(err.message, error);
+    return c.json({ message: err.message }, statusCode);
   }
 });
 

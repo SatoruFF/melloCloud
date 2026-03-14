@@ -3,11 +3,9 @@ import { Modal, Input, List, Avatar, Empty, Tabs, Checkbox, Button } from "antd"
 import { memo, useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useDebounce } from "../../../shared";
-import { useSearchUsersQuery } from "../../../entities/user/model/api/user";
-import { useCreateGroupChatMutation, useGetChatsQuery } from "../../../entities/chat/model/api/chatApi";
-import { setCurrentChat } from "../../../entities/chat/model/slice/chatSlice";
+import { useSearchUsersQuery, getUserSelector } from "../../../entities/user";
+import { useCreateGroupChatMutation, useGetChatsQuery, setCurrentChat } from "../../../entities/chat";
 import { useAppDispatch, useAppSelector } from "../../../app/store/store";
-import { getUserSelector } from "../../../entities/user";
 import styles from "./new-chat-modal.module.scss";
 
 interface Props {

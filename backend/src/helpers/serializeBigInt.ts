@@ -1,4 +1,4 @@
-export function serializeBigInt(obj: any): any {
+export function serializeBigInt(obj: unknown): unknown {
   if (typeof obj === "bigint") {
     return obj.toString();
   } else if (obj instanceof Date) {

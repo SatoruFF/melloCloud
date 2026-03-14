@@ -17,3 +17,14 @@ export {
   getFilesSelector,
   getFilesViewSelector,
 } from './model/selectors/getFiles';
+
+// API Hooks
+export {
+  useGetFilesQuery,
+  useLazyGetFilePreviewUrlQuery,
+  useLazyGetFileContentQuery,
+  useCreateDirMutation,
+  useDownloadFileMutation,
+  useDeleteFileMutation,
+  useDeleteAvatarMutation,
+} from './model/api/fileApi';

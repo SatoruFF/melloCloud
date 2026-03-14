@@ -3,6 +3,7 @@ import type { Context } from "hono";
 import createError from "http-errors";
 
 import { logger } from "../configs/logger.js";
+import { getErrorMessage, getErrorStatusCode } from "../types/errors.js";
 
 import { TaskService } from "../services/taskService.js";
 
@@ -38,9 +39,11 @@ class TaskControllerClass {
       });
 
       return c.json(task);
-    } catch (error: any) {
-      logger.error(error.message, error);
-      return c.json({ message: error.message }, error.statusCode || 500);
+    } catch (error: unknown) {
+      const message = getErrorMessage(error);
+      const statusCode = getErrorStatusCode(error);
+      logger.error(message, error);
+      return c.json({ message }, statusCode);
     }
   }
 
@@ -57,9 +60,11 @@ class TaskControllerClass {
       const tasks = await TaskService.getAll(userId);
 
       return c.json(tasks);
-    } catch (error: any) {
-      logger.error(error.message, error);
-      return c.json({ message: error.message }, error.statusCode || 500);
+    } catch (error: unknown) {
+      const message = getErrorMessage(error);
+      const statusCode = getErrorStatusCode(error);
+      logger.error(message, error);
+      return c.json({ message }, statusCode);
     }
   }
 
@@ -72,9 +77,11 @@ class TaskControllerClass {
       if (!boardId) throw createError(400, "boardId query is required");
       const kanbanData = await TaskService.getKanbanData(Number(boardId), userId);
       return c.json(kanbanData);
-    } catch (error: any) {
-      logger.error(error.message, error);
-      return c.json({ message: error.message }, error.statusCode || 500);
+    } catch (error: unknown) {
+      const message = getErrorMessage(error);
+      const statusCode = getErrorStatusCode(error);
+      logger.error(message, error);
+      return c.json({ message }, statusCode);
     }
   }
 
@@ -94,9 +101,11 @@ class TaskControllerClass {
       const tasks = await TaskService.getByColumn(Number(columnId), userId);
 
       return c.json(tasks);
-    } catch (error: any) {
-      logger.error(error.message, error);
-      return c.json({ message: error.message }, error.statusCode || 500);
+    } catch (error: unknown) {
+      const message = getErrorMessage(error);
+      const statusCode = getErrorStatusCode(error);
+      logger.error(message, error);
+      return c.json({ message }, statusCode);
     }
   }
 
@@ -118,9 +127,11 @@ class TaskControllerClass {
       if (!task) throw createError(404, "Task not found");
 
       return c.json(task);
-    } catch (error: any) {
-      logger.error(error.message, error);
-      return c.json({ message: error.message }, error.statusCode || 500);
+    } catch (error: unknown) {
+      const message = getErrorMessage(error);
+      const statusCode = getErrorStatusCode(error);
+      logger.error(message, error);
+      return c.json({ message }, statusCode);
     }
   }
 
@@ -160,9 +171,11 @@ class TaskControllerClass {
       });
 
       return c.json(task);
-    } catch (error: any) {
-      logger.error(error.message, error);
-      return c.json({ message: error.message }, error.statusCode || 500);
+    } catch (error: unknown) {
+      const message = getErrorMessage(error);
+      const statusCode = getErrorStatusCode(error);
+      logger.error(message, error);
+      return c.json({ message }, statusCode);
     }
   }
 
@@ -182,9 +195,11 @@ class TaskControllerClass {
       await TaskService.delete(Number(id), userId);
 
       return c.json({ message: "Task successfully deleted" }, 200);
-    } catch (error: any) {
-      logger.error(error.message, error);
-      return c.json({ message: error.message }, error.statusCode || 500);
+    } catch (error: unknown) {
+      const message = getErrorMessage(error);
+      const statusCode = getErrorStatusCode(error);
+      logger.error(message, error);
+      return c.json({ message }, statusCode);
     }
   }
 
@@ -204,9 +219,11 @@ class TaskControllerClass {
       const task = await TaskService.toggleComplete(Number(id), userId);
 
       return c.json(task);
-    } catch (error: any) {
-      logger.error(error.message, error);
-      return c.json({ message: error.message }, error.statusCode || 500);
+    } catch (error: unknown) {
+      const message = getErrorMessage(error);
+      const statusCode = getErrorStatusCode(error);
+      logger.error(message, error);
+      return c.json({ message }, statusCode);
     }
   }
 
@@ -229,9 +246,11 @@ class TaskControllerClass {
       const task = await TaskService.moveToColumn(Number(id), Number(columnId), userId);
 
       return c.json(task);
-    } catch (error: any) {
-      logger.error(error.message, error);
-      return c.json({ message: error.message }, error.statusCode || 500);
+    } catch (error: unknown) {
+      const message = getErrorMessage(error);
+      const statusCode = getErrorStatusCode(error);
+      logger.error(message, error);
+      return c.json({ message }, statusCode);
     }
   }
 
@@ -251,9 +270,11 @@ class TaskControllerClass {
       const tasks = await TaskService.search(userId, query);
 
       return c.json(tasks);
-    } catch (error: any) {
-      logger.error(error.message, error);
-      return c.json({ message: error.message }, error.statusCode || 500);
+    } catch (error: unknown) {
+      const message = getErrorMessage(error);
+      const statusCode = getErrorStatusCode(error);
+      logger.error(message, error);
+      return c.json({ message }, statusCode);
     }
   }
 
@@ -273,9 +294,11 @@ class TaskControllerClass {
       const tasks = await TaskService.getByPriority(userId, priority.toUpperCase());
 
       return c.json(tasks);
-    } catch (error: any) {
-      logger.error(error.message, error);
-      return c.json({ message: error.message }, error.statusCode || 500);
+    } catch (error: unknown) {
+      const message = getErrorMessage(error);
+      const statusCode = getErrorStatusCode(error);
+      logger.error(message, error);
+      return c.json({ message }, statusCode);
     }
   }
 
@@ -296,9 +319,11 @@ class TaskControllerClass {
       const tasks = await TaskService.getByStatus(userId, isDone);
 
       return c.json(tasks);
-    } catch (error: any) {
-      logger.error(error.message, error);
-      return c.json({ message: error.message }, error.statusCode || 500);
+    } catch (error: unknown) {
+      const message = getErrorMessage(error);
+      const statusCode = getErrorStatusCode(error);
+      logger.error(message, error);
+      return c.json({ message }, statusCode);
     }
   }
 
@@ -315,9 +340,11 @@ class TaskControllerClass {
       const tasks = await TaskService.getOverdueTasks(userId);
 
       return c.json(tasks);
-    } catch (error: any) {
-      logger.error(error.message, error);
-      return c.json({ message: error.message }, error.statusCode || 500);
+    } catch (error: unknown) {
+      const message = getErrorMessage(error);
+      const statusCode = getErrorStatusCode(error);
+      logger.error(message, error);
+      return c.json({ message }, statusCode);
     }
   }
 
@@ -335,9 +362,11 @@ class TaskControllerClass {
       const tasks = await TaskService.getUpcomingTasks(userId, days);
 
       return c.json(tasks);
-    } catch (error: any) {
-      logger.error(error.message, error);
-      return c.json({ message: error.message }, error.statusCode || 500);
+    } catch (error: unknown) {
+      const message = getErrorMessage(error);
+      const statusCode = getErrorStatusCode(error);
+      logger.error(message, error);
+      return c.json({ message }, statusCode);
     }
   }
 
@@ -354,16 +383,18 @@ class TaskControllerClass {
       const stats = await TaskService.getTaskStats(userId);
 
       return c.json(stats);
-    } catch (error: any) {
-      logger.error(error.message, error);
-      return c.json({ message: error.message }, error.statusCode || 500);
+    } catch (error: unknown) {
+      const message = getErrorMessage(error);
+      const statusCode = getErrorStatusCode(error);
+      logger.error(message, error);
+      return c.json({ message }, statusCode);
     }
   }
 
   // Batch update tasks (for drag and drop)
   async batchUpdate(c: Context) {
     try {
-      const body = await c.req.json<{ updates: any[] }>();
+      const body = await c.req.json<{ updates: Array<{ id: number; columnId?: number; order?: number }> }>();
       const { updates } = body; // Array of { id, columnId, order }
       const user = c.get("user") as { id?: number } | undefined;
       const userId = user?.id;
@@ -379,9 +410,11 @@ class TaskControllerClass {
       const tasks = await TaskService.batchUpdateTasks(userId, updates);
 
       return c.json(tasks);
-    } catch (error: any) {
-      logger.error(error.message, error);
-      return c.json({ message: error.message }, error.statusCode || 500);
+    } catch (error: unknown) {
+      const message = getErrorMessage(error);
+      const statusCode = getErrorStatusCode(error);
+      logger.error(message, error);
+      return c.json({ message }, statusCode);
     }
   }
 }

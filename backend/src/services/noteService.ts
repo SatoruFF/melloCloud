@@ -1,15 +1,21 @@
 import createError from "http-errors";
-import { ResourceType, PermissionLevel } from "@prisma/client";
+import { ResourceType, PermissionLevel, Note } from "@prisma/client";
 import { parseJson, stringify } from "../helpers/parseJson.js";
 import { SharingService } from "./sharingService.js";
+import { prisma } from "../configs/config.js";
 
 //
 // content <-> text(JSON)
 //
-const mapContent = <T extends { content: any }>(
+interface NoteContent {
+  content: string;
+  [key: string]: unknown;
+}
+
+const mapContent = <T extends NoteContent>(
   data: T | T[],
   to: "text" | "object" = "object"
-): any => {
+): T | T[] => {
   const mappers = {
     text: stringify,     // object -> string
     object: parseJson,   // string -> object
@@ -19,13 +25,13 @@ const mapContent = <T extends { content: any }>(
     return data.map((note) => ({
       ...note,
       content: mappers[to](note.content),
-    }));
+    })) as T[];
   }
 
   return {
     ...data,
     content: mappers[to](data.content),
-  };
+  } as T;
 };
 
 class NotesServiceClass {
@@ -33,7 +39,7 @@ class NotesServiceClass {
   // GET MANY — свои заметки + расшаренные. Фильтры: view (all | starred | trash), tag
   //
   async getUserNotes(
-    context,
+    context: { prisma: typeof prisma },
     userId: number,
     opts?: { view?: "all" | "starred" | "trash"; tag?: string }
   ) {
@@ -50,7 +56,7 @@ class NotesServiceClass {
     const view = opts?.view ?? "all";
     const tag = opts?.tag?.trim();
 
-    const andConditions: any[] = [{ OR: [{ userId }, { id: { in: sharedIds } }] }];
+    const andConditions: Parameters<typeof context.prisma.note.findMany>[0]["where"][] = [{ OR: [{ userId }, { id: { in: sharedIds } }] }];
 
     if (view === "trash") {
       andConditions.push({ isRemoved: true });
@@ -86,7 +92,7 @@ class NotesServiceClass {
   //
   // GET ONE — доступ владельцу или по Permission
   //
-  async getNote(context, noteId: string, userId: number) {
+  async getNote(context: { prisma: typeof prisma }, noteId: string, userId: number) {
     let note = await context.prisma.note.findFirst({
       where: { id: +noteId, userId },
       select: {
@@ -134,9 +140,9 @@ class NotesServiceClass {
   // CREATE
   //
   async createNote(
-    context,
+    context: { prisma: typeof prisma },
     userId: number,
-    data: { title: string; content: any; tags?: string[] }
+    data: { title: string; content: string | Record<string, unknown>; tags?: string[] }
   ) {
     const note = await context.prisma.note.create({
       data: {
@@ -154,10 +160,10 @@ class NotesServiceClass {
   // UPDATE — владелец или EDITOR/ADMIN/OWNER
   //
   async updateNote(
-    context,
+    context: { prisma: typeof prisma },
     noteId: string,
     userId: number,
-    data: { title?: string; content?: any; isStarred?: boolean; isRemoved?: boolean; tags?: string[] }
+    data: { title?: string; content?: string | Record<string, unknown>; isStarred?: boolean; isRemoved?: boolean; tags?: string[] }
   ) {
     let existingNote = await context.prisma.note.findFirst({
       where: { id: +noteId, userId },
@@ -184,7 +190,8 @@ class NotesServiceClass {
       throw createError(404, "Note not found");
     }
 
-    const updateData: any = {
+    type UpdateNoteData = Parameters<typeof context.prisma.note.update>[0]["data"];
+    const updateData: UpdateNoteData = {
       updatedAt: new Date(),
     };
 
@@ -220,7 +227,7 @@ class NotesServiceClass {
   //
   // DELETE — только владелец или ADMIN/OWNER
   //
-  async deleteNote(context, noteId: string, userId: number) {
+  async deleteNote(context: { prisma: typeof prisma }, noteId: string, userId: number) {
     let existingNote = await context.prisma.note.findFirst({
       where: { id: +noteId, userId },
     });
@@ -254,7 +261,7 @@ class NotesServiceClass {
   //
   // SEARCH — свои + расшаренные
   //
-  async searchNotes(context, userId: number, query: string) {
+  async searchNotes(context: { prisma: typeof prisma }, userId: number, query: string) {
     const sharedPermissionIds = await context.prisma.permission.findMany({
       where: {
         resourceType: ResourceType.NOTE,

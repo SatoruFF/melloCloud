@@ -7,6 +7,7 @@ import { logger } from "../configs/logger.js";
 import { serializeBigInt } from "../helpers/serializeBigInt.js";
 import { MessageService } from "../services/messagesService.js";
 import ApiContext from "../models/context.js";
+import { getErrorMessage, getErrorStatusCode } from "../types/errors.js";
 
 class MessageControllerClass {
   async getMessages(c: Context) {
@@ -34,13 +35,14 @@ class MessageControllerClass {
       });
 
       return c.json(serializeBigInt(messages), 200);
-    } catch (error: any) {
-      logger.error(error.message, error);
+    } catch (error: unknown) {
+      const message = getErrorMessage(error);
+      logger.error(message, error);
       return c.json(
         {
-          message: error.message,
+          message,
         },
-        error.statusCode || 500,
+        getErrorStatusCode(error),
       );
     }
   }
