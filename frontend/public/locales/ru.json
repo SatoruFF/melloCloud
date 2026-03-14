@@ -565,7 +565,8 @@
       "boards": "Доски",
       "invites": "Приглашения",
       "sessions": "Сессии",
-      "featureFlags": "Флаги функций"
+      "featureFlags": "Флаги функций",
+      "subscriptions": "Подписки"
     },
     "columns": {
       "id": "ID",
@@ -646,7 +647,8 @@
       "overrideSet": "Переопределение установлено",
       "failedToSetOverride": "Не удалось установить переопределение",
       "overrideRemoved": "Переопределение снято",
-      "failedToRemoveOverride": "Не удалось снять переопределение"
+      "failedToRemoveOverride": "Не удалось снять переопределение",
+      "subscriptionConfigSaved": "Настройки подписок сохранены"
     },
     "entities": {
       "user": "Пользователь",
@@ -658,7 +660,24 @@
       "flag": "Флаг"
     },
     "createFeatureFlag": "Создать флаг функции",
-    "featureFlagsHint": "Ключ должен совпадать с фронтендом: files, notes, chats, planner, kanban, webhooks. Глобальное «Включено» — для всех; для отдельных пользователей используйте «Переопределения пользователей» в БД."
+    "featureFlagsHint": "Ключ должен совпадать с фронтендом: files, notes, chats, planner, kanban, webhooks. Глобальное «Включено» — для всех; для отдельных пользователей используйте «Переопределения пользователей» в БД.",
+    "subscription": {
+      "configTitle": "Настройки системы подписок",
+      "enableSystem": "Включить систему подписок",
+      "storageBytes": "Хранилище (байты)",
+      "maxNotes": "Макс. заметок",
+      "maxCollaborators": "Макс. соавторов",
+      "videoCall": "Видеозвонки",
+      "priceUsd": "Цена (USD/мес)",
+      "priceRub": "Цена (RUB/мес)",
+      "zeroUnlimited": "0 = безлимит",
+      "paymentsTitle": "История платежей (все пользователи)",
+      "plan": "Тариф",
+      "provider": "Провайдер",
+      "status": "Статус",
+      "amount": "Сумма",
+      "period": "Период"
+    }
   },
   "subscription": {
     "free": "Бесплатно",
@@ -666,7 +685,33 @@
     "enterprise": "Enterprise",
     "expired": "истёк",
     "videoCallLocked": "Видеозвонки доступны на тарифах PRO и ENTERPRISE.",
-    "videoCallLockedHint": "Обратитесь к администратору для повышения тарифа."
+    "videoCallLockedHint": "Обратитесь к администратору для повышения тарифа.",
+    "pageTitle": "Подписка",
+    "currentPlan": "Текущий тариф",
+    "expiresOn": "Истекает {{date}}",
+    "manage": "Управление",
+    "systemDisabled": "Система подписок отключена. Все функции доступны бесплатно.",
+    "unlimited": "Безлимит",
+    "storageLimit": "Хранилище",
+    "notesLimit": "Заметки",
+    "collaboratorsLimit": "Соавторы",
+    "videoCall": "Видеозвонки",
+    "period": "Период",
+    "storage": "Хранилище",
+    "maxNotes": "Лимит заметок",
+    "maxCollaborators": "Лимит соавторов",
+    "videoCallFeature": "Видеозвонки",
+    "payStripe": "Оплатить через Stripe",
+    "payYookassa": "Оплатить через ЮКассу",
+    "paymentError": "Не удалось создать платёж. Попробуйте ещё раз.",
+    "paymentHistory": "История платежей",
+    "historyPlan": "Тариф",
+    "historyProvider": "Провайдер",
+    "historyStatus": "Статус",
+    "historyAmount": "Сумма",
+    "historyPeriod": "Период",
+    "historyExpires": "Истекает",
+    "historyDate": "Дата"
   },
   "sharing": {
     "publicLink": {

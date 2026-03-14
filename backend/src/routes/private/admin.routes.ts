@@ -4,6 +4,7 @@ import { z } from "zod";
 import { prisma } from "../../configs/config.js";
 import { adminMiddleware } from "../../middleware/admin.middleware.js";
 import * as FeatureFlagService from "../../services/featureFlagService.js";
+import * as SubscriptionService from "../../services/subscriptionService.js";
 
 const adminRouter = new Hono();
 
@@ -410,6 +411,72 @@ adminRouter.get("/stats", async (c) => {
       count: Number(r.count),
     })),
   });
+});
+
+// ========== SUBSCRIPTION CONFIG ==========
+
+adminRouter.get("/subscription-config", async (c) => {
+  const cfg = await SubscriptionService.getPublicConfig();
+  return c.json(cfg);
+});
+
+const subscriptionConfigSchema = z.object({
+  isEnabled: z.boolean().optional(),
+  freeStorageBytes: z.coerce.number().min(0).optional(),
+  freeMaxNotes: z.coerce.number().min(0).optional(),
+  freeMaxCollaborators: z.coerce.number().min(0).optional(),
+  freeVideoCall: z.boolean().optional(),
+  proPriceUsd: z.coerce.number().min(0).optional(),
+  proPriceRub: z.coerce.number().min(0).optional(),
+  proStorageBytes: z.coerce.number().min(0).optional(),
+  proMaxNotes: z.coerce.number().min(0).optional(),
+  proMaxCollaborators: z.coerce.number().min(0).optional(),
+  proVideoCall: z.boolean().optional(),
+  enterprisePriceUsd: z.coerce.number().min(0).optional(),
+  enterprisePriceRub: z.coerce.number().min(0).optional(),
+  enterpriseStorageBytes: z.coerce.number().min(0).optional(),
+  enterpriseMaxNotes: z.coerce.number().min(0).optional(),
+  enterpriseMaxCollaborators: z.coerce.number().min(0).optional(),
+  enterpriseVideoCall: z.boolean().optional(),
+});
+
+adminRouter.patch("/subscription-config", zValidator("json", subscriptionConfigSchema), async (c) => {
+  const body = c.req.valid("json");
+  // Convert number bytes → BigInt where needed
+  const data: Record<string, unknown> = { ...body };
+  if (body.freeStorageBytes !== undefined) data.freeStorageBytes = BigInt(body.freeStorageBytes);
+  if (body.proStorageBytes !== undefined) data.proStorageBytes = BigInt(body.proStorageBytes);
+  if (body.enterpriseStorageBytes !== undefined) data.enterpriseStorageBytes = BigInt(body.enterpriseStorageBytes);
+  const cfg = await SubscriptionService.updateConfig(data as Parameters<typeof SubscriptionService.updateConfig>[0]);
+  return c.json(await SubscriptionService.getPublicConfig());
+});
+
+// ========== PAYMENTS (admin overview) ==========
+adminRouter.get("/payments", zValidator("query", z.object({
+  page: z.coerce.number().min(1).optional().default(1),
+  limit: z.coerce.number().min(1).max(100).optional().default(20),
+})), async (c) => {
+  const { page, limit } = c.req.valid("query");
+  const skip = (page - 1) * limit;
+  const [payments, total] = await Promise.all([
+    prisma.payment.findMany({
+      skip,
+      take: limit,
+      orderBy: { createdAt: "desc" },
+      select: {
+        id: true,
+        plan: true,
+        provider: true,
+        status: true,
+        currency: true,
+        periodMonths: true,
+        createdAt: true,
+        user: { select: { id: true, email: true } },
+      },
+    }),
+    prisma.payment.count(),
+  ]);
+  return c.json({ data: payments, total, page, limit });
 });
 
 // Health for admin route

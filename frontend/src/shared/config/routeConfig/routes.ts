@@ -23,6 +23,7 @@ import {
   SHARED_PUBLIC_ROUTE,
   PRIVACY_POLICY_ROUTE,
   TERMS_OF_SERVICE_ROUTE,
+  SUBSCRIPTION_ROUTE,
 } from '../../consts/routes';
 
 import type { UserRolesType } from '@/entities/user';
@@ -49,6 +50,7 @@ const CalendarPage = lazy(() => import('../../../pages/planner/CalendarPage/ui/C
 
 const Activate = lazy(() => import('../../../pages/activate/ui/Activate'));
 const VideoCall = lazy(() => import('../../../pages/videoCall/ui/VideoCall'));
+const SubscriptionPage = lazy(() => import('../../../pages/subscription/ui/SubscriptionPage'));
 
 export interface IRoute {
   path: string;
@@ -124,6 +126,7 @@ const privateRoutes: IRoute[] = createRoutes([
     children: [{ path: 'pomodoro', element: Pomodoro, private: true }],
   },
   { path: ADMIN_ROUTE, element: AdminPanel, private: true, adminOnly: true },
+  { path: SUBSCRIPTION_ROUTE, element: SubscriptionPage, private: true },
 ]);
 
 export const routes: IRoute[] = [...publicRoutes, ...privateRoutes];

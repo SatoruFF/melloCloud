@@ -113,6 +113,14 @@ export const ApiPaths = {
   adminBoards: "admin/boards",
   adminStats: "admin/stats",
   adminFeatureFlags: "admin/feature-flags",
+  adminSubscriptionConfig: "admin/subscription-config",
+  adminPayments: "admin/payments",
+
+  // Payment / Subscription
+  paymentConfig: "payment/config",
+  paymentHistory: "payment/history",
+  paymentStripe: "payment/stripe",
+  paymentYookassa: "payment/yookassa",
 } as const;
 
 // ========================================

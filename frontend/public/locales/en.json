@@ -567,7 +567,8 @@
       "boards": "Boards",
       "invites": "Invites",
       "sessions": "Sessions",
-      "featureFlags": "Feature flags"
+      "featureFlags": "Feature flags",
+      "subscriptions": "Subscriptions"
     },
     "columns": {
       "id": "ID",
@@ -648,7 +649,8 @@
       "overrideSet": "Override set",
       "failedToSetOverride": "Failed to set override",
       "overrideRemoved": "Override removed",
-      "failedToRemoveOverride": "Failed to remove override"
+      "failedToRemoveOverride": "Failed to remove override",
+      "subscriptionConfigSaved": "Subscription settings saved"
     },
     "entities": {
       "user": "User",
@@ -660,7 +662,24 @@
       "flag": "Flag"
     },
     "createFeatureFlag": "Create feature flag",
-    "featureFlagsHint": "Key must match frontend: files, notes, chats, planner, kanban, webhooks. Global \"Enabled\" = for everyone; use \"User overrides\" in DB for per-user."
+    "featureFlagsHint": "Key must match frontend: files, notes, chats, planner, kanban, webhooks. Global \"Enabled\" = for everyone; use \"User overrides\" in DB for per-user.",
+    "subscription": {
+      "configTitle": "Subscription system settings",
+      "enableSystem": "Enable subscription system",
+      "storageBytes": "Storage (bytes)",
+      "maxNotes": "Max notes",
+      "maxCollaborators": "Max collaborators",
+      "videoCall": "Video calls",
+      "priceUsd": "Price (USD/mo)",
+      "priceRub": "Price (RUB/mo)",
+      "zeroUnlimited": "0 = unlimited",
+      "paymentsTitle": "Payment history (all users)",
+      "plan": "Plan",
+      "provider": "Provider",
+      "status": "Status",
+      "amount": "Amount",
+      "period": "Period"
+    }
   },
   "subscription": {
     "free": "Free",
@@ -668,7 +687,33 @@
     "enterprise": "Enterprise",
     "expired": "expired",
     "videoCallLocked": "Video calls are available on PRO and ENTERPRISE plans.",
-    "videoCallLockedHint": "Contact the administrator to upgrade your subscription."
+    "videoCallLockedHint": "Contact the administrator to upgrade your subscription.",
+    "pageTitle": "Subscription",
+    "currentPlan": "Current plan",
+    "expiresOn": "Expires on {{date}}",
+    "manage": "Manage",
+    "systemDisabled": "The subscription system is currently disabled. All features are available for free.",
+    "unlimited": "Unlimited",
+    "storageLimit": "Storage",
+    "notesLimit": "Notes",
+    "collaboratorsLimit": "Collaborators",
+    "videoCall": "Video calls",
+    "period": "Period",
+    "storage": "Storage",
+    "maxNotes": "Notes limit",
+    "maxCollaborators": "Collaborators limit",
+    "videoCallFeature": "Video calls",
+    "payStripe": "Pay via Stripe",
+    "payYookassa": "Pay via YooKassa",
+    "paymentError": "Failed to create payment. Please try again.",
+    "paymentHistory": "Payment history",
+    "historyPlan": "Plan",
+    "historyProvider": "Provider",
+    "historyStatus": "Status",
+    "historyAmount": "Amount",
+    "historyPeriod": "Period",
+    "historyExpires": "Expires",
+    "historyDate": "Date"
   },
   "sharing": {
     "publicLink": {

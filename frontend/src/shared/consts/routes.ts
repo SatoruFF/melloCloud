@@ -25,3 +25,6 @@ export const ACCESS_DENIED_ROUTE: string = '/access-denied';
 // Legal routes
 export const PRIVACY_POLICY_ROUTE: string = '/privacy-policy';
 export const TERMS_OF_SERVICE_ROUTE: string = '/terms-of-service';
+
+// Subscription
+export const SUBSCRIPTION_ROUTE: string = '/subscription';

@@ -1,0 +1,122 @@
+.root {
+  padding: 24px;
+  max-width: 1000px;
+  margin: 0 auto;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+.historyTitle {
+  font-size: 18px;
+  font-weight: 500;
+  margin-bottom: 12px;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 300px;
+}
+
+.currentPlanCard {
+  margin-bottom: 24px;
+  background: #1f1f1f !important;
+  border-color: #303030 !important;
+}
+
+.currentPlan {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.planLabel {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.65);
+  margin-right: 8px;
+}
+
+.planTag {
+  font-size: 14px;
+}
+
+.expiryNote {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.limits {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.disabledCard {
+  background: #1f1f1f !important;
+  border-color: #303030 !important;
+  color: rgba(255, 255, 255, 0.65);
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.periodSelector {
+  margin-bottom: 16px;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.65);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.plans {
+  margin-bottom: 24px;
+}
+
+.planCard {
+  background: #1f1f1f !important;
+  border-color: #303030 !important;
+  height: 100%;
+}
+
+.activePlan {
+  border-color: #1890ff !important;
+}
+
+.featureList {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 12px 0;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.65);
+
+  li {
+    padding: 4px 0;
+    border-bottom: 1px solid #303030;
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+}
+
+.price {
+  font-size: 18px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.85);
+  margin-bottom: 12px;
+}
+
+.payButtons {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}

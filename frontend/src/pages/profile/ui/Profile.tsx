@@ -43,7 +43,8 @@ import { Variables } from "../../../shared/consts/localVariables";
 import { sizeFormat } from "../../../shared/utils/sizeFormat";
 import styles from "./profile.module.scss";
 import { useNavigate, NavLink } from "react-router-dom";
-import { LOGIN_ROUTE, PRIVACY_POLICY_ROUTE, TERMS_OF_SERVICE_ROUTE } from "../../../shared/consts/routes";
+import { LOGIN_ROUTE, PRIVACY_POLICY_ROUTE, TERMS_OF_SERVICE_ROUTE, SUBSCRIPTION_ROUTE } from "../../../shared/consts/routes";
+import { getEffectivePlan } from "../../../entities/user/model/types/user";
 
 const { Paragraph } = Typography;
 
@@ -260,6 +261,29 @@ const Profile = () => {
                       </Card>
                     </Col>
                   </Row>
+                </div>
+
+                <Divider />
+
+                {/* Subscription */}
+                <div className={styles.sectionBlock}>
+                  <div className={styles.sectionHeader}>
+                    <Calendar size={20} />
+                    <h3>{t("subscription.pageTitle")}</h3>
+                  </div>
+                  <div className={styles.settingItem}>
+                    <div className={styles.settingInfo}>
+                      <span>{t("subscription.currentPlan")}: <strong>{getEffectivePlan(user)}</strong></span>
+                      {user.subscriptionExpiresAt && new Date(user.subscriptionExpiresAt) > new Date() && (
+                        <span style={{ marginLeft: 8, fontSize: 12, opacity: 0.65 }}>
+                          {t("subscription.expiresOn", { date: new Date(user.subscriptionExpiresAt).toLocaleDateString() })}
+                        </span>
+                      )}
+                    </div>
+                    <Button onClick={() => navigate(SUBSCRIPTION_ROUTE)}>
+                      {t("subscription.manage")}
+                    </Button>
+                  </div>
                 </div>
 
                 <Divider />

@@ -72,6 +72,7 @@ model User {
   noteHistories      NoteHistory[]
 
   notifications Notification[]
+  payments      Payment[]
 
   @@index([email])
   @@index([oauthProvider, oauthId])
@@ -694,4 +695,75 @@ model ScheduledWebhook {
   @@index([scheduledFor, executed])
   @@index([webhookId])
   @@index([resourceType, resourceId])
+}
+
+// =============================================
+// SUBSCRIPTION SYSTEM
+// =============================================
+
+/// Single-row config managed by admin. id is always 1.
+model SubscriptionConfig {
+  id Int @id @default(1)
+
+  /// Master switch: if false, no limits apply and pricing is hidden
+  isEnabled Boolean @default(false)
+
+  // -------- FREE plan limits --------
+  freeStorageBytes     BigInt  @default(104857600)  // 100 MB
+  freeMaxNotes         Int     @default(100)
+  freeMaxCollaborators Int     @default(5)
+  freeVideoCall        Boolean @default(false)
+
+  // -------- PRO pricing & limits --------
+  proPriceUsd          Decimal @default(9.99)  @db.Decimal(10,2)
+  proPriceRub          Decimal @default(990)   @db.Decimal(10,2)
+  proStorageBytes      BigInt  @default(10737418240) // 10 GB
+  proMaxNotes          Int     @default(0)      // 0 = unlimited
+  proMaxCollaborators  Int     @default(0)
+  proVideoCall         Boolean @default(true)
+
+  // -------- ENTERPRISE pricing & limits --------
+  enterprisePriceUsd         Decimal @default(29.99) @db.Decimal(10,2)
+  enterprisePriceRub         Decimal @default(2990)  @db.Decimal(10,2)
+  enterpriseStorageBytes     BigInt  @default(0)     // 0 = unlimited
+  enterpriseMaxNotes         Int     @default(0)
+  enterpriseMaxCollaborators Int     @default(0)
+  enterpriseVideoCall        Boolean @default(true)
+
+  updatedAt DateTime @updatedAt
+}
+
+/// Payment record created when user initiates checkout
+model Payment {
+  id                String   @id @default(uuid())
+
+  userId            Int
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  /// PRO | ENTERPRISE
+  plan              String
+  /// stripe | yookassa
+  provider          String
+  /// Provider-side payment / session ID
+  providerPaymentId String?  @unique
+  /// pending | succeeded | failed
+  status            String   @default("pending")
+
+  amountUsd         Decimal? @db.Decimal(10,2)
+  amountRub         Decimal? @db.Decimal(10,2)
+  currency          String   @default("USD")
+
+  /// How many months purchased
+  periodMonths      Int      @default(1)
+  /// When subscription expires after activation
+  expiresAt         DateTime?
+
+  metadata          Json?
+
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@index([userId])
+  @@index([providerPaymentId])
+  @@index([status])
 }
