@@ -3,6 +3,7 @@ import { ResourceType, PermissionLevel, Note } from "@prisma/client";
 import { parseJson, stringify } from "../helpers/parseJson.js";
 import { SharingService } from "./sharingService.js";
 import { prisma } from "../configs/config.js";
+import { checkNoteLimit } from "./subscriptionService.js";
 
 //
 // content <-> text(JSON)
@@ -144,6 +145,8 @@ class NotesServiceClass {
     userId: number,
     data: { title: string; content: string | Record<string, unknown>; tags?: string[] }
   ) {
+    await checkNoteLimit(userId);
+
     const note = await context.prisma.note.create({
       data: {
         title: data.title,

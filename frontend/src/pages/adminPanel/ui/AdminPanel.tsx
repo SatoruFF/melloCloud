@@ -28,6 +28,9 @@ import {
   useGetAdminFeatureFlagUsersQuery,
   useSetAdminFeatureFlagUserMutation,
   useRemoveAdminFeatureFlagUserMutation,
+  useGetAdminSubscriptionConfigQuery,
+  useUpdateAdminSubscriptionConfigMutation,
+  useGetAdminPaymentsQuery,
   type AdminFeatureFlagItem,
 } from "../../../features/admin";
 import { sizeFormat, Spinner } from "../../../shared";
@@ -106,6 +109,12 @@ const AdminPanel = () => {
   const [deleteEvent] = useDeleteAdminEventMutation();
   const [deleteBoard] = useDeleteAdminBoardMutation();
 
+  const { data: subscriptionConfigData, isLoading: subscriptionConfigLoading } = useGetAdminSubscriptionConfigQuery();
+  const [updateSubscriptionConfig, { isLoading: subscriptionConfigSaving }] = useUpdateAdminSubscriptionConfigMutation();
+  const [paymentsPage, setPaymentsPage] = useState(1);
+  const { data: paymentsData, isLoading: paymentsLoading } = useGetAdminPaymentsQuery({ page: paymentsPage, limit: PAGE_SIZE });
+  const [subscriptionForm] = Form.useForm();
+
   const [form] = Form.useForm();
 
   const handleEditUser = useCallback((record: { id: number; userName: string | null; email: string; role: string; isActivated: boolean; isBlocked: boolean; diskSpace: string; subscriptionPlan: string; subscriptionExpiresAt: string | null }) => {
@@ -171,6 +180,19 @@ const AdminPanel = () => {
     },
     [t]
   );
+
+  const handleSaveSubscriptionConfig = useCallback(async () => {
+    try {
+      const values = await subscriptionForm.validateFields();
+      // Convert storage fields to strings (backend expects numbers, which become BigInt)
+      await updateSubscriptionConfig(values).unwrap();
+      message.success(t("admin.messages.subscriptionConfigSaved"));
+    } catch (error: unknown) {
+      const apiError = error as Record<string, unknown>;
+      if (apiError?.errorFields) return;
+      message.error(t("admin.messages.failedToSave"));
+    }
+  }, [subscriptionForm, updateSubscriptionConfig, t]);
 
   const subscriptionPlanColor: Record<string, string> = { FREE: "default", PRO: "blue", ENTERPRISE: "gold" };
 
@@ -420,6 +442,7 @@ const AdminPanel = () => {
     { key: "invites", label: t("admin.tabs.invites"), children: invitesData?.data ?? [], columns: inviteColumns, loading: invitesLoading, page: invitesPage, total: invitesData?.total ?? 0, setPage: setInvitesPage },
     { key: "sessions", label: t("admin.tabs.sessions"), children: sessionsData?.data ?? [], columns: sessionColumns, loading: sessionsLoading, page: sessionsPage, total: sessionsData?.total ?? 0, setPage: setSessionsPage },
     { key: "featureFlags", label: t("admin.tabs.featureFlags"), isFeatureFlags: true, children: featureFlagsData ?? [], columns: featureFlagColumns, loading: featureFlagsLoading },
+    { key: "subscriptions", label: t("admin.tabs.subscriptions"), isSubscriptions: true },
   ];
 
   return (
@@ -592,6 +615,174 @@ const AdminPanel = () => {
                         </Card>
                       </>
                     ) : null}
+                  </div>
+                ),
+              };
+            }
+            if (item.isSubscriptions) {
+              return {
+                key: item.key,
+                label: item.label,
+                children: (
+                  <div className={styles.tableWrap}>
+                    <Card
+                      size="small"
+                      title={<span className={styles.cardTitle}>{t("admin.subscription.configTitle")}</span>}
+                      className={styles.statCard}
+                      style={{ marginBottom: 24 }}
+                      extra={
+                        <Button type="primary" onClick={handleSaveSubscriptionConfig} loading={subscriptionConfigSaving}>
+                          {t("admin.actions.save")}
+                        </Button>
+                      }
+                    >
+                      {subscriptionConfigLoading ? <Spinner /> : (
+                        <Form
+                          form={subscriptionForm}
+                          layout="vertical"
+                          initialValues={subscriptionConfigData ?? {}}
+                          onFinish={handleSaveSubscriptionConfig}
+                        >
+                          <Form.Item name="isEnabled" label={t("admin.subscription.enableSystem")} valuePropName="checked">
+                            <Switch />
+                          </Form.Item>
+                          <Row gutter={16}>
+                            <Col span={24}><strong style={{ color: "rgba(255,255,255,0.85)" }}>FREE</strong></Col>
+                            <Col xs={24} sm={8}>
+                              <Form.Item name="freeStorageBytes" label={t("admin.subscription.storageBytes")}>
+                                <InputNumber min={0} style={{ width: "100%" }} />
+                              </Form.Item>
+                            </Col>
+                            <Col xs={24} sm={8}>
+                              <Form.Item name="freeMaxNotes" label={t("admin.subscription.maxNotes")}>
+                                <InputNumber min={0} style={{ width: "100%" }} addonAfter={t("admin.subscription.zeroUnlimited")} />
+                              </Form.Item>
+                            </Col>
+                            <Col xs={24} sm={8}>
+                              <Form.Item name="freeMaxCollaborators" label={t("admin.subscription.maxCollaborators")}>
+                                <InputNumber min={0} style={{ width: "100%" }} addonAfter={t("admin.subscription.zeroUnlimited")} />
+                              </Form.Item>
+                            </Col>
+                            <Col xs={24} sm={8}>
+                              <Form.Item name="freeVideoCall" label={t("admin.subscription.videoCall")} valuePropName="checked">
+                                <Switch />
+                              </Form.Item>
+                            </Col>
+                          </Row>
+                          <Row gutter={16}>
+                            <Col span={24}><strong style={{ color: "#1890ff" }}>PRO</strong></Col>
+                            <Col xs={24} sm={8}>
+                              <Form.Item name="proPriceUsd" label={t("admin.subscription.priceUsd")}>
+                                <InputNumber min={0} step={0.01} style={{ width: "100%" }} addonBefore="$" />
+                              </Form.Item>
+                            </Col>
+                            <Col xs={24} sm={8}>
+                              <Form.Item name="proPriceRub" label={t("admin.subscription.priceRub")}>
+                                <InputNumber min={0} style={{ width: "100%" }} addonBefore="₽" />
+                              </Form.Item>
+                            </Col>
+                            <Col xs={24} sm={8}>
+                              <Form.Item name="proStorageBytes" label={t("admin.subscription.storageBytes")}>
+                                <InputNumber min={0} style={{ width: "100%" }} />
+                              </Form.Item>
+                            </Col>
+                            <Col xs={24} sm={8}>
+                              <Form.Item name="proMaxNotes" label={t("admin.subscription.maxNotes")}>
+                                <InputNumber min={0} style={{ width: "100%" }} addonAfter={t("admin.subscription.zeroUnlimited")} />
+                              </Form.Item>
+                            </Col>
+                            <Col xs={24} sm={8}>
+                              <Form.Item name="proMaxCollaborators" label={t("admin.subscription.maxCollaborators")}>
+                                <InputNumber min={0} style={{ width: "100%" }} addonAfter={t("admin.subscription.zeroUnlimited")} />
+                              </Form.Item>
+                            </Col>
+                            <Col xs={24} sm={8}>
+                              <Form.Item name="proVideoCall" label={t("admin.subscription.videoCall")} valuePropName="checked">
+                                <Switch />
+                              </Form.Item>
+                            </Col>
+                          </Row>
+                          <Row gutter={16}>
+                            <Col span={24}><strong style={{ color: "#d4b106" }}>ENTERPRISE</strong></Col>
+                            <Col xs={24} sm={8}>
+                              <Form.Item name="enterprisePriceUsd" label={t("admin.subscription.priceUsd")}>
+                                <InputNumber min={0} step={0.01} style={{ width: "100%" }} addonBefore="$" />
+                              </Form.Item>
+                            </Col>
+                            <Col xs={24} sm={8}>
+                              <Form.Item name="enterprisePriceRub" label={t("admin.subscription.priceRub")}>
+                                <InputNumber min={0} style={{ width: "100%" }} addonBefore="₽" />
+                              </Form.Item>
+                            </Col>
+                            <Col xs={24} sm={8}>
+                              <Form.Item name="enterpriseStorageBytes" label={t("admin.subscription.storageBytes")}>
+                                <InputNumber min={0} style={{ width: "100%" }} />
+                              </Form.Item>
+                            </Col>
+                            <Col xs={24} sm={8}>
+                              <Form.Item name="enterpriseMaxNotes" label={t("admin.subscription.maxNotes")}>
+                                <InputNumber min={0} style={{ width: "100%" }} addonAfter={t("admin.subscription.zeroUnlimited")} />
+                              </Form.Item>
+                            </Col>
+                            <Col xs={24} sm={8}>
+                              <Form.Item name="enterpriseMaxCollaborators" label={t("admin.subscription.maxCollaborators")}>
+                                <InputNumber min={0} style={{ width: "100%" }} addonAfter={t("admin.subscription.zeroUnlimited")} />
+                              </Form.Item>
+                            </Col>
+                            <Col xs={24} sm={8}>
+                              <Form.Item name="enterpriseVideoCall" label={t("admin.subscription.videoCall")} valuePropName="checked">
+                                <Switch />
+                              </Form.Item>
+                            </Col>
+                          </Row>
+                        </Form>
+                      )}
+                    </Card>
+                    <Card
+                      size="small"
+                      title={<span className={styles.cardTitle}>{t("admin.subscription.paymentsTitle")}</span>}
+                      className={styles.statCard}
+                    >
+                      <Table
+                        rowKey="id"
+                        loading={paymentsLoading}
+                        dataSource={paymentsData?.data ?? []}
+                        size="small"
+                        scroll={{ x: 900 }}
+                        pagination={{
+                          current: paymentsPage,
+                          pageSize: PAGE_SIZE,
+                          total: paymentsData?.total ?? 0,
+                          onChange: setPaymentsPage,
+                          showSizeChanger: false,
+                        }}
+                        columns={[
+                          { title: "ID", dataIndex: "id", width: 80, ellipsis: true },
+                          { title: t("admin.columns.user"), dataIndex: ["user", "email"], ellipsis: true },
+                          {
+                            title: t("admin.subscription.plan"),
+                            dataIndex: "plan",
+                            width: 100,
+                            render: (plan: string) => <Tag color={subscriptionPlanColor[plan] ?? "default"}>{plan}</Tag>,
+                          },
+                          { title: t("admin.subscription.provider"), dataIndex: "provider", width: 100 },
+                          {
+                            title: t("admin.subscription.status"),
+                            dataIndex: "status",
+                            width: 100,
+                            render: (s: string) => <Tag color={s === "succeeded" ? "green" : s === "pending" ? "orange" : "red"}>{s}</Tag>,
+                          },
+                          {
+                            title: t("admin.subscription.amount"),
+                            width: 110,
+                            render: (_: unknown, r: Record<string, unknown>) =>
+                              r.amountUsd !== null ? `$${r.amountUsd}` : r.amountRub !== null ? `₽${r.amountRub}` : "—",
+                          },
+                          { title: t("admin.subscription.period"), dataIndex: "periodMonths", width: 80, render: (v: number) => `${v} mo` },
+                          { title: t("admin.columns.created"), dataIndex: "createdAt", width: 160 },
+                        ]}
+                      />
+                    </Card>
                   </div>
                 ),
               };

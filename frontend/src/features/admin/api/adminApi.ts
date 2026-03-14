@@ -139,6 +139,48 @@ export interface AdminFeatureFlagItem {
   _count: { enabledForUsers: number };
 }
 
+export interface SubscriptionConfigAdmin {
+  isEnabled: boolean;
+  freeStorageBytes: string;
+  freeMaxNotes: number;
+  freeMaxCollaborators: number;
+  freeVideoCall: boolean;
+  proPriceUsd: number;
+  proPriceRub: number;
+  proStorageBytes: string;
+  proMaxNotes: number;
+  proMaxCollaborators: number;
+  proVideoCall: boolean;
+  enterprisePriceUsd: number;
+  enterprisePriceRub: number;
+  enterpriseStorageBytes: string;
+  enterpriseMaxNotes: number;
+  enterpriseMaxCollaborators: number;
+  enterpriseVideoCall: boolean;
+}
+
+export interface AdminPaymentItem {
+  id: string;
+  userId: number;
+  plan: string;
+  provider: string;
+  status: string;
+  amountUsd: number | null;
+  amountRub: number | null;
+  currency: string;
+  periodMonths: number;
+  expiresAt: string | null;
+  createdAt: string;
+  user: { id: number; email: string; userName: string | null };
+}
+
+export interface AdminPaymentsResponse {
+  data: AdminPaymentItem[];
+  total: number;
+  page: number;
+  limit: number;
+}
+
 export const adminApi = rtkApi.injectEndpoints({
   endpoints: (build) => ({
     getAdminUsers: build.query<AdminUsersResponse, PaginationParams | void>({
@@ -320,6 +362,24 @@ export const adminApi = rtkApi.injectEndpoints({
         { type: 'AdminFeatureFlags', id: `users-${featureFlagId}` },
       ],
     }),
+    getAdminSubscriptionConfig: build.query<SubscriptionConfigAdmin, void>({
+      query: () => ApiPaths.adminSubscriptionConfig,
+      providesTags: ['SubscriptionConfig'],
+    }),
+    updateAdminSubscriptionConfig: build.mutation<SubscriptionConfigAdmin, Partial<SubscriptionConfigAdmin>>({
+      query: (body) => ({
+        url: ApiPaths.adminSubscriptionConfig,
+        method: 'PATCH',
+        body,
+      }),
+      invalidatesTags: ['SubscriptionConfig'],
+    }),
+    getAdminPayments: build.query<AdminPaymentsResponse, { page?: number; limit?: number } | void>({
+      query: (params = {}) => ({
+        url: ApiPaths.adminPayments,
+        params: { page: params?.page ?? 1, limit: params?.limit ?? 20 },
+      }),
+    }),
   }),
 });
 
@@ -347,4 +407,7 @@ export const {
   useGetAdminFeatureFlagUsersQuery,
   useSetAdminFeatureFlagUserMutation,
   useRemoveAdminFeatureFlagUserMutation,
+  useGetAdminSubscriptionConfigQuery,
+  useUpdateAdminSubscriptionConfigMutation,
+  useGetAdminPaymentsQuery,
 } = adminApi;

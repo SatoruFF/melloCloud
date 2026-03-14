@@ -14,6 +14,7 @@ import notificationRouter from "./notification.routes.js";
 import sharingRouter from "./sharing.hono.routes.js";
 import adminRouter from "./admin.routes.js";
 import featureFlagsRouter from "./featureFlags.routes.js";
+import paymentRouter from "./payment.routes.js";
 
 const privateRouter = new Hono();
 
@@ -34,5 +35,6 @@ privateRouter.route('/notifications', notificationRouter);
 privateRouter.route('/sharing', sharingRouter);
 privateRouter.route('/admin', adminRouter);
 privateRouter.route('/feature-flags', featureFlagsRouter);
+privateRouter.route('/payment', paymentRouter);
 
 export default privateRouter;

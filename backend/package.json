@@ -63,6 +63,7 @@
     "pm2": "^5.3.1",
     "qs": "^6.13.1",
     "streamifier": "^0.1.1",
+    "stripe": "^20.4.1",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^4.6.3",
     "tslib": "^2.8.1",

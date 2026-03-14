@@ -3,6 +3,7 @@ import createError from "http-errors";
 import { ResourceType, PermissionLevel, ShareActivityType, Permission, Note, Task, CalendarEvent, File, TaskColumn, KanbanBoard } from "@prisma/client";
 import crypto from "crypto";
 import { PrismaClient } from "@prisma/client";
+import { checkCollaboratorLimit } from "./subscriptionService.js";
 
 interface ShareResourceData {
   resourceType: ResourceType;
@@ -25,6 +26,9 @@ class SharingServiceClass {
       if (!isOwner) {
         throw createError(403, "You don't have permission to share this resource");
       }
+
+      // Check collaborator limit for granter's plan
+      await checkCollaboratorLimit(resourceType, resourceId, grantedBy);
 
       // If email provided, check if user exists
       let targetUserId = userId;
