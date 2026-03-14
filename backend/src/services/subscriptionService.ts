@@ -31,7 +31,7 @@ let configCache: typeof DEFAULT_CONFIG | null = null;
 export async function getConfig() {
   if (configCache) return configCache;
   const cfg = await prisma.subscriptionConfig.findUnique({ where: { id: 1 } });
-  configCache = cfg ? (cfg as typeof DEFAULT_CONFIG) : DEFAULT_CONFIG;
+  configCache = cfg ? (cfg as unknown as typeof DEFAULT_CONFIG) : DEFAULT_CONFIG;
   return configCache;
 }
 

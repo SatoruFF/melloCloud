@@ -30,7 +30,7 @@ class TaskControllerClass {
 
       const task = await TaskService.create({
         title,
-        content,
+        content: content ?? "",
         priority,
         dueDate,
         columnId,

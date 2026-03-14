@@ -12,7 +12,7 @@ import { getErrorMessage, getErrorStatusCode } from "../types/errors.js";
 class MessageControllerClass {
   async getMessages(c: Context) {
     try {
-      const apiContext = (c.get("context") as ApiContext | undefined) ?? null;
+      const apiContext = c.get("context") as ApiContext;
       const userId = (c.get("user") as { id?: number } | undefined)?.id ?? c.get("userId");
       const query = c.req.query();
       const chatId = query.chatId as string | undefined;

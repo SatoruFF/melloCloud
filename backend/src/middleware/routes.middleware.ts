@@ -1,4 +1,4 @@
-export function routesMiddleWare(req, res, next) {
+export function routesMiddleWare(req: any, res: any, next: any) {
   // If the path starts with `/api`, remove it from the request URL
   if (req.url.startsWith('/api')) {
     req.url = req.url.slice(4); // Remove `/api`

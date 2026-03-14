@@ -349,7 +349,9 @@ class SharingControllerClass {
       // ✅ Set headers
       res.setHeader("Content-Disposition", `attachment; filename="${file.name}"`);
       res.setHeader("Content-Type", file.type || "application/octet-stream");
-      res.setHeader("Content-Length", s3object.ContentLength);
+      if (s3object.ContentLength != null) {
+        res.setHeader("Content-Length", s3object.ContentLength);
+      }
 
       // ✅ Send S3 buffer
       res.send(s3object.Body);

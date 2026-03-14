@@ -12,7 +12,7 @@ import { getErrorMessage, getErrorStatusCode } from "../types/errors.js";
 class ChatControllerClass {
   async getUserChats(c: Context) {
     try {
-      const apiContext = (c.get("context") as ApiContext | undefined) ?? null;
+      const apiContext = c.get("context") as ApiContext;
       const userId = (c.get("user") as { id?: number } | undefined)?.id ?? c.get("userId");
 
       if (!userId) {
@@ -53,7 +53,7 @@ class ChatControllerClass {
         throw createError(400, "title is required");
       }
 
-      const apiContext = (c.get("context") as ApiContext | undefined) ?? null;
+      const apiContext = c.get("context") as ApiContext;
       const chat = await ChatService.createGroupChat(apiContext, {
         title,
         creatorId: userId,

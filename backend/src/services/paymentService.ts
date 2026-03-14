@@ -11,7 +11,7 @@ import { CLIENT_URL } from "../configs/config.js";
 function getStripe(): Stripe {
   const key = process.env.STRIPE_SECRET_KEY;
   if (!key) throw createError(500, "Stripe not configured");
-  return new Stripe(key, { apiVersion: "2025-05-28.basil" });
+  return new Stripe(key, { apiVersion: "2026-02-25.clover" });
 }
 
 export async function createStripeSession(

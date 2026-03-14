@@ -57,7 +57,7 @@ class NotesServiceClass {
     const view = opts?.view ?? "all";
     const tag = opts?.tag?.trim();
 
-    const andConditions: Parameters<typeof context.prisma.note.findMany>[0]["where"][] = [{ OR: [{ userId }, { id: { in: sharedIds } }] }];
+    const andConditions: NonNullable<Parameters<typeof context.prisma.note.findMany>[0]>["where"][] = [{ OR: [{ userId }, { id: { in: sharedIds } }] }];
 
     if (view === "trash") {
       andConditions.push({ isRemoved: true });
@@ -72,7 +72,7 @@ class NotesServiceClass {
     }
 
     const notes = await context.prisma.note.findMany({
-      where: { AND: andConditions },
+      where: { AND: andConditions.filter(Boolean) as any },
       orderBy: { updatedAt: "desc" },
       select: {
         id: true,
@@ -178,7 +178,7 @@ class NotesServiceClass {
         ResourceType.NOTE,
         +noteId
       );
-      const canEdit = [PermissionLevel.EDITOR, PermissionLevel.ADMIN, PermissionLevel.OWNER].includes(
+      const canEdit = ([PermissionLevel.EDITOR, PermissionLevel.ADMIN, PermissionLevel.OWNER] as PermissionLevel[]).includes(
         permissionLevel!
       );
       if (!hasAccess || !canEdit) {
@@ -241,7 +241,7 @@ class NotesServiceClass {
         ResourceType.NOTE,
         +noteId
       );
-      const canDelete = [PermissionLevel.ADMIN, PermissionLevel.OWNER].includes(permissionLevel!);
+      const canDelete = ([PermissionLevel.ADMIN, PermissionLevel.OWNER] as PermissionLevel[]).includes(permissionLevel!);
       if (!hasAccess || !canDelete) {
         throw createError(404, "Note not found");
       }
@@ -283,7 +283,7 @@ class NotesServiceClass {
           {
             OR: [
               { title: { contains: query, mode: "insensitive" } },
-              { content: { path: [], string_contains: query } },
+              { content: { path: [], string_contains: query } as never },
               { tags: { has: query } },
             ],
           },

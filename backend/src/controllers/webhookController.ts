@@ -1,5 +1,6 @@
 import type { Context } from "hono";
 import type { WebhookEvent, WebhookMethod } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import createError from "http-errors";
 import { logger } from "../configs/logger.js";
 import { getErrorMessage, getErrorStatusCode } from "../types/errors.js";
@@ -11,7 +12,7 @@ class WebhookControllerClass {
   // Получить все webhooks пользователя
   async getUserWebhooks(c: Context) {
     try {
-      const apiContext = (c.get("context") as ApiContext | undefined) ?? null;
+      const apiContext = c.get("context") as ApiContext;
       const userId = (c.get("user") as { id?: number } | undefined)?.id ?? c.get("userId");
       if (!userId || !apiContext) {
         throw createError(401, "User not found");
@@ -41,7 +42,7 @@ class WebhookControllerClass {
   // Получить один webhook
   async getWebhook(c: Context) {
     try {
-      const apiContext = (c.get("context") as ApiContext | undefined) ?? null;
+      const apiContext = c.get("context") as ApiContext;
       const userId = (c.get("user") as { id?: number } | undefined)?.id ?? c.get("userId");
       const { webhookId } = c.req.param();
 
@@ -83,7 +84,7 @@ class WebhookControllerClass {
   // Создать webhook
   async createWebhook(c: Context) {
     try {
-      const apiContext = (c.get("context") as ApiContext | undefined) ?? null;
+      const apiContext = c.get("context") as ApiContext;
       const userId = (c.get("user") as { id?: number } | undefined)?.id ?? c.get("userId");
       const { name, description, url, method, events, filters, headers, retryCount, retryDelay } = await c.req.json<{
         name: string;
@@ -120,8 +121,8 @@ class WebhookControllerClass {
           url,
           method: (method || "POST") as WebhookMethod,
           events: events as WebhookEvent[],
-          filters: (filters ?? null) as object | null,
-          headers: (headers ?? null) as object | null,
+          filters: (filters ?? Prisma.DbNull) as any,
+          headers: (headers ?? Prisma.DbNull) as any,
           retryCount: retryCount || 3,
           retryDelay: retryDelay || 60,
           status: "ACTIVE",
@@ -140,7 +141,7 @@ class WebhookControllerClass {
   // Обновить webhook
   async updateWebhook(c: Context) {
     try {
-      const apiContext = (c.get("context") as ApiContext | undefined) ?? null;
+      const apiContext = c.get("context") as ApiContext;
       const userId = (c.get("user") as { id?: number } | undefined)?.id ?? c.get("userId");
       const { webhookId } = c.req.param();
       const { name, description, url, method, events, filters, headers, retryCount, retryDelay, status } =
@@ -207,7 +208,7 @@ class WebhookControllerClass {
 
       const webhook = await apiContext.prisma.webhook.update({
         where: { id: +webhookId },
-        data: updateData,
+        data: updateData as any,
       });
 
       return c.json(serializeBigInt(webhook));
@@ -222,7 +223,7 @@ class WebhookControllerClass {
   // Удалить webhook
   async deleteWebhook(c: Context) {
     try {
-      const apiContext = (c.get("context") as ApiContext | undefined) ?? null;
+      const apiContext = c.get("context") as ApiContext;
       const userId = (c.get("user") as { id?: number } | undefined)?.id ?? c.get("userId");
       const { webhookId } = c.req.param();
 
@@ -257,7 +258,7 @@ class WebhookControllerClass {
   // Тестовый запуск webhook
   async testWebhook(c: Context) {
     try {
-      const apiContext = (c.get("context") as ApiContext | undefined) ?? null;
+      const apiContext = c.get("context") as ApiContext;
       const userId = (c.get("user") as { id?: number } | undefined)?.id ?? c.get("userId");
       const { webhookId } = c.req.param();
 
@@ -300,7 +301,7 @@ class WebhookControllerClass {
   // Получить историю выполнений
   async getWebhookExecutions(c: Context) {
     try {
-      const apiContext = (c.get("context") as ApiContext | undefined) ?? null;
+      const apiContext = c.get("context") as ApiContext;
       const userId = (c.get("user") as { id?: number } | undefined)?.id ?? c.get("userId");
       const { webhookId } = c.req.param();
       const query = c.req.query();
@@ -356,7 +357,7 @@ class WebhookControllerClass {
   // Получить запланированные webhooks
   async getScheduledWebhooks(c: Context) {
     try {
-      const apiContext = (c.get("context") as ApiContext | undefined) ?? null;
+      const apiContext = c.get("context") as ApiContext;
       const userId = (c.get("user") as { id?: number } | undefined)?.id ?? c.get("userId");
 
       if (!userId || !apiContext) {

@@ -1,4 +1,5 @@
 import { prisma } from "../configs/config.js";
+import type ApiContext from "../models/context.js";
 import { UserDto } from "../dtos/user-dto.js";
 // utils
 import _ from "lodash";
@@ -7,7 +8,7 @@ import { deserializeMessage, serializeMessage } from "../helpers/messageSerializ
 import { ChatUser, User } from "@prisma/client";
 
 class ChatServiceClass {
-  async getUserChats(context, userId: number) {
+  async getUserChats(context: ApiContext, userId: number) {
     const chats = await context.prisma.chat.findMany({
       where: {
         users: {
@@ -59,7 +60,7 @@ class ChatServiceClass {
         const { text: deserializedTitle } =
           (await deserializeMessage<{
             text?: string;
-          }>(lastMessage?.text || chat.title || null)) || {};
+          }>((lastMessage?.text || chat.title) ?? "")) || {};
 
         return {
           id: chat.id,
@@ -112,14 +113,14 @@ class ChatServiceClass {
     return null;
   }
 
-  async getOrCreatePrivateChat(prisma: typeof import("../configs/config.js").prisma, { senderId, receiverId, text }: { senderId: number; receiverId: number; text: string }) {
+  async getOrCreatePrivateChat(prisma: any, { senderId, receiverId, text }: { senderId: number; receiverId: number; text: string }) {
     const existingChat = await this.findPrivateChat(prisma, senderId, receiverId);
 
     if (existingChat) {
       return existingChat.id;
     }
 
-    const encryptedTitle = await serializeMessage(text || "");
+    const encryptedTitle = await serializeMessage({ text: text || "" });
 
     const newChat = await prisma.chat.create({
       data: {

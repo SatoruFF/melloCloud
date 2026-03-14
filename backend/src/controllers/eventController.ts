@@ -9,7 +9,7 @@ import { getErrorMessage, getErrorStatusCode } from "../types/errors.js";
 class EventsControllerClass {
   async getUserEvents(c: Context) {
     try {
-      const apiContext = (c.get("context") as ApiContext | undefined) ?? null;
+      const apiContext = c.get("context") as ApiContext;
       const userId = (c.get("user") as { id?: number } | undefined)?.id ?? c.get("userId");
       if (!userId) {
         throw createError(401, "User not found");
@@ -26,7 +26,7 @@ class EventsControllerClass {
 
   async getEventsByDateRange(c: Context) {
     try {
-      const apiContext = (c.get("context") as ApiContext | undefined) ?? null;
+      const apiContext = c.get("context") as ApiContext;
       const userId = (c.get("user") as { id?: number } | undefined)?.id ?? c.get("userId");
       const { startDate, endDate } = c.req.query();
 
@@ -55,7 +55,7 @@ class EventsControllerClass {
 
   async searchEvents(c: Context) {
     try {
-      const apiContext = (c.get("context") as ApiContext | undefined) ?? null;
+      const apiContext = c.get("context") as ApiContext;
       const userId = (c.get("user") as { id?: number } | undefined)?.id ?? c.get("userId");
       const { query } = c.req.query();
 
@@ -78,7 +78,7 @@ class EventsControllerClass {
 
   async getEvent(c: Context) {
     try {
-      const apiContext = (c.get("context") as ApiContext | undefined) ?? null;
+      const apiContext = c.get("context") as ApiContext;
       const userId = (c.get("user") as { id?: number } | undefined)?.id ?? c.get("userId");
       const { eventId } = c.req.param();
 
@@ -101,7 +101,7 @@ class EventsControllerClass {
 
   async createEvent(c: Context) {
     try {
-      const apiContext = (c.get("context") as ApiContext | undefined) ?? null;
+      const apiContext = c.get("context") as ApiContext;
       const userId = (c.get("user") as { id?: number } | undefined)?.id ?? c.get("userId");
       const { title, description, location, color, category, startDate, endDate, allDay, taskId, attendees } =
         await c.req.json<{
@@ -174,7 +174,7 @@ class EventsControllerClass {
 
   async updateEvent(c: Context) {
     try {
-      const apiContext = (c.get("context") as ApiContext | undefined) ?? null;
+      const apiContext = c.get("context") as ApiContext;
       const userId = (c.get("user") as { id?: number } | undefined)?.id ?? c.get("userId");
       const { eventId } = c.req.param();
       const { title, description, location, color, category, startDate, endDate, allDay } = await c.req.json<{
@@ -231,7 +231,7 @@ class EventsControllerClass {
 
   async deleteEvent(c: Context) {
     try {
-      const apiContext = (c.get("context") as ApiContext | undefined) ?? null;
+      const apiContext = c.get("context") as ApiContext;
       const userId = (c.get("user") as { id?: number } | undefined)?.id ?? c.get("userId");
       const { eventId } = c.req.param();
 
@@ -256,7 +256,7 @@ class EventsControllerClass {
 
   async addAttendee(c: Context) {
     try {
-      const apiContext = (c.get("context") as ApiContext | undefined) ?? null;
+      const apiContext = c.get("context") as ApiContext;
       const userId = (c.get("user") as { id?: number } | undefined)?.id ?? c.get("userId");
       const { eventId } = c.req.param();
       const { attendeeId } = await c.req.json<{ attendeeId: number }>();
@@ -285,7 +285,7 @@ class EventsControllerClass {
 
   async removeAttendee(c: Context) {
     try {
-      const apiContext = (c.get("context") as ApiContext | undefined) ?? null;
+      const apiContext = c.get("context") as ApiContext;
       const userId = (c.get("user") as { id?: number } | undefined)?.id ?? c.get("userId");
       const { eventId, attendeeUserId } = c.req.param();
 
@@ -313,7 +313,7 @@ class EventsControllerClass {
 
   async updateAttendeeStatus(c: Context) {
     try {
-      const apiContext = (c.get("context") as ApiContext | undefined) ?? null;
+      const apiContext = c.get("context") as ApiContext;
       const userId = (c.get("user") as { id?: number } | undefined)?.id ?? c.get("userId");
       const { eventId } = c.req.param();
       const { status } = await c.req.json<{ status: string }>();

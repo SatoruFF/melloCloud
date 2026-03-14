@@ -1,6 +1,6 @@
 export interface IUserModel {
   id: number;
-  userName: string;
+  userName: string | null;
   email: string;
   storageGuid: string;
   diskSpace?: string | number | bigint;
@@ -18,7 +18,7 @@ export interface IUserModel {
 export class UserDto {
   user: {
     id: number;
-    userName: string;
+    userName: string | null;
     email: string;
     storageGuid?: string;
     diskSpace: string | number | bigint;
@@ -44,8 +44,8 @@ export class UserDto {
       id,
       userName,
       email,
-      diskSpace,
-      usedSpace,
+      diskSpace: diskSpace ?? "0",
+      usedSpace: usedSpace ?? "0",
       avatar: avatar || "",
       role: role || "USER",
       isActivated: isActivated ?? false,

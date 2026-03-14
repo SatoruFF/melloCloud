@@ -54,7 +54,7 @@ const server = http.createServer(async (req, res) => {
       ...(body && body.length > 0 && { body }),
     }) as Request;
     const response = await app.fetch(request);
-    res.writeHead(response.status, Object.fromEntries(response.headers));
+    res.writeHead(response.status, Object.fromEntries(response.headers as unknown as Iterable<[string, string]>));
     if (response.body) {
       const writable = new WritableStreamCtor({
         write(chunk: unknown) {

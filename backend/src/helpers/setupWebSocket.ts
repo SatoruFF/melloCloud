@@ -23,7 +23,8 @@ export function setupWebSocketServer(server: http.Server) {
       }
 
       const decoded = jwt.verify(token, ACCESS_SECRET_KEY);
-      const userId = Number(decoded.payload) === decoded.payload ? decoded.payload : decoded;
+      const payload = typeof decoded === 'string' ? decoded : (decoded as any).payload ?? decoded;
+      const userId = payload;
 
       context = new ApiContext(userId);
 
@@ -42,7 +43,7 @@ export function setupWebSocketServer(server: http.Server) {
         const messageString = message.toString ? message.toString() : message;
         const messageData = parseJson(messageString);
 
-        const savedMessage = await MessageService.saveMessage(context, messageData);
+        const savedMessage = await MessageService.saveMessage(context!, messageData);
 
         // Отправка подтверждения отправителю
         ws.send(JSON.stringify(savedMessage));

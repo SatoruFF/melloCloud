@@ -1,6 +1,7 @@
 /**
  * Error handling types and utilities for melloCloud backend
  */
+import type { ContentfulStatusCode } from "hono/utils/http-status";
 
 export interface ErrorResponse {
   error: string;
@@ -53,14 +54,20 @@ export function getErrorMessage(error: unknown): string {
  * Extract status code from unknown error type
  * Returns the statusCode if available, defaults to 500
  */
-export function getErrorStatusCode(error: unknown): number {
+export function getErrorStatusCode(error: unknown): ContentfulStatusCode {
   if (isErrorResponse(error)) {
-    return error.statusCode || 500;
+    return (error.statusCode || 500) as ContentfulStatusCode;
   }
   if (typeof error === 'object' && error !== null && 'statusCode' in error) {
     const code = (error as Record<string, unknown>).statusCode;
     if (typeof code === 'number') {
-      return code;
+      return code as ContentfulStatusCode;
+    }
+  }
+  if (typeof error === 'object' && error !== null && 'status' in error) {
+    const code = (error as Record<string, unknown>).status;
+    if (typeof code === 'number') {
+      return code as ContentfulStatusCode;
     }
   }
   return 500;

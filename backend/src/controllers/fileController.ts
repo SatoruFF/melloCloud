@@ -227,11 +227,11 @@ class FileControllerClass {
       const body = s3object.Body as Readable;
       body.pipe(stream);
 
-      return c.newResponse(stream, {
+      return c.newResponse(stream as any, {
         status: 200,
         headers: {
           "Content-Disposition": `attachment; filename=${file.name}`,
-          "Content-Type": file.type,
+          "Content-Type": file.type ?? "application/octet-stream",
         },
       });
     } catch (error: unknown) {
@@ -260,7 +260,7 @@ class FileControllerClass {
       const stream = new PassThrough();
       const body = s3object.Body as Readable;
       body.pipe(stream);
-      return c.newResponse(stream, {
+      return c.newResponse(stream as any, {
         status: 200,
         headers: {
           "Content-Disposition": `inline; filename="${file.name}"`,

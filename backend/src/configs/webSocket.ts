@@ -35,7 +35,7 @@ export function getWebSocketConnection(
     server,
     path,
     handleProtocols: (protocols) => {
-      const token = protocols[0];
+      const token = Array.from(protocols)[0];
       return token;
     },
   });

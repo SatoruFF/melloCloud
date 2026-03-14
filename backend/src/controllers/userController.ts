@@ -146,7 +146,7 @@ class UserControllerClass {
     try {
       const refreshTokenCookie = getCookie(c, "refreshToken");
 
-      const userData = await UserService.refresh(refreshTokenCookie);
+      const userData = await UserService.refresh(refreshTokenCookie!);
 
       // Обновляем accessToken cookie
       setCookie(c, "accessToken", userData.token, {
@@ -184,7 +184,7 @@ class UserControllerClass {
       const user = c.get("user") as { id?: number } | undefined;
       const id = user?.id;
 
-      const loggedOutUser = await UserService.logout(id, refreshToken);
+      const loggedOutUser = await UserService.logout(id!, refreshToken!);
 
       // Удаляем оба cookie
       deleteCookie(c, "accessToken", { path: "/" });
@@ -210,7 +210,7 @@ class UserControllerClass {
       const user = c.get("user") as { id?: number } | undefined;
       const id = user?.id;
 
-      const loggedOutUser = await UserService.logoutAll(id);
+      const loggedOutUser = await UserService.logoutAll(id!);
 
       // Удаляем оба cookie
       deleteCookie(c, "accessToken", { path: "/" });
@@ -236,7 +236,7 @@ class UserControllerClass {
       const user = c.get("user") as { id?: number } | undefined;
       const id = user?.id;
 
-      const sessions = await UserService.getSessions(id);
+      const sessions = await UserService.getSessions(id!);
       return c.json(sessions);
     } catch (error: unknown) {
       const message = getErrorMessage(error);
@@ -253,7 +253,7 @@ class UserControllerClass {
       const id = user?.id;
       const { sessionId } = c.req.param();
 
-      await UserService.deleteSession(id, sessionId);
+      await UserService.deleteSession(id!, sessionId);
       return c.json({ message: "Session deleted successfully" });
     } catch (error: unknown) {
       const message = getErrorMessage(error);
@@ -271,7 +271,7 @@ class UserControllerClass {
         throw createError(400, "Empty query");
       }
 
-      const apiContext = (c.get("context") as ApiContext | undefined) ?? null;
+      const apiContext = c.get("context") as ApiContext;
       const users = await UserService.search(apiContext, query);
       return c.json(users);
     } catch (error: unknown) {
@@ -290,7 +290,7 @@ class UserControllerClass {
         throw createError(400, "Empty Params");
       }
 
-      const apiContext = (c.get("context") as ApiContext | undefined) ?? null;
+      const apiContext = c.get("context") as ApiContext;
       const user = await UserService.getById(apiContext, Number(id));
       if (!user) {
         throw createError(404, "User not found");

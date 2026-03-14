@@ -1,4 +1,5 @@
-function print(path, layer) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function print(path: any, layer: any) {
   if (layer.route) {
     layer.route.stack.forEach(print.bind(null, path.concat(split(layer.route.path))));
   } else if (layer.name === "router" && layer.handle.stack) {
@@ -8,7 +9,7 @@ function print(path, layer) {
   }
 }
 
-function split(thing) {
+function split(thing: any) {
   if (typeof thing === "string") {
     return thing.split("/");
   } else if (thing.fast_slash) {
@@ -23,6 +24,6 @@ function split(thing) {
   }
 }
 
-export function logRoutes(app) {
+export function logRoutes(app: any) {
   app._router.stack.forEach(print.bind(null, []));
 }

@@ -11,10 +11,10 @@ import {
   HTTPS_CERTIFICATE_PATH,
   HTTPS_KEY_PATH,
   ROOT_DIR,
-} from './configs/config';
-import { logger } from './configs/logger';
+} from './configs/config.js';
+import { logger } from './configs/logger.js';
 
-function getAbsolutePath(filePath) {
+function getAbsolutePath(filePath: string) {
   if (path.isAbsolute(filePath)) {
     return filePath;
   }
@@ -22,7 +22,7 @@ function getAbsolutePath(filePath) {
   return path.join(ROOT_DIR, filePath);
 }
 
-export function startHttpServer(app) {
+export function startHttpServer(app: any) {
   if (HTTPS) {
     if (!HTTPS_CERTIFICATE_PATH) {
       throw new Error('Certificate file not found by path ' + HTTPS_CERTIFICATE_PATH);
@@ -50,7 +50,7 @@ export function startHttpServer(app) {
 
       logger.info('Start listen port to http', PORT_HTTP);
 
-      app.use(function (req, res, next) {
+      app.use(function (req: any, res: any, next: any) {
         res.secure =
           res.secure == null ? req.protocol == 'https' || req.headers['x-forwarded-proto'] === 'https' : req.secure;
 

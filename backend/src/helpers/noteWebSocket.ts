@@ -1,4 +1,4 @@
-import type { Prisma } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import { WebSocketServer, WebSocket } from "ws";
 import jwt from "jsonwebtoken";
 import { logger } from "../configs/logger.js";
@@ -232,8 +232,8 @@ async function handleLeaveNote(userId: number, noteId: number) {
       where: { noteId, userId },
       data: {
         isActive: false,
-        cursorPosition: null,
-        selection: null,
+        cursorPosition: Prisma.DbNull,
+        selection: Prisma.DbNull,
       },
     });
 
@@ -557,8 +557,8 @@ setInterval(async () => {
       },
       data: {
         isActive: false,
-        cursorPosition: null,
-        selection: null,
+        cursorPosition: Prisma.DbNull,
+        selection: Prisma.DbNull,
       },
     });
   } catch (error) {

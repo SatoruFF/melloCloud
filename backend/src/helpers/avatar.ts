@@ -4,7 +4,6 @@ import { imagekit, prisma } from '../configs/config.js';
 import createError from 'http-errors';
 import _ from 'lodash';
 import { createReadStream } from 'streamifier';
-import type { ReadStream } from 'streamifier';
 // utils
 import { v4 as uuidv4 } from 'uuid';
 
@@ -18,19 +17,23 @@ class AvatarClass {
       where: { id: userId },
     });
 
+    if (!user) {
+      throw createError(404, 'User not found');
+    }
+
     // in first, we must delete old avatar
     if (user.avatar) {
-      const fileList = await imagekit.listFiles();
+      const fileList = await imagekit.listFiles({});
 
-      const file = _.isArray(fileList) && fileList.find(file => file.url === user.avatar);
+      const file = _.isArray(fileList) && fileList.find(file => (file as any).url === user.avatar);
 
-      const fileId = file ? file.fileId : null;
-
-      await imagekit.deleteFile(fileId);
+      if (file && typeof file === 'object') {
+        await imagekit.deleteFile((file as any).fileId);
+      }
     }
 
     const uploadedImage = await imagekit.upload({
-      file: fileStream,
+      file: fileStream as any,
       fileName: avatarName,
       extensions: [
         {
@@ -41,18 +44,18 @@ class AvatarClass {
       ],
     });
 
-    user.avatar = uploadedImage.url;
+    const newAvatar = (uploadedImage as any).url as string;
 
     await prisma.user.update({
       where: {
         id: user.id,
       },
       data: {
-        avatar: user.avatar,
+        avatar: newAvatar,
       },
     });
 
-    return user.avatar;
+    return newAvatar;
   }
 
   async deleteAvatar(userId: number) {
@@ -60,33 +63,37 @@ class AvatarClass {
       where: { id: userId },
     });
 
+    if (!user) {
+      throw createError(404, 'User not found');
+    }
+
     if (!user.avatar) {
       throw createError(404, 'avatar not found');
     }
 
-    const fileList = await imagekit.listFiles();
+    const fileList = await imagekit.listFiles({});
 
-    const file = _.isArray(fileList) && fileList.find(file => file.url === user.avatar);
+    const file = _.isArray(fileList) && fileList.find(file => (file as any).url === user.avatar);
 
-    const fileId = file ? file.fileId : null;
-
-    await imagekit.deleteFile(fileId);
-
-    user.avatar = null;
+    if (file && typeof file === 'object') {
+      await imagekit.deleteFile((file as any).fileId);
+    }
 
     await prisma.user.update({
       where: {
         id: user.id,
       },
       data: {
-        avatar: user.avatar,
+        avatar: null,
       },
     });
 
-    user.diskSpace = user.diskSpace.toString();
-    user.usedSpace = user.usedSpace.toString();
-
-    return user;
+    return {
+      ...user,
+      avatar: null,
+      diskSpace: user.diskSpace.toString(),
+      usedSpace: user.usedSpace.toString(),
+    };
   }
 }
 

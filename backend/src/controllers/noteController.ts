@@ -9,7 +9,7 @@ import { getErrorMessage, getErrorStatusCode } from "../types/errors.js";
 class NotesControllerClass {
   async getUserNotes(c: Context) {
     try {
-      const apiContext = (c.get("context") as ApiContext | undefined) ?? null;
+      const apiContext = c.get("context") as ApiContext;
       const userId = (c.get("user") as { id?: number } | undefined)?.id ?? c.get("userId");
       if (!userId) {
         throw createError(401, "User not found");
@@ -30,7 +30,7 @@ class NotesControllerClass {
 
   async getNote(c: Context) {
     try {
-      const apiContext = (c.get("context") as ApiContext | undefined) ?? null;
+      const apiContext = c.get("context") as ApiContext;
       const userId = (c.get("user") as { id?: number } | undefined)?.id ?? c.get("userId");
       const { noteId } = c.req.param();
 
@@ -53,7 +53,7 @@ class NotesControllerClass {
 
   async createNote(c: Context) {
     try {
-      const apiContext = (c.get("context") as ApiContext | undefined) ?? null;
+      const apiContext = c.get("context") as ApiContext;
       const userId = (c.get("user") as { id?: number } | undefined)?.id ?? c.get("userId");
       const { title, content, tags } = await c.req.json<{
         title: string;
@@ -76,7 +76,7 @@ class NotesControllerClass {
 
       const note = await NotesService.createNote(apiContext, userId, {
         title,
-        content,
+        content: (content ?? "") as string | Record<string, unknown>,
         tags: tags !== undefined && Array.isArray(tags) ? (tags as string[]) : undefined,
       });
 
@@ -90,7 +90,7 @@ class NotesControllerClass {
 
   async updateNote(c: Context) {
     try {
-      const apiContext = (c.get("context") as ApiContext | undefined) ?? null;
+      const apiContext = c.get("context") as ApiContext;
       const userId = (c.get("user") as { id?: number } | undefined)?.id ?? c.get("userId");
       const { noteId } = c.req.param();
       const { title, content, isStarred, isRemoved, tags } = await c.req.json<{
@@ -140,7 +140,7 @@ class NotesControllerClass {
 
   async deleteNote(c: Context) {
     try {
-      const apiContext = (c.get("context") as ApiContext | undefined) ?? null;
+      const apiContext = c.get("context") as ApiContext;
       const userId = (c.get("user") as { id?: number } | undefined)?.id ?? c.get("userId");
       const { noteId } = c.req.param();
 
@@ -163,7 +163,7 @@ class NotesControllerClass {
 
   async searchNotes(c: Context) {
     try {
-      const apiContext = (c.get("context") as ApiContext | undefined) ?? null;
+      const apiContext = c.get("context") as ApiContext;
       const userId = (c.get("user") as { id?: number } | undefined)?.id ?? c.get("userId");
       const { query } = c.req.query();
 

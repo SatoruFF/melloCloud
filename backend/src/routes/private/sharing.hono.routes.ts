@@ -1,4 +1,5 @@
 import type { Context } from "hono";
+import type { ContentfulStatusCode } from "hono/utils/http-status";
 import createError, { HttpError } from "http-errors";
 import { Hono } from "hono";
 import { ResourceType, PermissionLevel } from "@prisma/client";
@@ -47,7 +48,7 @@ router.post("/", async (c) => {
     const err = error instanceof HttpError ? error : error instanceof Error ? error : new Error(String(error));
     const statusCode = error instanceof HttpError ? error.statusCode : 500;
     logger.error(err.message, error);
-    return c.json({ message: err.message }, statusCode);
+    return c.json({ message: err.message }, statusCode as ContentfulStatusCode);
   }
 });
 
@@ -69,7 +70,7 @@ router.get("/permissions/:resourceType/:resourceId", async (c) => {
     const err = error instanceof HttpError ? error : error instanceof Error ? error : new Error(String(error));
     const statusCode = error instanceof HttpError ? error.statusCode : 500;
     logger.error(err.message, error);
-    return c.json({ message: err.message }, statusCode);
+    return c.json({ message: err.message }, statusCode as ContentfulStatusCode);
   }
 });
 
@@ -91,7 +92,7 @@ router.patch("/permissions/:permissionId", async (c) => {
     const err = error instanceof HttpError ? error : error instanceof Error ? error : new Error(String(error));
     const statusCode = error instanceof HttpError ? error.statusCode : 500;
     logger.error(err.message, error);
-    return c.json({ message: err.message }, statusCode);
+    return c.json({ message: err.message }, statusCode as ContentfulStatusCode);
   }
 });
 
@@ -108,7 +109,7 @@ router.delete("/permissions/:permissionId", async (c) => {
     const err = error instanceof HttpError ? error : error instanceof Error ? error : new Error(String(error));
     const statusCode = error instanceof HttpError ? error.statusCode : 500;
     logger.error(err.message, error);
-    return c.json({ message: err.message }, statusCode);
+    return c.json({ message: err.message }, statusCode as ContentfulStatusCode);
   }
 });
 
@@ -134,7 +135,7 @@ router.post("/public-link", async (c) => {
     const err = error instanceof HttpError ? error : error instanceof Error ? error : new Error(String(error));
     const statusCode = error instanceof HttpError ? error.statusCode : 500;
     logger.error(err.message, error);
-    return c.json({ message: err.message }, statusCode);
+    return c.json({ message: err.message }, statusCode as ContentfulStatusCode);
   }
 });
 
@@ -156,7 +157,7 @@ router.delete("/public-link/:resourceType/:resourceId", async (c) => {
     const err = error instanceof HttpError ? error : error instanceof Error ? error : new Error(String(error));
     const statusCode = error instanceof HttpError ? error.statusCode : 500;
     logger.error(err.message, error);
-    return c.json({ message: err.message }, statusCode);
+    return c.json({ message: err.message }, statusCode as ContentfulStatusCode);
   }
 });
 
@@ -173,7 +174,7 @@ router.get("/shared-with-me", async (c) => {
     const err = error instanceof HttpError ? error : error instanceof Error ? error : new Error(String(error));
     const statusCode = error instanceof HttpError ? error.statusCode : 500;
     logger.error(err.message, error);
-    return c.json({ message: err.message }, statusCode);
+    return c.json({ message: err.message }, statusCode as ContentfulStatusCode);
   }
 });
 
@@ -190,7 +191,7 @@ router.get("/shared-by-me", async (c) => {
     const err = error instanceof HttpError ? error : error instanceof Error ? error : new Error(String(error));
     const statusCode = error instanceof HttpError ? error.statusCode : 500;
     logger.error(err.message, error);
-    return c.json({ message: err.message }, statusCode);
+    return c.json({ message: err.message }, statusCode as ContentfulStatusCode);
   }
 });
 
@@ -212,7 +213,7 @@ router.get("/check-permission/:resourceType/:resourceId", async (c) => {
     const err = error instanceof HttpError ? error : error instanceof Error ? error : new Error(String(error));
     const statusCode = error instanceof HttpError ? error.statusCode : 500;
     logger.error(err.message, error);
-    return c.json({ message: err.message }, statusCode);
+    return c.json({ message: err.message }, statusCode as ContentfulStatusCode);
   }
 });
 
@@ -234,7 +235,7 @@ router.get("/activity/:resourceType/:resourceId", async (c) => {
     const err = error instanceof HttpError ? error : error instanceof Error ? error : new Error(String(error));
     const statusCode = error instanceof HttpError ? error.statusCode : 500;
     logger.error(err.message, error);
-    return c.json({ message: err.message }, statusCode);
+    return c.json({ message: err.message }, statusCode as ContentfulStatusCode);
   }
 });
 

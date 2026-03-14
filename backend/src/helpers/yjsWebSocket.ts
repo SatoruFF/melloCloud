@@ -127,7 +127,7 @@ function handleAwarenessMessage(decoder: decoding.Decoder, client: YjsClient, no
   try {
     const awarenessUpdate = decoding.readVarUint8Array(decoder);
     const decoder2 = decoding.createDecoder(awarenessUpdate);
-    const added = [];
+    const added: number[] = [];
     const updated = [];
     const removed = [];
 

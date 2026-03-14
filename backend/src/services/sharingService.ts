@@ -425,7 +425,7 @@ class SharingServiceClass {
     resourceType: ResourceType,
     resourceId: number,
     userId: number,
-    trx?: Omit<PrismaClient, '$connect' | '$disconnect' | '$on' | '$transaction' | '$use'>
+    trx?: Omit<PrismaClient, '$connect' | '$disconnect' | '$on' | '$transaction' | '$use' | '$extends'>
   ): Promise<boolean> {
     const prismaClient = trx || prisma;
 
@@ -593,7 +593,7 @@ class SharingServiceClass {
       throw createError(404, "File not found");
     }
 
-    let filePath = `${String(file.user.storageGuid)}/${file.path}/${file.name}`;
+    let filePath = `${String(file.user?.storageGuid)}/${file.path}/${file.name}`;
     filePath = filePath.replace(/\/{2,}/g, "/");
 
     const s3object = await s3

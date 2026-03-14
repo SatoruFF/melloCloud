@@ -1,3 +1,4 @@
+import type ApiContext from "../models/context.js";
 import { serializeMessage, deserializeMessage } from "./../helpers/messageSerializer.js";
 import _ from "lodash";
 import { prisma } from "../configs/config.js";
@@ -35,7 +36,7 @@ class MessagesServiceClass<T extends IMessage> {
    * @param decrypt - Расшифровать сообщения (по умолчанию true).
    * @returns Список сообщений.
    */
-  async getPaginatedMessagesByChatId({ userId, chatId, limit = 20, offset = 0, decrypt = true }) {
+  async getPaginatedMessagesByChatId({ userId, chatId, limit = 20, offset = 0, decrypt = true }: { userId: number; chatId: number; limit?: number; offset?: number; decrypt?: boolean }) {
     try {
       const isUserInChat = await prisma.chatUser.findFirst({
         where: { chatId, userId },
@@ -80,7 +81,7 @@ class MessagesServiceClass<T extends IMessage> {
    * @param encrypt - Шифровать сообщение (по умолчанию true).
    * @returns Сохраненное сообщение.
    */
-  async saveMessage(context, message: IMessage, encrypt = true) {
+  async saveMessage(context: ApiContext, message: IMessage, encrypt = true) {
     try {
       const validatedMessage = messageSchema.parse(message);
 

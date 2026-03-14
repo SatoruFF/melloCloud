@@ -496,7 +496,7 @@ class EventsServiceClass {
       const canEdit =
         hasAccess &&
         permissionLevel &&
-        [PermissionLevel.EDITOR, PermissionLevel.ADMIN, PermissionLevel.OWNER].includes(permissionLevel);
+        ([PermissionLevel.EDITOR, PermissionLevel.ADMIN, PermissionLevel.OWNER] as PermissionLevel[]).includes(permissionLevel);
       if (!canEdit) {
         throw createError(403, "Event not found or access denied");
       }
@@ -612,7 +612,7 @@ class EventsServiceClass {
       const canDelete =
         hasAccess &&
         permissionLevel &&
-        [PermissionLevel.ADMIN, PermissionLevel.OWNER].includes(permissionLevel);
+        ([PermissionLevel.ADMIN, PermissionLevel.OWNER] as PermissionLevel[]).includes(permissionLevel);
       if (!canDelete) {
         throw createError(403, "Event not found or access denied");
       }

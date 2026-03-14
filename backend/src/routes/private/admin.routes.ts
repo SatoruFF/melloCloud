@@ -334,7 +334,7 @@ adminRouter.patch("/feature-flags/:id", zValidator("json", updateFeatureFlagSche
   const id = Number(c.req.param("id"));
   if (!Number.isFinite(id)) return c.json({ message: "Invalid id" }, 400);
   const body = c.req.valid("json");
-  const flag = await FeatureFlagService.updateFlag(id, body);
+  const flag = await FeatureFlagService.updateFlag(id, body as any);
   return c.json(flag);
 });
 

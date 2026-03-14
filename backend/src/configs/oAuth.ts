@@ -101,7 +101,7 @@ if (YANDEX_CLIENT_ID && YANDEX_CLIENT_SECRET) {
           emails?: Array<{ value: string }>;
           default_avatar_id?: string;
         },
-        done: (err: Error | null, user?: User) => void
+        done: (err: any, user?: User) => void
       ) => {
         try {
           const email = profile.emails?.[0]?.value || profile.default_email;
@@ -149,7 +149,7 @@ if (YANDEX_CLIENT_ID && YANDEX_CLIENT_SECRET) {
           return done(null, user);
         } catch (error) {
           console.error("Yandex OAuth error:", error);
-          return done(error, undefined);
+          return done(error as Error | null, undefined);
         }
       }
     )
