@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Card, Button, Tag, Table, Row, Col, Divider, Select, Spin, message } from "antd";
+import { Card, Button, Tag, Table, Row, Col, Divider, Select, Spin, message, ConfigProvider, theme } from "antd";
 import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
 import { getUserSelector } from "../../../entities/user";
@@ -12,6 +12,16 @@ import {
 } from "../../../entities/subscription/model/api/subscriptionApi";
 import { sizeFormat } from "../../../shared/utils/sizeFormat";
 import styles from "./subscription-page.module.scss";
+
+const darkTheme = {
+  algorithm: theme.darkAlgorithm,
+  token: {
+    colorBgContainer: "#1f1f1f",
+    colorBgElevated: "#1f1f1f",
+    colorBorder: "#303030",
+    colorPrimary: "#1890ff",
+  },
+};
 
 const PLAN_COLOR: Record<string, string> = { FREE: "default", PRO: "blue", ENTERPRISE: "gold" };
 const PERIOD_OPTIONS = [
@@ -65,6 +75,7 @@ const SubscriptionPage = () => {
   const subscriptionsEnabled = config?.isEnabled ?? false;
 
   return (
+    <ConfigProvider theme={darkTheme}>
     <div className={styles.root}>
       <h1 className={styles.title}>{t("subscription.pageTitle")}</h1>
 
@@ -260,6 +271,7 @@ const SubscriptionPage = () => {
         ]}
       />
     </div>
+    </ConfigProvider>
   );
 };
 
