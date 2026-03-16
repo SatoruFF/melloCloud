@@ -1,6 +1,6 @@
 import { useLocation } from "react-router-dom";
 
-import ParticleEffect from "@/shared";
+import { ParticleEffect } from "@/shared";
 import { Login } from "@/widgets/login";
 import { Register } from "@/widgets/register";
 
