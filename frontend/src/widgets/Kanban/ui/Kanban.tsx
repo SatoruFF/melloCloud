@@ -236,7 +236,7 @@ const Kanban = ({ boardId }: KanbanProps) => {
               onDrop={(e) => onDrop(e, column.id)}
               onDragOver={onDragOver}
               onDragEnter={() => onDragEnter(column.id)}
-              bodyStyle={{ padding: 0 }}
+              styles={{ body: { padding: 0 } }}
             >
               {/* Column Header */}
               <div

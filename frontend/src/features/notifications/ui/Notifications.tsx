@@ -83,8 +83,8 @@ export const Notifications = () => {
           </div>
         }
         placement="right"
-        width={420}
         onClose={handleClose}
+        styles={{ wrapper: { width: 420 } }}
         open={open}
         className={styles.drawer}
         closeIcon={<X size={20} />}

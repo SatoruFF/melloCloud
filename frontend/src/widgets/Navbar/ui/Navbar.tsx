@@ -136,8 +136,7 @@ const MyNavbar: React.FC = () => {
             onClose={() => setProfile(false)}
             open={profile}
             className={styles.settingsDrawer}
-            contentWrapperStyle={{ backgroundColor: "#1f1f1f" }}
-            styles={{ body: { backgroundColor: "#1f1f1f" }, header: { backgroundColor: "#1f1f1f", borderBottomColor: "#303030" } }}
+            styles={{ body: { backgroundColor: "#1f1f1f" }, header: { backgroundColor: "#1f1f1f", borderBottomColor: "#303030" }, wrapper: { backgroundColor: "#1f1f1f" } }}
           >
             <AccountSettings />
           </Drawer>
