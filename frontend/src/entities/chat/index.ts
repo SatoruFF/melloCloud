@@ -1,6 +1,6 @@
 import { useGetChatsQuery, useCreateGroupChatMutation } from './model/api/chatApi';
 import { getCurrentChat } from './model/selector/getChats';
-import chatReducer from './model/slice/chatSlice';
+import chatReducer, { setCurrentChat } from './model/slice/chatSlice';
 import type { ChatSchema } from './types/chat';
 
 export {
@@ -8,6 +8,7 @@ export {
   useCreateGroupChatMutation,
   getCurrentChat,
   chatReducer,
+  setCurrentChat,
   type ChatSchema,
 };
 
